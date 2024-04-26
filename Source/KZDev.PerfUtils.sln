@@ -1,0 +1,63 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34728.123
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KZDev.PerfUtils", "Src\KZDev.PerfUtils\KZDev.PerfUtils.csproj", "{3DDF84F3-9A4D-4F6D-B21C-2DCE5330ECC4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Source", "Source", "{8C579DDD-A752-46C3-9BBD-08FAC5EA0F2F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BD923567-7F19-4909-9ED9-FBC5A82A5252}"
+	ProjectSection(SolutionItems) = preProject
+		..\.gitignore = ..\.gitignore
+		..\LICENSE = ..\LICENSE
+		..\README.md = ..\README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{F8C76B35-0758-433E-953B-0D7E9D63DE13}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KZDev.PerfUtils.Memory.UnitTests", "Tst\KZDev.PerfUtils.Memory.UnitTests\KZDev.PerfUtils.Memory.UnitTests.csproj", "{E057E292-E832-49ED-8AD3-FA39E2B15991}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KZDev.PerfUtils.TestBase", "Tst\KZDev.PerfUtils.TestBase\KZDev.PerfUtils.TestBase.csproj", "{FBC500FD-C9DE-4AEC-B8AB-180115BFCB75}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KZDev.PerfUtils.UnitTestBase", "Tst\KZDev.PerfUtils.UnitTestBase\KZDev.PerfUtils.UnitTestBase.csproj", "{126DEC2E-62D4-4F31-A07A-D7FF740BEF44}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{30D9D5E1-42BB-4230-8528-A6B339BD14AA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3DDF84F3-9A4D-4F6D-B21C-2DCE5330ECC4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3DDF84F3-9A4D-4F6D-B21C-2DCE5330ECC4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3DDF84F3-9A4D-4F6D-B21C-2DCE5330ECC4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3DDF84F3-9A4D-4F6D-B21C-2DCE5330ECC4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E057E292-E832-49ED-8AD3-FA39E2B15991}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E057E292-E832-49ED-8AD3-FA39E2B15991}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E057E292-E832-49ED-8AD3-FA39E2B15991}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E057E292-E832-49ED-8AD3-FA39E2B15991}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FBC500FD-C9DE-4AEC-B8AB-180115BFCB75}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FBC500FD-C9DE-4AEC-B8AB-180115BFCB75}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FBC500FD-C9DE-4AEC-B8AB-180115BFCB75}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FBC500FD-C9DE-4AEC-B8AB-180115BFCB75}.Release|Any CPU.Build.0 = Release|Any CPU
+		{126DEC2E-62D4-4F31-A07A-D7FF740BEF44}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{126DEC2E-62D4-4F31-A07A-D7FF740BEF44}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{126DEC2E-62D4-4F31-A07A-D7FF740BEF44}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{126DEC2E-62D4-4F31-A07A-D7FF740BEF44}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{3DDF84F3-9A4D-4F6D-B21C-2DCE5330ECC4} = {8C579DDD-A752-46C3-9BBD-08FAC5EA0F2F}
+		{E057E292-E832-49ED-8AD3-FA39E2B15991} = {F8C76B35-0758-433E-953B-0D7E9D63DE13}
+		{FBC500FD-C9DE-4AEC-B8AB-180115BFCB75} = {30D9D5E1-42BB-4230-8528-A6B339BD14AA}
+		{126DEC2E-62D4-4F31-A07A-D7FF740BEF44} = {30D9D5E1-42BB-4230-8528-A6B339BD14AA}
+		{30D9D5E1-42BB-4230-8528-A6B339BD14AA} = {F8C76B35-0758-433E-953B-0D7E9D63DE13}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FE0AB859-B820-470E-AA57-2337B2495B50}
+	EndGlobalSection
+EndGlobal
