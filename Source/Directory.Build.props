@@ -1,0 +1,11 @@
+<Project>
+    <!-- 
+    Define Solution-Level properties
+   -->
+    <PropertyGroup Label="SourceGlobals">
+        <Configurations>Debug;Release;Profile</Configurations>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <LangVersion>latest</LangVersion>
+    </PropertyGroup>
+</Project>

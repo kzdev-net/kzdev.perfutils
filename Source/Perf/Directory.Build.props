@@ -1,0 +1,14 @@
+<Project>
+    <!-- 
+    Define Source-Level properties
+   -->
+    <PropertyGroup Label="SourceGlobals">
+        <Configurations>Debug;Release;Profile</Configurations>
+        <TargetFrameworks>net8.0</TargetFrameworks>
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+    <!-- 
+    Import the next higher level Directory.Build.props file. 
+   -->
+    <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)..\'))" />
+</Project>

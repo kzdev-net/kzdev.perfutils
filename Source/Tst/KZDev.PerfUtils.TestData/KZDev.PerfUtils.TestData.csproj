@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<ItemGroup>
+		<AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage" />
+	</ItemGroup>
+	<ItemGroup Condition="'$(Configuration)' != 'Package'">
+		<InternalsVisibleTo Include="KZDev.PerfUtils.Common.UnitTests" />
+		<InternalsVisibleTo Include="KZDev.PerfUtils.Memory.UnitTests" />
+		<InternalsVisibleTo Include="KZDev.PerfUtils.Memory.Fixed.UnitTests" />
+		<InternalsVisibleTo Include="KZDev.PerfUtils.Memory.Native.UnitTests" />
+		<InternalsVisibleTo Include="KZDev.PerfUtils.Memory.Heap.UnitTests" />
+		<InternalsVisibleTo Include="KZDev.PerfUtils.Memory.Sequential.UnitTests" />
+		<InternalsVisibleTo Include="KZDev.PerfUtils.Memory.Heap.Sequential.UnitTests" />
+		<InternalsVisibleTo Include="KZDev.PerfUtils.Memory.Native.Sequential.UnitTests" />
+		<InternalsVisibleTo Include="MemoryStreamBenchmarks" />
+	</ItemGroup>
+</Project>

@@ -1,0 +1,50 @@
+- name: Getting Started
+  href: getting-started.md
+- name: Memory Stream
+  href: memorystreamslim.md
+- name: Management
+  href: memory-management.md
+- name: Monitoring
+  href: memory-monitoring.md
+- name: Benchmarks
+  href: benchmarks.md
+  items:
+    - name: Dynamic Throughput Benchmarks
+      href: dynamic-throughput-benchmarks.md
+      items:
+        - name: Bulk Fill And Read
+          href: MemoryStreamBenchmarks.BulkFillAndReadThroughputBenchmarks-report-github.md
+        - name: Segmented Fill And Read
+          href: MemoryStreamBenchmarks.SegmentedFillAndReadThroughputBenchmarks-report-github.md
+        - name: Bulk Fill And Read (Full HTML Table)
+          href: MemoryStreamBenchmarks.BulkFillAndReadThroughputBenchmarks-report.html
+        - name: Segmented Fill And Read (Full HTML Table)
+          href: MemoryStreamBenchmarks.SegmentedFillAndReadThroughputBenchmarks-report.html
+    - name: Wrapper Throughput Benchmarks
+      href: wrapper-throughput-benchmarks.md
+      items:
+        - name: Benchmark Results
+          href: MemoryStreamBenchmarks.WrapperFillAndReadThroughputBenchmarks-report-github.md
+        - name: Benchmark Results (Full HTML Table)
+          href: MemoryStreamBenchmarks.WrapperFillAndReadThroughputBenchmarks-report.html
+    - name: Continuous Growth Throughput Benchmarks
+      href: continuous-growth-throughput-benchmarks.md
+      items:
+        - name: Benchmark Results
+          href: MemoryStreamBenchmarks.ContinuousGrowFillAndReadThroughputBenchmarks-report-github.md
+        - name: Benchmark Results (Full HTML Table)
+          href: MemoryStreamBenchmarks.ContinuousGrowFillAndReadThroughputBenchmarks-report.html
+    - name: CopyToAsync Throughput Benchmarks
+      href: copytoasync-throughput-benchmarks.md
+      items:
+        - name: Benchmark Results
+          href: MemoryStreamBenchmarks.CopyToAsyncThroughputBenchmarks-report-github.md
+        - name: Benchmark Results (Full HTML Table)
+          href: MemoryStreamBenchmarks.CopyToAsyncThroughputBenchmarks-report.html
+    - name: Set Loop Count Throughput Benchmarks
+      href: set-loop-count-throughput-benchmarks.md
+      items:
+        - name: Benchmark Results
+          href: MemoryStreamBenchmarks.SetLoopCountFillAndReadThroughputBenchmarks-report-github.md
+        - name: Benchmark Results (Full HTML Table)
+          href: MemoryStreamBenchmarks.SetLoopCountFillAndReadThroughputBenchmarks-report.html

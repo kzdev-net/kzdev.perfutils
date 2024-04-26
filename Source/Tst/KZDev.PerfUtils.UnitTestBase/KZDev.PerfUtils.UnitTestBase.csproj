@@ -1,14 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <RootNamespace>KZDev.PerfUtils.Tests</RootNamespace>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\KZDev.PerfUtils.TestBase\KZDev.PerfUtils.TestBase.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\KZDev.PerfUtils.TestBase\KZDev.PerfUtils.TestBase.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+		<AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage" />
+	</ItemGroup>
 
 </Project>

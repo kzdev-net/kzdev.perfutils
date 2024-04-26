@@ -1,0 +1,1 @@
+The MemoryStreamBenchmarks project is used to benchmark the performance of the `MemoryStreamSlim` class. The benchmarks largely run a comparison to the baseline `MemoryStream` but also compare to the `RecyclableMemoryStream` from the `Microsoft.IO.RecyclableMemoryStream` package.

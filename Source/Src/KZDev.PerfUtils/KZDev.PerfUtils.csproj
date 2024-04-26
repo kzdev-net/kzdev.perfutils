@@ -1,13 +1,61 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <Folder Include="Memory\" />
-  </ItemGroup>
-
+	<PropertyGroup>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<Deterministic>true</Deterministic>
+	</PropertyGroup>
+	<PropertyGroup Label="Package">
+		<Title>KZDev Performance Utilities</Title>
+		<PackageId>KZDev.PerfUtils</PackageId>
+		<PackageTags>KZDev,Utilities,Performance,MemoryStream,MemoryStreamSlim,Stream,GC,Garbage Collection</PackageTags>
+		<PackageReadmeFile>docs\README.md</PackageReadmeFile>
+		<PackageIcon>images\icon.png</PackageIcon>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageDescription>Performance utilities for .NET projects, initially providing the `MemoryStreamSlim` class; a high-performance, memory-efficient, and easy-to-use replacement for the `MemoryStream` class that provides particular benefits for large or frequently used streams.</PackageDescription>
+		<PackageReleaseNotes>Initial release (version 1.0.0)</PackageReleaseNotes>
+		<EmbedUntrackedSources>true</EmbedUntrackedSources>
+		<RepositoryUrl>https://github.com/kzdev-net/kzdev.perfutils</RepositoryUrl>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(IsPacking)' == 'true'">
+		<IncludeSymbols>true</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)'=='Profile'">
+		<DebugType>pdbonly</DebugType>
+		<DebugSymbols>true</DebugSymbols>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(IsPacking)' != 'true'">
+		<DefineConstants>$(DefineConstants);NOT_PACKAGING</DefineConstants>
+	</PropertyGroup>
+	<ItemGroup Condition="'$(IsPacking)' != 'true'">
+		<InternalsVisibleTo Include="KZDev.PerfUtils.Common.UnitTests" />
+		<InternalsVisibleTo Include="KZDev.PerfUtils.Memory.UnitTests" />
+		<InternalsVisibleTo Include="KZDev.PerfUtils.Memory.Fixed.UnitTests" />
+		<InternalsVisibleTo Include="KZDev.PerfUtils.Memory.Native.UnitTests" />
+		<InternalsVisibleTo Include="KZDev.PerfUtils.Memory.Heap.UnitTests" />
+		<InternalsVisibleTo Include="KZDev.PerfUtils.Memory.Sequential.UnitTests" />
+		<InternalsVisibleTo Include="KZDev.PerfUtils.Memory.Heap.Sequential.UnitTests" />
+		<InternalsVisibleTo Include="KZDev.PerfUtils.Memory.Native.Sequential.UnitTests" />
+		<InternalsVisibleTo Include="MemoryStreamBenchmarks" />
+	</ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)' != 'net8.0'">
+	  <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="8.0.1" />
+	</ItemGroup>
+	<ItemGroup>
+		<Compile Update="Resources\Strings.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Strings.resx</DependentUpon>
+		</Compile>
+	</ItemGroup>
+	<ItemGroup>
+		<EmbeddedResource Update="Resources\Strings.resx">
+			<Generator>ResXFileCodeGenerator</Generator>
+			<LastGenOutput>Strings.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+	</ItemGroup>
+	<ItemGroup>
+		<None Include="Package\nuget.readme.md" Pack="true" Visible="false" PackagePath="docs\README.md" />
+		<None Include="Package\nuget.icon.png" Pack="true" Visible="false" PackagePath="images\icon.png" />
+	</ItemGroup>
 </Project>

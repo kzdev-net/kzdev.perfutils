@@ -6,46 +6,253 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KZDev.PerfUtils", "Src\KZDev.PerfUtils\KZDev.PerfUtils.csproj", "{3DDF84F3-9A4D-4F6D-B21C-2DCE5330ECC4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Source", "Source", "{8C579DDD-A752-46C3-9BBD-08FAC5EA0F2F}"
+	ProjectSection(SolutionItems) = preProject
+		Src\Directory.Build.props = Src\Directory.Build.props
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BD923567-7F19-4909-9ED9-FBC5A82A5252}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
 		..\.gitignore = ..\.gitignore
+		Directory.Build.props = Directory.Build.props
+		global.json = global.json
 		..\LICENSE = ..\LICENSE
 		..\README.md = ..\README.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{F8C76B35-0758-433E-953B-0D7E9D63DE13}"
+	ProjectSection(SolutionItems) = preProject
+		Tst\Directory.Build.props = Tst\Directory.Build.props
+		linuxtest.dockerfile = linuxtest.dockerfile
+		Tst\README.md = Tst\README.md
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KZDev.PerfUtils.Memory.UnitTests", "Tst\KZDev.PerfUtils.Memory.UnitTests\KZDev.PerfUtils.Memory.UnitTests.csproj", "{E057E292-E832-49ED-8AD3-FA39E2B15991}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KZDev.PerfUtils.Memory.UnitTests", "Tst\KZDev.PerfUtils.Memory.UnitTests\KZDev.PerfUtils.Memory.UnitTests.csproj", "{E057E292-E832-49ED-8AD3-FA39E2B15991}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KZDev.PerfUtils.TestBase", "Tst\KZDev.PerfUtils.TestBase\KZDev.PerfUtils.TestBase.csproj", "{FBC500FD-C9DE-4AEC-B8AB-180115BFCB75}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KZDev.PerfUtils.TestBase", "Tst\KZDev.PerfUtils.TestBase\KZDev.PerfUtils.TestBase.csproj", "{FBC500FD-C9DE-4AEC-B8AB-180115BFCB75}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KZDev.PerfUtils.UnitTestBase", "Tst\KZDev.PerfUtils.UnitTestBase\KZDev.PerfUtils.UnitTestBase.csproj", "{126DEC2E-62D4-4F31-A07A-D7FF740BEF44}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KZDev.PerfUtils.UnitTestBase", "Tst\KZDev.PerfUtils.UnitTestBase\KZDev.PerfUtils.UnitTestBase.csproj", "{126DEC2E-62D4-4F31-A07A-D7FF740BEF44}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{30D9D5E1-42BB-4230-8528-A6B339BD14AA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KZDev.PerfUtils.TestPrep", "Tst\KZDev.PerfUtils.TestPrep\KZDev.PerfUtils.TestPrep.csproj", "{6184B28D-0F5C-414E-BAE2-9871FE536115}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KZDev.PerfUtils.TestData", "Tst\KZDev.PerfUtils.TestData\KZDev.PerfUtils.TestData.csproj", "{9437F0E3-4ABA-4268-9BAE-C53CF496E544}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KZDev.PerfUtils.Common.UnitTests", "Tst\KZDev.PerfUtils.Common.UnitTests\KZDev.PerfUtils.Common.UnitTests.csproj", "{0F63F98C-EF3E-49EF-8621-50B8054B77A5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Performance", "Performance", "{FC849880-867F-4404-B3A7-A9E0D32B323B}"
+	ProjectSection(SolutionItems) = preProject
+		Perf\Directory.Build.props = Perf\Directory.Build.props
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MemoryStreamBenchmarks", "Perf\MemoryStreamBenchmarks\MemoryStreamBenchmarks.csproj", "{7D44A27D-9391-45F4-851E-79880E1B83DD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{275595B2-9125-41B0-880C-F92366002CC8}"
+	ProjectSection(SolutionItems) = preProject
+		Docs\.gitignore = Docs\.gitignore
+		Docs\docfx.json = Docs\docfx.json
+		Docs\filterConfig.yml = Docs\filterConfig.yml
+		Docs\index.md = Docs\index.md
+		Docs\toc.yml = Docs\toc.yml
+	EndProjectSection
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "KZDev.PerfUtils.Memory.Tests.Shared", "Tst\Shared\KZDev.PerfUtils.Memory.Tests.Shared\KZDev.PerfUtils.Memory.Tests.Shared.shproj", "{CBA74DF8-C294-4BC4-A0E5-BAD1582DA56A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MemoryStreamProfile", "Perf\MemoryStreamProfile\MemoryStreamProfile.csproj", "{144A1E2B-02BF-4127-BD3A-1163F2C18BA2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Development", "Development", "{C95F6A6E-49CC-47F9-AB44-D6904F56D83E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Templates", "Templates", "{DDB87329-EA4A-421A-9F6F-7408A1AA004B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Styles", "Styles", "{58788936-8D00-4798-B7D0-F30DCBFB4766}"
+	ProjectSection(SolutionItems) = preProject
+		Docs\templates\public\main.css = Docs\templates\public\main.css
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Articles", "Articles", "{B94D886A-CDE3-4650-908C-4243A5C532B7}"
+	ProjectSection(SolutionItems) = preProject
+		Docs\articles\benchmarks.md = Docs\articles\benchmarks.md
+		Docs\articles\continuous-growth-throughput-benchmarks.md = Docs\articles\continuous-growth-throughput-benchmarks.md
+		Docs\articles\copytoasync-throughput-benchmarks.md = Docs\articles\copytoasync-throughput-benchmarks.md
+		Docs\articles\dynamic-throughput-benchmarks.md = Docs\articles\dynamic-throughput-benchmarks.md
+		Docs\articles\getting-started.md = Docs\articles\getting-started.md
+		Docs\articles\memory-management.md = Docs\articles\memory-management.md
+		Docs\articles\memory-monitoring.md = Docs\articles\memory-monitoring.md
+		Docs\articles\MemoryStreamBenchmarks.BulkFillAndReadThroughputBenchmarks-report-github.md = Docs\articles\MemoryStreamBenchmarks.BulkFillAndReadThroughputBenchmarks-report-github.md
+		Docs\articles\MemoryStreamBenchmarks.BulkFillAndReadThroughputBenchmarks-report.html = Docs\articles\MemoryStreamBenchmarks.BulkFillAndReadThroughputBenchmarks-report.html
+		Docs\articles\MemoryStreamBenchmarks.ContinuousGrowFillAndReadThroughputBenchmarks-report-github.md = Docs\articles\MemoryStreamBenchmarks.ContinuousGrowFillAndReadThroughputBenchmarks-report-github.md
+		Docs\articles\MemoryStreamBenchmarks.ContinuousGrowFillAndReadThroughputBenchmarks-report.html = Docs\articles\MemoryStreamBenchmarks.ContinuousGrowFillAndReadThroughputBenchmarks-report.html
+		Docs\articles\MemoryStreamBenchmarks.CopyToAsyncThroughputBenchmarks-report-github.md = Docs\articles\MemoryStreamBenchmarks.CopyToAsyncThroughputBenchmarks-report-github.md
+		Docs\articles\MemoryStreamBenchmarks.CopyToAsyncThroughputBenchmarks-report.html = Docs\articles\MemoryStreamBenchmarks.CopyToAsyncThroughputBenchmarks-report.html
+		Docs\articles\MemoryStreamBenchmarks.SegmentedFillAndReadThroughputBenchmarks-report-github.md = Docs\articles\MemoryStreamBenchmarks.SegmentedFillAndReadThroughputBenchmarks-report-github.md
+		Docs\articles\MemoryStreamBenchmarks.SegmentedFillAndReadThroughputBenchmarks-report.html = Docs\articles\MemoryStreamBenchmarks.SegmentedFillAndReadThroughputBenchmarks-report.html
+		Docs\articles\MemoryStreamBenchmarks.SetLoopCountFillAndReadThroughputBenchmarks-report-github.md = Docs\articles\MemoryStreamBenchmarks.SetLoopCountFillAndReadThroughputBenchmarks-report-github.md
+		Docs\articles\MemoryStreamBenchmarks.SetLoopCountFillAndReadThroughputBenchmarks-report.html = Docs\articles\MemoryStreamBenchmarks.SetLoopCountFillAndReadThroughputBenchmarks-report.html
+		Docs\articles\MemoryStreamBenchmarks.WrapperFillAndReadThroughputBenchmarks-report-github.md = Docs\articles\MemoryStreamBenchmarks.WrapperFillAndReadThroughputBenchmarks-report-github.md
+		Docs\articles\MemoryStreamBenchmarks.WrapperFillAndReadThroughputBenchmarks-report.html = Docs\articles\MemoryStreamBenchmarks.WrapperFillAndReadThroughputBenchmarks-report.html
+		Docs\articles\memorystreamslim.md = Docs\articles\memorystreamslim.md
+		Docs\articles\set-loop-count-throughput-benchmarks.md = Docs\articles\set-loop-count-throughput-benchmarks.md
+		Docs\articles\toc.yml = Docs\articles\toc.yml
+		Docs\articles\wrapper-throughput-benchmarks.md = Docs\articles\wrapper-throughput-benchmarks.md
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KZDev.PerfUtils.Memory.Sequential.UnitTests", "Tst\KZDev.PerfUtils.Memory.Sequential.UnitTests\KZDev.PerfUtils.Memory.Sequential.UnitTests.csproj", "{2F0975BB-4074-4764-BD19-39A0F0DDF529}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KZDev.PerfUtils.Memory.Heap.UnitTests", "Tst\KZDev.PerfUtils.Memory.Heap.UnitTests\KZDev.PerfUtils.Memory.Heap.UnitTests.csproj", "{ECB7BCF6-A9DE-45BF-85EC-981304FFA480}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KZDev.PerfUtils.Memory.Native.UnitTests", "Tst\KZDev.PerfUtils.Memory.Native.UnitTests\KZDev.PerfUtils.Memory.Native.UnitTests.csproj", "{E9CF827D-6AC1-4CEF-88E3-746822D9F296}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "KZDev.PerfUtils.MemoryStreamSlim.Tests.Shared", "Tst\Shared\KZDev.PerfUtils.MemoryStreamSlim.Tests.Shared\KZDev.PerfUtils.MemoryStreamSlim.Tests.Shared.shproj", "{526D3949-96BC-4C3B-9D0C-6C53D6D7E424}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "KZDev.PerfUtils.Memory.Sequential.Tests.Shared", "Tst\Shared\KZDev.PerfUtils.Memory.Sequential.Tests.Shared\KZDev.PerfUtils.Memory.Sequential.Tests.Shared.shproj", "{1674AF19-C69D-4082-94A6-C43FB479649E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KZDev.PerfUtils.Memory.Native.Sequential.UnitTests", "Tst\KZDev.PerfUtils.Memory.Native.Sequential.UnitTests\KZDev.PerfUtils.Memory.Native.Sequential.UnitTests.csproj", "{81F9CD93-4149-4D87-91E4-650DDD2D83CC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KZDev.PerfUtils.Memory.Heap.Sequential.UnitTests", "Tst\KZDev.PerfUtils.Memory.Heap.Sequential.UnitTests\KZDev.PerfUtils.Memory.Heap.Sequential.UnitTests.csproj", "{7C37EECE-067B-4B09-897E-AA62616D83F6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Package", "Package", "{D1035E58-BF82-446D-BF8B-168266DAE600}"
+	ProjectSection(SolutionItems) = preProject
+		Src\KZDev.PerfUtils\Package\nuget.icon.png = Src\KZDev.PerfUtils\Package\nuget.icon.png
+		Src\KZDev.PerfUtils\Package\nuget.readme.md = Src\KZDev.PerfUtils\Package\nuget.readme.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{E69AE4BE-78A2-44D1-A68A-6E9A6A27DE79}"
+	ProjectSection(SolutionItems) = preProject
+		Docs\images\favicon.ico = Docs\images\favicon.ico
+		Docs\images\kzdevlogo.svg = Docs\images\kzdevlogo.svg
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KZDev.PerfUtils.Memory.Fixed.UnitTests", "Tst\KZDev.PerfUtils.Memory.Fixed.UnitTests\KZDev.PerfUtils.Memory.Fixed.UnitTests.csproj", "{5D74ECD3-20EC-4049-8C84-D5550E835CD1}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "KZDev.PerfUtils.TestMocks.Shared", "Tst\Shared\KZDev.PerfUtils.TestMocks.Shared\KZDev.PerfUtils.TestMocks.Shared.shproj", "{4EFA3802-BA4D-4CA0-B040-B02AE260910D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Package|Any CPU = Package|Any CPU
+		Profile|Any CPU = Profile|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{3DDF84F3-9A4D-4F6D-B21C-2DCE5330ECC4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3DDF84F3-9A4D-4F6D-B21C-2DCE5330ECC4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3DDF84F3-9A4D-4F6D-B21C-2DCE5330ECC4}.Package|Any CPU.ActiveCfg = Release|Any CPU
+		{3DDF84F3-9A4D-4F6D-B21C-2DCE5330ECC4}.Package|Any CPU.Build.0 = Release|Any CPU
+		{3DDF84F3-9A4D-4F6D-B21C-2DCE5330ECC4}.Profile|Any CPU.ActiveCfg = Profile|Any CPU
+		{3DDF84F3-9A4D-4F6D-B21C-2DCE5330ECC4}.Profile|Any CPU.Build.0 = Profile|Any CPU
 		{3DDF84F3-9A4D-4F6D-B21C-2DCE5330ECC4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3DDF84F3-9A4D-4F6D-B21C-2DCE5330ECC4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E057E292-E832-49ED-8AD3-FA39E2B15991}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E057E292-E832-49ED-8AD3-FA39E2B15991}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E057E292-E832-49ED-8AD3-FA39E2B15991}.Package|Any CPU.ActiveCfg = Release|Any CPU
+		{E057E292-E832-49ED-8AD3-FA39E2B15991}.Package|Any CPU.Build.0 = Release|Any CPU
+		{E057E292-E832-49ED-8AD3-FA39E2B15991}.Profile|Any CPU.ActiveCfg = Release|Any CPU
+		{E057E292-E832-49ED-8AD3-FA39E2B15991}.Profile|Any CPU.Build.0 = Release|Any CPU
 		{E057E292-E832-49ED-8AD3-FA39E2B15991}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E057E292-E832-49ED-8AD3-FA39E2B15991}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FBC500FD-C9DE-4AEC-B8AB-180115BFCB75}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FBC500FD-C9DE-4AEC-B8AB-180115BFCB75}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FBC500FD-C9DE-4AEC-B8AB-180115BFCB75}.Package|Any CPU.ActiveCfg = Release|Any CPU
+		{FBC500FD-C9DE-4AEC-B8AB-180115BFCB75}.Package|Any CPU.Build.0 = Release|Any CPU
+		{FBC500FD-C9DE-4AEC-B8AB-180115BFCB75}.Profile|Any CPU.ActiveCfg = Release|Any CPU
+		{FBC500FD-C9DE-4AEC-B8AB-180115BFCB75}.Profile|Any CPU.Build.0 = Release|Any CPU
 		{FBC500FD-C9DE-4AEC-B8AB-180115BFCB75}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FBC500FD-C9DE-4AEC-B8AB-180115BFCB75}.Release|Any CPU.Build.0 = Release|Any CPU
 		{126DEC2E-62D4-4F31-A07A-D7FF740BEF44}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{126DEC2E-62D4-4F31-A07A-D7FF740BEF44}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{126DEC2E-62D4-4F31-A07A-D7FF740BEF44}.Package|Any CPU.ActiveCfg = Release|Any CPU
+		{126DEC2E-62D4-4F31-A07A-D7FF740BEF44}.Package|Any CPU.Build.0 = Release|Any CPU
+		{126DEC2E-62D4-4F31-A07A-D7FF740BEF44}.Profile|Any CPU.ActiveCfg = Release|Any CPU
+		{126DEC2E-62D4-4F31-A07A-D7FF740BEF44}.Profile|Any CPU.Build.0 = Release|Any CPU
 		{126DEC2E-62D4-4F31-A07A-D7FF740BEF44}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{126DEC2E-62D4-4F31-A07A-D7FF740BEF44}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6184B28D-0F5C-414E-BAE2-9871FE536115}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6184B28D-0F5C-414E-BAE2-9871FE536115}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6184B28D-0F5C-414E-BAE2-9871FE536115}.Package|Any CPU.ActiveCfg = Release|Any CPU
+		{6184B28D-0F5C-414E-BAE2-9871FE536115}.Package|Any CPU.Build.0 = Release|Any CPU
+		{6184B28D-0F5C-414E-BAE2-9871FE536115}.Profile|Any CPU.ActiveCfg = Release|Any CPU
+		{6184B28D-0F5C-414E-BAE2-9871FE536115}.Profile|Any CPU.Build.0 = Release|Any CPU
+		{6184B28D-0F5C-414E-BAE2-9871FE536115}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6184B28D-0F5C-414E-BAE2-9871FE536115}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9437F0E3-4ABA-4268-9BAE-C53CF496E544}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9437F0E3-4ABA-4268-9BAE-C53CF496E544}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9437F0E3-4ABA-4268-9BAE-C53CF496E544}.Package|Any CPU.ActiveCfg = Release|Any CPU
+		{9437F0E3-4ABA-4268-9BAE-C53CF496E544}.Package|Any CPU.Build.0 = Release|Any CPU
+		{9437F0E3-4ABA-4268-9BAE-C53CF496E544}.Profile|Any CPU.ActiveCfg = Release|Any CPU
+		{9437F0E3-4ABA-4268-9BAE-C53CF496E544}.Profile|Any CPU.Build.0 = Release|Any CPU
+		{9437F0E3-4ABA-4268-9BAE-C53CF496E544}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9437F0E3-4ABA-4268-9BAE-C53CF496E544}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0F63F98C-EF3E-49EF-8621-50B8054B77A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F63F98C-EF3E-49EF-8621-50B8054B77A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F63F98C-EF3E-49EF-8621-50B8054B77A5}.Package|Any CPU.ActiveCfg = Release|Any CPU
+		{0F63F98C-EF3E-49EF-8621-50B8054B77A5}.Package|Any CPU.Build.0 = Release|Any CPU
+		{0F63F98C-EF3E-49EF-8621-50B8054B77A5}.Profile|Any CPU.ActiveCfg = Release|Any CPU
+		{0F63F98C-EF3E-49EF-8621-50B8054B77A5}.Profile|Any CPU.Build.0 = Release|Any CPU
+		{0F63F98C-EF3E-49EF-8621-50B8054B77A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F63F98C-EF3E-49EF-8621-50B8054B77A5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D44A27D-9391-45F4-851E-79880E1B83DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D44A27D-9391-45F4-851E-79880E1B83DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D44A27D-9391-45F4-851E-79880E1B83DD}.Package|Any CPU.ActiveCfg = Release|Any CPU
+		{7D44A27D-9391-45F4-851E-79880E1B83DD}.Profile|Any CPU.ActiveCfg = Profile|Any CPU
+		{7D44A27D-9391-45F4-851E-79880E1B83DD}.Profile|Any CPU.Build.0 = Profile|Any CPU
+		{7D44A27D-9391-45F4-851E-79880E1B83DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D44A27D-9391-45F4-851E-79880E1B83DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{144A1E2B-02BF-4127-BD3A-1163F2C18BA2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{144A1E2B-02BF-4127-BD3A-1163F2C18BA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{144A1E2B-02BF-4127-BD3A-1163F2C18BA2}.Package|Any CPU.ActiveCfg = Release|Any CPU
+		{144A1E2B-02BF-4127-BD3A-1163F2C18BA2}.Profile|Any CPU.ActiveCfg = Profile|Any CPU
+		{144A1E2B-02BF-4127-BD3A-1163F2C18BA2}.Profile|Any CPU.Build.0 = Profile|Any CPU
+		{144A1E2B-02BF-4127-BD3A-1163F2C18BA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{144A1E2B-02BF-4127-BD3A-1163F2C18BA2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2F0975BB-4074-4764-BD19-39A0F0DDF529}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F0975BB-4074-4764-BD19-39A0F0DDF529}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F0975BB-4074-4764-BD19-39A0F0DDF529}.Package|Any CPU.ActiveCfg = Release|Any CPU
+		{2F0975BB-4074-4764-BD19-39A0F0DDF529}.Package|Any CPU.Build.0 = Release|Any CPU
+		{2F0975BB-4074-4764-BD19-39A0F0DDF529}.Profile|Any CPU.ActiveCfg = Profile|Any CPU
+		{2F0975BB-4074-4764-BD19-39A0F0DDF529}.Profile|Any CPU.Build.0 = Profile|Any CPU
+		{2F0975BB-4074-4764-BD19-39A0F0DDF529}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F0975BB-4074-4764-BD19-39A0F0DDF529}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ECB7BCF6-A9DE-45BF-85EC-981304FFA480}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ECB7BCF6-A9DE-45BF-85EC-981304FFA480}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ECB7BCF6-A9DE-45BF-85EC-981304FFA480}.Package|Any CPU.ActiveCfg = Release|Any CPU
+		{ECB7BCF6-A9DE-45BF-85EC-981304FFA480}.Package|Any CPU.Build.0 = Release|Any CPU
+		{ECB7BCF6-A9DE-45BF-85EC-981304FFA480}.Profile|Any CPU.ActiveCfg = Profile|Any CPU
+		{ECB7BCF6-A9DE-45BF-85EC-981304FFA480}.Profile|Any CPU.Build.0 = Profile|Any CPU
+		{ECB7BCF6-A9DE-45BF-85EC-981304FFA480}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ECB7BCF6-A9DE-45BF-85EC-981304FFA480}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E9CF827D-6AC1-4CEF-88E3-746822D9F296}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E9CF827D-6AC1-4CEF-88E3-746822D9F296}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E9CF827D-6AC1-4CEF-88E3-746822D9F296}.Package|Any CPU.ActiveCfg = Release|Any CPU
+		{E9CF827D-6AC1-4CEF-88E3-746822D9F296}.Package|Any CPU.Build.0 = Release|Any CPU
+		{E9CF827D-6AC1-4CEF-88E3-746822D9F296}.Profile|Any CPU.ActiveCfg = Profile|Any CPU
+		{E9CF827D-6AC1-4CEF-88E3-746822D9F296}.Profile|Any CPU.Build.0 = Profile|Any CPU
+		{E9CF827D-6AC1-4CEF-88E3-746822D9F296}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E9CF827D-6AC1-4CEF-88E3-746822D9F296}.Release|Any CPU.Build.0 = Release|Any CPU
+		{81F9CD93-4149-4D87-91E4-650DDD2D83CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81F9CD93-4149-4D87-91E4-650DDD2D83CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81F9CD93-4149-4D87-91E4-650DDD2D83CC}.Package|Any CPU.ActiveCfg = Release|Any CPU
+		{81F9CD93-4149-4D87-91E4-650DDD2D83CC}.Package|Any CPU.Build.0 = Release|Any CPU
+		{81F9CD93-4149-4D87-91E4-650DDD2D83CC}.Profile|Any CPU.ActiveCfg = Profile|Any CPU
+		{81F9CD93-4149-4D87-91E4-650DDD2D83CC}.Profile|Any CPU.Build.0 = Profile|Any CPU
+		{81F9CD93-4149-4D87-91E4-650DDD2D83CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81F9CD93-4149-4D87-91E4-650DDD2D83CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7C37EECE-067B-4B09-897E-AA62616D83F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C37EECE-067B-4B09-897E-AA62616D83F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C37EECE-067B-4B09-897E-AA62616D83F6}.Package|Any CPU.ActiveCfg = Release|Any CPU
+		{7C37EECE-067B-4B09-897E-AA62616D83F6}.Package|Any CPU.Build.0 = Release|Any CPU
+		{7C37EECE-067B-4B09-897E-AA62616D83F6}.Profile|Any CPU.ActiveCfg = Profile|Any CPU
+		{7C37EECE-067B-4B09-897E-AA62616D83F6}.Profile|Any CPU.Build.0 = Profile|Any CPU
+		{7C37EECE-067B-4B09-897E-AA62616D83F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C37EECE-067B-4B09-897E-AA62616D83F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5D74ECD3-20EC-4049-8C84-D5550E835CD1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D74ECD3-20EC-4049-8C84-D5550E835CD1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D74ECD3-20EC-4049-8C84-D5550E835CD1}.Package|Any CPU.ActiveCfg = Profile|Any CPU
+		{5D74ECD3-20EC-4049-8C84-D5550E835CD1}.Package|Any CPU.Build.0 = Profile|Any CPU
+		{5D74ECD3-20EC-4049-8C84-D5550E835CD1}.Profile|Any CPU.ActiveCfg = Profile|Any CPU
+		{5D74ECD3-20EC-4049-8C84-D5550E835CD1}.Profile|Any CPU.Build.0 = Profile|Any CPU
+		{5D74ECD3-20EC-4049-8C84-D5550E835CD1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D74ECD3-20EC-4049-8C84-D5550E835CD1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -56,8 +263,51 @@ Global
 		{FBC500FD-C9DE-4AEC-B8AB-180115BFCB75} = {30D9D5E1-42BB-4230-8528-A6B339BD14AA}
 		{126DEC2E-62D4-4F31-A07A-D7FF740BEF44} = {30D9D5E1-42BB-4230-8528-A6B339BD14AA}
 		{30D9D5E1-42BB-4230-8528-A6B339BD14AA} = {F8C76B35-0758-433E-953B-0D7E9D63DE13}
+		{6184B28D-0F5C-414E-BAE2-9871FE536115} = {30D9D5E1-42BB-4230-8528-A6B339BD14AA}
+		{9437F0E3-4ABA-4268-9BAE-C53CF496E544} = {30D9D5E1-42BB-4230-8528-A6B339BD14AA}
+		{0F63F98C-EF3E-49EF-8621-50B8054B77A5} = {F8C76B35-0758-433E-953B-0D7E9D63DE13}
+		{7D44A27D-9391-45F4-851E-79880E1B83DD} = {FC849880-867F-4404-B3A7-A9E0D32B323B}
+		{CBA74DF8-C294-4BC4-A0E5-BAD1582DA56A} = {30D9D5E1-42BB-4230-8528-A6B339BD14AA}
+		{144A1E2B-02BF-4127-BD3A-1163F2C18BA2} = {FC849880-867F-4404-B3A7-A9E0D32B323B}
+		{DDB87329-EA4A-421A-9F6F-7408A1AA004B} = {275595B2-9125-41B0-880C-F92366002CC8}
+		{58788936-8D00-4798-B7D0-F30DCBFB4766} = {DDB87329-EA4A-421A-9F6F-7408A1AA004B}
+		{B94D886A-CDE3-4650-908C-4243A5C532B7} = {275595B2-9125-41B0-880C-F92366002CC8}
+		{2F0975BB-4074-4764-BD19-39A0F0DDF529} = {F8C76B35-0758-433E-953B-0D7E9D63DE13}
+		{ECB7BCF6-A9DE-45BF-85EC-981304FFA480} = {F8C76B35-0758-433E-953B-0D7E9D63DE13}
+		{E9CF827D-6AC1-4CEF-88E3-746822D9F296} = {F8C76B35-0758-433E-953B-0D7E9D63DE13}
+		{526D3949-96BC-4C3B-9D0C-6C53D6D7E424} = {30D9D5E1-42BB-4230-8528-A6B339BD14AA}
+		{1674AF19-C69D-4082-94A6-C43FB479649E} = {30D9D5E1-42BB-4230-8528-A6B339BD14AA}
+		{81F9CD93-4149-4D87-91E4-650DDD2D83CC} = {F8C76B35-0758-433E-953B-0D7E9D63DE13}
+		{7C37EECE-067B-4B09-897E-AA62616D83F6} = {F8C76B35-0758-433E-953B-0D7E9D63DE13}
+		{E69AE4BE-78A2-44D1-A68A-6E9A6A27DE79} = {275595B2-9125-41B0-880C-F92366002CC8}
+		{5D74ECD3-20EC-4049-8C84-D5550E835CD1} = {F8C76B35-0758-433E-953B-0D7E9D63DE13}
+		{4EFA3802-BA4D-4CA0-B040-B02AE260910D} = {30D9D5E1-42BB-4230-8528-A6B339BD14AA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FE0AB859-B820-470E-AA57-2337B2495B50}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Tst\Shared\KZDev.PerfUtils.Memory.Sequential.Tests.Shared\KZDev.PerfUtils.Memory.Sequential.Tests.Shared.projitems*{1674af19-c69d-4082-94a6-c43fb479649e}*SharedItemsImports = 13
+		Tst\Shared\KZDev.PerfUtils.Memory.Tests.Shared\KZDev.PerfUtils.Memory.Shared.projitems*{2f0975bb-4074-4764-bd19-39a0f0ddf529}*SharedItemsImports = 5
+		Tst\Shared\KZDev.PerfUtils.TestMocks.Shared\KZDev.PerfUtils.TestMocks.Shared.projitems*{4efa3802-ba4d-4ca0-b040-b02ae260910d}*SharedItemsImports = 13
+		Tst\Shared\KZDev.PerfUtils.MemoryStreamSlim.Tests.Shared\KZDev.PerfUtils.MemoryStreamSlim.Tests.Shared.projitems*{526d3949-96bc-4c3b-9d0c-6c53d6d7e424}*SharedItemsImports = 13
+		Tst\Shared\KZDev.PerfUtils.Memory.Tests.Shared\KZDev.PerfUtils.Memory.Shared.projitems*{5d74ecd3-20ec-4049-8c84-d5550e835cd1}*SharedItemsImports = 5
+		Tst\Shared\KZDev.PerfUtils.MemoryStreamSlim.Tests.Shared\KZDev.PerfUtils.MemoryStreamSlim.Tests.Shared.projitems*{5d74ecd3-20ec-4049-8c84-d5550e835cd1}*SharedItemsImports = 5
+		Tst\Shared\KZDev.PerfUtils.TestMocks.Shared\KZDev.PerfUtils.TestMocks.Shared.projitems*{5d74ecd3-20ec-4049-8c84-d5550e835cd1}*SharedItemsImports = 5
+		Tst\Shared\KZDev.PerfUtils.Memory.Sequential.Tests.Shared\KZDev.PerfUtils.Memory.Sequential.Tests.Shared.projitems*{7c37eece-067b-4b09-897e-aa62616d83f6}*SharedItemsImports = 5
+		Tst\Shared\KZDev.PerfUtils.Memory.Tests.Shared\KZDev.PerfUtils.Memory.Shared.projitems*{7c37eece-067b-4b09-897e-aa62616d83f6}*SharedItemsImports = 5
+		Tst\Shared\KZDev.PerfUtils.TestMocks.Shared\KZDev.PerfUtils.TestMocks.Shared.projitems*{7d44a27d-9391-45f4-851e-79880e1b83dd}*SharedItemsImports = 5
+		Tst\Shared\KZDev.PerfUtils.Memory.Sequential.Tests.Shared\KZDev.PerfUtils.Memory.Sequential.Tests.Shared.projitems*{81f9cd93-4149-4d87-91e4-650ddd2d83cc}*SharedItemsImports = 5
+		Tst\Shared\KZDev.PerfUtils.Memory.Tests.Shared\KZDev.PerfUtils.Memory.Shared.projitems*{81f9cd93-4149-4d87-91e4-650ddd2d83cc}*SharedItemsImports = 5
+		Tst\Shared\KZDev.PerfUtils.Memory.Tests.Shared\KZDev.PerfUtils.Memory.Shared.projitems*{cba74df8-c294-4bc4-a0e5-bad1582da56a}*SharedItemsImports = 13
+		Tst\Shared\KZDev.PerfUtils.Memory.Tests.Shared\KZDev.PerfUtils.Memory.Shared.projitems*{e057e292-e832-49ed-8ad3-fa39e2b15991}*SharedItemsImports = 5
+		Tst\Shared\KZDev.PerfUtils.MemoryStreamSlim.Tests.Shared\KZDev.PerfUtils.MemoryStreamSlim.Tests.Shared.projitems*{e057e292-e832-49ed-8ad3-fa39e2b15991}*SharedItemsImports = 5
+		Tst\Shared\KZDev.PerfUtils.TestMocks.Shared\KZDev.PerfUtils.TestMocks.Shared.projitems*{e057e292-e832-49ed-8ad3-fa39e2b15991}*SharedItemsImports = 5
+		Tst\Shared\KZDev.PerfUtils.Memory.Tests.Shared\KZDev.PerfUtils.Memory.Shared.projitems*{e9cf827d-6ac1-4cef-88e3-746822d9f296}*SharedItemsImports = 5
+		Tst\Shared\KZDev.PerfUtils.MemoryStreamSlim.Tests.Shared\KZDev.PerfUtils.MemoryStreamSlim.Tests.Shared.projitems*{e9cf827d-6ac1-4cef-88e3-746822d9f296}*SharedItemsImports = 5
+		Tst\Shared\KZDev.PerfUtils.TestMocks.Shared\KZDev.PerfUtils.TestMocks.Shared.projitems*{e9cf827d-6ac1-4cef-88e3-746822d9f296}*SharedItemsImports = 5
+		Tst\Shared\KZDev.PerfUtils.Memory.Tests.Shared\KZDev.PerfUtils.Memory.Shared.projitems*{ecb7bcf6-a9de-45bf-85ec-981304ffa480}*SharedItemsImports = 5
+		Tst\Shared\KZDev.PerfUtils.MemoryStreamSlim.Tests.Shared\KZDev.PerfUtils.MemoryStreamSlim.Tests.Shared.projitems*{ecb7bcf6-a9de-45bf-85ec-981304ffa480}*SharedItemsImports = 5
+		Tst\Shared\KZDev.PerfUtils.TestMocks.Shared\KZDev.PerfUtils.TestMocks.Shared.projitems*{ecb7bcf6-a9de-45bf-85ec-981304ffa480}*SharedItemsImports = 5
 	EndGlobalSection
 EndGlobal

@@ -1,0 +1,28 @@
+{
+  "profiles": {
+    "MemoryStreamProfile": {
+      "commandName": "Project",
+      "commandLineArgs": "std"
+    },
+    "Grow-MemoryStream": {
+      "commandName": "Project",
+      "commandLineArgs": "grow std"
+    },
+    "Recyclable": {
+      "commandName": "Project",
+      "commandLineArgs": "recycle"
+    },
+    "Grow-Recyclable": {
+      "commandName": "Project",
+      "commandLineArgs": "grow recycle"
+    },
+    "Slim": {
+      "commandName": "Project",
+      "commandLineArgs": ""
+    },
+    "Grow-Slim": {
+      "commandName": "Project",
+      "commandLineArgs": "grow"
+    }
+  }
+}

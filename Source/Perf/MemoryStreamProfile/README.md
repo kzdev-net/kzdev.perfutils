@@ -1,0 +1,1 @@
+The MemoryStreamProfile project uses the setup and run configurations from the MemoryStreamBenchmarks project to run different profiling scenarios. This is largely tweaked for each scenario as needed and most changes are just throw away and not committed to the repository.
