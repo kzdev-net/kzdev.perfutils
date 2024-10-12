@@ -127,6 +127,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KZDev.PerfUtils.Memory.Fixe
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "KZDev.PerfUtils.TestMocks.Shared", "Tst\Shared\KZDev.PerfUtils.TestMocks.Shared\KZDev.PerfUtils.TestMocks.Shared.shproj", "{4EFA3802-BA4D-4CA0-B040-B02AE260910D}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GitHub", "GitHub", "{CD9B846B-FEE3-4F43-929C-A4FCBD7D974C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WorkFlows", "WorkFlows", "{42188FFF-1E0E-44F4-9717-D6946CE2CA8E}"
+	ProjectSection(SolutionItems) = preProject
+		..\.github\workflows\docfx-publish.yml = ..\.github\workflows\docfx-publish.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -282,6 +289,7 @@ Global
 		{E69AE4BE-78A2-44D1-A68A-6E9A6A27DE79} = {275595B2-9125-41B0-880C-F92366002CC8}
 		{5D74ECD3-20EC-4049-8C84-D5550E835CD1} = {F8C76B35-0758-433E-953B-0D7E9D63DE13}
 		{4EFA3802-BA4D-4CA0-B040-B02AE260910D} = {30D9D5E1-42BB-4230-8528-A6B339BD14AA}
+		{42188FFF-1E0E-44F4-9717-D6946CE2CA8E} = {CD9B846B-FEE3-4F43-929C-A4FCBD7D974C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FE0AB859-B820-470E-AA57-2337B2495B50}
