@@ -55,7 +55,7 @@ One other important difference is that `MemoryStreamSlim` is specifically design
 
 ## Documentation
 
-Full documentation for the package is available on the [PerfUtils Documentation](./Docs/index.md) page.
+Full documentation for the package is available on the [PerfUtils Documentation](articles/getting-started.md) page.
 
 ## Future Features
 

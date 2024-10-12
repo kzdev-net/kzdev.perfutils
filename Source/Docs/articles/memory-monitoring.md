@@ -58,7 +58,7 @@ This counter provides the number of buffer segments currently allocated from the
 
 ## Events
 
-For detailed monitoring of `MemoryStreamSlim` instances and memory management, you can use the `EventSource` events that are provided by the `PerfUtils` library with tools such as [`PerfView`](#perfView-example). The event source name is `KZDev.PerfUtils`. The following events are available.
+For detailed monitoring of `MemoryStreamSlim` instances and memory management, you can use the `EventSource` events that are provided by the `PerfUtils` library with tools such as [`PerfView`](#perfview-example). The event source name is `KZDev.PerfUtils`. The following events are available.
 
 ### MemoryStreamSlimCreate event
 

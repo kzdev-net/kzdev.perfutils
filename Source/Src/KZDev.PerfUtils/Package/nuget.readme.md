@@ -49,7 +49,7 @@ The `MemoryStreamSlim` class is similar in concept and purpose to the [`Recyclab
 
 ## Documentation
 
-Full documentation for the package is available on the [PerfUtils Documentation](./Docs/index.md) page.
+Full documentation for the package is available on the [PerfUtils Documentation](https://kzdev-net.github.io/kzdev.perfutils) page.
 
 ## Future Features
 
