@@ -15,3 +15,12 @@ This is the repository for the 'KZDev.PerfUtils' nuget package that contains the
 ## Future Features
 
 The roadmap plan for this package is to add several additional helpful performance focused utilities. These will be forthcoming as time permits, so this first release is focused just on the `MemoryStreamSlim` class.
+
+## Contribution Guidelines
+
+At this time, I am not accepting external pull requests. However, any feedback or suggestions are welcome and can be provided through the following channels:
+
+- **Feature Requests:** Please use GitHub Discussions to propose new features or enhancements.
+- **Bug Reports:** If you encounter any issues, feel free to open an issue so it can be addressed promptly.
+
+I appreciate your understanding and look forward to collaborating with you through discussions and issue tracking.
