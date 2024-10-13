@@ -1131,7 +1131,7 @@ namespace KZDev.PerfUtils.Tests
 
             void PositionStream (MemoryStreamSlim stream, int maxPosition, out int dataCopyArrayPosition)
             {
-                int newPosition = RandomSource.GetRandomInteger(maxPosition);
+                int newPosition = (0 == maxPosition) ? 0 : RandomSource.GetRandomInteger(maxPosition);
                 stream.Position = dataCopyArrayPosition = newPosition;
             }
 
