@@ -23,7 +23,8 @@ namespace KZDev.PerfUtils.Helpers
         /// Throws an argument out of range exception with the message for a non-negative number.
         /// </summary>
         /// <param name="argumentName">The name of the invalid argument.</param>
-        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// </exception>
         [DoesNotReturn]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void ThrowArgumentOutOfRangeException_NeedNonNegNum (string argumentName) => 
@@ -42,7 +43,8 @@ namespace KZDev.PerfUtils.Helpers
         /// <param name="maximumValue">
         /// The required maximum value.
         /// </param>
-        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// </exception>
         [DoesNotReturn]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void ThrowArgumentOutOfRangeException_NeedBetween (string argumentName,
@@ -59,7 +61,8 @@ namespace KZDev.PerfUtils.Helpers
         /// <param name="minimumValue">
         /// The required minimum value.
         /// </param>
-        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// </exception>
         [DoesNotReturn]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void ThrowArgumentOutOfRangeException_NeedMinValue (string argumentName,
@@ -86,7 +89,8 @@ namespace KZDev.PerfUtils.Helpers
         /// <param name="argumentName">
         /// The name of the invalid argument.
         /// </param>
-        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// </exception>
         [DoesNotReturn]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void ThrowArgumentOutOfRange_IndexMustBeLessOrEqualException (string argumentName) =>
@@ -99,7 +103,8 @@ namespace KZDev.PerfUtils.Helpers
         /// <param name="argumentName">
         /// The name of the invalid argument.
         /// </param>
-        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="ArgumentException">
+        /// </exception>
         [DoesNotReturn]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void ThrowArgumentException_InvalidSeekOrigin (string argumentName) =>
@@ -109,7 +114,8 @@ namespace KZDev.PerfUtils.Helpers
         /// Throws an argument with the message for an invalid array segment offset
         /// and length.
         /// </summary>
-        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="ArgumentException">
+        /// </exception>
         [DoesNotReturn]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void ThrowArgumentException_InvalidOffsetLength () =>
@@ -122,7 +128,8 @@ namespace KZDev.PerfUtils.Helpers
         /// <param name="argumentName">
         /// The name of the invalid argument.
         /// </param>
-        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="ArgumentException">
+        /// </exception>
         [DoesNotReturn]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void ThrowArgumentException_DestinationTooShort (string argumentName) =>
@@ -137,7 +144,8 @@ namespace KZDev.PerfUtils.Helpers
         /// <summary>
         /// Throws an invalid operation exception with the message for a closed stream.
         /// </summary>
-        /// <exception cref="InvalidOperationException"></exception>
+        /// <exception cref="InvalidOperationException">
+        /// </exception>
         [DoesNotReturn]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void ThrowInvalidOperationException_StreamClosed () => 
@@ -146,7 +154,8 @@ namespace KZDev.PerfUtils.Helpers
         /// <summary>
         /// Throws an object disposed exception with the message for a closed stream.
         /// </summary>
-        /// <exception cref="ObjectDisposedException"></exception>
+        /// <exception cref="ObjectDisposedException">
+        /// </exception>
         [DoesNotReturn]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void ThrowObjectDisposedException_StreamClosed () => 
@@ -155,7 +164,8 @@ namespace KZDev.PerfUtils.Helpers
         /// <summary>
         /// Throws a not supported exception with the message for an unwritable stream.
         /// </summary>
-        /// <exception cref="NotSupportedException"></exception>
+        /// <exception cref="NotSupportedException">
+        /// </exception>
         [DoesNotReturn]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void ThrowNotSupportedException_UnwritableStream () => 
@@ -168,7 +178,8 @@ namespace KZDev.PerfUtils.Helpers
         /// <param name="streamMode">
         /// The mode of the stream that does not support the feature.
         /// </param>
-        /// <exception cref="NotSupportedException"></exception>
+        /// <exception cref="NotSupportedException">
+        /// </exception>
         [DoesNotReturn]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void ThrowNotSupportedException_InvalidModeStreamStream (MemoryStreamSlimMode streamMode) =>
@@ -177,7 +188,8 @@ namespace KZDev.PerfUtils.Helpers
         /// <summary>
         /// Throws a not supported exception with the message for a general feature not supported.
         /// </summary>
-        /// <exception cref="NotSupportedException"></exception>
+        /// <exception cref="NotSupportedException">
+        /// </exception>
         [DoesNotReturn]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void ThrowNotSupportedException_FeatureNotSupported () =>
@@ -189,7 +201,8 @@ namespace KZDev.PerfUtils.Helpers
         /// <param name="argumentName">
         /// The name of the invalid argument.
         /// </param>
-        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// </exception>
         [DoesNotReturn]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void ThrowArgumentOutOfRangeException_CapacitySmall (string argumentName) => 
@@ -199,7 +212,8 @@ namespace KZDev.PerfUtils.Helpers
         /// Throws an argument out of range exception with the message indicating that the 
         /// stream length would be invalid.
         /// </summary>
-        /// <exception cref="IOException"></exception>
+        /// <exception cref="IOException">
+        /// </exception>
         [DoesNotReturn]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void ThrowArgumentOutOfRangeException_StreamLength (string argumentName) =>
@@ -208,7 +222,8 @@ namespace KZDev.PerfUtils.Helpers
         /// <summary>
         /// Throws an IO exception with the message for the stream being too long.
         /// </summary>
-        /// <exception cref="IOException"></exception>
+        /// <exception cref="IOException">
+        /// </exception>
         [DoesNotReturn]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void ThrowIOException_StreamTooLong () =>
@@ -218,7 +233,8 @@ namespace KZDev.PerfUtils.Helpers
         /// Throws an IO exception with the message for an attempt to move the position
         /// before the beginning of the stream.
         /// </summary>
-        /// <exception cref="IOException"></exception>
+        /// <exception cref="IOException">
+        /// </exception>
         [DoesNotReturn]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void ThrowIOException_SeekBeforeBegin () =>
@@ -232,7 +248,8 @@ namespace KZDev.PerfUtils.Helpers
         /// Throws an invalid operation exception with the message for a type of global settings
         /// that cannot be updated.
         /// </summary>
-        /// <exception cref="InvalidOperationException"></exception>
+        /// <exception cref="InvalidOperationException">
+        /// </exception>
         [DoesNotReturn]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void ThrowInvalidOperation_GlobalSettingsCantBeUpdated (string classTypeName) =>

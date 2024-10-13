@@ -785,10 +785,13 @@ namespace KZDev.PerfUtils
         /// An instance of the <see cref="MemoryStreamSlim"/> class based on the 
         /// specified region (index) of a byte array.
         /// </returns>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// The index or count is outside the bounds of the buffer.
+        /// </exception>
         public static MemoryStreamSlim Create (byte[] buffer, int index, int count)
         {
             ArgumentNullException.ThrowIfNull(buffer);
-            if (index < 0 || count < 0 || index > buffer.Length - count)
+            if (index < 0 || index > buffer.Length - count)
                 ThrowHelper.ThrowArgumentOutOfRangeException_NeedNonNegNum(nameof(index));
             if (count < 0)
                 ThrowHelper.ThrowArgumentOutOfRangeException_NeedNonNegNum(nameof(count));
@@ -827,10 +830,13 @@ namespace KZDev.PerfUtils
         /// An instance of the <see cref="MemoryStreamSlim"/> class based on the specified 
         /// region of a byte array, with the CanWrite property set as specified.
         /// </returns>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// The index or count is outside the bounds of the buffer.
+        /// </exception>
         public static MemoryStreamSlim Create (byte[] buffer, int index, int count, bool writable)
         {
             ArgumentNullException.ThrowIfNull(buffer);
-            if (index < 0 || count < 0 || index > buffer.Length - count)
+            if (index < 0 || index > buffer.Length - count)
                 ThrowHelper.ThrowArgumentOutOfRangeException_NeedNonNegNum(nameof(index));
             if (count < 0)
                 ThrowHelper.ThrowArgumentOutOfRangeException_NeedNonNegNum(nameof(count));
@@ -875,10 +881,13 @@ namespace KZDev.PerfUtils
         /// region of a byte array, with the CanWrite property set as specified, and the 
         /// ability to call GetBuffer() set as specified.
         /// </returns>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// The index or count is outside the bounds of the buffer.
+        /// </exception>
         public static MemoryStreamSlim Create (byte[] buffer, int index, int count, bool writable, bool publiclyVisible)
         {
             ArgumentNullException.ThrowIfNull(buffer);
-            if (index < 0 || count < 0 || index > buffer.Length - count)
+            if (index < 0 || index > buffer.Length - count)
                 ThrowHelper.ThrowArgumentOutOfRangeException_NeedNonNegNum(nameof(index));
             if (count < 0)
                 ThrowHelper.ThrowArgumentOutOfRangeException_NeedNonNegNum(nameof(count));
@@ -1077,6 +1086,9 @@ namespace KZDev.PerfUtils
         /// <value>
         /// The length of the usable portion of the buffer for the stream.
         /// </value>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// The capacity is set to a value less than zero or greater than <see cref="MaximumCapacity"/>.
+        /// </exception>
         public override int Capacity
         {
             get => CapacityInternal;
@@ -1166,6 +1178,9 @@ namespace KZDev.PerfUtils
         /// and getting the capacity as a long integer. The <see cref="Capacity"/> property 
         /// should be used for all normal operations.
         /// </remarks>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// The capacity is set to a value less than zero or greater than <see cref="MaximumCapacity"/>.
+        /// </exception>
         public virtual long CapacityLong
         {
             get => CapacityInternal;

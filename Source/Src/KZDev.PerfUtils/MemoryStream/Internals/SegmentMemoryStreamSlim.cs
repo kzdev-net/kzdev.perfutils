@@ -2164,6 +2164,9 @@ namespace KZDev.PerfUtils.Internals
         }
         //--------------------------------------------------------------------------------
         /// <inheritdoc />
+        /// <exception cref="ObjectDisposedException">
+        /// The stream has been disposed.
+        /// </exception>
         protected override void Dispose (bool disposing)
         {
             if (IsDisposed)
