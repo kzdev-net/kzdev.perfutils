@@ -4,14 +4,15 @@
       "src": [
         {
           "src": "../Src",
+          "cwd": "src",
           "files": [
             "**/*.csproj"
           ]
         }
       ],
-      "dest": "/api",
+      "dest": "api",
       "filter": "filterConfig.yml",
-      "outputFormat": "apiPage",
+      "outputFormat": "mref",
       "memberLayout": "separatePages",
       "enumSortOrder": "declaringOrder",
       "allowCompilationErrors": false
@@ -37,7 +38,6 @@
       }
     ],
     "output": "_site",
-    "root": "/kzdev.perfutils/",
     "sitemap": {
       "baseUrl": "https://kzdev-net.github.io/kzdev.perfutils/",
       "priority": 0.1,
@@ -46,7 +46,8 @@
     "template": [
       "default",
       "modern",
-      "templates"
+      "templates/material",
+      "templates/custom"
     ],
     "postProcessors": [ "ExtractSearchIndex" ],
     "xref": [

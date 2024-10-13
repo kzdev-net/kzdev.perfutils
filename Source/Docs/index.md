@@ -4,7 +4,7 @@ _layout: landing
 
 # PerfUtils
 
-The `KZDev.PerfUtils` package contains the [`MemoryStreamSlim`](./articles/memorystreamslim.md) class; a high-performance, memory-efficient, easy-to-use replacement for the `MemoryStream` class that provides particular benefits for large or frequently used streams. See the individual [documentation pages](./articles/getting-started.md) and the [API Reference](/api/KZDev.PerfUtils.html) for more detailed information.
+The `KZDev.PerfUtils` package contains the [`MemoryStreamSlim`](./articles/memorystreamslim.md) class; a high-performance, memory-efficient, easy-to-use replacement for the `MemoryStream` class that provides particular benefits for large or frequently used streams. See the individual [documentation pages](./articles/getting-started.md) and the [API Reference](xref:KZDev.PerfUtils) for more detailed information.
 
 ## Features
 

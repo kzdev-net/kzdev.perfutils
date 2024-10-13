@@ -196,6 +196,15 @@ namespace KZDev.PerfUtils.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The feature is not supported in the current implementation..
+        /// </summary>
+        internal static string NotSupported_FeatureNotAvailable {
+            get {
+                return ResourceManager.GetString("NotSupported_FeatureNotAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The operation is not supported with {0} mode MemoryStreamSlim instances..
         /// </summary>
         internal static string NotSupported_InvalidModeStreamStream {

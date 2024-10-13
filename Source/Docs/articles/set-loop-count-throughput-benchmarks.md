@@ -35,7 +35,7 @@ The amount of data to write to the stream in each loop of the operation. The dat
 
 #### ZeroBuffers
 
-When `true`, the stream is created with the option to zero out memory buffers when they are no longer used. When `false`, the stream is created with the option to not zero out memory buffers specified. For the `MemoryStreamSlim` class, the [`ZeroBufferBehavior`](/api/KZDev.PerfUtils.MemoryStreamSlimOptions.ZeroBufferBehavior.html) option is set to `OnRelease` to provide a fair comparison to the other classes.
+When `true`, the stream is created with the option to zero out memory buffers when they are no longer used. When `false`, the stream is created with the option to not zero out memory buffers specified. For the `MemoryStreamSlim` class, the [`ZeroBufferBehavior`](xref:KZDev.PerfUtils.MemoryStreamSlimOptions.ZeroBufferBehavior) option is set to `OnRelease` to provide a fair comparison to the other classes.
 
 The `MemoryStream` class has no option to zero out memory buffers (used memory is always cleared), so this parameter does not apply to that class.
 

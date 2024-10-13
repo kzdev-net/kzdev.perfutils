@@ -168,4 +168,7 @@
   <data name="NotSupported_InvalidModeStreamStream" xml:space="preserve">
     <value>The operation is not supported with {0} mode MemoryStreamSlim instances.</value>
   </data>
+  <data name="NotSupported_FeatureNotAvailable" xml:space="preserve">
+    <value>The feature is not supported in the current implementation.</value>
+  </data>
 </root>

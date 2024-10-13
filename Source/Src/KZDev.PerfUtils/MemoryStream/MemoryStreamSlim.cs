@@ -1140,6 +1140,13 @@ namespace KZDev.PerfUtils
             }
         }
         //--------------------------------------------------------------------------------
+        /// <inheritdoc />
+        public override byte[] GetBuffer ()
+        {
+            ThrowHelper.ThrowNotSupportedException_FeatureNotSupported();
+            return default;
+        }
+        //--------------------------------------------------------------------------------
 
         #endregion Overrides of MemoryStream
 

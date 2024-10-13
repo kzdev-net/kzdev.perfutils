@@ -67,7 +67,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Templates", "Templates", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Styles", "Styles", "{58788936-8D00-4798-B7D0-F30DCBFB4766}"
 	ProjectSection(SolutionItems) = preProject
-		Docs\templates\public\main.css = Docs\templates\public\main.css
+		Docs\templates\custom\public\main.css = Docs\templates\custom\public\main.css
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Articles", "Articles", "{B94D886A-CDE3-4650-908C-4243A5C532B7}"

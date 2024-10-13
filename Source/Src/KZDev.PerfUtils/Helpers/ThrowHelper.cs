@@ -175,6 +175,15 @@ namespace KZDev.PerfUtils.Helpers
             throw new NotSupportedException(string.Format(Strings.NotSupported_InvalidModeStreamStream, streamMode.GetString()));
         //--------------------------------------------------------------------------------
         /// <summary>
+        /// Throws a not supported exception with the message for a general feature not supported.
+        /// </summary>
+        /// <exception cref="NotSupportedException"></exception>
+        [DoesNotReturn]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static void ThrowNotSupportedException_FeatureNotSupported () =>
+            throw new NotSupportedException(Strings.NotSupported_FeatureNotAvailable);
+        //--------------------------------------------------------------------------------
+        /// <summary>
         /// Throws an argument out of range exception with the message for a small capacity.
         /// </summary>
         /// <param name="argumentName">

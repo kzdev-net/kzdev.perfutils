@@ -1,12 +1,12 @@
 # PerfUtils Documentation
 
-This documentation is for the `KZDev.PerfUtils` package, which contains the `MemoryStreamSlim` class. The following sections provide insight and information on usage, how the class operates, and information on performance benchmarks. For a full API reference, see the [API Reference](/api/KZDev.PerfUtils.html).
+This documentation is for the `KZDev.PerfUtils` package, which contains the `MemoryStreamSlim` class. The following sections provide insight and information on usage, how the class operates, and information on performance benchmarks. For a full API reference, see the [API Reference](xref:KZDev.PerfUtils).
 
 ## MemoryStreamSlim
 
 The standard `MemoryStream` is a class in the .NET Class Library that represents a stream of bytes stored in memory. It is a very useful class for working with in-memory data, but it has some limitations. One of the main limitations is that it uses a single byte array to store the data, which can result in a lot of garbage collection pressure when working with large amounts of memory or cases where many `MemoryStream` instances are created and disposed of frequently.
 
-The [`MemoryStreamSlim`](/api/KZDev.PerfUtils.MemoryStreamSlim.html) class is specifically tailored to improve performance in cases where using `MemoryStream` can result in a lot of GC pressure but it also has better overall throughput performance than the standard MemoryStream in most use cases.
+The [`MemoryStreamSlim`](xref:KZDev.PerfUtils.MemoryStreamSlim) class is specifically tailored to improve performance in cases where using `MemoryStream` can result in a lot of GC pressure but it also has better overall throughput performance than the standard MemoryStream in most use cases.
 
 This documentation provides information on how to use the `MemoryStreamSlim` class, how it works, and how it can help improve performance in your applications.
 
