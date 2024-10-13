@@ -9,7 +9,7 @@
           ]
         }
       ],
-      "dest": "api",
+      "dest": "/api",
       "filter": "filterConfig.yml",
       "outputFormat": "apiPage",
       "memberLayout": "separatePages",
@@ -37,6 +37,12 @@
       }
     ],
     "output": "_site",
+    "root": "/kzdev.perfutils/",
+    "sitemap": {
+      "baseUrl": "https://kzdev-net.github.io/kzdev.perfutils/",
+      "priority": 0.1,
+      "changefreq": "monthly"
+    },
     "template": [
       "default",
       "modern",
