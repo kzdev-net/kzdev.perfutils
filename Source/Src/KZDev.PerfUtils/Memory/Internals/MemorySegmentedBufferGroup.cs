@@ -115,7 +115,9 @@ namespace KZDev.PerfUtils.Internals
         /// Debug helper to display the state of the group.
         /// </summary>
         [ExcludeFromCodeCoverage]
+#pragma warning disable HAA0601
         private string DebugDisplayValue => $"ID {Id}, Count = {_segmentCount}, InUse = {_segmentsInUse}";
+#pragma warning restore HAA0601
 
         /// <summary>
         /// The high bit mask for a ulong.
@@ -135,7 +137,7 @@ namespace KZDev.PerfUtils.Internals
         /// should be done using the Volatile class, but we want to be explicit about it in the
         /// code, so we don't actually use the volatile keyword here.
         /// </remarks>
-        private static /* volatile */ int _totalGcSegmentsAllocated = 0;
+        private static /* volatile */ int _totalGcSegmentsAllocated;
 
         /// <summary>
         /// The total number of Native Heap segments allocated.
@@ -145,7 +147,7 @@ namespace KZDev.PerfUtils.Internals
         /// should be done using the Volatile class, but we want to be explicit about it in the
         /// code, so we don't actually use the volatile keyword here.
         /// </remarks>
-        private static /* volatile */ int _totalNativeSegmentsAllocated = 0;
+        private static /* volatile */ int _totalNativeSegmentsAllocated;
 
         /// <summary>
         /// The last ID used for a group.
@@ -314,6 +316,60 @@ namespace KZDev.PerfUtils.Internals
         }
 
         /// <summary>
+        /// Returns information about the series of segments that are all free
+        /// starting at the specified segment index using the flag index and mask.
+        /// </summary>
+        /// <returns>
+        /// The number of contiguous free segments (up to the maximum) and whether all the segments are zeroed.
+        /// </returns>
+        private (int SegmentCount, bool AllZeroed)
+            GetAllFreeSegmentSeriesFromIndex (int firstSegmentIndex, int maxSegments, int flagIndex, ulong flagMask)
+        {
+            Debug.Assert(maxSegments > 1, "maxSegments <= 1");
+            Debug.Assert(firstSegmentIndex >= 0, "firstSegmentIndex < 0");
+            // Get the flag set for the segment index.
+            ulong flagGroup = _blockUsedFlags[flagIndex];
+            ulong zeroFlagGroup = _blockZeroFlags[flagIndex];
+            // Get the in use status of this segment.
+            bool segmentIsUsed = (flagGroup & flagMask) != 0;
+            // Track the number of contiguous segments we find.
+            int foundSegmentCount = 0;
+            // Track if all the segments are zeroed.
+            bool allZeroed = true;
+
+            // Looking for a series of free segments
+            while (!segmentIsUsed)
+            {
+                // Check the zero state of the segment.
+                if ((zeroFlagGroup & flagMask) == 0)
+                    allZeroed = false;
+                // Increment the number we have
+                if (++foundSegmentCount == maxSegments)
+                    break;
+                // Check the next segment.
+                if (++firstSegmentIndex == _segmentCount)
+                    break;
+                // If we are at the end of the flag group, then move to the next flag group.
+                if (flagMask == HighBitMask)
+                {
+                    // If we are at the end of the flag groups, then we are done.
+                    if (++flagIndex == _blockUsedFlags.Length)
+                        break;
+                    flagGroup = _blockUsedFlags[flagIndex];
+                    zeroFlagGroup = _blockZeroFlags[flagIndex];
+                    flagMask = 1;
+                }
+                else
+                {
+                    // Otherwise check the next segment.
+                    flagMask <<= 1;
+                }
+                segmentIsUsed = (flagGroup & flagMask) != 0;
+            }
+            return (foundSegmentCount, allZeroed);
+        }
+
+        /// <summary>
         /// Returns information about the series of segments that are all used
         /// starting at the specified segment index using the flag index and mask.
         /// </summary>
@@ -322,8 +378,9 @@ namespace KZDev.PerfUtils.Internals
         /// index and mask to continuously check for the next similar series of segments.
         /// </returns>
         private (int SegmentCount, int NextFlagIndex, ulong NextFlagMask)
-            GetUsedSegmentSeriesFrom (int checkingSegmentIndex, int flagIndex, ulong flagMask)
+            GetUsedSegmentSeriesFromIndex (int checkingSegmentIndex, int flagIndex, ulong flagMask)
         {
+            Debug.Assert(checkingSegmentIndex >= 0, "checkingSegmentIndex < 0");
             // Get the flag set for the segment index.
             ulong flagGroup = _blockUsedFlags[flagIndex];
             // Get the in use status of this segment.
@@ -373,6 +430,7 @@ namespace KZDev.PerfUtils.Internals
         private (int SegmentCount, bool Zeroed, int NextFlagIndex, ulong NextFlagMask)
             GetFreeSegmentSeriesFromIndex (int checkingSegmentIndex, int flagIndex, ulong flagMask)
         {
+            Debug.Assert(checkingSegmentIndex >= 0, "checkingSegmentIndex < 0");
             // Get the flag set for the segment index.
             ulong flagGroup = _blockUsedFlags[flagIndex];
             ulong zeroFlagGroup = _blockZeroFlags[flagIndex];
@@ -425,6 +483,7 @@ namespace KZDev.PerfUtils.Internals
         private (int SegmentCount, bool Used, bool Zeroed, int NextFlagIndex, ulong NextFlagMask)
             GetSimilarStateSegmentSeriesFrom (int startingSegmentIndex, int flagIndex, ulong flagMask)
         {
+            Debug.Assert(startingSegmentIndex >= 0, "startingSegmentIndex < 0");
             // Get the flag set for the segment index.
             ulong flagGroup = _blockUsedFlags[flagIndex];
             // Determine what type of series we're looking for at this segment index.
@@ -432,7 +491,7 @@ namespace KZDev.PerfUtils.Internals
             if (segmentIsUsed)
             {
                 (int usedSegmentCount, int usedNextFlagIndex, ulong usedNextFlagMask) =
-                    GetUsedSegmentSeriesFrom(startingSegmentIndex, flagIndex, flagMask);
+                    GetUsedSegmentSeriesFromIndex(startingSegmentIndex, flagIndex, flagMask);
                 return (usedSegmentCount, true, false, usedNextFlagIndex, usedNextFlagMask);
             }
             (int freeSegmentCount, bool freeZeroed, int freeNextFlagIndex, ulong freeNextFlagMask) =
@@ -535,6 +594,7 @@ namespace KZDev.PerfUtils.Internals
                     _blockUsedFlags[flagIndex] = flagGroup;
                     // This check MUST happen before the increment of the flagIndex.
                     if (markSegmentIndex == segmentCount)
+                        // Break out of the loop early so that we don't increment the flagIndex.
                         break;
                     // Reset the mask
                     flagMask = 1;
@@ -554,6 +614,71 @@ namespace KZDev.PerfUtils.Internals
         }
 
         /// <summary>
+        /// Tries to reserve a set of segments for use starting at a specific index and returns whether
+        /// the segments were reserved, the number of segments reserved, and if the segments are zeroed.
+        /// </summary>
+        /// <returns>
+        /// Values indicating the segment reserved, which includes the first segment index,
+        /// the number of contiguous segments reserved, and if the segment is zeroed. 
+        /// </returns>
+        private (int SegmentCount, bool Zeroed) TryReserveSegments (int requestedSegments,
+            int firstSegmentIndex)
+        {
+            Debug.Assert(requestedSegments > 1, "requestedSegments <= 1");
+            Debug.Assert(firstSegmentIndex > 0, "firstSegmentIndex <= 0");
+            // Check if we can even use this segment.
+            if (firstSegmentIndex >= _segmentCount)
+                return (0, false);
+            // Get the index of the flag set and the mask for the segment index.
+            (int flagIndex, ulong flagMask) = GetFlagIndexAndMask(firstSegmentIndex);
+            // Get the flag set for the segment index.
+            ulong flagGroup = _blockUsedFlags[flagIndex];
+            // Check if the segment is in use.
+            if ((flagGroup & flagMask) != 0)
+            {
+                // The first segment is in use.
+                return (0, false);
+            }
+
+            // Find a series of segments that are unused and treat that series as zeroed ONLY if all the
+            // segments in the series are zeroed.
+            (int segmentCount, bool zeroed) =
+                GetAllFreeSegmentSeriesFromIndex(firstSegmentIndex, requestedSegments, flagIndex, flagMask);
+
+            // We have the series that we will return, now mark them as in use.
+            int markSegmentIndex = 0;
+            while (markSegmentIndex < segmentCount)
+            {
+                markSegmentIndex++;
+                // Update the flag group.
+                flagGroup |= flagMask;
+                // If we are at the end of the flag group, then move to the next flag group.
+                if (flagMask == HighBitMask)
+                {
+                    // Save the current flag group.
+                    _blockUsedFlags[flagIndex] = flagGroup;
+                    // This check MUST happen before the increment of the flagIndex.
+                    if (markSegmentIndex == segmentCount)
+                        // Break out of the loop early so that we don't increment the flagIndex.
+                        break;
+                    // Reset the mask
+                    flagMask = 1;
+                    // Move to the next flag group.
+                    flagGroup = _blockUsedFlags[++flagIndex];
+                }
+                else
+                {
+                    flagMask <<= 1;
+                }
+            }
+            // Store the final updates.
+            _blockUsedFlags[flagIndex] = flagGroup;
+            // Update the number of segments in use.
+            Interlocked.Add(ref _segmentsInUse, segmentCount);
+            return (segmentCount, zeroed);
+        }
+
+        /// <summary>
         /// Reserves a segment index for use and returns the segment index that was reserved.
         /// and if the segment is zeroed.
         /// </summary>
@@ -563,8 +688,8 @@ namespace KZDev.PerfUtils.Internals
         /// </returns>
         private (int SegmentIndex, bool Zeroed) ReserveSegment ()
         {
-            // For single segments, try from the last segment backwards....
-            int checkSegmentIndex = _segmentCount - 1;
+            // Move forward from the start of the block to find the first unused segment.
+            int checkSegmentIndex = 0;
             // Get the index of the flag set and the mask for the segment index.
             (int flagIndex, ulong flagMask) = GetFlagIndexAndMask(checkSegmentIndex);
             // Get the flag set for the segment index.
@@ -581,17 +706,59 @@ namespace KZDev.PerfUtils.Internals
                     return (checkSegmentIndex, (_blockZeroFlags[flagIndex] & flagMask) != 0);
                 }
                 // Check the next segment.
-                checkSegmentIndex--;
-                Debug.Assert(checkSegmentIndex >= 0, "checkSegmentIndex < 0");
-                if (flagMask == 1)
+                checkSegmentIndex++;
+                Debug.Assert(checkSegmentIndex < _segmentCount, "checkSegmentIndex >= _segmentCount");
+                // If we are at the end of the flag group, then move to the next flag group.
+                if (flagMask == HighBitMask)
                 {
-                    Debug.Assert(flagIndex > 0, "flagIndex <= 0");
-                    flagMask = HighBitMask;
-                    flagGroup = _blockUsedFlags[--flagIndex];
+                    if (++flagIndex == _blockUsedFlags.Length)
+                        break;
+                    // Get the next flag group and mask.
+                    flagGroup = _blockUsedFlags[flagIndex];
+                    flagMask = 1;
                     continue;
                 }
-                flagMask >>= 1;
+                // Otherwise move to the next segment
+                flagMask <<= 1;
             }
+            // We should never get here because we should always have a single free segment if 
+            // this is called, because the full state should have already been checked.
+            Debug.Fail("No free segments found.");
+            return (-1, false);
+        }
+
+        /// <summary>
+        /// Tries to reserve a specific segment index for use and returns whether that segment index was reserved.
+        /// and if the segment is zeroed.
+        /// </summary>
+        /// <param name="segmentIndex">
+        /// The specific segment index to try and reserve.
+        /// </param>
+        /// <returns>
+        /// Values indicating the segment reserved, and if the segment is zeroed.
+        /// </returns>
+        private (bool SegmentReserved, bool Zeroed) TryReserveSegment (int segmentIndex)
+        {
+            Debug.Assert(segmentIndex > 0, "segmentIndex <= 0");
+            // Check if we can even use this segment.
+            if (segmentIndex >= _segmentCount)
+                return (false, false);
+            // Get the index of the flag set and the mask for the segment index.
+            (int flagIndex, ulong flagMask) = GetFlagIndexAndMask(segmentIndex);
+            // Get the flag set for the segment index.
+            ulong flagGroup = _blockUsedFlags[flagIndex];
+            // Check if the segment is in use.
+            if ((flagGroup & flagMask) != 0)
+            {
+                // The segment is in use.
+                return (false, false);
+            }
+
+            // Mark the segment as in use.
+            _blockUsedFlags[flagIndex] = flagGroup | flagMask;
+            Interlocked.Increment(ref _segmentsInUse);
+            // Return the index and the zeroed state of the segment.
+            return (true, (_blockZeroFlags[flagIndex] & flagMask) != 0);
         }
 
         /// <summary>
@@ -645,10 +812,12 @@ namespace KZDev.PerfUtils.Internals
         static MemorySegmentedBufferGroup ()
         {
             // Create the observable gauges for the total allocated memory.
+#pragma warning disable HAA0601
             MemoryMeter.Meter.CreateObservableGauge("segment_memory.gc_allocated", static () => Volatile.Read(ref _totalGcSegmentsAllocated),
                 unit: "{segments}", description: $"The total number of GC heap segments (of {StandardBufferSegmentSize:N0} bytes) allocated for the segmented memory buffers");
             MemoryMeter.Meter.CreateObservableGauge("segment_memory.native_allocated", static () => Volatile.Read(ref _totalNativeSegmentsAllocated),
                 unit: "{segments}", description: $"The total number of native heap segments (of {StandardBufferSegmentSize:N0} bytes) allocated for the segmented memory buffers");
+#pragma warning restore HAA0601
         }
 
         /// <summary>
@@ -745,19 +914,30 @@ namespace KZDev.PerfUtils.Internals
         /// <param name="bufferPool">
         /// The buffer pool that is requesting the buffer.
         /// </param>
+        /// <param name="preferredFirstSegmentIndex">
+        /// The index of the first segment to try and allocate from. If this is -1, then we will
+        /// not try to allocate from a specific segment.
+        /// </param>
         /// <returns>
         /// The buffer to use from this group if available, and a result value for the operation.
         /// </returns>
-        public (SegmentBuffer buffer, GetBufferResult result) GetBuffer (int bufferSize, bool requireZeroed, MemorySegmentedBufferPool bufferPool)
+        public (SegmentBuffer Buffer, GetBufferResult Result, bool SegmentIsPreferred)
+            GetBuffer (int bufferSize, bool requireZeroed, MemorySegmentedBufferPool bufferPool, int preferredFirstSegmentIndex = -1)
         {
             Debug.Assert(0 == (bufferSize % StandardBufferSegmentSize), "bufferSize is not an even multiple of StandardBufferSegmentSize");
             int segmentsNeeded = bufferSize / StandardBufferSegmentSize;
-            int reservedSegmentIndex;
-            int reservedSegmentCount;
-            bool segmentsZeroed;
+            // The index of the first segment we have reserved. This will be
+            // -1 if we don't have a segment reserved yet.
+            int reservedSegmentIndex = -1;
+            // The number of segments we have reserved.
+            int reservedSegmentCount = 0;
+            // Indicates if the segments we have are zeroed.
+            bool segmentsZeroed = false;
+            // Flag that indicates the segment we have is the preferred segment.
+            bool segmentIsPreferred = false;
 
             if (Interlocked.CompareExchange(ref _locked, 1, 0) == 1)
-                return (SegmentBuffer.Empty, GetBufferResult.GroupLocked);
+                return (SegmentBuffer.Empty, GetBufferResult.GroupLocked, false);
             try
             {
                 // We allocate the block when needed. It is not ideal that we are doing an allocation while holding the lock, but
@@ -765,23 +945,53 @@ namespace KZDev.PerfUtils.Internals
                 // will allow them to handle the lock externally. If we didn't hold the lock and just did the allocation, then we could
                 // possibly allocate a buffer segment and then immediately release it, which is very likely even a worse condition.
                 if ((!AllocateBufferIfNeeded()) && IsFull)
-                    return (SegmentBuffer.Empty, GetBufferResult.GroupFull);
+                    return (SegmentBuffer.Empty, GetBufferResult.GroupFull, false);
 
                 // Reserve the segments
                 if (segmentsNeeded == 1)
                 {
-                    (reservedSegmentIndex, segmentsZeroed) = ReserveSegment();
+                    // Try to get the preferred segment first.
+                    if (preferredFirstSegmentIndex >=0) 
+                    {
+                        (segmentIsPreferred, segmentsZeroed) = TryReserveSegment(preferredFirstSegmentIndex);
+                        if (segmentIsPreferred)
+                            reservedSegmentIndex = preferredFirstSegmentIndex;
+                    }
+                    // If we didn't get the preferred segment, then try to get any segment.
+                    if (reservedSegmentIndex < 0)
+                    {
+                        (reservedSegmentIndex, segmentsZeroed) = ReserveSegment();
+                    }
                     reservedSegmentCount = 1;
                 }
                 else
                 {
-                    (reservedSegmentIndex, reservedSegmentCount, segmentsZeroed) = ReserveSegments(segmentsNeeded);
+                    // We need multiple segments
+                    // Try to get the series at the preferred segment first.
+                    if (preferredFirstSegmentIndex >=0)
+                    {
+                        (reservedSegmentCount, segmentsZeroed) = TryReserveSegments(segmentsNeeded, preferredFirstSegmentIndex);
+                        if (reservedSegmentCount > 0)
+                        {
+                            // We got the preferred segment, so we know that the first
+                            // segment index is the preferred segment.
+                            reservedSegmentIndex = preferredFirstSegmentIndex;
+                            segmentIsPreferred = true;
+                        }
+                    }
+                    // If we didn't get segments from the preferred segment, then try to get any series of segments.
+                    if (reservedSegmentIndex < 0)
+                    {
+                        (reservedSegmentIndex, reservedSegmentCount, segmentsZeroed) = ReserveSegments(segmentsNeeded);
+                    }
                 }
             }
             finally
             {
                 Volatile.Write(ref _locked, 0);
             }
+            Debug.Assert(reservedSegmentIndex >= 0, "reservedSegmentIndex < 0");
+            Debug.Assert(reservedSegmentCount > 0, "reservedSegmentCount <= 0");
             // Track where the buffer is from, so we can release it later.
             SegmentBufferInfo bufferInfo = new(Id, reservedSegmentIndex, reservedSegmentCount, bufferPool);
             if (_useNativeMemory)
@@ -792,7 +1002,7 @@ namespace KZDev.PerfUtils.Internals
                 {
                     memorySegment.Clear();
                 }
-                return (new SegmentBuffer(memorySegment, bufferInfo), GetBufferResult.Available);
+                return (new SegmentBuffer(memorySegment, bufferInfo), GetBufferResult.Available, segmentIsPreferred);
             }
             MemorySegment arraySegment = new(_bufferBlock!, (reservedSegmentIndex * StandardBufferSegmentSize),
                 reservedSegmentCount * StandardBufferSegmentSize);
@@ -800,7 +1010,7 @@ namespace KZDev.PerfUtils.Internals
             {
                 arraySegment.Clear();
             }
-            return (new SegmentBuffer(arraySegment, bufferInfo), GetBufferResult.Available);
+            return (new SegmentBuffer(arraySegment, bufferInfo), GetBufferResult.Available, segmentIsPreferred);
         }
 
         /// <summary>
