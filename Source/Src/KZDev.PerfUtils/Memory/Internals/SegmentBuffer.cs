@@ -19,7 +19,9 @@ namespace KZDev.PerfUtils.Internals
         /// Debug helper to display the state of this object.
         /// </summary>
         [ExcludeFromCodeCoverage]
+#pragma warning disable HAA0601
         internal string DebugDisplayValue => IsEmpty && (BufferInfo.BlockId < 0) ? "Empty" : $"{BufferInfo.DebugDisplayValue}, Length {Length}, {(IsRaw ? "Raw" : "NotRaw")}, Segment: {MemorySegment.DebugDisplayValue}";
+#pragma warning restore HAA0601
 
         /// <summary>
         /// The raw buffer that this segment references, if any.
@@ -132,27 +134,6 @@ namespace KZDev.PerfUtils.Internals
             Debug.Assert(bufferInfo.SegmentCount > 0, "bufferInfo.SegmentCount <= 0");
 
             MemorySegment = memorySegment;
-            BufferInfo = bufferInfo;
-        }
-        //--------------------------------------------------------------------------------
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SegmentBuffer"/> struct with a 
-        /// raw byte buffer.
-        /// </summary>
-        /// <param name="buffer">
-        /// The raw byte buffer.
-        /// </param>
-        /// <param name="bufferInfo">
-        /// The meta-data information about this buffer segment.
-        /// </param>
-        public SegmentBuffer (byte[] buffer, in SegmentBufferInfo bufferInfo)
-        {
-            Debug.Assert(buffer is not null, "buffer is not null");
-            Debug.Assert(buffer.Length > 0, "buffer.Length <= 0");
-            Debug.Assert(bufferInfo.SegmentCount > 0, "bufferInfo.SegmentCount <= 0");
-
-            RawBuffer = buffer;
-            MemorySegment = new MemorySegment(buffer);
             BufferInfo = bufferInfo;
         }
         //--------------------------------------------------------------------------------
