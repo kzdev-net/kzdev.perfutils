@@ -1694,19 +1694,38 @@ namespace KZDev.PerfUtils.Internals
             int bufferOffset = _currentBufferOffset;   // Offset into the buffer being copied from
             int bufferIndex = _currentBufferInfo.Index;
             int newPosition = VirtualPosition;
+
+            // Set up the first write task
+            // We are not using a small buffer and length is not zero, so we must have a buffer list
+            SegmentBuffer currentBuffer = _bufferList![bufferIndex++].SegmentBuffer;
+            int copyLength = Math.Min(currentBuffer.Length - bufferOffset, bytesToCopy);
+
+            MemorySegment memorySegment = currentBuffer.MemorySegment;
+            ReadOnlyMemory<byte> writeMemory = memorySegment.AsReadOnlyMemory().Slice(bufferOffset, copyLength);
+            // Get the first write task
+            ValueTask writeTask = destination.WriteAsync(writeMemory, cancellationToken);
+            bytesToCopy -= copyLength;
+            newPosition += copyLength;
+
             while (bytesToCopy > 0)
             {
-                // We are not using a small buffer and length is not zero, so we must have a buffer list
-                SegmentBuffer currentBuffer = _bufferList![bufferIndex++].SegmentBuffer;
-                int copyLength = Math.Min(currentBuffer.Length - bufferOffset, bytesToCopy);
+                // We loop through the buffers and write the data to the destination stream by doing the
+                // setup for the next write as the previous write is running asynchronously.
+                currentBuffer = _bufferList![bufferIndex++].SegmentBuffer;
+                copyLength = Math.Min(currentBuffer.Length, bytesToCopy);
 
-                MemorySegment memorySegment = currentBuffer.MemorySegment;
-                await destination.WriteAsync(memorySegment.AsReadOnlyMemory().Slice(bufferOffset, copyLength), cancellationToken).ConfigureAwait(false);
+                memorySegment = currentBuffer.MemorySegment;
+                writeMemory = memorySegment.AsReadOnlyMemory()[..copyLength];
+
+                // Await the previous write task
+                await writeTask.ConfigureAwait(false);
+                // Move on to the next write task
+                writeTask = destination.WriteAsync(writeMemory, cancellationToken);
                 bytesToCopy -= copyLength;
                 newPosition += copyLength;
-                // For the remaining buffers, we will start at the beginning of the buffer
-                bufferOffset = 0;
             }
+            // Await the final write task
+            await writeTask.ConfigureAwait(false);
             SetPositionAndCurrentBuffer(newPosition);
         }
         //--------------------------------------------------------------------------------

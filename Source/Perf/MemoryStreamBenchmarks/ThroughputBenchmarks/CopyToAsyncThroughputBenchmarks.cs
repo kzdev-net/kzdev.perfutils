@@ -28,6 +28,11 @@ namespace MemoryStreamBenchmarks
         }
 
         /// <summary>
+        /// The size of the segments to fill and read in.
+        /// </summary>
+        private const int SegmentSize = 0x1000;  // 4KB
+
+        /// <summary>
         /// The specifically set loop iteration count for the benchmarks
         /// </summary>
         private int? _setLoopCount;
@@ -73,6 +78,12 @@ namespace MemoryStreamBenchmarks
         public bool CapacityOnCreate { get; set; } = false;
 
         /// <summary>
+        /// Controls if the stream is initially filled with the data in a single operation or in segments
+        /// </summary>
+        [ParamsAllValues]
+        public bool BulkFill { get; set; } = false;
+
+        /// <summary>
         /// The different ways to create the stream instances, by specifying capacity or not
         /// </summary>
         // We are leaving this as a parameter to allow for testing with linear and exponential buffer growth in the
@@ -101,7 +112,9 @@ namespace MemoryStreamBenchmarks
         /// </param>
         private Task ProcessStreamAsync (Stream stream, int dataLength)
         {
-            return streamUtility.CopyToAsync(stream, _fileStream!, fillData!, dataLength);
+            return BulkFill ? 
+                streamUtility.BulkFillCopyToAsync(stream, _fileStream!, fillData!, dataLength) :
+                streamUtility.SegmentFillCopyToAsync(stream, _fileStream!, fillData!, dataLength, SegmentSize);
         }
         //--------------------------------------------------------------------------------
         /// <summary>

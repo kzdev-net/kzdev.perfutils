@@ -763,7 +763,7 @@ namespace KZDev.PerfUtils.Internals
                 // We allocate the block when needed. It is not ideal that we are doing an allocation while holding the lock, but
                 // we hope that with it being uninitialized, it will be fast enough, plus the return code of any race condition callers
                 // will allow them to handle the lock externally. If we didn't hold the lock and just did the allocation, then we could
-                // possibly allocate a buffer segment and then immediately release it, which is very likely even worse.
+                // possibly allocate a buffer segment and then immediately release it, which is very likely even a worse condition.
                 if ((!AllocateBufferIfNeeded()) && IsFull)
                     return (SegmentBuffer.Empty, GetBufferResult.GroupFull);
 
