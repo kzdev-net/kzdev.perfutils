@@ -12,7 +12,7 @@
 		<PackageIcon>images\icon.png</PackageIcon>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageDescription>Performance utilities for .NET projects, initially providing the `MemoryStreamSlim` class; a high-performance, memory-efficient, and easy-to-use replacement for the `MemoryStream` class that provides particular benefits for large or frequently used streams.</PackageDescription>
-		<PackageReleaseNotes>Initial release (version 1.0.0)</PackageReleaseNotes>
+		<PackageReleaseNotes>Further MemoryStreamSlim performance enhancements (version 1.0.1)</PackageReleaseNotes>
 		<EmbedUntrackedSources>true</EmbedUntrackedSources>
 		<RepositoryUrl>https://github.com/kzdev-net/kzdev.perfutils</RepositoryUrl>
 	</PropertyGroup>
