@@ -2072,11 +2072,18 @@ namespace KZDev.PerfUtils.Internals
             {
                 // We need to ensure that we have the capacity for the new length
                 EnsureCapacity(newLength, true);
+                // Verify the current buffer in case that buffer is a small buffer. If we are using a buffer list,
+                // then we don't really need to verify the current buffer, but it has likely been invalidated by
+                // the EnsureCapacity call, so we will verify it anyway. There are cases where calling this while
+                // using a buffer list could result in the current buffer still being invalid, but with the buffer list
+                // case, we are clearing the buffers directly below anyway.
+                // BTW: The case where the buffer could still be invalid is when the current position is right beyond
+                // the last buffer in the list (Position == Length == Capacity).
                 VerifyCurrentBuffer();
             }
             // If the new length is greater than the current length, then we need to zero out the
             // remainder of our current buffer. Any new buffers will be zeroed out when they are allocated.
-            if (newLength > LengthInternal && !_currentBufferInfo.Buffer.IsEmpty)
+            if (newLength > LengthInternal)
             {
                 if (_currentBufferInfo.IsSmallBuffer)
                 {
