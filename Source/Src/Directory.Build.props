@@ -15,7 +15,13 @@
         <Product>KZDev Performance Utilities</Product>
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     </PropertyGroup>
-    <PropertyGroup Condition=" '$(Configuration)'=='Package' ">
+    <!-- 
+    Define source code project package version properties
+   -->
+    <PropertyGroup Condition="'$(TargetFramework)' != 'net8.0'">
+		<PerfUtils-Pkg-System_Diagnostics_DiagnosticSource>8.0.1</PerfUtils-Pkg-System_Diagnostics_DiagnosticSource>
+    </PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)'=='Package' ">
         <IsPacking>true</IsPacking>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(IsPacking)'=='' AND '$(Configuration)'!='Package' ">

@@ -12,7 +12,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="JetBrains.Profiler.Api" Version="1.4.8" />
+		<PackageReference Include="JetBrains.Profiler.Api" Version="$(PerfUtils-Pkg-JetBrains_Profiler_Api)" />
 	</ItemGroup>
 
 	<ItemGroup>
