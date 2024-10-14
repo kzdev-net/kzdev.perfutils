@@ -4,6 +4,7 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
 namespace KZDev.PerfUtils.Internals
 {
@@ -97,18 +98,22 @@ namespace KZDev.PerfUtils.Internals
                     // Now, loop through the pending list and zero out the buffers.
                     for (int loopIndex = 0; loopIndex < runLoops; loopIndex++)
                     {
-                        if (!pendingZeroList.TryTake(out SegmentBuffer buffer))
+                        if (!pendingZeroList.TryTake(out SegmentBuffer releaseBuffer))
                             break;
-                        buffer.Clear();
+                        releaseBuffer.Clear();
                         // Store the buffer back in the group.
-                        if (!generationArray.ReleaseBuffer(buffer, true))
+                        if (!generationArray.ReleaseBuffer(releaseBuffer, true))
                         {
                             // If we get here, this means that the buffer actually came from a generation that is newer
                             // than the one we grabbed a reference to. So, the buffer group was not found.
                             // We could try to get the most recent generation and just loop again,
                             // but we might just as well break out and let the next round just pick
                             // up from the beginning, since could possibly indicate things are pretty busy.
-                            moreWork = true;
+                            // We are going to take a bit of a performance hit here because we will zero the buffer more
+                            // than once, but we need to make sure this segment gets properly released, and we need to
+                            // put it back into the pending zero list to be zeroed out again on the next pass.
+                            // This is the safest this to do, and this condition will be extremely rare.
+                            pendingZeroList.Add(releaseBuffer);
                             break;
                         }
 
@@ -119,12 +124,12 @@ namespace KZDev.PerfUtils.Internals
                         // We have been running for too long, so we should stop and return the thread to the pool.
 
 #if FALSE
-                    // Check if we should dedicate a thread to this operation.
-                    if (pendingZeroList.Count > startPendingCount)
-                    {
-                        // We are falling behind, so we should consider dedicating a thread to this operation.
-                        // TODO: Consider dedicating a thread to this operation.
-                    }
+                        // Check if we should dedicate a thread to this operation.
+                        if (pendingZeroList.Count > startPendingCount)
+                        {
+                            // We are falling behind, so we should consider dedicating a thread to this operation.
+                            // TODO: Consider dedicating a thread to this operation.
+                        }
 #endif
                         break;
                     }
@@ -337,6 +342,7 @@ namespace KZDev.PerfUtils.Internals
         /// <returns>
         /// A buffer that is the size of the buffer size for this pool.
         /// </returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public SegmentBuffer Rent (int requestedBufferSize, bool clearNewAllocations) =>
             RentInternal(requestedBufferSize, clearNewAllocations);
         //--------------------------------------------------------------------------------
