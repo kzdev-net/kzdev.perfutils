@@ -562,7 +562,7 @@ namespace KZDev.PerfUtils.Tests
         public void UsingMemoryStreamSlim_SetLengthLarger_FillsWithZeroedBytes ()
         {
             // Fill the stream with random bytes
-            for (int testLoop = 0; testLoop < 1000; testLoop++)
+            for (int testLoop = 0; testLoop < 5_000; testLoop++)
             {
                 using MemoryStreamSlim testService = MemoryStreamSlim.Create(options => options.ZeroBufferBehavior = MemoryStreamSlimZeroBufferOption.None);
                 int byteCount = RandomSource.GetRandomInteger(10, 0x2_0000);
@@ -570,13 +570,66 @@ namespace KZDev.PerfUtils.Tests
                 int newLength = byteCount + addLength;
                 TestWriteLine($"Running test loop {testLoop} with byte count of {byteCount} and new length of {newLength}");
 
-                MemoryTestPrep.FillStreamAndArrayWithRandomBytes(testService, byteCount, 0x10000);
+                MemoryTestPrep.FillStreamWithRandomBytes(testService, byteCount, 0x10000);
 
                 // Change the length to a random value
                 testService.SetLength(newLength);
                 byte[] bytes = new byte[addLength];
                 testService.Read(bytes, 0, addLength).Should().Be(addLength);
                 bytes.Should().AllBeEquivalentTo<byte>(0);
+            }
+        }
+        //--------------------------------------------------------------------------------    
+        /// <summary>
+        /// Tests setting the Length property of a <see cref="MemoryStreamSlim"/> instance
+        /// to a value higher than the current length and verifying the filled space is zeroed.
+        /// The set to lengths are from a set of standard sizes
+        /// </summary>
+        [Fact]
+        public void UsingMemoryStreamSlim_SetLengthLargerUsingSizeIntervals_FillsWithZeroedBytes ()
+        {
+            int[] testLengths = [MemorySegmentedBufferGroup.StandardBufferSegmentSize / 4,
+                MemorySegmentedBufferGroup.StandardBufferSegmentSize / 2,
+                MemorySegmentedBufferGroup.StandardBufferSegmentSize,
+                (MemorySegmentedBufferGroup.StandardBufferSegmentSize / 2) * 3,
+                MemorySegmentedBufferGroup.StandardBufferSegmentSize * 2,
+                MemorySegmentedBufferGroup.StandardBufferSegmentSize * 3,
+                MemorySegmentedBufferGroup.StandardBufferSegmentSize * 4];
+            byte[] readCompareArray = new byte[testLengths.Max()];
+
+            // Test the full lengths
+            for (int sizeIndex = 0; sizeIndex < testLengths.Length; sizeIndex++)
+            {
+                int fullLength = testLengths[sizeIndex];
+                // Test initial write data sizes that are less than the current full length
+                for (int initialSize = 0xC00; initialSize < fullLength; initialSize += 0xC00)
+                {
+                    // Test pushing the position beyond the target length to different values
+                    for (int positionIndex = sizeIndex; positionIndex < testLengths.Length; positionIndex++)
+                    {
+                        int setPositionValue = testLengths[positionIndex];
+                        using MemoryStreamSlim testService = MemoryStreamSlim.Create(options => options.ZeroBufferBehavior = MemoryStreamSlimZeroBufferOption.None);
+                        int addLength = fullLength - initialSize;
+                        TestWriteLine($"Running test loop {sizeIndex} with byte count of {initialSize} and new length of {fullLength}");
+
+                        MemoryTestPrep.FillStreamWithRandomBytes(testService, initialSize, 0x1000);
+
+                        // Set the position of the stream
+                        testService.Position = setPositionValue;
+
+                        // Change the length to a random value
+                        testService.SetLength(fullLength);
+                        // Now set the position back in order to read the data which 
+                        // should have been filled in with zeros
+                        testService.Position = initialSize;
+                        Span<byte> readSpan = readCompareArray.AsSpan(0, addLength);
+                        testService.Read(readSpan).Should().Be(addLength);
+                        for (int byteIndex = 0; byteIndex < addLength; byteIndex++)
+                        {
+                            readSpan[byteIndex].Should().Be(0);
+                        }
+                    }
+                }
             }
         }
         //--------------------------------------------------------------------------------    
