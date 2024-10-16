@@ -146,12 +146,12 @@ namespace KZDev.PerfUtils.Tests
                 runIncrementSignal.Set();
                 // Wait for the increment thread to finish
                 bool testWaitReturned = incrementTestDoneSignal.Wait(5000);
+                testWaitReturned.Should().BeTrue();
                 if (exceptionDispatchInfo is not null)
                 {
                     TestWriteLine($"Exception found on loop #{loop}");
                     break;
                 }
-                testWaitReturned.Should().BeTrue();
 
                 incrementTestDoneSignal.Reset();
                 resetSignal.Set();
@@ -160,6 +160,7 @@ namespace KZDev.PerfUtils.Tests
             // Shut down the test threads
             abortSignal.Set();
             // Set the signals to run the threads so that they loop around to the abort signal
+            resetSignal.Set();
             runIncrementSignal.Set();
             runTestSignal.Set();
             // Wait for the threads to finish
@@ -300,12 +301,12 @@ namespace KZDev.PerfUtils.Tests
                 runIncrementSignal.Set();
                 // Wait for the increment thread to finish
                 bool testWaitReturned = incrementTestDoneSignal.Wait(5000);
+                testWaitReturned.Should().BeTrue();
                 if (exceptionDispatchInfo is not null)
                 {
                     TestWriteLine($"Exception found on loop #{loop}");
                     break;
                 }
-                testWaitReturned.Should().BeTrue();
 
                 incrementTestDoneSignal.Reset();
                 resetSignal.Set();
@@ -314,6 +315,7 @@ namespace KZDev.PerfUtils.Tests
             // Shut down the test threads
             abortSignal.Set();
             // Set the signals to run the threads so that they loop around to the abort signal
+            resetSignal.Set();
             runIncrementSignal.Set();
             runTestSignal.Set();
             // Wait for the threads to finish
@@ -448,12 +450,12 @@ namespace KZDev.PerfUtils.Tests
                 runIncrementSignal.Set();
                 // Wait for the increment thread to finish
                 bool testWaitReturned = incrementTestDoneSignal.Wait(5000);
+                testWaitReturned.Should().BeTrue();
                 if (exceptionDispatchInfo is not null)
                 {
                     TestWriteLine($"Exception found on loop #{loop}");
                     break;
                 }
-                testWaitReturned.Should().BeTrue();
 
                 incrementTestDoneSignal.Reset();
                 resetSignal.Set();
@@ -462,6 +464,7 @@ namespace KZDev.PerfUtils.Tests
             // Shut down the test threads
             abortSignal.Set();
             // Set the signals to run the threads so that they loop around to the abort signal
+            resetSignal.Set();
             runIncrementSignal.Set();
             runTestSignal.Set();
             // Wait for the threads to finish
@@ -610,12 +613,12 @@ namespace KZDev.PerfUtils.Tests
                 runIncrementSignal.Set();
                 // Wait for the increment thread to finish
                 bool testWaitReturned = incrementTestDoneSignal.Wait(5000);
+                testWaitReturned.Should().BeTrue();
                 if (exceptionDispatchInfo is not null)
                 {
                     TestWriteLine($"Exception found on loop #{loop}");
                     break;
                 }
-                testWaitReturned.Should().BeTrue();
 
                 incrementTestDoneSignal.Reset();
                 resetSignal.Set();
@@ -624,6 +627,7 @@ namespace KZDev.PerfUtils.Tests
             // Shut down the test threads
             abortSignal.Set();
             // Set the signals to run the threads so that they loop around to the abort signal
+            resetSignal.Set();
             runIncrementSignal.Set();
             runTestSignal.Set();
             // Wait for the threads to finish
