@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.ExceptionServices;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Runtime.ExceptionServices;
 
 using FluentAssertions;
 
@@ -81,7 +76,6 @@ namespace KZDev.PerfUtils.Tests
                         if (!runIncrementSignal.Wait(testCycleWaitTime))
                             throw new TimeoutException("Timed out waiting for the test increment signal");
                         runIncrementSignal.Reset();
-                        resetSignal.Reset();
 
                         Interlocked.Exchange(ref _testContentionInteger, startValue);
                         int lastValue = _testContentionInteger;
@@ -125,6 +119,7 @@ namespace KZDev.PerfUtils.Tests
                         incrementTestDoneSignal.Set();
                         if (!resetSignal.Wait(testCycleWaitTime))
                             throw new TimeoutException("Timed out waiting for the reset signal");
+                        resetSignal.Reset();
                     }
                 }
                 catch (Exception error)
@@ -139,33 +134,43 @@ namespace KZDev.PerfUtils.Tests
             };
             incrementThread.Start();
 
-            // Now, run the test a bunch of times
-            for (int loop = 0; loop < ContentionTestLoopCount; loop++)
+            try
             {
-                // Signal the increment thread to run
-                runIncrementSignal.Set();
-                // Wait for the increment thread to finish
-                bool testWaitReturned = incrementTestDoneSignal.Wait(5000);
-                testWaitReturned.Should().BeTrue();
-                if (exceptionDispatchInfo is not null)
+                // Now, run the test a bunch of times
+                for (int loop = 0; loop < ContentionTestLoopCount; loop++)
                 {
-                    TestWriteLine($"Exception found on loop #{loop}");
-                    break;
+                    // Signal the increment thread to run
+                    runIncrementSignal.Set();
+                    // Wait for the increment thread to finish
+                    incrementTestDoneSignal.Wait(5000).Should().BeTrue();
+                    if (exceptionDispatchInfo is not null)
+                    {
+                        TestWriteLine($"Exception found on loop #{loop}");
+                        break;
+                    }
+
+                    incrementTestDoneSignal.Reset();
+                    // Don't set the test reset on the last loop because that might cause the
+                    // increment thread to reset the signal and test the state of the abort
+                    // signal before we have a chance to set it below in the finally block.
+                    if (loop < ContentionTestLoopCount - 1)
+                        resetSignal.Set();
                 }
-
-                incrementTestDoneSignal.Reset();
-                resetSignal.Set();
             }
-
-            // Shut down the test threads
-            abortSignal.Set();
-            // Set the signals to run the threads so that they loop around to the abort signal
-            resetSignal.Set();
-            runIncrementSignal.Set();
-            runTestSignal.Set();
-            // Wait for the threads to finish
-            incrementThread.Join(5000);
-            interlockedOperation.Join(5000);
+            finally
+            {
+                // Shut down the test threads
+                abortSignal.Set();
+                // Set the signals to run the threads so that they loop around to the abort signal
+                resetSignal.Set();
+                runIncrementSignal.Set();
+                runTestSignal.Set();
+                // Wait for the threads to finish
+                incrementThread.Join(5000).Should().BeTrue();
+                TestWriteLine($"Increment Thread Stopped");
+                interlockedOperation.Join(5000).Should().BeTrue();
+                TestWriteLine($"Operation Thread Stopped");
+            }
 
             exceptionDispatchInfo?.Throw();
             TestWriteLine($"Average hit loop count: {hitLoopCounts.Average()}");
@@ -236,7 +241,6 @@ namespace KZDev.PerfUtils.Tests
                         if (!runIncrementSignal.Wait(testCycleWaitTime))
                             throw new TimeoutException("Timed out waiting for the test increment signal");
                         runIncrementSignal.Reset();
-                        resetSignal.Reset();
 
                         Interlocked.Exchange(ref _testContentionUnsignedInteger, startValue);
                         uint lastValue = _testContentionUnsignedInteger;
@@ -280,6 +284,7 @@ namespace KZDev.PerfUtils.Tests
                         incrementTestDoneSignal.Set();
                         if (!resetSignal.Wait(testCycleWaitTime))
                             throw new TimeoutException("Timed out waiting for the reset signal");
+                        resetSignal.Reset();
                     }
                 }
                 catch (Exception error)
@@ -294,33 +299,43 @@ namespace KZDev.PerfUtils.Tests
             };
             incrementThread.Start();
 
-            // Now, run the test a bunch of times
-            for (int loop = 0; loop < ContentionTestLoopCount; loop++)
+            try
             {
-                // Signal the increment thread to run
-                runIncrementSignal.Set();
-                // Wait for the increment thread to finish
-                bool testWaitReturned = incrementTestDoneSignal.Wait(5000);
-                testWaitReturned.Should().BeTrue();
-                if (exceptionDispatchInfo is not null)
+                // Now, run the test a bunch of times
+                for (int loop = 0; loop < ContentionTestLoopCount; loop++)
                 {
-                    TestWriteLine($"Exception found on loop #{loop}");
-                    break;
+                    // Signal the increment thread to run
+                    runIncrementSignal.Set();
+                    // Wait for the increment thread to finish
+                    incrementTestDoneSignal.Wait(5000).Should().BeTrue();
+                    if (exceptionDispatchInfo is not null)
+                    {
+                        TestWriteLine($"Exception found on loop #{loop}");
+                        break;
+                    }
+
+                    incrementTestDoneSignal.Reset();
+                    // Don't set the test reset on the last loop because that might cause the
+                    // increment thread to reset the signal and test the state of the abort
+                    // signal before we have a chance to set it below in the finally block.
+                    if (loop < ContentionTestLoopCount - 1)
+                        resetSignal.Set();
                 }
-
-                incrementTestDoneSignal.Reset();
-                resetSignal.Set();
             }
-
-            // Shut down the test threads
-            abortSignal.Set();
-            // Set the signals to run the threads so that they loop around to the abort signal
-            resetSignal.Set();
-            runIncrementSignal.Set();
-            runTestSignal.Set();
-            // Wait for the threads to finish
-            incrementThread.Join(5000);
-            interlockedOperation.Join(5000);
+            finally
+            {
+                // Shut down the test threads
+                abortSignal.Set();
+                // Set the signals to run the threads so that they loop around to the abort signal
+                resetSignal.Set();
+                runIncrementSignal.Set();
+                runTestSignal.Set();
+                // Wait for the threads to finish
+                incrementThread.Join(5000).Should().BeTrue();
+                TestWriteLine($"Increment Thread Stopped");
+                interlockedOperation.Join(5000).Should().BeTrue();
+                TestWriteLine($"Operation Thread Stopped");
+            }
 
             exceptionDispatchInfo?.Throw();
             TestWriteLine($"Average hit loop count: {hitLoopCounts.Average()}");
@@ -391,7 +406,6 @@ namespace KZDev.PerfUtils.Tests
                         if (!runIncrementSignal.Wait(testCycleWaitTime))
                             throw new TimeoutException("Timed out waiting for the test increment signal");
                         runIncrementSignal.Reset();
-                        resetSignal.Reset();
 
                         Interlocked.Exchange(ref _testContentionLongInteger, startValue);
                         long lastValue = _testContentionLongInteger;
@@ -429,6 +443,7 @@ namespace KZDev.PerfUtils.Tests
                         incrementTestDoneSignal.Set();
                         if (!resetSignal.Wait(testCycleWaitTime))
                             throw new TimeoutException("Timed out waiting for the reset signal");
+                        resetSignal.Reset();
                     }
                 }
                 catch (Exception error)
@@ -443,33 +458,43 @@ namespace KZDev.PerfUtils.Tests
             };
             incrementThread.Start();
 
-            // Now, run the test a bunch of times
-            for (long loop = 0; loop < ContentionTestLoopCount; loop++)
+            try
             {
-                // Signal the increment thread to run
-                runIncrementSignal.Set();
-                // Wait for the increment thread to finish
-                bool testWaitReturned = incrementTestDoneSignal.Wait(5000);
-                testWaitReturned.Should().BeTrue();
-                if (exceptionDispatchInfo is not null)
+                // Now, run the test a bunch of times
+                for (long loop = 0; loop < ContentionTestLoopCount; loop++)
                 {
-                    TestWriteLine($"Exception found on loop #{loop}");
-                    break;
+                    // Signal the increment thread to run
+                    runIncrementSignal.Set();
+                    // Wait for the increment thread to finish
+                    incrementTestDoneSignal.Wait(5000).Should().BeTrue();
+                    if (exceptionDispatchInfo is not null)
+                    {
+                        TestWriteLine($"Exception found on loop #{loop}");
+                        break;
+                    }
+
+                    incrementTestDoneSignal.Reset();
+                    // Don't set the test reset on the last loop because that might cause the
+                    // increment thread to reset the signal and test the state of the abort
+                    // signal before we have a chance to set it below in the finally block.
+                    if (loop < ContentionTestLoopCount - 1)
+                        resetSignal.Set();
                 }
-
-                incrementTestDoneSignal.Reset();
-                resetSignal.Set();
             }
-
-            // Shut down the test threads
-            abortSignal.Set();
-            // Set the signals to run the threads so that they loop around to the abort signal
-            resetSignal.Set();
-            runIncrementSignal.Set();
-            runTestSignal.Set();
-            // Wait for the threads to finish
-            incrementThread.Join(5000);
-            interlockedOperation.Join(5000);
+            finally
+            {
+                // Shut down the test threads
+                abortSignal.Set();
+                // Set the signals to run the threads so that they loop around to the abort signal
+                resetSignal.Set();
+                runIncrementSignal.Set();
+                runTestSignal.Set();
+                // Wait for the threads to finish
+                incrementThread.Join(5000).Should().BeTrue();
+                TestWriteLine($"Increment Thread Stopped");
+                interlockedOperation.Join(5000).Should().BeTrue();
+                TestWriteLine($"Operation Thread Stopped");
+            }
 
             exceptionDispatchInfo?.Throw();
             TestWriteLine($"Average hit loop count: {hitLoopCounts.Average()}");
@@ -493,7 +518,7 @@ namespace KZDev.PerfUtils.Tests
         /// <param name="operationRunVerifier">
         /// The verifier to run when the operation is found to have run.
         /// </param>
-        private void UsingInterlockedOps_UnsignedLongIntegerOperation_WithContention_SavesProperResult 
+        private void UsingInterlockedOps_UnsignedLongIntegerOperation_WithContention_SavesProperResult
             (Action operation, ulong startValue, ulong maxIncrement, Predicate<ulong> operationRunCheckCondition,
             Action<ulong, ulong> operationRunVerifier)
         {
@@ -554,7 +579,6 @@ namespace KZDev.PerfUtils.Tests
                         if (!runIncrementSignal.Wait(testCycleWaitTime))
                             throw new TimeoutException("Timed out waiting for the test increment signal");
                         runIncrementSignal.Reset();
-                        resetSignal.Reset();
 
                         Interlocked.Exchange(ref _testContentionUnsignedLongInteger, startValue);
                         ulong lastValue = _testContentionUnsignedLongInteger;
@@ -592,6 +616,7 @@ namespace KZDev.PerfUtils.Tests
                         incrementTestDoneSignal.Set();
                         if (!resetSignal.Wait(testCycleWaitTime))
                             throw new TimeoutException("Timed out waiting for the reset signal");
+                        resetSignal.Reset();
                     }
                 }
                 catch (Exception error)
@@ -606,33 +631,43 @@ namespace KZDev.PerfUtils.Tests
             };
             incrementThread.Start();
 
-            // Now, run the test a bunch of times
-            for (long loop = 0; loop < ContentionTestLoopCount; loop++)
+            try
             {
-                // Signal the increment thread to run
-                runIncrementSignal.Set();
-                // Wait for the increment thread to finish
-                bool testWaitReturned = incrementTestDoneSignal.Wait(5000);
-                testWaitReturned.Should().BeTrue();
-                if (exceptionDispatchInfo is not null)
+                // Now, run the test a bunch of times
+                for (long loop = 0; loop < ContentionTestLoopCount; loop++)
                 {
-                    TestWriteLine($"Exception found on loop #{loop}");
-                    break;
+                    // Signal the increment thread to run
+                    runIncrementSignal.Set();
+                    // Wait for the increment thread to finish
+                    incrementTestDoneSignal.Wait(5000).Should().BeTrue();
+                    if (exceptionDispatchInfo is not null)
+                    {
+                        TestWriteLine($"Exception found on loop #{loop}");
+                        break;
+                    }
+
+                    incrementTestDoneSignal.Reset();
+                    // Don't set the test reset on the last loop because that might cause the
+                    // increment thread to reset the signal and test the state of the abort
+                    // signal before we have a chance to set it below in the finally block.
+                    if (loop < ContentionTestLoopCount - 1)
+                        resetSignal.Set();
                 }
-
-                incrementTestDoneSignal.Reset();
-                resetSignal.Set();
             }
-
-            // Shut down the test threads
-            abortSignal.Set();
-            // Set the signals to run the threads so that they loop around to the abort signal
-            resetSignal.Set();
-            runIncrementSignal.Set();
-            runTestSignal.Set();
-            // Wait for the threads to finish
-            incrementThread.Join(5000);
-            interlockedOperation.Join(5000);
+            finally
+            {
+                // Shut down the test threads
+                abortSignal.Set();
+                // Set the signals to run the threads so that they loop around to the abort signal
+                resetSignal.Set();
+                runIncrementSignal.Set();
+                runTestSignal.Set();
+                // Wait for the threads to finish
+                incrementThread.Join(5000).Should().BeTrue();
+                TestWriteLine($"Increment Thread Stopped");
+                interlockedOperation.Join(5000).Should().BeTrue();
+                TestWriteLine($"Operation Thread Stopped");
+            }
 
             exceptionDispatchInfo?.Throw();
             TestWriteLine($"Average hit loop count: {hitLoopCounts.Average()}");
