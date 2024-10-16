@@ -34,6 +34,31 @@ namespace KZDev.PerfUtils.Tests
         int GetRandomInteger (int minValue, int maxValue);
 
         /// <summary>
+        /// Gets a random unsigned integer in the range of [0...maxValue)
+        /// </summary>
+        /// <param name="maxValue">
+        /// The maximum value that the random number can be.
+        /// </param>
+        /// <returns>
+        /// A random number between zero and the maximum values.
+        /// </returns>
+        uint GetRandomUnsignedInteger (uint maxValue);
+
+        /// <summary>
+        /// Gets a random unsigned integer in the range of [minValue...maxValue)
+        /// </summary>
+        /// <param name="minValue">
+        /// The minimum value that the random number can be.
+        /// </param>
+        /// <param name="maxValue">
+        /// The maximum value that the random number can be.
+        /// </param>
+        /// <returns>
+        /// A random number between the specified minimum and maximum values.
+        /// </returns>
+        uint GetRandomUnsignedInteger (uint minValue, uint maxValue);
+
+        /// <summary>
         /// Gets a random long integer in the range of [0...maxValue)
         /// </summary>
         /// <param name="maxValue">
@@ -42,7 +67,7 @@ namespace KZDev.PerfUtils.Tests
         /// <returns>
         /// A random number between the zero and the maximum values.
         /// </returns>
-        long GetRandomInteger (long maxValue);
+        long GetRandomLongInteger (long maxValue);
 
         /// <summary>
         /// Gets a random long integer in the range of [minValue...maxValue)
@@ -57,6 +82,31 @@ namespace KZDev.PerfUtils.Tests
         /// A random long integer between the specified minimum and maximum values.
         /// </returns>
         long GetRandomLongInteger (long minValue, long maxValue);
+
+        /// <summary>
+        /// Gets a random unsigned long integer in the range of [0...maxValue)
+        /// </summary>
+        /// <param name="maxValue">
+        /// The maximum value that the random number can be.
+        /// </param>
+        /// <returns>
+        /// A random number between the zero and the maximum values.
+        /// </returns>
+        ulong GetRandomUnsignedLongInteger (ulong maxValue);
+
+        /// <summary>
+        /// Gets a random unsigned long integer in the range of [minValue...maxValue)
+        /// </summary>
+        /// <param name="minValue">
+        /// The minimum value that the random number can be.
+        /// </param>
+        /// <param name="maxValue">
+        /// The maximum value that the random number can be.
+        /// </param>
+        /// <returns>
+        /// A random long integer between the specified minimum and maximum values.
+        /// </returns>
+        ulong GetRandomUnsignedLongInteger (ulong minValue, ulong maxValue);
 
         /// <summary>
         /// Gets a series of random bytes and fills the array with them.

@@ -63,6 +63,22 @@ namespace KZDev.PerfUtils.Tests
             public const string Concurrency = "Concurrency";
         }
         //================================================================================
+        /// <summary>
+        /// Constants for test category names.
+        /// </summary>
+        public static class TestCategory
+        {
+            /// <summary>
+            /// The Memory unit test category.
+            /// </summary>
+            public const string Memory = "Memory";
+
+            /// <summary>
+            /// The concurrency unit test category.
+            /// </summary>
+            public const string Concurrency = "Concurrency";
+        }
+        //================================================================================
     }
     //################################################################################
 }

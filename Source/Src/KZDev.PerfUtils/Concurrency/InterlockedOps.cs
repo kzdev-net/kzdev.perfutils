@@ -1,4 +1,9 @@
-﻿namespace KZDev.PerfUtils
+﻿// Copyright (c) Kevin Zehrer
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
+using System.Runtime.CompilerServices;
+
+namespace KZDev.PerfUtils
 {
     //################################################################################
     /// <summary>
@@ -20,9 +25,10 @@
         /// The value to be combined with the value in <paramref name="location1"/>
         /// </param>
         /// <returns>
-        /// A tuple containing the original value and the new value after the operation.
+        /// The original value in <paramref name="location1"/>
         /// </returns>
-        public static (int originalValue, int newValue) Xor (ref int location1, int value)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int Xor (ref int location1, int value)
         {
             int original, result;
             do
@@ -31,7 +37,7 @@
                 result = original ^ value;
             }
             while (Interlocked.CompareExchange(ref location1, result, original) != original);
-            return (original, result);
+            return original;
         }
         //--------------------------------------------------------------------------------
         /// <summary>
@@ -45,9 +51,10 @@
         /// The value to be combined with the value in <paramref name="location1"/>
         /// </param>
         /// <returns>
-        /// A tuple containing the original value and the new value after the operation.
+        /// The original value in <paramref name="location1"/>
         /// </returns>
-        public static (uint originalValue, uint newValue) Xor (ref uint location1, uint value)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static uint Xor (ref uint location1, uint value)
         {
             uint original, result;
             do
@@ -56,7 +63,7 @@
                 result = original ^ value;
             }
             while (Interlocked.CompareExchange(ref location1, result, original) != original);
-            return (original, result);
+            return original;
         }
         //--------------------------------------------------------------------------------
         /// <summary>
@@ -70,9 +77,10 @@
         /// The value to be combined with the value in <paramref name="location1"/>
         /// </param>
         /// <returns>
-        /// A tuple containing the original value and the new value after the operation.
+        /// The original value in <paramref name="location1"/>
         /// </returns>
-        public static (long originalValue, long newValue) Xor (ref long location1, long value)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static long Xor (ref long location1, long value)
         {
             long original, result;
             do
@@ -81,7 +89,7 @@
                 result = original ^ value;
             }
             while (Interlocked.CompareExchange(ref location1, result, original) != original);
-            return (original, result);
+            return original;
         }
         //--------------------------------------------------------------------------------
         /// <summary>
@@ -95,9 +103,10 @@
         /// The value to be combined with the value in <paramref name="location1"/>
         /// </param>
         /// <returns>
-        /// A tuple containing the original value and the new value after the operation.
+        /// The original value in <paramref name="location1"/>
         /// </returns>
-        public static (ulong originalValue, ulong newValue) Xor (ref ulong location1, ulong value)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ulong Xor (ref ulong location1, ulong value)
         {
             ulong original, result;
             do
@@ -106,7 +115,7 @@
                 result = original ^ value;
             }
             while (Interlocked.CompareExchange(ref location1, result, original) != original);
-            return (original, result);
+            return original;
         }
         //--------------------------------------------------------------------------------
 
@@ -128,9 +137,10 @@
         /// A tuple containing the original value and the new value after the operation.
         /// </returns>
         /// <remarks>
-        /// This is just a convenience method that uses the <see cref="Interlocked.Or(ref int, int)"/>
+        /// This is a convenience method that uses the <see cref="Interlocked.Or(ref int, int)"/>
         /// operation to set the bits, and returns the original and new values.
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (int originalValue, int newValue) SetBits (ref int location1, int setBitsValue)
         {
             int original = Interlocked.Or(ref location1, setBitsValue);
@@ -150,9 +160,10 @@
         /// A tuple containing the original value and the new value after the operation.
         /// </returns>
         /// <remarks>
-        /// This is just a convenience method that uses the <see cref="Interlocked.Or(ref int, int)"/>
+        /// This is a convenience method that uses the <see cref="Interlocked.Or(ref int, int)"/>
         /// operation to set the bits, and returns the original and new values.
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (uint originalValue, uint newValue) SetBits (ref uint location1, uint setBitsValue)
         {
             uint original = Interlocked.Or(ref location1, setBitsValue);
@@ -172,9 +183,10 @@
         /// A tuple containing the original value and the new value after the operation.
         /// </returns>
         /// <remarks>
-        /// This is just a convenience method that uses the <see cref="Interlocked.Or(ref int, int)"/>
+        /// This is a convenience method that uses the <see cref="Interlocked.Or(ref int, int)"/>
         /// operation to set the bits, and returns the original and new values.
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (long originalValue, long newValue) SetBits (ref long location1, long setBitsValue)
         {
             long original = Interlocked.Or(ref location1, setBitsValue);
@@ -194,9 +206,10 @@
         /// A tuple containing the original value and the new value after the operation.
         /// </returns>
         /// <remarks>
-        /// This is just a convenience method that uses the <see cref="Interlocked.Or(ref int, int)"/>
+        /// This is a convenience method that uses the <see cref="Interlocked.Or(ref int, int)"/>
         /// operation to set the bits, and returns the original and new values.
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (ulong originalValue, ulong newValue) SetBits (ref ulong location1, ulong setBitsValue)
         {
             ulong original = Interlocked.Or(ref location1, setBitsValue);
@@ -222,10 +235,11 @@
         /// A tuple containing the original value and the new value after the operation.
         /// </returns>
         /// <remarks>
-        /// This is just a convenience method that could be done with <see cref="Interlocked.And(ref int, int)"/>
+        /// This is a convenience method that could be done with <see cref="Interlocked.And(ref int, int)"/>
         /// passing the bitwise complement of the <paramref name="clearBitsValue"/>, but this 
         /// method returns the original and new values in a tuple.
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (int originalValue, int newValue) ClearBits (ref int location1, int clearBitsValue)
         {
             int original, result;
@@ -251,10 +265,11 @@
         /// A tuple containing the original value and the new value after the operation.
         /// </returns>
         /// <remarks>
-        /// This is just a convenience method that could be done with <see cref="Interlocked.And(ref int, int)"/>
+        /// This is a convenience method that could be done with <see cref="Interlocked.And(ref int, int)"/>
         /// passing the bitwise complement of the <paramref name="clearBitsValue"/>, but this 
         /// method returns the original and new values in a tuple.
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (uint originalValue, uint newValue) ClearBits (ref uint location1, uint clearBitsValue)
         {
             uint original, result;
@@ -280,10 +295,11 @@
         /// A tuple containing the original value and the new value after the operation.
         /// </returns>
         /// <remarks>
-        /// This is just a convenience method that could be done with <see cref="Interlocked.And(ref int, int)"/>
+        /// This is a convenience method that could be done with <see cref="Interlocked.And(ref int, int)"/>
         /// passing the bitwise complement of the <paramref name="clearBitsValue"/>, but this 
         /// method returns the original and new values in a tuple.
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (long originalValue, long newValue) ClearBits (ref long location1, long clearBitsValue)
         {
             long original, result;
@@ -309,10 +325,11 @@
         /// A tuple containing the original value and the new value after the operation.
         /// </returns>
         /// <remarks>
-        /// This is just a convenience method that could be done with <see cref="Interlocked.And(ref int, int)"/>
+        /// This is a convenience method that could be done with <see cref="Interlocked.And(ref int, int)"/>
         /// passing the bitwise complement of the <paramref name="clearBitsValue"/>, but this 
         /// method returns the original and new values in a tuple.
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (ulong originalValue, ulong newValue) ClearBits (ref ulong location1, ulong clearBitsValue)
         {
             ulong original, result;
@@ -339,7 +356,8 @@
         /// is stored in this variable.
         /// </param>
         /// <param name="condition">
-        /// The condition that must be met for the operation to proceed.
+        /// The condition that must be met for the operation to proceed. The delegate takes
+        /// the current value of <paramref name="location1"/> as an argument.
         /// </param>
         /// <param name="value">
         /// The value to be combined with the value in <paramref name="location1"/>
@@ -349,6 +367,7 @@
         /// If the condition is not met, the original value is returned in both fields.
         /// </returns>
         /// <remarks>
+        /// <para>
         /// This method uses a <see cref="Predicate{T}"/> to determine if the operation 
         /// should proceed based on the current value of <paramref name="location1"/>. If
         /// <paramref name="condition"/> returns <see langword="true"/>, then the XOR
@@ -356,7 +375,14 @@
         /// same as the value passed to the condition. If the value has changed in the time
         /// between being read, and processed by <paramref name="condition"/>, the operation
         /// is repeated until either the condition is not met, or the operation is successful.
+        /// </para>
+        /// <para>
+        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// when it is read, and when the condition is processed, the <paramref name="condition"/>
+        /// could be called multiple times before the operation is successful.
+        /// </para>
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (int originalValue, int newValue) ConditionXor (ref int location1,
             Predicate<int> condition, int value)
         {
@@ -386,7 +412,8 @@
         /// is stored in this variable.
         /// </param>
         /// <param name="condition">
-        /// The condition that must be met for the operation to proceed.
+        /// The condition that must be met for the operation to proceed. The delegate takes
+        /// the current value of <paramref name="location1"/> as an argument.
         /// </param>
         /// <param name="argument">
         /// The argument to pass to the condition function <paramref name="condition"/>
@@ -399,14 +426,22 @@
         /// If the condition is not met, the original value is returned in both fields.
         /// </returns>
         /// <remarks>
-        /// This method uses a <see cref="Predicate{T}"/> to determine if the operation 
+        /// <para>
+        /// This method uses a <see cref="Func{T1, T2, TResult}"/> to determine if the operation 
         /// should proceed based on the current value of <paramref name="location1"/>. If
         /// <paramref name="condition"/> returns <see langword="true"/>, then the XOR
         /// result is stored in <paramref name="location1"/> if the current value is the
         /// same as the value passed to the condition. If the value has changed in the time
         /// between being read, and processed by <paramref name="condition"/>, the operation
         /// is repeated until either the condition is not met, or the operation is successful.
+        /// </para>
+        /// <para>
+        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// when it is read, and when the condition is processed, the <paramref name="condition"/>
+        /// could be called multiple times before the operation is successful.
+        /// </para>
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (int originalValue, int newValue) ConditionXor<T> (ref int location1,
             Func<int, T, bool> condition, T argument, int value)
         {
@@ -432,7 +467,8 @@
         /// is stored in this variable.
         /// </param>
         /// <param name="condition">
-        /// The condition that must be met for the operation to proceed.
+        /// The condition that must be met for the operation to proceed. The delegate takes
+        /// the current value of <paramref name="location1"/> as an argument.
         /// </param>
         /// <param name="value">
         /// The value to be combined with the value in <paramref name="location1"/>
@@ -442,6 +478,7 @@
         /// If the condition is not met, the original value is returned in both fields.
         /// </returns>
         /// <remarks>
+        /// <para>
         /// This method uses a <see cref="Predicate{T}"/> to determine if the operation 
         /// should proceed based on the current value of <paramref name="location1"/>. If
         /// <paramref name="condition"/> returns <see langword="true"/>, then the XOR
@@ -449,7 +486,14 @@
         /// same as the value passed to the condition. If the value has changed in the time
         /// between being read, and processed by <paramref name="condition"/>, the operation
         /// is repeated until either the condition is not met, or the operation is successful.
+        /// </para>
+        /// <para>
+        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// when it is read, and when the condition is processed, the <paramref name="condition"/>
+        /// could be called multiple times before the operation is successful.
+        /// </para>
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (uint originalValue, uint newValue) ConditionXor (ref uint location1,
             Predicate<uint> condition, uint value)
         {
@@ -479,7 +523,8 @@
         /// is stored in this variable.
         /// </param>
         /// <param name="condition">
-        /// The condition that must be met for the operation to proceed.
+        /// The condition that must be met for the operation to proceed. The delegate takes
+        /// the current value of <paramref name="location1"/> as an argument.
         /// </param>
         /// <param name="argument">
         /// The argument to pass to the condition function <paramref name="condition"/>
@@ -492,14 +537,22 @@
         /// If the condition is not met, the original value is returned in both fields.
         /// </returns>
         /// <remarks>
-        /// This method uses a <see cref="Predicate{T}"/> to determine if the operation 
+        /// <para>
+        /// This method uses a <see cref="Func{T1, T2, TResult}"/> to determine if the operation 
         /// should proceed based on the current value of <paramref name="location1"/>. If
         /// <paramref name="condition"/> returns <see langword="true"/>, then the XOR
         /// result is stored in <paramref name="location1"/> if the current value is the
         /// same as the value passed to the condition. If the value has changed in the time
         /// between being read, and processed by <paramref name="condition"/>, the operation
         /// is repeated until either the condition is not met, or the operation is successful.
+        /// </para>
+        /// <para>
+        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// when it is read, and when the condition is processed, the <paramref name="condition"/>
+        /// could be called multiple times before the operation is successful.
+        /// </para>
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (uint originalValue, uint newValue) ConditionXor<T> (ref uint location1,
             Func<uint, T, bool> condition, T argument, uint value)
         {
@@ -525,7 +578,8 @@
         /// is stored in this variable.
         /// </param>
         /// <param name="condition">
-        /// The condition that must be met for the operation to proceed.
+        /// The condition that must be met for the operation to proceed. The delegate takes
+        /// the current value of <paramref name="location1"/> as an argument.
         /// </param>
         /// <param name="value">
         /// The value to be combined with the value in <paramref name="location1"/>
@@ -535,6 +589,7 @@
         /// If the condition is not met, the original value is returned in both fields.
         /// </returns>
         /// <remarks>
+        /// <para>
         /// This method uses a <see cref="Predicate{T}"/> to determine if the operation 
         /// should proceed based on the current value of <paramref name="location1"/>. If
         /// <paramref name="condition"/> returns <see langword="true"/>, then the XOR
@@ -542,7 +597,14 @@
         /// same as the value passed to the condition. If the value has changed in the time
         /// between being read, and processed by <paramref name="condition"/>, the operation
         /// is repeated until either the condition is not met, or the operation is successful.
+        /// </para>
+        /// <para>
+        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// when it is read, and when the condition is processed, the <paramref name="condition"/>
+        /// could be called multiple times before the operation is successful.
+        /// </para>
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (long originalValue, long newValue) ConditionXor (ref long location1,
             Predicate<long> condition, long value)
         {
@@ -572,7 +634,8 @@
         /// is stored in this variable.
         /// </param>
         /// <param name="condition">
-        /// The condition that must be met for the operation to proceed.
+        /// The condition that must be met for the operation to proceed. The delegate takes
+        /// the current value of <paramref name="location1"/> as an argument.
         /// </param>
         /// <param name="argument">
         /// The argument to pass to the condition function <paramref name="condition"/>
@@ -585,14 +648,22 @@
         /// If the condition is not met, the original value is returned in both fields.
         /// </returns>
         /// <remarks>
-        /// This method uses a <see cref="Predicate{T}"/> to determine if the operation 
+        /// <para>
+        /// This method uses a <see cref="Func{T1, T2, TResult}"/> to determine if the operation 
         /// should proceed based on the current value of <paramref name="location1"/>. If
         /// <paramref name="condition"/> returns <see langword="true"/>, then the XOR
         /// result is stored in <paramref name="location1"/> if the current value is the
         /// same as the value passed to the condition. If the value has changed in the time
         /// between being read, and processed by <paramref name="condition"/>, the operation
         /// is repeated until either the condition is not met, or the operation is successful.
+        /// </para>
+        /// <para>
+        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// when it is read, and when the condition is processed, the <paramref name="condition"/>
+        /// could be called multiple times before the operation is successful.
+        /// </para>
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (long originalValue, long newValue) ConditionXor<T> (ref long location1,
             Func<long, T, bool> condition, T argument, long value)
         {
@@ -618,7 +689,8 @@
         /// is stored in this variable.
         /// </param>
         /// <param name="condition">
-        /// The condition that must be met for the operation to proceed.
+        /// The condition that must be met for the operation to proceed. The delegate takes
+        /// the current value of <paramref name="location1"/> as an argument.
         /// </param>
         /// <param name="value">
         /// The value to be combined with the value in <paramref name="location1"/>
@@ -628,6 +700,7 @@
         /// If the condition is not met, the original value is returned in both fields.
         /// </returns>
         /// <remarks>
+        /// <para>
         /// This method uses a <see cref="Predicate{T}"/> to determine if the operation 
         /// should proceed based on the current value of <paramref name="location1"/>. If
         /// <paramref name="condition"/> returns <see langword="true"/>, then the XOR
@@ -635,7 +708,14 @@
         /// same as the value passed to the condition. If the value has changed in the time
         /// between being read, and processed by <paramref name="condition"/>, the operation
         /// is repeated until either the condition is not met, or the operation is successful.
+        /// </para>
+        /// <para>
+        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// when it is read, and when the condition is processed, the <paramref name="condition"/>
+        /// could be called multiple times before the operation is successful.
+        /// </para>
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (ulong originalValue, ulong newValue) ConditionXor (ref ulong location1,
             Predicate<ulong> condition, ulong value)
         {
@@ -665,7 +745,8 @@
         /// is stored in this variable.
         /// </param>
         /// <param name="condition">
-        /// The condition that must be met for the operation to proceed.
+        /// The condition that must be met for the operation to proceed. The delegate takes
+        /// the current value of <paramref name="location1"/> as an argument.
         /// </param>
         /// <param name="argument">
         /// The argument to pass to the condition function <paramref name="condition"/>
@@ -678,14 +759,22 @@
         /// If the condition is not met, the original value is returned in both fields.
         /// </returns>
         /// <remarks>
-        /// This method uses a <see cref="Predicate{T}"/> to determine if the operation 
+        /// <para>
+        /// This method uses a <see cref="Func{T1, T2, TResult}"/> to determine if the operation 
         /// should proceed based on the current value of <paramref name="location1"/>. If
         /// <paramref name="condition"/> returns <see langword="true"/>, then the XOR
         /// result is stored in <paramref name="location1"/> if the current value is the
         /// same as the value passed to the condition. If the value has changed in the time
         /// between being read, and processed by <paramref name="condition"/>, the operation
         /// is repeated until either the condition is not met, or the operation is successful.
+        /// </para>
+        /// <para>
+        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// when it is read, and when the condition is processed, the <paramref name="condition"/>
+        /// could be called multiple times before the operation is successful.
+        /// </para>
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (ulong originalValue, ulong newValue) ConditionXor<T> (ref ulong location1,
             Func<ulong, T, bool> condition, T argument, ulong value)
         {
@@ -717,7 +806,8 @@
         /// is stored in this variable.
         /// </param>
         /// <param name="condition">
-        /// The condition that must be met for the operation to proceed.
+        /// The condition that must be met for the operation to proceed. The delegate takes
+        /// the current value of <paramref name="location1"/> as an argument.
         /// </param>
         /// <param name="value">
         /// The value to be combined with the value in <paramref name="location1"/>
@@ -727,14 +817,22 @@
         /// If the condition is not met, the original value is returned in both fields.
         /// </returns>
         /// <remarks>
+        /// <para>
         /// This method uses a <see cref="Predicate{T}"/> to determine if the operation 
         /// should proceed based on the current value of <paramref name="location1"/>. If
-        /// <paramref name="condition"/> returns <see langword="true"/>, then the AND
+        /// <paramref name="condition"/> returns <see langword="true"/>, then the XOR
         /// result is stored in <paramref name="location1"/> if the current value is the
         /// same as the value passed to the condition. If the value has changed in the time
         /// between being read, and processed by <paramref name="condition"/>, the operation
         /// is repeated until either the condition is not met, or the operation is successful.
+        /// </para>
+        /// <para>
+        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// when it is read, and when the condition is processed, the <paramref name="condition"/>
+        /// could be called multiple times before the operation is successful.
+        /// </para>
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (int originalValue, int newValue) ConditionAnd (ref int location1,
             Predicate<int> condition, int value)
         {
@@ -764,7 +862,8 @@
         /// is stored in this variable.
         /// </param>
         /// <param name="condition">
-        /// The condition that must be met for the operation to proceed.
+        /// The condition that must be met for the operation to proceed. The delegate takes
+        /// the current value of <paramref name="location1"/> as an argument.
         /// </param>
         /// <param name="argument">
         /// The argument to pass to the condition function <paramref name="condition"/>
@@ -777,7 +876,7 @@
         /// If the condition is not met, the original value is returned in both fields.
         /// </returns>
         /// <remarks>
-        /// This method uses a <see cref="Predicate{T}"/> to determine if the operation 
+        /// This method uses a <see cref="Func{T1, T2, TResult}"/> to determine if the operation 
         /// should proceed based on the current value of <paramref name="location1"/>. If
         /// <paramref name="condition"/> returns <see langword="true"/>, then the AND
         /// result is stored in <paramref name="location1"/> if the current value is the
@@ -785,6 +884,7 @@
         /// between being read, and processed by <paramref name="condition"/>, the operation
         /// is repeated until either the condition is not met, or the operation is successful.
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (int originalValue, int newValue) ConditionAnd<T> (ref int location1,
             Func<int, T, bool> condition, T argument, int value)
         {
@@ -810,7 +910,8 @@
         /// is stored in this variable.
         /// </param>
         /// <param name="condition">
-        /// The condition that must be met for the operation to proceed.
+        /// The condition that must be met for the operation to proceed. The delegate takes
+        /// the current value of <paramref name="location1"/> as an argument.
         /// </param>
         /// <param name="value">
         /// The value to be combined with the value in <paramref name="location1"/>
@@ -820,14 +921,22 @@
         /// If the condition is not met, the original value is returned in both fields.
         /// </returns>
         /// <remarks>
+        /// <para>
         /// This method uses a <see cref="Predicate{T}"/> to determine if the operation 
         /// should proceed based on the current value of <paramref name="location1"/>. If
-        /// <paramref name="condition"/> returns <see langword="true"/>, then the AND
+        /// <paramref name="condition"/> returns <see langword="true"/>, then the XOR
         /// result is stored in <paramref name="location1"/> if the current value is the
         /// same as the value passed to the condition. If the value has changed in the time
         /// between being read, and processed by <paramref name="condition"/>, the operation
         /// is repeated until either the condition is not met, or the operation is successful.
+        /// </para>
+        /// <para>
+        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// when it is read, and when the condition is processed, the <paramref name="condition"/>
+        /// could be called multiple times before the operation is successful.
+        /// </para>
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (uint originalValue, uint newValue) ConditionAnd (ref uint location1,
             Predicate<uint> condition, uint value)
         {
@@ -857,7 +966,8 @@
         /// is stored in this variable.
         /// </param>
         /// <param name="condition">
-        /// The condition that must be met for the operation to proceed.
+        /// The condition that must be met for the operation to proceed. The delegate takes
+        /// the current value of <paramref name="location1"/> as an argument.
         /// </param>
         /// <param name="argument">
         /// The argument to pass to the condition function <paramref name="condition"/>
@@ -870,7 +980,7 @@
         /// If the condition is not met, the original value is returned in both fields.
         /// </returns>
         /// <remarks>
-        /// This method uses a <see cref="Predicate{T}"/> to determine if the operation 
+        /// This method uses a <see cref="Func{T1, T2, TResult}"/> to determine if the operation 
         /// should proceed based on the current value of <paramref name="location1"/>. If
         /// <paramref name="condition"/> returns <see langword="true"/>, then the AND
         /// result is stored in <paramref name="location1"/> if the current value is the
@@ -878,6 +988,7 @@
         /// between being read, and processed by <paramref name="condition"/>, the operation
         /// is repeated until either the condition is not met, or the operation is successful.
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (uint originalValue, uint newValue) ConditionAnd<T> (ref uint location1,
             Func<uint, T, bool> condition, T argument, uint value)
         {
@@ -903,7 +1014,8 @@
         /// is stored in this variable.
         /// </param>
         /// <param name="condition">
-        /// The condition that must be met for the operation to proceed.
+        /// The condition that must be met for the operation to proceed. The delegate takes
+        /// the current value of <paramref name="location1"/> as an argument.
         /// </param>
         /// <param name="value">
         /// The value to be combined with the value in <paramref name="location1"/>
@@ -913,14 +1025,22 @@
         /// If the condition is not met, the original value is returned in both fields.
         /// </returns>
         /// <remarks>
+        /// <para>
         /// This method uses a <see cref="Predicate{T}"/> to determine if the operation 
         /// should proceed based on the current value of <paramref name="location1"/>. If
-        /// <paramref name="condition"/> returns <see langword="true"/>, then the AND
+        /// <paramref name="condition"/> returns <see langword="true"/>, then the XOR
         /// result is stored in <paramref name="location1"/> if the current value is the
         /// same as the value passed to the condition. If the value has changed in the time
         /// between being read, and processed by <paramref name="condition"/>, the operation
         /// is repeated until either the condition is not met, or the operation is successful.
+        /// </para>
+        /// <para>
+        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// when it is read, and when the condition is processed, the <paramref name="condition"/>
+        /// could be called multiple times before the operation is successful.
+        /// </para>
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (long originalValue, long newValue) ConditionAnd (ref long location1,
             Predicate<long> condition, long value)
         {
@@ -950,7 +1070,8 @@
         /// is stored in this variable.
         /// </param>
         /// <param name="condition">
-        /// The condition that must be met for the operation to proceed.
+        /// The condition that must be met for the operation to proceed. The delegate takes
+        /// the current value of <paramref name="location1"/> as an argument.
         /// </param>
         /// <param name="argument">
         /// The argument to pass to the condition function <paramref name="condition"/>
@@ -963,7 +1084,7 @@
         /// If the condition is not met, the original value is returned in both fields.
         /// </returns>
         /// <remarks>
-        /// This method uses a <see cref="Predicate{T}"/> to determine if the operation 
+        /// This method uses a <see cref="Func{T1, T2, TResult}"/> to determine if the operation 
         /// should proceed based on the current value of <paramref name="location1"/>. If
         /// <paramref name="condition"/> returns <see langword="true"/>, then the AND
         /// result is stored in <paramref name="location1"/> if the current value is the
@@ -971,6 +1092,7 @@
         /// between being read, and processed by <paramref name="condition"/>, the operation
         /// is repeated until either the condition is not met, or the operation is successful.
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (long originalValue, long newValue) ConditionAnd<T> (ref long location1,
             Func<long, T, bool> condition, T argument, long value)
         {
@@ -996,7 +1118,8 @@
         /// is stored in this variable.
         /// </param>
         /// <param name="condition">
-        /// The condition that must be met for the operation to proceed.
+        /// The condition that must be met for the operation to proceed. The delegate takes
+        /// the current value of <paramref name="location1"/> as an argument.
         /// </param>
         /// <param name="value">
         /// The value to be combined with the value in <paramref name="location1"/>
@@ -1006,14 +1129,22 @@
         /// If the condition is not met, the original value is returned in both fields.
         /// </returns>
         /// <remarks>
+        /// <para>
         /// This method uses a <see cref="Predicate{T}"/> to determine if the operation 
         /// should proceed based on the current value of <paramref name="location1"/>. If
-        /// <paramref name="condition"/> returns <see langword="true"/>, then the AND
+        /// <paramref name="condition"/> returns <see langword="true"/>, then the XOR
         /// result is stored in <paramref name="location1"/> if the current value is the
         /// same as the value passed to the condition. If the value has changed in the time
         /// between being read, and processed by <paramref name="condition"/>, the operation
         /// is repeated until either the condition is not met, or the operation is successful.
+        /// </para>
+        /// <para>
+        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// when it is read, and when the condition is processed, the <paramref name="condition"/>
+        /// could be called multiple times before the operation is successful.
+        /// </para>
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (ulong originalValue, ulong newValue) ConditionAnd (ref ulong location1,
             Predicate<ulong> condition, ulong value)
         {
@@ -1043,7 +1174,8 @@
         /// is stored in this variable.
         /// </param>
         /// <param name="condition">
-        /// The condition that must be met for the operation to proceed.
+        /// The condition that must be met for the operation to proceed. The delegate takes
+        /// the current value of <paramref name="location1"/> as an argument.
         /// </param>
         /// <param name="argument">
         /// The argument to pass to the condition function <paramref name="condition"/>
@@ -1056,7 +1188,7 @@
         /// If the condition is not met, the original value is returned in both fields.
         /// </returns>
         /// <remarks>
-        /// This method uses a <see cref="Predicate{T}"/> to determine if the operation 
+        /// This method uses a <see cref="Func{T1, T2, TResult}"/> to determine if the operation 
         /// should proceed based on the current value of <paramref name="location1"/>. If
         /// <paramref name="condition"/> returns <see langword="true"/>, then the AND
         /// result is stored in <paramref name="location1"/> if the current value is the
@@ -1064,6 +1196,7 @@
         /// between being read, and processed by <paramref name="condition"/>, the operation
         /// is repeated until either the condition is not met, or the operation is successful.
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (ulong originalValue, ulong newValue) ConditionAnd<T> (ref ulong location1,
             Func<ulong, T, bool> condition, T argument, ulong value)
         {
@@ -1095,7 +1228,8 @@
         /// is stored in this variable.
         /// </param>
         /// <param name="condition">
-        /// The condition that must be met for the operation to proceed.
+        /// The condition that must be met for the operation to proceed. The delegate takes
+        /// the current value of <paramref name="location1"/> as an argument.
         /// </param>
         /// <param name="value">
         /// The value to be combined with the value in <paramref name="location1"/>
@@ -1105,14 +1239,22 @@
         /// If the condition is not met, the original value is returned in both fields.
         /// </returns>
         /// <remarks>
+        /// <para>
         /// This method uses a <see cref="Predicate{T}"/> to determine if the operation 
         /// should proceed based on the current value of <paramref name="location1"/>. If
-        /// <paramref name="condition"/> returns <see langword="true"/>, then the OR
+        /// <paramref name="condition"/> returns <see langword="true"/>, then the XOR
         /// result is stored in <paramref name="location1"/> if the current value is the
         /// same as the value passed to the condition. If the value has changed in the time
         /// between being read, and processed by <paramref name="condition"/>, the operation
         /// is repeated until either the condition is not met, or the operation is successful.
+        /// </para>
+        /// <para>
+        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// when it is read, and when the condition is processed, the <paramref name="condition"/>
+        /// could be called multiple times before the operation is successful.
+        /// </para>
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (int originalValue, int newValue) ConditionOr (ref int location1,
             Predicate<int> condition, int value)
         {
@@ -1142,7 +1284,8 @@
         /// is stored in this variable.
         /// </param>
         /// <param name="condition">
-        /// The condition that must be met for the operation to proceed.
+        /// The condition that must be met for the operation to proceed. The delegate takes
+        /// the current value of <paramref name="location1"/> as an argument.
         /// </param>
         /// <param name="argument">
         /// The argument to pass to the condition function <paramref name="condition"/>
@@ -1155,7 +1298,7 @@
         /// If the condition is not met, the original value is returned in both fields.
         /// </returns>
         /// <remarks>
-        /// This method uses a <see cref="Predicate{T}"/> to determine if the operation 
+        /// This method uses a <see cref="Func{T1, T2, TResult}"/> to determine if the operation 
         /// should proceed based on the current value of <paramref name="location1"/>. If
         /// <paramref name="condition"/> returns <see langword="true"/>, then the OR
         /// result is stored in <paramref name="location1"/> if the current value is the
@@ -1163,6 +1306,7 @@
         /// between being read, and processed by <paramref name="condition"/>, the operation
         /// is repeated until either the condition is not met, or the operation is successful.
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (int originalValue, int newValue) ConditionOr<T> (ref int location1,
             Func<int, T, bool> condition, T argument, int value)
         {
@@ -1188,7 +1332,8 @@
         /// is stored in this variable.
         /// </param>
         /// <param name="condition">
-        /// The condition that must be met for the operation to proceed.
+        /// The condition that must be met for the operation to proceed. The delegate takes
+        /// the current value of <paramref name="location1"/> as an argument.
         /// </param>
         /// <param name="value">
         /// The value to be combined with the value in <paramref name="location1"/>
@@ -1198,14 +1343,22 @@
         /// If the condition is not met, the original value is returned in both fields.
         /// </returns>
         /// <remarks>
+        /// <para>
         /// This method uses a <see cref="Predicate{T}"/> to determine if the operation 
         /// should proceed based on the current value of <paramref name="location1"/>. If
-        /// <paramref name="condition"/> returns <see langword="true"/>, then the OR
+        /// <paramref name="condition"/> returns <see langword="true"/>, then the XOR
         /// result is stored in <paramref name="location1"/> if the current value is the
         /// same as the value passed to the condition. If the value has changed in the time
         /// between being read, and processed by <paramref name="condition"/>, the operation
         /// is repeated until either the condition is not met, or the operation is successful.
+        /// </para>
+        /// <para>
+        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// when it is read, and when the condition is processed, the <paramref name="condition"/>
+        /// could be called multiple times before the operation is successful.
+        /// </para>
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (uint originalValue, uint newValue) ConditionOr (ref uint location1,
             Predicate<uint> condition, uint value)
         {
@@ -1235,7 +1388,8 @@
         /// is stored in this variable.
         /// </param>
         /// <param name="condition">
-        /// The condition that must be met for the operation to proceed.
+        /// The condition that must be met for the operation to proceed. The delegate takes
+        /// the current value of <paramref name="location1"/> as an argument.
         /// </param>
         /// <param name="argument">
         /// The argument to pass to the condition function <paramref name="condition"/>
@@ -1248,7 +1402,7 @@
         /// If the condition is not met, the original value is returned in both fields.
         /// </returns>
         /// <remarks>
-        /// This method uses a <see cref="Predicate{T}"/> to determine if the operation 
+        /// This method uses a <see cref="Func{T1, T2, TResult}"/> to determine if the operation 
         /// should proceed based on the current value of <paramref name="location1"/>. If
         /// <paramref name="condition"/> returns <see langword="true"/>, then the OR
         /// result is stored in <paramref name="location1"/> if the current value is the
@@ -1256,6 +1410,7 @@
         /// between being read, and processed by <paramref name="condition"/>, the operation
         /// is repeated until either the condition is not met, or the operation is successful.
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (uint originalValue, uint newValue) ConditionOr<T> (ref uint location1,
             Func<uint, T, bool> condition, T argument, uint value)
         {
@@ -1281,7 +1436,8 @@
         /// is stored in this variable.
         /// </param>
         /// <param name="condition">
-        /// The condition that must be met for the operation to proceed.
+        /// The condition that must be met for the operation to proceed. The delegate takes
+        /// the current value of <paramref name="location1"/> as an argument.
         /// </param>
         /// <param name="value">
         /// The value to be combined with the value in <paramref name="location1"/>
@@ -1291,14 +1447,22 @@
         /// If the condition is not met, the original value is returned in both fields.
         /// </returns>
         /// <remarks>
+        /// <para>
         /// This method uses a <see cref="Predicate{T}"/> to determine if the operation 
         /// should proceed based on the current value of <paramref name="location1"/>. If
-        /// <paramref name="condition"/> returns <see langword="true"/>, then the OR
+        /// <paramref name="condition"/> returns <see langword="true"/>, then the XOR
         /// result is stored in <paramref name="location1"/> if the current value is the
         /// same as the value passed to the condition. If the value has changed in the time
         /// between being read, and processed by <paramref name="condition"/>, the operation
         /// is repeated until either the condition is not met, or the operation is successful.
+        /// </para>
+        /// <para>
+        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// when it is read, and when the condition is processed, the <paramref name="condition"/>
+        /// could be called multiple times before the operation is successful.
+        /// </para>
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (long originalValue, long newValue) ConditionOr (ref long location1,
             Predicate<long> condition, long value)
         {
@@ -1328,7 +1492,8 @@
         /// is stored in this variable.
         /// </param>
         /// <param name="condition">
-        /// The condition that must be met for the operation to proceed.
+        /// The condition that must be met for the operation to proceed. The delegate takes
+        /// the current value of <paramref name="location1"/> as an argument.
         /// </param>
         /// <param name="argument">
         /// The argument to pass to the condition function <paramref name="condition"/>
@@ -1341,7 +1506,7 @@
         /// If the condition is not met, the original value is returned in both fields.
         /// </returns>
         /// <remarks>
-        /// This method uses a <see cref="Predicate{T}"/> to determine if the operation 
+        /// This method uses a <see cref="Func{T1, T2, TResult}"/> to determine if the operation 
         /// should proceed based on the current value of <paramref name="location1"/>. If
         /// <paramref name="condition"/> returns <see langword="true"/>, then the OR
         /// result is stored in <paramref name="location1"/> if the current value is the
@@ -1349,6 +1514,7 @@
         /// between being read, and processed by <paramref name="condition"/>, the operation
         /// is repeated until either the condition is not met, or the operation is successful.
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (long originalValue, long newValue) ConditionOr<T> (ref long location1,
             Func<long, T, bool> condition, T argument, long value)
         {
@@ -1374,7 +1540,8 @@
         /// is stored in this variable.
         /// </param>
         /// <param name="condition">
-        /// The condition that must be met for the operation to proceed.
+        /// The condition that must be met for the operation to proceed. The delegate takes
+        /// the current value of <paramref name="location1"/> as an argument.
         /// </param>
         /// <param name="value">
         /// The value to be combined with the value in <paramref name="location1"/>
@@ -1384,14 +1551,22 @@
         /// If the condition is not met, the original value is returned in both fields.
         /// </returns>
         /// <remarks>
+        /// <para>
         /// This method uses a <see cref="Predicate{T}"/> to determine if the operation 
         /// should proceed based on the current value of <paramref name="location1"/>. If
-        /// <paramref name="condition"/> returns <see langword="true"/>, then the OR
+        /// <paramref name="condition"/> returns <see langword="true"/>, then the XOR
         /// result is stored in <paramref name="location1"/> if the current value is the
         /// same as the value passed to the condition. If the value has changed in the time
         /// between being read, and processed by <paramref name="condition"/>, the operation
         /// is repeated until either the condition is not met, or the operation is successful.
+        /// </para>
+        /// <para>
+        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// when it is read, and when the condition is processed, the <paramref name="condition"/>
+        /// could be called multiple times before the operation is successful.
+        /// </para>
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (ulong originalValue, ulong newValue) ConditionOr (ref ulong location1,
             Predicate<ulong> condition, ulong value)
         {
@@ -1421,7 +1596,8 @@
         /// is stored in this variable.
         /// </param>
         /// <param name="condition">
-        /// The condition that must be met for the operation to proceed.
+        /// The condition that must be met for the operation to proceed. The delegate takes
+        /// the current value of <paramref name="location1"/> as an argument.
         /// </param>
         /// <param name="argument">
         /// The argument to pass to the condition function <paramref name="condition"/>
@@ -1434,7 +1610,7 @@
         /// If the condition is not met, the original value is returned in both fields.
         /// </returns>
         /// <remarks>
-        /// This method uses a <see cref="Predicate{T}"/> to determine if the operation 
+        /// This method uses a <see cref="Func{T1, T2, TResult}"/> to determine if the operation 
         /// should proceed based on the current value of <paramref name="location1"/>. If
         /// <paramref name="condition"/> returns <see langword="true"/>, then the OR
         /// result is stored in <paramref name="location1"/> if the current value is the
@@ -1442,6 +1618,7 @@
         /// between being read, and processed by <paramref name="condition"/>, the operation
         /// is repeated until either the condition is not met, or the operation is successful.
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (ulong originalValue, ulong newValue) ConditionOr<T> (ref ulong location1,
             Func<ulong, T, bool> condition, T argument, ulong value)
         {
@@ -1472,7 +1649,8 @@
         /// A variable containing the bits to set. The result is stored in this variable.
         /// </param>
         /// <param name="condition">
-        /// The condition that must be met for the operation to proceed.
+        /// The condition that must be met for the operation to proceed. The delegate takes
+        /// the current value of <paramref name="location1"/> as an argument.
         /// </param>
         /// <param name="setBitsValue">
         /// The value that holds the bits to set and store in <paramref name="location1"/>
@@ -1482,9 +1660,26 @@
         /// A tuple containing the original value and the new value after the operation.
         /// </returns>
         /// <remarks>
-        /// This method is just a convenience method that is a semantic alias for 
+        /// <para>
+        /// This method is a convenience method that is a semantic alias for 
         /// <see cref="ConditionOr(ref int, Predicate{int}, int)"/>
+        /// </para>
+        /// <para>
+        /// This method uses a <see cref="Predicate{T}"/> to determine if the operation 
+        /// should proceed based on the current value of <paramref name="location1"/>. If
+        /// <paramref name="condition"/> returns <see langword="true"/>, then the XOR
+        /// result is stored in <paramref name="location1"/> if the current value is the
+        /// same as the value passed to the condition. If the value has changed in the time
+        /// between being read, and processed by <paramref name="condition"/>, the operation
+        /// is repeated until either the condition is not met, or the operation is successful.
+        /// </para>
+        /// <para>
+        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// when it is read, and when the condition is processed, the <paramref name="condition"/>
+        /// could be called multiple times before the operation is successful.
+        /// </para>
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (int originalValue, int newValue) ConditionSetBits (ref int location1,
             Predicate<int> condition, int setBitsValue) => ConditionOr(ref location1, condition, setBitsValue);
         //--------------------------------------------------------------------------------
@@ -1499,7 +1694,8 @@
         /// A variable containing the bits to set. The result is stored in this variable.
         /// </param>
         /// <param name="condition">
-        /// The condition that must be met for the operation to proceed.
+        /// The condition that must be met for the operation to proceed. The delegate takes
+        /// the current value of <paramref name="location1"/> as an argument.
         /// </param>
         /// <param name="argument">
         /// The argument to pass to the condition function <paramref name="condition"/>
@@ -1512,9 +1708,26 @@
         /// A tuple containing the original value and the new value after the operation.
         /// </returns>
         /// <remarks>
-        /// This method is just a convenience method that is a semantic alias for 
-        /// <see cref="ConditionOr(ref int, Predicate{int}, int)"/>
+        /// <para>
+        /// This method is a convenience method that is a semantic alias for 
+        /// <see cref="ConditionOr{T}(ref int, Func{int, T, bool}, T, int)"/>
+        /// </para>
+        /// <para>
+        /// This method uses a <see cref="Func{T1, T2, TResult}"/> to determine if the operation 
+        /// should proceed based on the current value of <paramref name="location1"/>. If
+        /// <paramref name="condition"/> returns <see langword="true"/>, then the XOR
+        /// result is stored in <paramref name="location1"/> if the current value is the
+        /// same as the value passed to the condition. If the value has changed in the time
+        /// between being read, and processed by <paramref name="condition"/>, the operation
+        /// is repeated until either the condition is not met, or the operation is successful.
+        /// </para>
+        /// <para>
+        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// when it is read, and when the condition is processed, the <paramref name="condition"/>
+        /// could be called multiple times before the operation is successful.
+        /// </para>
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (int originalValue, int newValue) ConditionSetBits<T> (ref int location1,
             Func<int, T, bool> condition, T argument, int setBitsValue) =>
             ConditionOr(ref location1, condition, argument, setBitsValue);
@@ -1526,7 +1739,8 @@
         /// A variable containing the bits to set. The result is stored in this variable.
         /// </param>
         /// <param name="condition">
-        /// The condition that must be met for the operation to proceed.
+        /// The condition that must be met for the operation to proceed. The delegate takes
+        /// the current value of <paramref name="location1"/> as an argument.
         /// </param>
         /// <param name="setBitsValue">
         /// The value that holds the bits to set and store in <paramref name="location1"/>
@@ -1536,9 +1750,26 @@
         /// A tuple containing the original value and the new value after the operation.
         /// </returns>
         /// <remarks>
-        /// This method is just a convenience method that is a semantic alias for 
+        /// <para>
+        /// This method is a convenience method that is a semantic alias for 
         /// <see cref="ConditionOr(ref uint, Predicate{uint}, uint)"/>
+        /// </para>
+        /// <para>
+        /// This method uses a <see cref="Predicate{T}"/> to determine if the operation 
+        /// should proceed based on the current value of <paramref name="location1"/>. If
+        /// <paramref name="condition"/> returns <see langword="true"/>, then the XOR
+        /// result is stored in <paramref name="location1"/> if the current value is the
+        /// same as the value passed to the condition. If the value has changed in the time
+        /// between being read, and processed by <paramref name="condition"/>, the operation
+        /// is repeated until either the condition is not met, or the operation is successful.
+        /// </para>
+        /// <para>
+        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// when it is read, and when the condition is processed, the <paramref name="condition"/>
+        /// could be called multiple times before the operation is successful.
+        /// </para>
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (uint originalValue, uint newValue) ConditionSetBits (ref uint location1,
             Predicate<uint> condition, uint setBitsValue) => ConditionOr(ref location1, condition, setBitsValue);
         //--------------------------------------------------------------------------------
@@ -1553,7 +1784,8 @@
         /// A variable containing the bits to set. The result is stored in this variable.
         /// </param>
         /// <param name="condition">
-        /// The condition that must be met for the operation to proceed.
+        /// The condition that must be met for the operation to proceed. The delegate takes
+        /// the current value of <paramref name="location1"/> as an argument.
         /// </param>
         /// <param name="argument">
         /// The argument to pass to the condition function <paramref name="condition"/>
@@ -1566,9 +1798,26 @@
         /// A tuple containing the original value and the new value after the operation.
         /// </returns>
         /// <remarks>
-        /// This method is just a convenience method that is a semantic alias for 
-        /// <see cref="ConditionOr(ref uint, Predicate{uint}, uint)"/>
+        /// <para>
+        /// This method is a convenience method that is a semantic alias for 
+        /// <see cref="ConditionOr{T}(ref uint, Func{uint, T, bool}, T, uint)"/>
+        /// </para>
+        /// <para>
+        /// This method uses a <see cref="Func{T1, T2, TResult}"/> to determine if the operation 
+        /// should proceed based on the current value of <paramref name="location1"/>. If
+        /// <paramref name="condition"/> returns <see langword="true"/>, then the XOR
+        /// result is stored in <paramref name="location1"/> if the current value is the
+        /// same as the value passed to the condition. If the value has changed in the time
+        /// between being read, and processed by <paramref name="condition"/>, the operation
+        /// is repeated until either the condition is not met, or the operation is successful.
+        /// </para>
+        /// <para>
+        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// when it is read, and when the condition is processed, the <paramref name="condition"/>
+        /// could be called multiple times before the operation is successful.
+        /// </para>
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (uint originalValue, uint newValue) ConditionSetBits<T> (ref uint location1,
             Func<uint, T, bool> condition, T argument, uint setBitsValue) =>
             ConditionOr(ref location1, condition, argument, setBitsValue);
@@ -1580,7 +1829,8 @@
         /// A variable containing the bits to set. The result is stored in this variable.
         /// </param>
         /// <param name="condition">
-        /// The condition that must be met for the operation to proceed.
+        /// The condition that must be met for the operation to proceed. The delegate takes
+        /// the current value of <paramref name="location1"/> as an argument.
         /// </param>
         /// <param name="setBitsValue">
         /// The value that holds the bits to set and store in <paramref name="location1"/>
@@ -1590,9 +1840,26 @@
         /// If the condition is not met, the original value is returned in both fields.
         /// </returns>
         /// <remarks>
-        /// This method is just a convenience method that is a semantic alias for 
+        /// <para>
+        /// This method is a convenience method that is a semantic alias for 
         /// <see cref="ConditionOr(ref long, Predicate{long}, long)"/>
+        /// </para>
+        /// <para>
+        /// This method uses a <see cref="Predicate{T}"/> to determine if the operation 
+        /// should proceed based on the current value of <paramref name="location1"/>. If
+        /// <paramref name="condition"/> returns <see langword="true"/>, then the XOR
+        /// result is stored in <paramref name="location1"/> if the current value is the
+        /// same as the value passed to the condition. If the value has changed in the time
+        /// between being read, and processed by <paramref name="condition"/>, the operation
+        /// is repeated until either the condition is not met, or the operation is successful.
+        /// </para>
+        /// <para>
+        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// when it is read, and when the condition is processed, the <paramref name="condition"/>
+        /// could be called multiple times before the operation is successful.
+        /// </para>
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (long originalValue, long newValue) ConditionSetBits (ref long location1,
             Predicate<long> condition, long setBitsValue) => ConditionOr(ref location1, condition, setBitsValue);
         //--------------------------------------------------------------------------------
@@ -1607,7 +1874,8 @@
         /// A variable containing the bits to set. The result is stored in this variable.
         /// </param>
         /// <param name="condition">
-        /// The condition that must be met for the operation to proceed.
+        /// The condition that must be met for the operation to proceed. The delegate takes
+        /// the current value of <paramref name="location1"/> as an argument.
         /// </param>
         /// <param name="argument">
         /// The argument to pass to the condition function <paramref name="condition"/>
@@ -1620,9 +1888,26 @@
         /// If the condition is not met, the original value is returned in both fields.
         /// </returns>
         /// <remarks>
-        /// This method is just a convenience method that is a semantic alias for 
-        /// <see cref="ConditionOr(ref long, Predicate{long}, long)"/>
+        /// <para>
+        /// This method is a convenience method that is a semantic alias for 
+        /// <see cref="ConditionOr{T}(ref long, Func{long, T, bool}, T, long)"/>
+        /// </para>
+        /// <para>
+        /// This method uses a <see cref="Func{T1, T2, TResult}"/> to determine if the operation 
+        /// should proceed based on the current value of <paramref name="location1"/>. If
+        /// <paramref name="condition"/> returns <see langword="true"/>, then the XOR
+        /// result is stored in <paramref name="location1"/> if the current value is the
+        /// same as the value passed to the condition. If the value has changed in the time
+        /// between being read, and processed by <paramref name="condition"/>, the operation
+        /// is repeated until either the condition is not met, or the operation is successful.
+        /// </para>
+        /// <para>
+        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// when it is read, and when the condition is processed, the <paramref name="condition"/>
+        /// could be called multiple times before the operation is successful.
+        /// </para>
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (long originalValue, long newValue) ConditionSetBits<T> (ref long location1,
             Func<long, T, bool> condition, T argument, long setBitsValue) =>
             ConditionOr(ref location1, condition, argument, setBitsValue);
@@ -1634,7 +1919,8 @@
         /// A variable containing the bits to set. The result is stored in this variable.
         /// </param>
         /// <param name="condition">
-        /// The condition that must be met for the operation to proceed.
+        /// The condition that must be met for the operation to proceed. The delegate takes
+        /// the current value of <paramref name="location1"/> as an argument.
         /// </param>
         /// <param name="setBitsValue">
         /// The value that holds the bits to set and store in <paramref name="location1"/>
@@ -1644,9 +1930,26 @@
         /// If the condition is not met, the original value is returned in both fields.
         /// </returns>
         /// <remarks>
-        /// This method is just a convenience method that is a semantic alias for 
+        /// <para>
+        /// This method is a convenience method that is a semantic alias for 
         /// <see cref="ConditionOr(ref ulong, Predicate{ulong}, ulong)"/>
+        /// </para>
+        /// <para>
+        /// This method uses a <see cref="Predicate{T}"/> to determine if the operation 
+        /// should proceed based on the current value of <paramref name="location1"/>. If
+        /// <paramref name="condition"/> returns <see langword="true"/>, then the XOR
+        /// result is stored in <paramref name="location1"/> if the current value is the
+        /// same as the value passed to the condition. If the value has changed in the time
+        /// between being read, and processed by <paramref name="condition"/>, the operation
+        /// is repeated until either the condition is not met, or the operation is successful.
+        /// </para>
+        /// <para>
+        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// when it is read, and when the condition is processed, the <paramref name="condition"/>
+        /// could be called multiple times before the operation is successful.
+        /// </para>
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (ulong originalValue, ulong newValue) ConditionSetBits (ref ulong location1,
             Predicate<ulong> condition, ulong setBitsValue) => ConditionOr(ref location1, condition, setBitsValue);
         //--------------------------------------------------------------------------------
@@ -1661,7 +1964,8 @@
         /// A variable containing the bits to set. The result is stored in this variable.
         /// </param>
         /// <param name="condition">
-        /// The condition that must be met for the operation to proceed.
+        /// The condition that must be met for the operation to proceed. The delegate takes
+        /// the current value of <paramref name="location1"/> as an argument.
         /// </param>
         /// <param name="argument">
         /// The argument to pass to the condition function <paramref name="condition"/>
@@ -1674,9 +1978,26 @@
         /// If the condition is not met, the original value is returned in both fields.
         /// </returns>
         /// <remarks>
-        /// This method is just a convenience method that is a semantic alias for 
-        /// <see cref="ConditionOr(ref ulong, Predicate{ulong}, ulong)"/>
+        /// <para>
+        /// This method is a convenience method that is a semantic alias for 
+        /// <see cref="ConditionOr{T}(ref ulong, Func{ulong, T, bool}, T, ulong)"/>
+        /// </para>
+        /// <para>
+        /// This method uses a <see cref="Func{T1, T2, TResult}"/> to determine if the operation 
+        /// should proceed based on the current value of <paramref name="location1"/>. If
+        /// <paramref name="condition"/> returns <see langword="true"/>, then the XOR
+        /// result is stored in <paramref name="location1"/> if the current value is the
+        /// same as the value passed to the condition. If the value has changed in the time
+        /// between being read, and processed by <paramref name="condition"/>, the operation
+        /// is repeated until either the condition is not met, or the operation is successful.
+        /// </para>
+        /// <para>
+        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// when it is read, and when the condition is processed, the <paramref name="condition"/>
+        /// could be called multiple times before the operation is successful.
+        /// </para>
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (ulong originalValue, ulong newValue) ConditionSetBits<T> (ref ulong location1,
             Func<ulong, T, bool> condition, T argument, ulong setBitsValue) =>
             ConditionOr(ref location1, condition, argument, setBitsValue);
@@ -1694,7 +2015,8 @@
         /// A variable containing the bits to clear. The result is stored in this variable.
         /// </param>
         /// <param name="condition">
-        /// The condition that must be met for the operation to proceed.
+        /// The condition that must be met for the operation to proceed. The delegate takes
+        /// the current value of <paramref name="location1"/> as an argument.
         /// </param>
         /// <param name="clearBitsValue">
         /// The value that holds the bits to clear in <paramref name="location1"/>
@@ -1704,10 +2026,27 @@
         /// If the condition is not met, the original value is returned in both fields.
         /// </returns>
         /// <remarks>
-        /// This method is just a convenience method that is a semantic alias for 
+        /// <para>
+        /// This method is a convenience method that is a semantic alias for 
         /// <see cref="ConditionAnd(ref int, Predicate{int}, int)"/> with the
         /// bitwise complement of <paramref name="clearBitsValue"/>
+        /// </para>
+        /// <para>
+        /// This method uses a <see cref="Predicate{T}"/> to determine if the operation 
+        /// should proceed based on the current value of <paramref name="location1"/>. If
+        /// <paramref name="condition"/> returns <see langword="true"/>, then the XOR
+        /// result is stored in <paramref name="location1"/> if the current value is the
+        /// same as the value passed to the condition. If the value has changed in the time
+        /// between being read, and processed by <paramref name="condition"/>, the operation
+        /// is repeated until either the condition is not met, or the operation is successful.
+        /// </para>
+        /// <para>
+        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// when it is read, and when the condition is processed, the <paramref name="condition"/>
+        /// could be called multiple times before the operation is successful.
+        /// </para>
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (int originalValue, int newValue) ConditionClearBits (ref int location1,
             Predicate<int> condition, int clearBitsValue) => ConditionAnd(ref location1, condition, ~clearBitsValue);
         //--------------------------------------------------------------------------------
@@ -1722,7 +2061,8 @@
         /// A variable containing the bits to clear. The result is stored in this variable.
         /// </param>
         /// <param name="condition">
-        /// The condition that must be met for the operation to proceed.
+        /// The condition that must be met for the operation to proceed. The delegate takes
+        /// the current value of <paramref name="location1"/> as an argument.
         /// </param>
         /// <param name="argument">
         /// The argument to pass to the condition function <paramref name="condition"/>
@@ -1735,10 +2075,27 @@
         /// If the condition is not met, the original value is returned in both fields.
         /// </returns>
         /// <remarks>
-        /// This method is just a convenience method that is a semantic alias for 
-        /// <see cref="ConditionAnd(ref int, Predicate{int}, int)"/> with the
+        /// <para>
+        /// This method is a convenience method that is a semantic alias for 
+        /// <see cref="ConditionAnd{T}(ref int, Func{int, T, bool}, T, int)"/> with the
         /// bitwise complement of <paramref name="clearBitsValue"/>
+        /// </para>
+        /// <para>
+        /// This method uses a <see cref="Func{T1, T2, TResult}"/> to determine if the operation 
+        /// should proceed based on the current value of <paramref name="location1"/>. If
+        /// <paramref name="condition"/> returns <see langword="true"/>, then the XOR
+        /// result is stored in <paramref name="location1"/> if the current value is the
+        /// same as the value passed to the condition. If the value has changed in the time
+        /// between being read, and processed by <paramref name="condition"/>, the operation
+        /// is repeated until either the condition is not met, or the operation is successful.
+        /// </para>
+        /// <para>
+        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// when it is read, and when the condition is processed, the <paramref name="condition"/>
+        /// could be called multiple times before the operation is successful.
+        /// </para>
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (int originalValue, int newValue) ConditionClearBits<T> (ref int location1,
             Func<int, T, bool> condition, T argument, int clearBitsValue) =>
             ConditionAnd(ref location1, condition, argument, ~clearBitsValue);
@@ -1750,7 +2107,8 @@
         /// A variable containing the bits to clear. The result is stored in this variable.
         /// </param>
         /// <param name="condition">
-        /// The condition that must be met for the operation to proceed.
+        /// The condition that must be met for the operation to proceed. The delegate takes
+        /// the current value of <paramref name="location1"/> as an argument.
         /// </param>
         /// <param name="clearBitsValue">
         /// The value that holds the bits to clear in <paramref name="location1"/>
@@ -1760,10 +2118,27 @@
         /// If the condition is not met, the original value is returned in both fields.
         /// </returns>
         /// <remarks>
-        /// This method is just a convenience method that is a semantic alias for 
+        /// <para>
+        /// This method is a convenience method that is a semantic alias for 
         /// <see cref="ConditionAnd(ref uint, Predicate{uint}, uint)"/> with the
         /// bitwise complement of <paramref name="clearBitsValue"/>
+        /// </para>
+        /// <para>
+        /// This method uses a <see cref="Predicate{T}"/> to determine if the operation 
+        /// should proceed based on the current value of <paramref name="location1"/>. If
+        /// <paramref name="condition"/> returns <see langword="true"/>, then the XOR
+        /// result is stored in <paramref name="location1"/> if the current value is the
+        /// same as the value passed to the condition. If the value has changed in the time
+        /// between being read, and processed by <paramref name="condition"/>, the operation
+        /// is repeated until either the condition is not met, or the operation is successful.
+        /// </para>
+        /// <para>
+        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// when it is read, and when the condition is processed, the <paramref name="condition"/>
+        /// could be called multiple times before the operation is successful.
+        /// </para>
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (uint originalValue, uint newValue) ConditionClearBits (ref uint location1,
             Predicate<uint> condition, uint clearBitsValue) => ConditionAnd(ref location1, condition, ~clearBitsValue);
         //--------------------------------------------------------------------------------
@@ -1778,7 +2153,8 @@
         /// A variable containing the bits to clear. The result is stored in this variable.
         /// </param>
         /// <param name="condition">
-        /// The condition that must be met for the operation to proceed.
+        /// The condition that must be met for the operation to proceed. The delegate takes
+        /// the current value of <paramref name="location1"/> as an argument.
         /// </param>
         /// <param name="argument">
         /// The argument to pass to the condition function <paramref name="condition"/>
@@ -1791,10 +2167,27 @@
         /// If the condition is not met, the original value is returned in both fields.
         /// </returns>
         /// <remarks>
-        /// This method is just a convenience method that is a semantic alias for 
-        /// <see cref="ConditionAnd(ref uint, Predicate{uint}, uint)"/> with the
+        /// <para>
+        /// This method is a convenience method that is a semantic alias for 
+        /// <see cref="ConditionAnd{T}(ref uint, Func{uint, T, bool}, T, uint)"/> with the
         /// bitwise complement of <paramref name="clearBitsValue"/>
+        /// </para>
+        /// <para>
+        /// This method uses a <see cref="Func{T1, T2, TResult}"/> to determine if the operation 
+        /// should proceed based on the current value of <paramref name="location1"/>. If
+        /// <paramref name="condition"/> returns <see langword="true"/>, then the XOR
+        /// result is stored in <paramref name="location1"/> if the current value is the
+        /// same as the value passed to the condition. If the value has changed in the time
+        /// between being read, and processed by <paramref name="condition"/>, the operation
+        /// is repeated until either the condition is not met, or the operation is successful.
+        /// </para>
+        /// <para>
+        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// when it is read, and when the condition is processed, the <paramref name="condition"/>
+        /// could be called multiple times before the operation is successful.
+        /// </para>
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (uint originalValue, uint newValue) ConditionClearBits<T> (ref uint location1,
             Func<uint, T, bool> condition, T argument, uint clearBitsValue) =>
             ConditionAnd(ref location1, condition, argument, ~clearBitsValue);
@@ -1806,7 +2199,8 @@
         /// A variable containing the bits to clear. The result is stored in this variable.
         /// </param>
         /// <param name="condition">
-        /// The condition that must be met for the operation to proceed.
+        /// The condition that must be met for the operation to proceed. The delegate takes
+        /// the current value of <paramref name="location1"/> as an argument.
         /// </param>
         /// <param name="clearBitsValue">
         /// The value that holds the bits to clear in <paramref name="location1"/>
@@ -1816,10 +2210,27 @@
         /// If the condition is not met, the original value is returned in both fields.
         /// </returns>
         /// <remarks>
-        /// This method is just a convenience method that is a semantic alias for 
+        /// <para>
+        /// This method is a convenience method that is a semantic alias for 
         /// <see cref="ConditionAnd(ref long, Predicate{long}, long)"/> with the
         /// bitwise complement of <paramref name="clearBitsValue"/>
+        /// </para>
+        /// <para>
+        /// This method uses a <see cref="Predicate{T}"/> to determine if the operation 
+        /// should proceed based on the current value of <paramref name="location1"/>. If
+        /// <paramref name="condition"/> returns <see langword="true"/>, then the XOR
+        /// result is stored in <paramref name="location1"/> if the current value is the
+        /// same as the value passed to the condition. If the value has changed in the time
+        /// between being read, and processed by <paramref name="condition"/>, the operation
+        /// is repeated until either the condition is not met, or the operation is successful.
+        /// </para>
+        /// <para>
+        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// when it is read, and when the condition is processed, the <paramref name="condition"/>
+        /// could be called multiple times before the operation is successful.
+        /// </para>
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (long originalValue, long newValue) ConditionClearBits (ref long location1,
             Predicate<long> condition, long clearBitsValue) => ConditionAnd(ref location1, condition, ~clearBitsValue);
         //--------------------------------------------------------------------------------
@@ -1834,7 +2245,8 @@
         /// A variable containing the bits to clear. The result is stored in this variable.
         /// </param>
         /// <param name="condition">
-        /// The condition that must be met for the operation to proceed.
+        /// The condition that must be met for the operation to proceed. The delegate takes
+        /// the current value of <paramref name="location1"/> as an argument.
         /// </param>
         /// <param name="argument">
         /// The argument to pass to the condition function <paramref name="condition"/>
@@ -1847,10 +2259,27 @@
         /// If the condition is not met, the original value is returned in both fields.
         /// </returns>
         /// <remarks>
-        /// This method is just a convenience method that is a semantic alias for 
-        /// <see cref="ConditionAnd(ref long, Predicate{long}, long)"/> with the
+        /// <para>
+        /// This method is a convenience method that is a semantic alias for 
+        /// <see cref="ConditionAnd{T}(ref long, Func{long, T, bool}, T, long)"/> with the
         /// bitwise complement of <paramref name="clearBitsValue"/>
+        /// </para>
+        /// <para>
+        /// This method uses a <see cref="Func{T1, T2, TResult}"/> to determine if the operation 
+        /// should proceed based on the current value of <paramref name="location1"/>. If
+        /// <paramref name="condition"/> returns <see langword="true"/>, then the XOR
+        /// result is stored in <paramref name="location1"/> if the current value is the
+        /// same as the value passed to the condition. If the value has changed in the time
+        /// between being read, and processed by <paramref name="condition"/>, the operation
+        /// is repeated until either the condition is not met, or the operation is successful.
+        /// </para>
+        /// <para>
+        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// when it is read, and when the condition is processed, the <paramref name="condition"/>
+        /// could be called multiple times before the operation is successful.
+        /// </para>
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (long originalValue, long newValue) ConditionClearBits<T> (ref long location1,
             Func<long, T, bool> condition, T argument, long clearBitsValue) =>
             ConditionAnd(ref location1, condition, argument, ~clearBitsValue);
@@ -1862,7 +2291,8 @@
         /// A variable containing the bits to clear. The result is stored in this variable.
         /// </param>
         /// <param name="condition">
-        /// The condition that must be met for the operation to proceed.
+        /// The condition that must be met for the operation to proceed. The delegate takes
+        /// the current value of <paramref name="location1"/> as an argument.
         /// </param>
         /// <param name="clearBitsValue">
         /// The value that holds the bits to clear in <paramref name="location1"/>
@@ -1872,10 +2302,27 @@
         /// A tuple containing the original value and the new value after the operation.
         /// </returns>
         /// <remarks>
-        /// This method is just a convenience method that is a semantic alias for 
+        /// <para>
+        /// This method is a convenience method that is a semantic alias for 
         /// <see cref="ConditionAnd(ref ulong, Predicate{ulong}, ulong)"/> with the
         /// bitwise complement of <paramref name="clearBitsValue"/>
+        /// </para>
+        /// <para>
+        /// This method uses a <see cref="Predicate{T}"/> to determine if the operation 
+        /// should proceed based on the current value of <paramref name="location1"/>. If
+        /// <paramref name="condition"/> returns <see langword="true"/>, then the XOR
+        /// result is stored in <paramref name="location1"/> if the current value is the
+        /// same as the value passed to the condition. If the value has changed in the time
+        /// between being read, and processed by <paramref name="condition"/>, the operation
+        /// is repeated until either the condition is not met, or the operation is successful.
+        /// </para>
+        /// <para>
+        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// when it is read, and when the condition is processed, the <paramref name="condition"/>
+        /// could be called multiple times before the operation is successful.
+        /// </para>
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (ulong originalValue, ulong newValue) ConditionClearBits (ref ulong location1,
             Predicate<ulong> condition, ulong clearBitsValue) => ConditionAnd(ref location1, condition, ~clearBitsValue);
         //--------------------------------------------------------------------------------
@@ -1890,7 +2337,8 @@
         /// A variable containing the bits to clear. The result is stored in this variable.
         /// </param>
         /// <param name="condition">
-        /// The condition that must be met for the operation to proceed.
+        /// The condition that must be met for the operation to proceed. The delegate takes
+        /// the current value of <paramref name="location1"/> as an argument.
         /// </param>
         /// <param name="argument">
         /// The argument to pass to the condition function <paramref name="condition"/>
@@ -1903,10 +2351,27 @@
         /// A tuple containing the original value and the new value after the operation.
         /// </returns>
         /// <remarks>
-        /// This method is just a convenience method that is a semantic alias for 
-        /// <see cref="ConditionAnd(ref ulong, Predicate{ulong}, ulong)"/> with the
+        /// <para>
+        /// This method is a convenience method that is a semantic alias for 
+        /// <see cref="ConditionAnd{T}(ref ulong, Func{ulong, T, bool}, T, ulong)"/> with the
         /// bitwise complement of <paramref name="clearBitsValue"/>
+        /// </para>
+        /// <para>
+        /// This method uses a <see cref="Func{T1, T2, TResult}"/> to determine if the operation 
+        /// should proceed based on the current value of <paramref name="location1"/>. If
+        /// <paramref name="condition"/> returns <see langword="true"/>, then the XOR
+        /// result is stored in <paramref name="location1"/> if the current value is the
+        /// same as the value passed to the condition. If the value has changed in the time
+        /// between being read, and processed by <paramref name="condition"/>, the operation
+        /// is repeated until either the condition is not met, or the operation is successful.
+        /// </para>
+        /// <para>
+        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// when it is read, and when the condition is processed, the <paramref name="condition"/>
+        /// could be called multiple times before the operation is successful.
+        /// </para>
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (ulong originalValue, ulong newValue) ConditionClearBits<T> (ref ulong location1,
             Func<ulong, T, bool> condition, T argument, ulong clearBitsValue) =>
             ConditionAnd(ref location1, condition, argument, ~clearBitsValue);

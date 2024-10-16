@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Kevin Zehrer
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 
 namespace KZDev.PerfUtils.Tests
@@ -46,6 +47,7 @@ namespace KZDev.PerfUtils.Tests
         /// <exception cref="ArgumentException">
         /// Thrown when the passed <paramref name="byteArray"/> is an invalid size.
         /// </exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static int InternalGetRandomBytes (byte[] byteArray, int byteCount = -1)
         {
             ArgumentNullException.ThrowIfNull(byteArray);
@@ -61,6 +63,7 @@ namespace KZDev.PerfUtils.Tests
         /// in a truly random way.
         /// </summary>
         /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static int InternalGetRandomInteger ()
         {
             _randomIntegerBytes ??= new byte[sizeof(int)];
@@ -70,16 +73,45 @@ namespace KZDev.PerfUtils.Tests
         }
         //--------------------------------------------------------------------------------
         /// <summary>
+        /// Helper to generate a random unsigned integer from any range (uint.MinValue to uint.MaxValue)
+        /// in a truly random way.
+        /// </summary>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static uint InternalGetRandomUnsignedInteger ()
+        {
+            _randomIntegerBytes ??= new byte[sizeof(uint)];
+            Random.GetBytes(_randomIntegerBytes);
+            // convert 4 bytes to an integer 
+            return BitConverter.ToUInt32(_randomIntegerBytes, 0);
+        }
+        //--------------------------------------------------------------------------------
+        /// <summary>
         /// Helper to generate a random long integer from any range (long.MinValue to
         /// long.MaxValue) in a truly random way.
         /// </summary>
         /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static long InternalGetRandomLongInteger ()
         {
             _randomLongIntegerBytes ??= new byte[sizeof(long)];
             Random.GetBytes(_randomLongIntegerBytes);
             // convert 8 bytes to a long integer 
             return BitConverter.ToInt64(_randomLongIntegerBytes, 0);
+        }
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Helper to generate a random unsigned long integer from any range (ulong.MinValue to
+        /// ulong.MaxValue) in a truly random way.
+        /// </summary>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static ulong InternalGetRandomUnsignedLongInteger ()
+        {
+            _randomLongIntegerBytes ??= new byte[sizeof(ulong)];
+            Random.GetBytes(_randomLongIntegerBytes);
+            // convert 8 bytes to a long integer 
+            return BitConverter.ToUInt64(_randomLongIntegerBytes, 0);
         }
         //--------------------------------------------------------------------------------
 
@@ -119,6 +151,25 @@ namespace KZDev.PerfUtils.Tests
         }
         //--------------------------------------------------------------------------------
         /// <summary>
+        /// Internal helper to generate a random unsigned integer in the requested range.
+        /// </summary>
+        /// <param name="minValue">
+        /// The minimum value to return.
+        /// </param>
+        /// <param name="maxValue">
+        /// The maximum value to return.
+        /// </param>
+        /// <returns>
+        /// A random integer within the passed range of values.
+        /// </returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static uint InternalGetRandomUnsignedInteger (uint minValue, uint maxValue)
+        {
+            uint range = maxValue - minValue;
+            return minValue + (InternalGetRandomUnsignedInteger() % range);
+        }
+        //--------------------------------------------------------------------------------
+        /// <summary>
         /// Internal helper to generate a random long integer in the requested range.
         /// </summary>
         /// <param name="minValue">
@@ -154,16 +205,37 @@ namespace KZDev.PerfUtils.Tests
             }
         }
         //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Internal helper to generate a random unsigned long integer in the requested range.
+        /// </summary>
+        /// <param name="minValue">
+        /// The minimum value to return.
+        /// </param>
+        /// <param name="maxValue">
+        /// The maximum value to return.
+        /// </param>
+        /// <returns>
+        /// A random integer within the passed range of values.
+        /// </returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static ulong InternalGetRandomUnsignedLongInteger (ulong minValue, ulong maxValue)
+        {
+            ulong range = maxValue - minValue;
+            return minValue + (InternalGetRandomUnsignedLongInteger() % range);
+        }
+        //--------------------------------------------------------------------------------
 
         #region Implementation of IRandomSource
 
         //--------------------------------------------------------------------------------
         /// <inheritdoc />
-        public int GetRandomInteger (int maxValue) => (maxValue > 0) ? 
-            InternalGetRandomInteger (0, maxValue) : 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetRandomInteger (int maxValue) => (maxValue > 0) ?
+            InternalGetRandomInteger(0, maxValue) :
             throw new ArgumentException($"{nameof(maxValue)} must be greater than zero");
         //--------------------------------------------------------------------------------
         /// <inheritdoc />
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetRandomInteger (int minValue, int maxValue)
         {
             if (maxValue < minValue)
@@ -172,11 +244,26 @@ namespace KZDev.PerfUtils.Tests
         }
         //--------------------------------------------------------------------------------
         /// <inheritdoc />
-        public long GetRandomInteger (long maxValue) => (maxValue > 0) ? 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public uint GetRandomUnsignedInteger (uint maxValue) => InternalGetRandomUnsignedInteger(0, maxValue);
+        //--------------------------------------------------------------------------------
+        /// <inheritdoc />
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public uint GetRandomUnsignedInteger (uint minValue, uint maxValue)
+        {
+            if (maxValue < minValue)
+                throw new ArgumentOutOfRangeException(nameof(maxValue), $"{nameof(maxValue)} must be greater than or equal to {nameof(minValue)}");
+            return (minValue == maxValue) ? minValue : InternalGetRandomUnsignedInteger(minValue, maxValue);
+        }
+        //--------------------------------------------------------------------------------
+        /// <inheritdoc />
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public long GetRandomLongInteger (long maxValue) => (maxValue > 0) ?
             InternalGetRandomLongInteger(0, maxValue) :
             throw new ArgumentException($"{nameof(maxValue)} must be greater than zero");
         //--------------------------------------------------------------------------------
         /// <inheritdoc />
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public long GetRandomLongInteger (long minValue, long maxValue)
         {
             if (maxValue < minValue)
@@ -185,12 +272,28 @@ namespace KZDev.PerfUtils.Tests
         }
         //--------------------------------------------------------------------------------
         /// <inheritdoc />
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ulong GetRandomUnsignedLongInteger (ulong maxValue) => InternalGetRandomUnsignedLongInteger(0, maxValue);
+        //--------------------------------------------------------------------------------
+        /// <inheritdoc />
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ulong GetRandomUnsignedLongInteger (ulong minValue, ulong maxValue)
+        {
+            if (maxValue < minValue)
+                throw new ArgumentOutOfRangeException(nameof(maxValue), $"{nameof(maxValue)} must be greater than or equal to {nameof(minValue)}");
+            return (minValue == maxValue) ? minValue : InternalGetRandomUnsignedLongInteger(minValue, maxValue);
+        }
+        //--------------------------------------------------------------------------------
+        /// <inheritdoc />
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetRandomBytes (byte[] byteArray, int byteCount = -1) => InternalGetRandomBytes(byteArray, byteCount);
         //--------------------------------------------------------------------------------
         /// <inheritdoc />
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool GetRandomBoolean () => (0 == (InternalGetRandomInteger(0, byte.MaxValue + 1) % 2));
         //--------------------------------------------------------------------------------
         /// <inheritdoc />
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool GetRandomFalse (int falseFrequency) =>
             falseFrequency switch
             {
@@ -200,6 +303,7 @@ namespace KZDev.PerfUtils.Tests
             };
         //--------------------------------------------------------------------------------
         /// <inheritdoc />
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool GetRandomTrue (int trueFrequency) =>
             trueFrequency switch
             {

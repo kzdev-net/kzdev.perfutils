@@ -134,6 +134,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WorkFlows", "WorkFlows", "{
 		..\.github\workflows\docfx-publish.yml = ..\.github\workflows\docfx-publish.yml
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KZDev.PerfUtils.Concurrency.UnitTests", "Tst\KZDev.PerfUtils.Concurrency.UnitTests\KZDev.PerfUtils.Concurrency.UnitTests.csproj", "{4770E59B-764A-44BC-B6E3-EB11B335EF7C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -260,6 +262,14 @@ Global
 		{5D74ECD3-20EC-4049-8C84-D5550E835CD1}.Profile|Any CPU.Build.0 = Profile|Any CPU
 		{5D74ECD3-20EC-4049-8C84-D5550E835CD1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5D74ECD3-20EC-4049-8C84-D5550E835CD1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4770E59B-764A-44BC-B6E3-EB11B335EF7C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4770E59B-764A-44BC-B6E3-EB11B335EF7C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4770E59B-764A-44BC-B6E3-EB11B335EF7C}.Package|Any CPU.ActiveCfg = Profile|Any CPU
+		{4770E59B-764A-44BC-B6E3-EB11B335EF7C}.Package|Any CPU.Build.0 = Profile|Any CPU
+		{4770E59B-764A-44BC-B6E3-EB11B335EF7C}.Profile|Any CPU.ActiveCfg = Profile|Any CPU
+		{4770E59B-764A-44BC-B6E3-EB11B335EF7C}.Profile|Any CPU.Build.0 = Profile|Any CPU
+		{4770E59B-764A-44BC-B6E3-EB11B335EF7C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4770E59B-764A-44BC-B6E3-EB11B335EF7C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -290,6 +300,7 @@ Global
 		{5D74ECD3-20EC-4049-8C84-D5550E835CD1} = {F8C76B35-0758-433E-953B-0D7E9D63DE13}
 		{4EFA3802-BA4D-4CA0-B040-B02AE260910D} = {30D9D5E1-42BB-4230-8528-A6B339BD14AA}
 		{42188FFF-1E0E-44F4-9717-D6946CE2CA8E} = {CD9B846B-FEE3-4F43-929C-A4FCBD7D974C}
+		{4770E59B-764A-44BC-B6E3-EB11B335EF7C} = {F8C76B35-0758-433E-953B-0D7E9D63DE13}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FE0AB859-B820-470E-AA57-2337B2495B50}

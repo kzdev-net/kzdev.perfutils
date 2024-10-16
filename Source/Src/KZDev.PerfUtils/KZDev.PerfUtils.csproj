@@ -29,6 +29,7 @@
 	</PropertyGroup>
 	<ItemGroup Condition="'$(IsPacking)' != 'true'">
 		<InternalsVisibleTo Include="KZDev.PerfUtils.Common.UnitTests" />
+		<InternalsVisibleTo Include="KZDev.PerfUtils.Concurrency.UnitTests" />
 		<InternalsVisibleTo Include="KZDev.PerfUtils.Memory.UnitTests" />
 		<InternalsVisibleTo Include="KZDev.PerfUtils.Memory.Fixed.UnitTests" />
 		<InternalsVisibleTo Include="KZDev.PerfUtils.Memory.Native.UnitTests" />

@@ -1166,7 +1166,7 @@ namespace KZDev.PerfUtils.Tests
 
                     case 3:
                         {
-                            long newOffset = (0 == stream.Length) ? 0 : -RandomSource.GetRandomInteger(stream.Length);
+                            long newOffset = (0 == stream.Length) ? 0 : -RandomSource.GetRandomLongInteger(stream.Length);
                             dataCopyArrayPosition = (int)(stream.Length + newOffset);
                             stream.Seek(newOffset, SeekOrigin.End);
                         }
