@@ -327,6 +327,9 @@ namespace KZDev.PerfUtils.Internals
         {
             Debug.Assert(maxSegments > 1, "maxSegments <= 1");
             Debug.Assert(firstSegmentIndex >= 0, "firstSegmentIndex < 0");
+
+            // Get a working index for the segment index.
+            int workingSegmentIndex = firstSegmentIndex;
             // Get the flag set for the segment index.
             ulong flagGroup = _blockUsedFlags[flagIndex];
             ulong zeroFlagGroup = _blockZeroFlags[flagIndex];
@@ -341,22 +344,28 @@ namespace KZDev.PerfUtils.Internals
             while (!segmentIsUsed)
             {
                 // Check the zero state of the segment.
-                if ((zeroFlagGroup & flagMask) == 0)
+                if (allZeroed && ((zeroFlagGroup & flagMask) == 0))
                     allZeroed = false;
+                // Update the flag group that we are using this segment now.
+                flagGroup |= flagMask;
                 // Increment the number we have
                 if (++foundSegmentCount == maxSegments)
                     break;
                 // Check the next segment.
-                if (++firstSegmentIndex == _segmentCount)
+                if (++workingSegmentIndex == _segmentCount)
                     break;
                 // If we are at the end of the flag group, then move to the next flag group.
                 if (flagMask == HighBitMask)
                 {
-                    // If we are at the end of the flag groups, then we are done.
-                    if (++flagIndex == _blockUsedFlags.Length)
-                        break;
+                    // Save the current flag group.
+                    _blockUsedFlags[flagIndex++] = flagGroup;
+                    // The working segment index comparison to the segment count above should
+                    // prevent us from ever going past the end of the flag groups.
+                    Debug.Assert(flagIndex < _blockUsedFlags.Length, "flagIndex >= _blockUsedFlags.Length");
+                    // Get the next flag groups and mask.
                     flagGroup = _blockUsedFlags[flagIndex];
                     zeroFlagGroup = _blockZeroFlags[flagIndex];
+                    // Reset the mask
                     flagMask = 1;
                 }
                 else
@@ -366,6 +375,8 @@ namespace KZDev.PerfUtils.Internals
                 }
                 segmentIsUsed = (flagGroup & flagMask) != 0;
             }
+            // Store the final updates to the used flags.
+            _blockUsedFlags[flagIndex] = flagGroup;
             return (foundSegmentCount, allZeroed);
         }
 
@@ -644,35 +655,6 @@ namespace KZDev.PerfUtils.Internals
             // segments in the series are zeroed.
             (int segmentCount, bool zeroed) =
                 GetAllFreeSegmentSeriesFromIndex(firstSegmentIndex, requestedSegments, flagIndex, flagMask);
-
-            // We have the series that we will return, now mark them as in use.
-            int markSegmentIndex = 0;
-            while (markSegmentIndex < segmentCount)
-            {
-                markSegmentIndex++;
-                // Update the flag group.
-                flagGroup |= flagMask;
-                // If we are at the end of the flag group, then move to the next flag group.
-                if (flagMask == HighBitMask)
-                {
-                    // Save the current flag group.
-                    _blockUsedFlags[flagIndex] = flagGroup;
-                    // This check MUST happen before the increment of the flagIndex.
-                    if (markSegmentIndex == segmentCount)
-                        // Break out of the loop early so that we don't increment the flagIndex.
-                        break;
-                    // Reset the mask
-                    flagMask = 1;
-                    // Move to the next flag group.
-                    flagGroup = _blockUsedFlags[++flagIndex];
-                }
-                else
-                {
-                    flagMask <<= 1;
-                }
-            }
-            // Store the final updates.
-            _blockUsedFlags[flagIndex] = flagGroup;
             // Update the number of segments in use.
             Interlocked.Add(ref _segmentsInUse, segmentCount);
             return (segmentCount, zeroed);
