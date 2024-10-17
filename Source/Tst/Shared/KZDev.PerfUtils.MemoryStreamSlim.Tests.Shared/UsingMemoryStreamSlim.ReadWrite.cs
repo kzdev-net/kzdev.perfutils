@@ -462,6 +462,7 @@ namespace KZDev.PerfUtils.Tests
         /// is identical to the data written.
         /// </summary>
         [Fact]
+        [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.MedRun)]
         public async Task UsingMemoryStreamSlim_CopyFullToStream_CopiesAllDataAsync ()
         {
             int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
@@ -635,6 +636,7 @@ namespace KZDev.PerfUtils.Tests
         /// stream is correct. is identical to the data written.
         /// </summary>
         [Fact]
+        [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.MedRun)]
         public void UsingMemoryStreamSlim_CopyToLargerStream_CopiesCorrectData ()
         {
             int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
@@ -793,6 +795,7 @@ namespace KZDev.PerfUtils.Tests
         /// stream is correct.
         /// </summary>
         [Fact]
+        [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.MedRun)]
         public async Task UsingMemoryStreamSlim_CopyToLargerAsyncStream_CopiesCorrectDataAsync ()
         {
             int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();

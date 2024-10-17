@@ -268,7 +268,6 @@ namespace KZDev.PerfUtils.Tests
         /// to a value below the current length, which should throw an exception.
         /// </summary>
         [Fact]
-        [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.MedRun)]
         public void UsingMemoryStreamSlim_SetCapacityToLength_SetsProperCapacity ()
         {
             const int maxTestCapacity = MemorySegmentedBufferGroup.StandardBufferSegmentSize * 64;
@@ -586,6 +585,7 @@ namespace KZDev.PerfUtils.Tests
         /// The set to lengths are from a set of standard sizes
         /// </summary>
         [Fact]
+        [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.MedRun)]
         public void UsingMemoryStreamSlim_SetLengthLargerUsingSizeIntervals_FillsWithZeroedBytes ()
         {
             int[] testLengths = [MemorySegmentedBufferGroup.StandardBufferSegmentSize / 4,
