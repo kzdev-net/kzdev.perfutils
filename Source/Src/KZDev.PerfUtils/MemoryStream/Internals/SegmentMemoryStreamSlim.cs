@@ -887,9 +887,10 @@ namespace KZDev.PerfUtils.Internals
                 // segments that are immediately after the last segment in the last buffer in the list
                 // if possible. This means we don't have to have another entry in the list, and we can
                 // just extend the last buffer in the list.
+                SegmentBuffer lastBuffer = _bufferList[^1].SegmentBuffer;
+                SegmentBufferInfo lastBufferInfo = lastBuffer.BufferInfo;
                 (SegmentBuffer nextBuffer, bool isNextBlockSegment) =
-                    RentStandardBufferFromPreferredBlock((int)capacityNeeded, forceZeroBytes,
-                        _bufferList[^1].SegmentBuffer.BufferInfo);
+                    RentStandardBufferFromPreferredBlock((int)capacityNeeded, forceZeroBytes, lastBufferInfo);
 
                 if (!isNextBlockSegment)
                 {
@@ -902,9 +903,7 @@ namespace KZDev.PerfUtils.Internals
                 // If the segment is from the next block, then we have just essentially
                 // extended the last buffer in the list. Update the information in the last
                 // buffer in the list to reflect the new buffer.
-                SegmentBuffer previousListBuffer = _bufferList[^1].SegmentBuffer;
-                SegmentBufferInfo previousBufferInfo = previousListBuffer.BufferInfo;
-                MemorySegment previousMemorySegment = previousListBuffer.MemorySegment;
+                MemorySegment lastMemorySegment = lastBuffer.MemorySegment;
 
                 // Since we're extending the last buffer in the list, we need to be sure that 
                 // the current buffer will be properly selected when it's needed.
@@ -918,30 +917,8 @@ namespace KZDev.PerfUtils.Internals
                     _currentBufferInfo = CurrentBufferInfo.Empty;
 
                 // Now, we need to replace the last buffer in the list with the new buffer
-                MemorySegment replaceMemorySegment;
-                if (previousMemorySegment.IsNative)
-                {
-                    // Native memory...
-                    unsafe
-                    {
-                        // We create a new memory segment that is the combination of the previous buffer
-                        // and the new buffer.
-                        replaceMemorySegment = new MemorySegment(previousMemorySegment.NativePointer,
-                            previousMemorySegment.Offset, previousMemorySegment.Count + nextBuffer.Length);
-                    }
-                }
-                else
-                {
-                    // We create a new memory segment that is the combination of the previous buffer
-                    // and the new buffer.
-                    replaceMemorySegment = new MemorySegment(previousMemorySegment.Array,
-                        previousMemorySegment.Offset, previousMemorySegment.Count + nextBuffer.Length);
-                }
+                SegmentBuffer replaceBuffer = lastBuffer.Concat(nextBuffer);
 
-                SegmentBufferInfo replaceSegmentBufferInfo =
-                    new SegmentBufferInfo(nextBuffer.BufferInfo.BlockId, previousBufferInfo.SegmentId,
-                        previousBufferInfo.SegmentCount + nextBuffer.SegmentCount, nextBuffer.BufferInfo.BufferPool);
-                SegmentBuffer replaceBuffer = new SegmentBuffer(replaceMemorySegment, replaceSegmentBufferInfo);
                 // Replace the last buffer in the list with the new buffer
                 if (_bufferList.Count == 1)
                     _bufferList[^1] = new SegmentBufferVirtualInfo(replaceBuffer, replaceBuffer.Length, replaceBuffer.SegmentCount);

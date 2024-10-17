@@ -138,6 +138,50 @@ namespace KZDev.PerfUtils.Internals
         }
         //--------------------------------------------------------------------------------
         /// <summary>
+        /// Merges this segment with another segment which is assumed to follow this segment
+        /// in the internal allocated buffer.
+        /// </summary>
+        /// <param name="nextBuffer">
+        /// The next segment to merge with this segment.
+        /// </param>
+        /// <returns>
+        /// A new <see cref="SegmentBuffer"/> instance that represents the merged segments.
+        /// </returns>
+        public SegmentBuffer Concat (in SegmentBuffer nextBuffer)
+        {
+            Debug.Assert(!IsRaw, "IsRaw");
+            Debug.Assert(!nextBuffer.IsRaw, "other.IsRaw");
+            Debug.Assert(BufferInfo.SegmentId + BufferInfo.SegmentCount == nextBuffer.BufferInfo.SegmentId, "next buffer doesn't follow this buffer in the allocated memory");
+            Debug.Assert(BufferInfo.BlockId == nextBuffer.BufferInfo.BlockId, "next buffer is from a different block");
+
+            // Get the new memory segment that is the combination of the two segments
+            MemorySegment replaceMemorySegment;
+            if (MemorySegment.IsNative)
+            {
+                // Native memory...
+                unsafe
+                {
+                    // We create a new memory segment that is the combination of the previous buffer
+                    // and the new buffer.
+                    replaceMemorySegment = new MemorySegment(MemorySegment.NativePointer,
+                        MemorySegment.Offset, MemorySegment.Count + nextBuffer.Length);
+                }
+            }
+            else
+            {
+                // We create a new memory segment that is the combination of the previous buffer
+                // and the new buffer.
+                replaceMemorySegment = new MemorySegment(MemorySegment.Array,
+                    MemorySegment.Offset, MemorySegment.Count + nextBuffer.Length);
+            }
+
+            SegmentBufferInfo replaceSegmentBufferInfo =
+                new SegmentBufferInfo(nextBuffer.BufferInfo.BlockId, BufferInfo.SegmentId,
+                    BufferInfo.SegmentCount + nextBuffer.SegmentCount, nextBuffer.BufferInfo.BufferPool);
+            return new SegmentBuffer(replaceMemorySegment, replaceSegmentBufferInfo);
+        }
+        //--------------------------------------------------------------------------------
+        /// <summary>
         /// Clears the contents of this segment.
         /// </summary>
         public void Clear ()
