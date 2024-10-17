@@ -154,31 +154,11 @@ namespace KZDev.PerfUtils.Internals
             Debug.Assert(BufferInfo.SegmentId + BufferInfo.SegmentCount == nextBuffer.BufferInfo.SegmentId, "next buffer doesn't follow this buffer in the allocated memory");
             Debug.Assert(BufferInfo.BlockId == nextBuffer.BufferInfo.BlockId, "next buffer is from a different block");
 
-            // Get the new memory segment that is the combination of the two segments
-            MemorySegment replaceMemorySegment;
-            if (MemorySegment.IsNative)
-            {
-                // Native memory...
-                unsafe
-                {
-                    // We create a new memory segment that is the combination of the previous buffer
-                    // and the new buffer.
-                    replaceMemorySegment = new MemorySegment(MemorySegment.NativePointer,
-                        MemorySegment.Offset, MemorySegment.Count + nextBuffer.Length);
-                }
-            }
-            else
-            {
-                // We create a new memory segment that is the combination of the previous buffer
-                // and the new buffer.
-                replaceMemorySegment = new MemorySegment(MemorySegment.Array,
-                    MemorySegment.Offset, MemorySegment.Count + nextBuffer.Length);
-            }
-
+            // Get the new memory segment that is the combination of the two segments and create the new segment buffer
             SegmentBufferInfo replaceSegmentBufferInfo =
                 new SegmentBufferInfo(nextBuffer.BufferInfo.BlockId, BufferInfo.SegmentId,
                     BufferInfo.SegmentCount + nextBuffer.SegmentCount, nextBuffer.BufferInfo.BufferPool);
-            return new SegmentBuffer(replaceMemorySegment, replaceSegmentBufferInfo);
+            return new SegmentBuffer(MemorySegment.Extend(nextBuffer.Length), replaceSegmentBufferInfo);
         }
         //--------------------------------------------------------------------------------
         /// <summary>
