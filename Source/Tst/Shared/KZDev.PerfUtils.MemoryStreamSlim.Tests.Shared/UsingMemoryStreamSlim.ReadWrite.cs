@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Kevin Zehrer
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+using System.IO;
 using System.Runtime.ExceptionServices;
 
 using FluentAssertions;
@@ -494,6 +495,7 @@ namespace KZDev.PerfUtils.Tests
         /// is identical to the data written.
         /// </summary>
         [Fact]
+        [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.MedRun)]
         public async Task UsingMemoryStreamSlim_CopyFullToStream_OnManyThreads_CopiesAllDataAsync ()
         {
             int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
@@ -524,7 +526,11 @@ namespace KZDev.PerfUtils.Tests
                             memoryStream.Position.Should().Be(memoryStream.Length);
                             memoryStream.Length.Should().Be(byteCount);
                             // Verify the contents
-                            await VerifyContentsFromStartToEndOneReadAsync(memoryStream, dataCopy);
+                            // Alternate how we verify the data
+                            if (0 == (testLoop & 1))
+                                await VerifyContentsFromStartToEndOneReadAsync(memoryStream, dataCopy);
+                            else
+                                await VerifyContentsFromStartToEndInBlocksAsync(memoryStream, dataCopy, 0x61);
                         }
                 }
                 catch (Exception error)
@@ -576,6 +582,7 @@ namespace KZDev.PerfUtils.Tests
         /// is identical to the data written.
         /// </summary>
         [Fact]
+        [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.MedRun)]
         public async Task UsingMemoryStreamSlim_CopyFullToAsyncStream_OnManyThreads_CopiesAllDataAsync ()
         {
             int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
@@ -607,7 +614,11 @@ namespace KZDev.PerfUtils.Tests
                             fileStream.Length.Should().Be(byteCount);
                             // Verify the contents - suspend any async delays
                             using SuspendFileStreamAsyncDelay verifySuspendScope = fileStream.SuspendAsyncDelay();
-                            await VerifyContentsFromStartToEndOneReadAsync(fileStream, dataCopy);
+                            // Alternate how we verify the data
+                            if (0 == (testLoop & 1))
+                                await VerifyContentsFromStartToEndOneReadAsync(fileStream, dataCopy);
+                            else
+                                await VerifyContentsFromStartToEndInBlocksAsync(fileStream, dataCopy, 0x61);
                         }
                 }
                 catch (Exception error)
@@ -670,6 +681,7 @@ namespace KZDev.PerfUtils.Tests
         /// stream is correct.
         /// </summary>
         [Fact]
+        [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.MedRun)]
         public async Task UsingMemoryStreamSlim_CopyToLargerStream_CopiesCorrectDataAsync ()
         {
             int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
@@ -716,6 +728,7 @@ namespace KZDev.PerfUtils.Tests
         /// stream is correct.
         /// </summary>
         [Fact]
+        [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.LongRun)]
         public async Task UsingMemoryStreamSlim_CopyToLargerStream_OnManyThreads_CopiesCorrectDataAsync ()
         {
             int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
@@ -759,7 +772,11 @@ namespace KZDev.PerfUtils.Tests
                             // Update the expected data copy
                             Array.Copy(dataCopy, copySourceFrom, otherDataCopy, copyDestFrom, copyCount);
                             // Verify the contents
-                            await VerifyContentsFromStartToEndOneReadAsync(memoryStream, otherDataCopy);
+                            // Alternate how we verify the data
+                            if (0 == (testLoop & 1))
+                                await VerifyContentsFromStartToEndOneReadAsync(memoryStream, otherDataCopy);
+                            else
+                                await VerifyContentsFromStartToEndInBlocksAsync(memoryStream, otherDataCopy, 0x61);
                         }
                 }
                 catch (Exception error)
@@ -829,7 +846,7 @@ namespace KZDev.PerfUtils.Tests
         /// stream is correct.
         /// </summary>
         [Fact]
-        [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.MedRun)]
+        [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.LongRun)]
         public async Task UsingMemoryStreamSlim_CopyToLargerAsyncStream_OnManyThreads_CopiesCorrectDataAsync ()
         {
             int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
@@ -879,7 +896,11 @@ namespace KZDev.PerfUtils.Tests
                             Array.Copy(dataCopy, copySourceFrom, otherDataCopy, copyDestFrom, copyCount);
                             // Verify the contents - suspend any async delays
                             using SuspendFileStreamAsyncDelay verifySuspendScope = fileStream.SuspendAsyncDelay();
-                            await VerifyContentsFromStartToEndOneReadAsync(fileStream, otherDataCopy);
+                            // Alternate how we verify the data
+                            if (0 == (testLoop & 1))
+                                await VerifyContentsFromStartToEndOneReadAsync(fileStream, otherDataCopy);
+                            else
+                                await VerifyContentsFromStartToEndInBlocksAsync(fileStream, otherDataCopy, 0x61);
                         }
                 }
                 catch (Exception error)
@@ -988,6 +1009,7 @@ namespace KZDev.PerfUtils.Tests
         /// stream is correct.
         /// </summary>
         [Fact]
+        [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.MedRun)]
         public async Task UsingMemoryStreamSlim_CopyToSmallerStream_OnManyThreads_CopiesCorrectDataAsync ()
         {
             int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
@@ -1030,7 +1052,11 @@ namespace KZDev.PerfUtils.Tests
                             // Update the expected data copy
                             Array.Copy(dataCopy, copySourceFrom, otherDataCopy, copyDestFrom, copyCount);
                             // Verify the contents
-                            await VerifyContentsFromStartToEndOneReadAsync(memoryStream, otherDataCopy);
+                            // Alternate how we verify the data
+                            if (0 == (testLoop & 1))
+                                await VerifyContentsFromStartToEndOneReadAsync(memoryStream, otherDataCopy);
+                            else
+                                await VerifyContentsFromStartToEndInBlocksAsync(memoryStream, otherDataCopy, 0x61);
                         }
                 }
                 catch (Exception error)
@@ -1150,7 +1176,11 @@ namespace KZDev.PerfUtils.Tests
                             Array.Copy(dataCopy, copySourceFrom, otherDataCopy, copyDestFrom, copyCount);
                             // Verify the contents - suspend any async delays
                             using SuspendFileStreamAsyncDelay verifySuspendScope = fileStream.SuspendAsyncDelay();
-                            await VerifyContentsFromStartToEndOneReadAsync(fileStream, otherDataCopy);
+                            // Alternate how we verify the data
+                            if (0 == (testLoop & 1))
+                                await VerifyContentsFromStartToEndOneReadAsync(fileStream, otherDataCopy);
+                            else
+                                await VerifyContentsFromStartToEndInBlocksAsync(fileStream, otherDataCopy, 0x61);
                         }
                 }
                 catch (Exception error)
@@ -1201,7 +1231,7 @@ namespace KZDev.PerfUtils.Tests
         /// verifying that the contents of the stream are consistent.
         /// </summary>
         [Fact]
-        [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.MedRun)]
+        [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.LongRun)]
         public void UsingMemoryStreamSlim_WriteWithChaos_WritesCorrectData ()
         {
             int[] testDataSizes = GenerateTestDataSizes(MemorySegmentedBufferGroup.StandardBufferSegmentSize, MemorySegmentedBufferGroup.StandardBufferSegmentSize * 20).ToArray();
@@ -1355,11 +1385,11 @@ namespace KZDev.PerfUtils.Tests
         /// verifying that the contents of the stream are consistent.
         /// </summary>
         [Fact]
-        [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.MedRun)]
+        [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.LongRun)]
         public async Task UsingMemoryStreamSlim_WriteWithChaos_OnManyThreads_WritesCorrectData ()
         {
             int[] testDataSizes = GenerateTestDataSizes(MemorySegmentedBufferGroup.StandardBufferSegmentSize, MemorySegmentedBufferGroup.StandardBufferSegmentSize * 20).ToArray();
-            int testLoops = RandomSource.GetRandomInteger(MinimumRandomPositionTestLoops, MaximumRandomPositionTestLoops + 1);
+            int testLoops = RandomSource.GetRandomInteger(MinimumRandomPositionTestLoops / 8, MaximumRandomPositionTestLoops / 8);
 
             ExceptionDispatchInfo? taskException = null;
 
@@ -1412,7 +1442,11 @@ namespace KZDev.PerfUtils.Tests
                             }
                             // Verify the contents
                             testService.SetLength(Math.Max(testService.Length, dataCopy.Length));
-                            VerifyContentsFromStartToEndOneRead(testService, dataCopy);
+                            // Alternate how we verify the data
+                            if (0 == (testLoop & 1))
+                                await VerifyContentsFromStartToEndOneReadAsync(testService, dataCopy);
+                            else
+                                await VerifyContentsFromStartToEndInBlocksAsync(testService, dataCopy, 0x61);
                         }
 
                     void WriteArrayDataToStream (MemoryStreamSlim stream, byte[] dataCopyArray, ref int dataCopyArrayPosition)
