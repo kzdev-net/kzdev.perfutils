@@ -84,7 +84,7 @@ namespace KZDev.PerfUtils.Tests
             MemorySegmentedBufferPool bufferPool = GetTestBufferPool();
             int requestBufferSize = MemorySegmentedBufferGroup.StandardBufferSegmentSize * sut.SegmentCount;
 
-            (SegmentBuffer buffer, GetBufferResult result, bool _) = sut.GetBuffer(requestBufferSize, false, bufferPool);
+            (SegmentBuffer buffer, GetBufferResult result) = sut.GetBuffer(requestBufferSize, false, bufferPool);
 
             result.Should().Be(GetBufferResult.Available);
             buffer.Length.Should().Be(requestBufferSize);
@@ -106,7 +106,7 @@ namespace KZDev.PerfUtils.Tests
             int expectedBufferSize = MemorySegmentedBufferGroup.StandardBufferSegmentSize * sut.SegmentCount;
             int requestBufferSize = expectedBufferSize + MemorySegmentedBufferGroup.StandardBufferSegmentSize;
 
-            (SegmentBuffer buffer, GetBufferResult result, bool _) = sut.GetBuffer(requestBufferSize, false, bufferPool);
+            (SegmentBuffer buffer, GetBufferResult result) = sut.GetBuffer(requestBufferSize, false, bufferPool);
 
             result.Should().Be(GetBufferResult.Available);
             buffer.Length.Should().Be(expectedBufferSize);
@@ -136,7 +136,7 @@ namespace KZDev.PerfUtils.Tests
             for (int i = 0; i < 3; i++)
             {
                 int requestBufferSize = getSegments[i] * MemorySegmentedBufferGroup.StandardBufferSegmentSize;
-                (SegmentBuffer buffer, GetBufferResult result, bool _) = sut.GetBuffer(requestBufferSize, false, bufferPool);
+                (SegmentBuffer buffer, GetBufferResult result) = sut.GetBuffer(requestBufferSize, false, bufferPool);
 
                 result.Should().Be(GetBufferResult.Available);
                 buffer.Length.Should().Be(requestBufferSize);
@@ -162,7 +162,7 @@ namespace KZDev.PerfUtils.Tests
             MemorySegmentedBufferPool bufferPool = GetTestBufferPool();
             int bufferSize = MemorySegmentedBufferGroup.StandardBufferSegmentSize;
 
-            (SegmentBuffer buffer, GetBufferResult result, bool _) = sut.GetBuffer(bufferSize, false, bufferPool);
+            (SegmentBuffer buffer, GetBufferResult result) = sut.GetBuffer(bufferSize, false, bufferPool);
 
             result.Should().Be(GetBufferResult.Available);
             buffer.Length.Should().Be(bufferSize);
@@ -185,7 +185,7 @@ namespace KZDev.PerfUtils.Tests
 
             sut.SetSegmentsUsed(0, markSegmentCount);
 
-            (SegmentBuffer buffer, GetBufferResult result, bool _) = sut.GetBuffer(bufferSize, false, bufferPool);
+            (SegmentBuffer buffer, GetBufferResult result) = sut.GetBuffer(bufferSize, false, bufferPool);
 
             result.Should().Be(GetBufferResult.Available);
             buffer.Length.Should().Be(bufferSize);
@@ -211,7 +211,7 @@ namespace KZDev.PerfUtils.Tests
                 sut.SetAllSegmentsUsed();
                 sut.SetSegmentsFree(markSegmentIndex, 1, false);
 
-                (SegmentBuffer buffer, GetBufferResult result, bool _) = sut.GetBuffer(bufferSize, false, bufferPool);
+                (SegmentBuffer buffer, GetBufferResult result) = sut.GetBuffer(bufferSize, false, bufferPool);
 
                 result.Should().Be(GetBufferResult.Available);
                 buffer.Length.Should().Be(bufferSize);
@@ -233,7 +233,7 @@ namespace KZDev.PerfUtils.Tests
             MemorySegmentedBufferPool bufferPool = GetTestBufferPool();
             int bufferSize = MemorySegmentedBufferGroup.StandardBufferSegmentSize;
 
-            (SegmentBuffer buffer, GetBufferResult result, bool _) = sut.GetBuffer(bufferSize, true, bufferPool);
+            (SegmentBuffer buffer, GetBufferResult result) = sut.GetBuffer(bufferSize, true, bufferPool);
 
             result.Should().Be(GetBufferResult.Available);
             buffer.Length.Should().Be(bufferSize);
@@ -257,7 +257,7 @@ namespace KZDev.PerfUtils.Tests
 
             sut.SetSegmentsUsed(0, markSegmentCount);
 
-            (SegmentBuffer buffer, GetBufferResult result, bool _) = sut.GetBuffer(bufferSize, true, bufferPool);
+            (SegmentBuffer buffer, GetBufferResult result) = sut.GetBuffer(bufferSize, true, bufferPool);
 
             result.Should().Be(GetBufferResult.Available);
             buffer.Length.Should().Be(bufferSize);
@@ -284,7 +284,7 @@ namespace KZDev.PerfUtils.Tests
                 sut.SetAllSegmentsUsed();
                 sut.SetSegmentsFree(markSegmentIndex, 1, false);
 
-                (SegmentBuffer buffer, GetBufferResult result, bool _) = sut.GetBuffer(bufferSize, true, bufferPool);
+                (SegmentBuffer buffer, GetBufferResult result) = sut.GetBuffer(bufferSize, true, bufferPool);
 
                 result.Should().Be(GetBufferResult.Available);
                 buffer.Length.Should().Be(bufferSize);
@@ -309,7 +309,7 @@ namespace KZDev.PerfUtils.Tests
 
             for (int segmentNumber = 0; segmentNumber < sut.SegmentCount; segmentNumber++)
             {
-                (SegmentBuffer buffer, GetBufferResult result, bool _) = sut.GetBuffer(bufferSize, true, bufferPool);
+                (SegmentBuffer buffer, GetBufferResult result) = sut.GetBuffer(bufferSize, true, bufferPool);
 
                 result.Should().Be(GetBufferResult.Available);
                 buffer.Length.Should().Be(bufferSize);
@@ -319,7 +319,7 @@ namespace KZDev.PerfUtils.Tests
                 buffer.IsAllZeroes().Should().BeTrue();
             }
 
-            (SegmentBuffer _, GetBufferResult checkResult, bool _) = sut.GetBuffer(bufferSize, true, bufferPool);
+            (SegmentBuffer _, GetBufferResult checkResult) = sut.GetBuffer(bufferSize, true, bufferPool);
 
             checkResult.Should().Be(GetBufferResult.GroupFull);
         }
@@ -342,7 +342,7 @@ namespace KZDev.PerfUtils.Tests
             int segmentCount = GetTestInteger(2, sut.SegmentCount);
             int bufferSize = segmentCount * MemorySegmentedBufferGroup.StandardBufferSegmentSize;
 
-            (SegmentBuffer buffer, GetBufferResult result, bool _) = sut.GetBuffer(bufferSize, false, bufferPool);
+            (SegmentBuffer buffer, GetBufferResult result) = sut.GetBuffer(bufferSize, false, bufferPool);
 
             result.Should().Be(GetBufferResult.Available);
             buffer.Length.Should().Be(bufferSize);
@@ -366,7 +366,7 @@ namespace KZDev.PerfUtils.Tests
 
             sut.SetSegmentsUsed(0, markSegmentCount);
 
-            (SegmentBuffer buffer, GetBufferResult result, bool _) = sut.GetBuffer(bufferSize, false, bufferPool);
+            (SegmentBuffer buffer, GetBufferResult result) = sut.GetBuffer(bufferSize, false, bufferPool);
 
             result.Should().Be(GetBufferResult.Available);
             buffer.Length.Should().Be(bufferSize);
@@ -393,7 +393,7 @@ namespace KZDev.PerfUtils.Tests
                 int segmentCount = GetTestInteger(2, sut.SegmentCount - fillSegmentCount + 1);
                 int bufferSize = segmentCount * MemorySegmentedBufferGroup.StandardBufferSegmentSize;
 
-                (SegmentBuffer buffer, GetBufferResult result, bool _) = sut.GetBuffer(bufferSize, false, bufferPool);
+                (SegmentBuffer buffer, GetBufferResult result) = sut.GetBuffer(bufferSize, false, bufferPool);
 
                 result.Should().Be(GetBufferResult.Available);
                 buffer.Length.Should().Be(bufferSize);
@@ -415,7 +415,7 @@ namespace KZDev.PerfUtils.Tests
             int segmentCount = GetTestInteger(2, sut.SegmentCount);
             int bufferSize = segmentCount * MemorySegmentedBufferGroup.StandardBufferSegmentSize;
 
-            (SegmentBuffer buffer, GetBufferResult result, bool _) = sut.GetBuffer(bufferSize, true, bufferPool);
+            (SegmentBuffer buffer, GetBufferResult result) = sut.GetBuffer(bufferSize, true, bufferPool);
 
             result.Should().Be(GetBufferResult.Available);
             buffer.Length.Should().Be(bufferSize);
@@ -440,7 +440,7 @@ namespace KZDev.PerfUtils.Tests
 
             sut.SetSegmentsUsed(0, markSegmentCount);
 
-            (SegmentBuffer buffer, GetBufferResult result, bool _) = sut.GetBuffer(bufferSize, true, bufferPool);
+            (SegmentBuffer buffer, GetBufferResult result) = sut.GetBuffer(bufferSize, true, bufferPool);
 
             result.Should().Be(GetBufferResult.Available);
             buffer.Length.Should().Be(bufferSize);
@@ -468,7 +468,7 @@ namespace KZDev.PerfUtils.Tests
                 int segmentCount = GetTestInteger(2, sut.SegmentCount - fillSegmentCount + 1);
                 int bufferSize = segmentCount * MemorySegmentedBufferGroup.StandardBufferSegmentSize;
 
-                (SegmentBuffer buffer, GetBufferResult result, bool _) = sut.GetBuffer(bufferSize, true, bufferPool);
+                (SegmentBuffer buffer, GetBufferResult result) = sut.GetBuffer(bufferSize, true, bufferPool);
 
                 result.Should().Be(GetBufferResult.Available);
                 buffer.Length.Should().Be(bufferSize);
@@ -508,7 +508,7 @@ namespace KZDev.PerfUtils.Tests
             int expectedSegmentCount = segmentCount - 1;
             int expectedBufferSize = expectedSegmentCount * MemorySegmentedBufferGroup.StandardBufferSegmentSize;
 
-            (SegmentBuffer buffer, GetBufferResult result, bool _) = sut.GetBuffer(bufferSize, true, bufferPool);
+            (SegmentBuffer buffer, GetBufferResult result) = sut.GetBuffer(bufferSize, true, bufferPool);
 
             result.Should().Be(GetBufferResult.Available);
             buffer.Length.Should().Be(expectedBufferSize);
@@ -544,7 +544,7 @@ namespace KZDev.PerfUtils.Tests
             int expectedSegmentCount = segmentCount - 1;
             int expectedBufferSize = expectedSegmentCount * MemorySegmentedBufferGroup.StandardBufferSegmentSize;
 
-            (SegmentBuffer buffer, GetBufferResult result, bool _) = sut.GetBuffer(bufferSize, true, bufferPool);
+            (SegmentBuffer buffer, GetBufferResult result) = sut.GetBuffer(bufferSize, true, bufferPool);
 
             result.Should().Be(GetBufferResult.Available);
             buffer.Length.Should().Be(expectedBufferSize);

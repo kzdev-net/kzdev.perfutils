@@ -922,7 +922,7 @@ namespace KZDev.PerfUtils.Internals
         /// The buffer to use from this group if available, and a result value for the operation.
         /// </returns>
         public (SegmentBuffer Buffer, GetBufferResult Result, bool SegmentIsPreferred)
-            GetBuffer (int bufferSize, bool requireZeroed, MemorySegmentedBufferPool bufferPool, int preferredFirstSegmentIndex = -1)
+            GetBuffer (int bufferSize, bool requireZeroed, MemorySegmentedBufferPool bufferPool, int preferredFirstSegmentIndex)
         {
             Debug.Assert(0 == (bufferSize % StandardBufferSegmentSize), "bufferSize is not an even multiple of StandardBufferSegmentSize");
             int segmentsNeeded = bufferSize / StandardBufferSegmentSize;
@@ -1011,6 +1011,29 @@ namespace KZDev.PerfUtils.Internals
                 arraySegment.Clear();
             }
             return (new SegmentBuffer(arraySegment, bufferInfo), GetBufferResult.Available, segmentIsPreferred);
+        }
+
+        /// <summary>
+        /// Attempts to get a buffer from the group.
+        /// </summary>
+        /// <param name="bufferSize">
+        /// The size of the buffer that we need.
+        /// </param>
+        /// <param name="requireZeroed">
+        /// Indicates if we need to force the buffer to be zeroed.
+        /// </param>
+        /// <param name="bufferPool">
+        /// The buffer pool that is requesting the buffer.
+        /// </param>
+        /// <returns>
+        /// The buffer to use from this group if available, and a result value for the operation.
+        /// </returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public (SegmentBuffer Buffer, GetBufferResult Result)
+            GetBuffer (int bufferSize, bool requireZeroed, MemorySegmentedBufferPool bufferPool)
+        {
+            (SegmentBuffer buffer, GetBufferResult result, bool _) = GetBuffer(bufferSize, requireZeroed, bufferPool, -1);
+            return (buffer, result);
         }
 
         /// <summary>

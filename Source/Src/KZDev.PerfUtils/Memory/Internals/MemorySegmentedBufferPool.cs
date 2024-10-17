@@ -315,7 +315,7 @@ namespace KZDev.PerfUtils.Internals
                 {
                     for (int groupIndex = groupCount - 1; groupIndex >= 0; groupIndex--)
                     {
-                        (SegmentBuffer buffer, GetBufferResult getResult, bool _) =
+                        (SegmentBuffer buffer, GetBufferResult getResult) =
                             generationArray.Groups[groupIndex].GetBuffer(requestedBufferSize, clearNewAllocations, this);
                         switch (getResult)
                         {
@@ -333,7 +333,7 @@ namespace KZDev.PerfUtils.Internals
                 {
                     for (int groupIndex = 0; groupIndex < groupCount; groupIndex++)
                     {
-                        (SegmentBuffer buffer, GetBufferResult getResult, bool _) =
+                        (SegmentBuffer buffer, GetBufferResult getResult) =
                             generationArray.Groups[groupIndex].GetBuffer(requestedBufferSize, clearNewAllocations, this);
                         switch (getResult)
                         {
