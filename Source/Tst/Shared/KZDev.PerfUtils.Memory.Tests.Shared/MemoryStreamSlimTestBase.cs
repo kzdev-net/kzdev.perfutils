@@ -3,6 +3,8 @@
 
 using KZDev.PerfUtils.Internals;
 
+using Xunit.Abstractions;
+
 /*
  * We minimize use of Fluent Assertions in this file because a number of these methods 
  * are hot paths in the tests, and Fluent Assertions often times allocate a number of strings.
@@ -18,7 +20,7 @@ namespace KZDev.PerfUtils.Tests
     /// <summary>
     /// Base class for tests for the <see cref="MemoryStreamSlim"/> class.
     /// </summary>
-    public partial class UsingMemoryStreamSlim
+    public abstract class UsingMemoryStreamSlimUnitTestBase : UnitTestBase
     {
         /*
          * NOTE: For a number of tests here, we purposely run a loop over a set of test values
@@ -30,7 +32,7 @@ namespace KZDev.PerfUtils.Tests
         /// <summary>
         /// A set of sizes used for 'segmented' fill and read operations
         /// </summary>
-        private static readonly int[] TestSegmentSizes = [0x10, 0x47, 0x100, 0x1000, 0x7919, 0x1_0000, 0x2_0000];
+        protected static readonly int[] TestSegmentSizes = [0x10, 0x47, 0x100, 0x1000, 0x7919, 0x1_0000, 0x2_0000];
         //--------------------------------------------------------------------------------   
         /// <summary>
         /// Helper for permuting the values in an array of a range of values
@@ -336,7 +338,7 @@ NextCurrentSizeLoop:;
         /// <param name="expectedBytes">
         /// A copy of the bytes that are expected to be in the stream.
         /// </param>
-        private static void VerifyContentsFromStartToEndByByte (Stream stream, byte[] expectedBytes)
+        protected static void VerifyContentsFromStartToEndByByte (Stream stream, byte[] expectedBytes)
         {
             stream.Position = 0;
             Assert.True(stream.Position == 0, "Position should be 0 to start");
@@ -368,7 +370,7 @@ NextCurrentSizeLoop:;
         /// <param name="blockSize">
         /// The size of the block to use for reading the data.
         /// </param>
-        private static void VerifyContentsFromStartToEndInBlocksWithArrayBuffer (Stream stream, byte[] expectedBytes, int blockSize)
+        protected static void VerifyContentsFromStartToEndInBlocksWithArrayBuffer (Stream stream, byte[] expectedBytes, int blockSize)
         {
             stream.Position = 0;
             Assert.True(stream.Position == 0, "Position should be 0 to start");
@@ -408,7 +410,7 @@ NextCurrentSizeLoop:;
         /// <param name="blockSize">
         /// The size of the block to use for reading the data.
         /// </param>
-        private static void VerifyContentsFromStartToEndInBlocks (Stream stream, byte[] expectedBytes, int blockSize)
+        protected static void VerifyContentsFromStartToEndInBlocks (Stream stream, byte[] expectedBytes, int blockSize)
         {
             stream.Position = 0;
             Assert.True(stream.Position == 0, "Position should be 0 to start");
@@ -472,7 +474,7 @@ NextCurrentSizeLoop:;
         /// <param name="blockSize">
         /// The size of the block to use for reading the data.
         /// </param>
-        private static async Task VerifyContentsFromStartToEndInBlocksAsync (Stream stream, byte[] expectedBytes, int blockSize)
+        protected static async Task VerifyContentsFromStartToEndInBlocksAsync (Stream stream, byte[] expectedBytes, int blockSize)
         {
             stream.Position = 0;
             Assert.True(stream.Position == 0, "Position should be 0 to start");
@@ -532,7 +534,7 @@ NextCurrentSizeLoop:;
         /// <param name="expectedBytes">
         /// A copy of the bytes that are expected to be in the stream.
         /// </param>
-        private static void VerifyContentsFromStartToEndInBlocks (Stream stream, byte[] expectedBytes) =>
+        protected static void VerifyContentsFromStartToEndInBlocks (Stream stream, byte[] expectedBytes) =>
             VerifyContentsFromStartToEndInBlocks(stream, expectedBytes, 0x10);
         //--------------------------------------------------------------------------------
         /// <summary>
@@ -545,7 +547,7 @@ NextCurrentSizeLoop:;
         /// <param name="expectedBytes">
         /// A copy of the bytes that are expected to be in the stream.
         /// </param>
-        private static Task VerifyContentsFromStartToEndInBlocksAsync (Stream stream, byte[] expectedBytes) =>
+        protected static Task VerifyContentsFromStartToEndInBlocksAsync (Stream stream, byte[] expectedBytes) =>
             VerifyContentsFromStartToEndInBlocksAsync(stream, expectedBytes, 0x10);
         //--------------------------------------------------------------------------------
         /// <summary>
@@ -558,7 +560,7 @@ NextCurrentSizeLoop:;
         /// <param name="expectedBytes">
         /// A copy of the bytes that are expected to be in the stream.
         /// </param>
-        private static void VerifyContentsFromStartToEndOneRead (Stream stream, byte[] expectedBytes)
+        protected static void VerifyContentsFromStartToEndOneRead (Stream stream, byte[] expectedBytes)
         {
             stream.Position = 0;
             Assert.True(stream.Position == 0, "Position should be 0 to start");
@@ -592,7 +594,7 @@ NextCurrentSizeLoop:;
         /// <param name="expectedBytes">
         /// A copy of the bytes that are expected to be in the stream.
         /// </param>
-        private static async Task VerifyContentsFromStartToEndOneReadAsync (Stream stream, byte[] expectedBytes)
+        protected static async Task VerifyContentsFromStartToEndOneReadAsync (Stream stream, byte[] expectedBytes)
         {
             stream.Position = 0;
             Assert.True(stream.Position == 0, "Position should be 0 to start");
@@ -620,7 +622,7 @@ NextCurrentSizeLoop:;
         /// <param name="expectedBytes">
         /// A copy of the bytes that are expected to be in the stream.
         /// </param>
-        private static void VerifyContents (Stream stream, byte[] expectedBytes)
+        protected static void VerifyContents (Stream stream, byte[] expectedBytes)
         {
             stream.Position = 0;
             Assert.True(stream.Position == 0, "Position should be 0 to start");
@@ -639,7 +641,7 @@ NextCurrentSizeLoop:;
         /// <param name="expectedBytes">
         /// A copy of the bytes that are expected to be in the stream.
         /// </param>
-        private static async Task VerifyContentsAsync (Stream stream, byte[] expectedBytes)
+        protected static async Task VerifyContentsAsync (Stream stream, byte[] expectedBytes)
         {
             stream.Position = 0;
             Assert.True(stream.Position == 0, "Position should be 0 to start");
@@ -661,7 +663,7 @@ NextCurrentSizeLoop:;
         /// <param name="bySegmentSize">
         /// The size of each segment used to read the data.
         /// </param>
-        private static void VerifyContents (Stream stream, byte[] expectedBytes, int bySegmentSize)
+        protected static void VerifyContents (Stream stream, byte[] expectedBytes, int bySegmentSize)
         {
             stream.Position = 0;
             Assert.True(stream.Position == 0, "Position should be 0 to start");
@@ -683,7 +685,7 @@ NextCurrentSizeLoop:;
         /// <param name="bySegmentSize">
         /// The size of each segment used to read the data.
         /// </param>
-        private static async Task VerifyContentsAsync (Stream stream, byte[] expectedBytes, int bySegmentSize)
+        protected static async Task VerifyContentsAsync (Stream stream, byte[] expectedBytes, int bySegmentSize)
         {
             stream.Position = 0;
             Assert.True(stream.Position == 0, "Position should be 0 to start");
@@ -703,7 +705,7 @@ NextCurrentSizeLoop:;
         /// <param name="expectedBytes">
         /// A copy of the bytes that are expected to be in the stream.
         /// </param>
-        private static void VerifyStreamOperations (Stream stream, byte[] expectedBytes)
+        protected static void VerifyStreamOperations (Stream stream, byte[] expectedBytes)
         {
             stream.Position = 0;
             Assert.True(stream.Position == 0, "Position should be 0 to start");
@@ -729,7 +731,7 @@ NextCurrentSizeLoop:;
         /// <param name="expectedBytes">
         /// A copy of the bytes that are expected to be in the stream.
         /// </param>
-        private static async Task VerifyStreamOperationsAsync (Stream stream, byte[] expectedBytes)
+        protected static async Task VerifyStreamOperationsAsync (Stream stream, byte[] expectedBytes)
         {
             stream.Position = 0;
             Assert.True(stream.Position == 0, "Position should be 0 to start");
@@ -758,7 +760,7 @@ NextCurrentSizeLoop:;
         /// <param name="bySegmentSize">
         /// The size of each segment used to write and read the data.
         /// </param>
-        private static void VerifyStreamOperations (Stream stream, byte[] expectedBytes, int bySegmentSize)
+        protected static void VerifyStreamOperations (Stream stream, byte[] expectedBytes, int bySegmentSize)
         {
             stream.Position = 0;
             Assert.True(stream.Position == 0, "Position should be 0 to start");
@@ -801,7 +803,7 @@ NextCurrentSizeLoop:;
         /// <param name="bySegmentSize">
         /// The size of each segment used to write and read the data.
         /// </param>
-        private static async Task VerifyStreamOperationsAsync (Stream stream, byte[] expectedBytes, int bySegmentSize)
+        protected static async Task VerifyStreamOperationsAsync (Stream stream, byte[] expectedBytes, int bySegmentSize)
         {
             stream.Position = 0;
             Assert.True(stream.Position == 0, "Position should be 0 to start");
@@ -844,7 +846,7 @@ NextCurrentSizeLoop:;
         /// <param name="byteCount">
         /// The number of bytes to write to the stream and verify.
         /// </param>
-        private static async Task TestWriteAndVerifyBytesAsync (IRandomSource randomSource,
+        protected static async Task TestWriteAndVerifyBytesAsync (IRandomSource randomSource,
             Stream stream, int byteCount)
         {
             // Reset the stream
@@ -884,7 +886,7 @@ NextCurrentSizeLoop:;
         /// <param name="bySegmentSize">
         /// The size of each segment used to write and read the data.
         /// </param>
-        private static async Task TestWriteAndVerifyBytesAsync (IRandomSource randomSource,
+        protected static async Task TestWriteAndVerifyBytesAsync (IRandomSource randomSource,
             Stream stream, int byteCount, int bySegmentSize)
         {
             // Reset the stream
@@ -926,7 +928,7 @@ NextCurrentSizeLoop:;
         /// <param name="optionsSetupState">
         /// State data to pass to the options setup method.
         /// </param>
-        private static async Task TestStreamWriteAndVerifyContentAsync<TState> (IRandomSource randomSource,
+        protected static async Task TestStreamWriteAndVerifyContentAsync<TState> (IRandomSource randomSource,
             int dataSize, Action<MemoryStreamSlimOptions, TState> optionsSetup,
             TState optionsSetupState)
         {
@@ -956,7 +958,7 @@ NextCurrentSizeLoop:;
         /// <param name="optionsSetupState">
         /// State data to pass to the options setup method.
         /// </param>
-        private static async Task TestStreamWriteAndVerifyContentAsync<TState> (IRandomSource randomSource,
+        protected static async Task TestStreamWriteAndVerifyContentAsync<TState> (IRandomSource randomSource,
             int dataSize, int bySegmentSize, Action<MemoryStreamSlimOptions, TState> optionsSetup,
             TState optionsSetupState)
         {
@@ -968,6 +970,18 @@ NextCurrentSizeLoop:;
         //================================================================================
 
         #endregion Internal Test Methods
+
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UsingMemoryStreamSlimUnitTestBase"/> class.
+        /// </summary>
+        /// <param name="xUnitTestOutputHelper">
+        /// The Xunit test output helper that can be used to output test messages
+        /// </param>
+        protected UsingMemoryStreamSlimUnitTestBase (ITestOutputHelper xUnitTestOutputHelper) : base(xUnitTestOutputHelper)
+        {
+        }
+        //--------------------------------------------------------------------------------
     }
     //################################################################################
 }

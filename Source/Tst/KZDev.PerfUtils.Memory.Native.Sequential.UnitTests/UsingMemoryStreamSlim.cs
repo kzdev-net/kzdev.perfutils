@@ -11,7 +11,7 @@ namespace KZDev.PerfUtils.Tests
     /// parallel with other tests.
     /// </summary>
     [Trait(TestConstants.TestTrait.Category, "Memory")]
-    public partial class UsingMemoryStreamSlim : UnitTestBase
+    public partial class UsingMemoryStreamSlim : UsingMemoryStreamSlimUnitTestBase
     {
         /// <summary>
         /// The minimum number of test loops to run for the tests.

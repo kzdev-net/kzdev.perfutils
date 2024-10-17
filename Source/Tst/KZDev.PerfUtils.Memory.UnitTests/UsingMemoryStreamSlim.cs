@@ -16,7 +16,7 @@ namespace KZDev.PerfUtils.Tests
     /// Unit tests for the <see cref="MemoryStreamSlim"/> class.
     /// </summary>
     [Trait(TestConstants.TestTrait.Category, "Memory")]
-    public partial class UsingMemoryStreamSlim : UnitTestBase
+    public partial class UsingMemoryStreamSlim : UsingMemoryStreamSlimUnitTestBase
     {
         /// <summary>
         /// The size of the test read/write segments.

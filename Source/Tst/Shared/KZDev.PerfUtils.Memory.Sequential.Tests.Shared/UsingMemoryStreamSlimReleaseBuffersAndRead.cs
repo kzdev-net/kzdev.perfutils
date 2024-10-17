@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Kevin Zehrer
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+using Xunit.Abstractions;
+
 namespace KZDev.PerfUtils.Tests
 {
     //################################################################################
@@ -8,19 +10,37 @@ namespace KZDev.PerfUtils.Tests
     /// Unit tests for the <see cref="MemoryStreamSlim"/> class that never run in 
     /// parallel with other tests.
     /// </summary>
-    public partial class UsingMemoryStreamSlim
+    public class UsingMemoryStreamSlimReleaseBuffersAndRead : UsingMemoryStreamSlimUnitTestBase
     {
+        /// <summary>
+        /// The minimum number of test loops to run for the tests.
+        /// </summary>
+        private const int MinimumTestLoops = 100;
+        /// <summary>
+        /// The maximum number of test loops to run for the tests.
+        /// </summary>
+        private const int MaximumTestLoops = 500;
         //--------------------------------------------------------------------------------
         /// <summary>
-        /// Static constructor for the <see cref="UsingMemoryStreamSlim"/> class.
+        /// Static constructor for the <see cref="UsingMemoryStreamSlimReleaseBuffersAndRead"/> class.
         /// </summary>
-        static UsingMemoryStreamSlim ()
+        static UsingMemoryStreamSlimReleaseBuffersAndRead ()
         {
 #if NATIVEMEMORY
             MemoryStreamSlim.UseNativeLargeMemoryBuffers = true;
 #else
             MemoryStreamSlim.UseNativeLargeMemoryBuffers = false;
 #endif
+        }
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UsingMemoryStreamSlimReleaseBuffersAndRead"/> class.
+        /// </summary>
+        /// <param name="xUnitTestOutputHelper">
+        /// The Xunit test output helper that can be used to output test messages
+        /// </param>
+        public UsingMemoryStreamSlimReleaseBuffersAndRead (ITestOutputHelper xUnitTestOutputHelper) : base(xUnitTestOutputHelper)
+        {
         }
         //--------------------------------------------------------------------------------
 
@@ -51,7 +71,7 @@ namespace KZDev.PerfUtils.Tests
                     // ReSharper disable once MethodHasAsyncOverload
                     byte[] dataCopy = MemoryTestPrep.FillStreamAndArrayWithRandomBytes(testService, byteCount, testSegmentSize);
                     // Pick an unusual block size
-                    VerifyContentsFromStartToEndInBlocks(testService, dataCopy, 0x47);
+                    await VerifyContentsFromStartToEndInBlocksAsync(testService, dataCopy, 0x47);
                 }
 
             // Release the memory buffers
@@ -68,7 +88,7 @@ namespace KZDev.PerfUtils.Tests
                     // ReSharper disable once MethodHasAsyncOverload
                     byte[] dataCopy = MemoryTestPrep.FillStreamAndArrayWithRandomBytes(testService, byteCount, testSegmentSize);
                     // Pick an unusual block size
-                    VerifyContentsFromStartToEndInBlocks(testService, dataCopy, 0x47);
+                    await VerifyContentsFromStartToEndInBlocksAsync(testService, dataCopy, 0x47);
                 }
         }
         //--------------------------------------------------------------------------------    
