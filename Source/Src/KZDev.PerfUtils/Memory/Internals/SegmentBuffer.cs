@@ -155,10 +155,7 @@ namespace KZDev.PerfUtils.Internals
             Debug.Assert(BufferInfo.BlockId == nextBuffer.BufferInfo.BlockId, "next buffer is from a different block");
 
             // Get the new memory segment that is the combination of the two segments and create the new segment buffer
-            SegmentBufferInfo replaceSegmentBufferInfo =
-                new SegmentBufferInfo(nextBuffer.BufferInfo.BlockId, BufferInfo.SegmentId,
-                    BufferInfo.SegmentCount + nextBuffer.SegmentCount, nextBuffer.BufferInfo.BufferPool);
-            return new SegmentBuffer(MemorySegment.Extend(nextBuffer.Length), replaceSegmentBufferInfo);
+            return new SegmentBuffer(MemorySegment.Extend(nextBuffer.Length), BufferInfo.Concat(nextBuffer.BufferInfo));
         }
         //--------------------------------------------------------------------------------
         /// <summary>
