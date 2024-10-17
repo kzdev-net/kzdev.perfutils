@@ -327,6 +327,71 @@ namespace KZDev.PerfUtils.Tests
 
         #endregion Single Segment Allocation
 
+
+
+
+
+
+        #region Single Preferred Segment Allocation
+
+        //--------------------------------------------------------------------------------    
+        /// <summary>
+        /// Tests getting a single preferred segment buffer from the <see cref="MemorySegmentedBufferGroup"/> class
+        /// which should be allocated at the preferred segment index.
+        /// </summary>
+        [Fact]
+        public void UsingMemoryStreamSegmentedBufferGroup_GetSinglePreferredSegmentBuffer_ShouldAllocateStartingAtPreferredIndex ()
+        {
+            MemorySegmentedBufferGroup sut = GetSut();
+            MemorySegmentedBufferPool bufferPool = GetTestBufferPool();
+            int requestFirstBufferSize = MemorySegmentedBufferGroup.StandardBufferSegmentSize * GetTestInteger(1, sut.SegmentCount);
+
+            (SegmentBuffer buffer, GetBufferResult result) = sut.GetBuffer(requestFirstBufferSize, false, bufferPool);
+
+            result.Should().Be(GetBufferResult.Available);
+            buffer.Length.Should().Be(requestFirstBufferSize);
+            buffer.BufferInfo.BlockId.Should().Be(sut.Id);
+            buffer.BufferInfo.SegmentId.Should().Be(0);
+
+            (SegmentBuffer nextBuffer, GetBufferResult nextResult, bool isPreferredSegment) =
+                sut.GetBuffer(MemorySegmentedBufferGroup.StandardBufferSegmentSize, false, bufferPool, buffer.SegmentCount);
+            nextResult.Should().Be(GetBufferResult.Available);
+            nextBuffer.Length.Should().Be(MemorySegmentedBufferGroup.StandardBufferSegmentSize);
+            isPreferredSegment.Should().BeTrue();
+            nextBuffer.BufferInfo.BlockId.Should().Be(sut.Id);
+            nextBuffer.BufferInfo.SegmentId.Should().Be(buffer.SegmentCount);
+        }
+        //--------------------------------------------------------------------------------    
+        /// <summary>
+        /// Tests getting a single preferred segment buffer from the <see cref="MemorySegmentedBufferGroup"/> class
+        /// which should be allocated at the preferred segment index.
+        /// </summary>
+        [Fact]
+        public void UsingMemoryStreamSegmentedBufferGroup_GetSinglePreferredSegmentBuffer_FromSingleAvailableSegment_ShouldAllocateStartingAtPreferredIndex ()
+        {
+            MemorySegmentedBufferGroup sut = GetSut();
+            MemorySegmentedBufferPool bufferPool = GetTestBufferPool();
+            int requestFirstBufferSize = MemorySegmentedBufferGroup.StandardBufferSegmentSize * (sut.SegmentCount - 1);
+
+            (SegmentBuffer buffer, GetBufferResult result) = sut.GetBuffer(requestFirstBufferSize, false, bufferPool);
+
+            result.Should().Be(GetBufferResult.Available);
+            buffer.Length.Should().Be(requestFirstBufferSize);
+            buffer.BufferInfo.BlockId.Should().Be(sut.Id);
+            buffer.BufferInfo.SegmentId.Should().Be(0);
+
+            (SegmentBuffer nextBuffer, GetBufferResult nextResult, bool isPreferredSegment) =
+                sut.GetBuffer(MemorySegmentedBufferGroup.StandardBufferSegmentSize, false, bufferPool, buffer.SegmentCount);
+            nextResult.Should().Be(GetBufferResult.Available);
+            nextBuffer.Length.Should().Be(MemorySegmentedBufferGroup.StandardBufferSegmentSize);
+            isPreferredSegment.Should().BeTrue();
+            nextBuffer.BufferInfo.BlockId.Should().Be(sut.Id);
+            nextBuffer.BufferInfo.SegmentId.Should().Be(buffer.SegmentCount);
+        }
+        //--------------------------------------------------------------------------------    
+
+        #endregion Single Preferred Segment Allocation
+
         #region Multiple Segment Allocation
 
         //--------------------------------------------------------------------------------    
@@ -553,6 +618,70 @@ namespace KZDev.PerfUtils.Tests
         //--------------------------------------------------------------------------------    
 
         #endregion Multiple Segment Allocation
+
+        #region Multiple Preferred Segment Allocation
+
+        //--------------------------------------------------------------------------------    
+        /// <summary>
+        /// Tests getting a multiple preferred segment buffer from the <see cref="MemorySegmentedBufferGroup"/> class
+        /// which should be allocated at the preferred segment index.
+        /// </summary>
+        [Fact]
+        public void UsingMemoryStreamSegmentedBufferGroup_GetMultiplePreferredSegmentBuffer_ShouldAllocateStartingAtPreferredIndex ()
+        {
+            MemorySegmentedBufferGroup sut = GetSut();
+            MemorySegmentedBufferPool bufferPool = GetTestBufferPool();
+            int firstRequestSegmentCount = GetTestInteger(1, sut.SegmentCount - 1);
+            int requestFirstBufferSize = MemorySegmentedBufferGroup.StandardBufferSegmentSize * firstRequestSegmentCount;
+
+            (SegmentBuffer buffer, GetBufferResult result) = sut.GetBuffer(requestFirstBufferSize, false, bufferPool);
+
+            result.Should().Be(GetBufferResult.Available);
+            buffer.Length.Should().Be(requestFirstBufferSize);
+            buffer.BufferInfo.BlockId.Should().Be(sut.Id);
+            buffer.BufferInfo.SegmentId.Should().Be(0);
+
+            int nextRequestBufferSize = MemorySegmentedBufferGroup.StandardBufferSegmentSize * (sut.SegmentCount - firstRequestSegmentCount);
+            (SegmentBuffer nextBuffer, GetBufferResult nextResult, bool isPreferredSegment) =
+                sut.GetBuffer(nextRequestBufferSize, false, bufferPool, buffer.SegmentCount);
+            nextResult.Should().Be(GetBufferResult.Available);
+            nextBuffer.Length.Should().Be(nextRequestBufferSize);
+            isPreferredSegment.Should().BeTrue();
+            nextBuffer.BufferInfo.BlockId.Should().Be(sut.Id);
+            nextBuffer.BufferInfo.SegmentId.Should().Be(buffer.SegmentCount);
+        }
+        //--------------------------------------------------------------------------------    
+        /// <summary>
+        /// Tests getting a multiple preferred segment buffer from the <see cref="MemorySegmentedBufferGroup"/> class
+        /// which should be allocated at the preferred segment index.
+        /// </summary>
+        [Fact]
+        public void UsingMemoryStreamSegmentedBufferGroup_GetMultiplePreferredSegmentBuffer_FromSingleAvailableSegment_ShouldAllocateStartingAtPreferredIndex ()
+        {
+            MemorySegmentedBufferGroup sut = GetSut();
+            MemorySegmentedBufferPool bufferPool = GetTestBufferPool();
+            int requestFirstBufferSize = MemorySegmentedBufferGroup.StandardBufferSegmentSize * (sut.SegmentCount - 1);
+
+            (SegmentBuffer buffer, GetBufferResult result) = sut.GetBuffer(requestFirstBufferSize, false, bufferPool);
+
+            result.Should().Be(GetBufferResult.Available);
+            buffer.Length.Should().Be(requestFirstBufferSize);
+            buffer.BufferInfo.BlockId.Should().Be(sut.Id);
+            buffer.BufferInfo.SegmentId.Should().Be(0);
+
+            // We are going to request a buffer that is one segment larger than the available segment, but we should
+            // get just one segment back
+            (SegmentBuffer nextBuffer, GetBufferResult nextResult, bool isPreferredSegment) =
+                sut.GetBuffer(MemorySegmentedBufferGroup.StandardBufferSegmentSize * 2, false, bufferPool, buffer.SegmentCount);
+            nextResult.Should().Be(GetBufferResult.Available);
+            nextBuffer.Length.Should().Be(MemorySegmentedBufferGroup.StandardBufferSegmentSize);
+            isPreferredSegment.Should().BeTrue();
+            nextBuffer.BufferInfo.BlockId.Should().Be(sut.Id);
+            nextBuffer.BufferInfo.SegmentId.Should().Be(buffer.SegmentCount);
+        }
+        //--------------------------------------------------------------------------------    
+
+        #endregion Multiple Preferred Segment Allocation
 
         //================================================================================
 
