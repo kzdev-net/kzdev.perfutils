@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Kevin Zehrer
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
+
 using FluentAssertions;
 
 namespace KZDev.PerfUtils.Tests
@@ -10,6 +12,7 @@ namespace KZDev.PerfUtils.Tests
     /// Unit tests for the <see cref="InterlockedOps"/> Xor operations.
     /// </summary>
     [Trait(TestConstants.TestTrait.Category, TestConstants.TestCategory.Concurrency)]
+    [ExcludeFromCodeCoverage]
     public partial class UsingInterlockedOps : UnitTestBase
     {
         #region Xor Tests
