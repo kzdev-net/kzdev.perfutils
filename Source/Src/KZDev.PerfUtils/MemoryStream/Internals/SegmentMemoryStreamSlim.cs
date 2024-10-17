@@ -705,9 +705,7 @@ namespace KZDev.PerfUtils.Internals
                 _bufferList.Add(new SegmentBufferVirtualInfo(newBuffer, newBuffer.Length, newBuffer.SegmentCount));
                 return;
             }
-            SegmentBufferVirtualInfo previousListBuffer = _bufferList[^1];
-            _bufferList.Add(new SegmentBufferVirtualInfo(newBuffer, newBuffer.Length + previousListBuffer.SegmentEndOffset,
-                newBuffer.SegmentCount + previousListBuffer.SegmentEndCount));
+            _bufferList.Add(SegmentBufferVirtualInfo.FromPrevious(newBuffer, _bufferList[^1]));
         }
         //--------------------------------------------------------------------------------
         /// <summary>
@@ -951,9 +949,7 @@ namespace KZDev.PerfUtils.Internals
                 {
                     // Adjust the virtual information for the last buffer in the list based on the 
                     // new buffer and the second to last buffer in the list.
-                    SegmentBufferVirtualInfo previousReferenceListBuffer = _bufferList[^2];
-                    _bufferList[^1] = new SegmentBufferVirtualInfo(replaceBuffer, replaceBuffer.Length + previousReferenceListBuffer.SegmentEndOffset,
-                        replaceBuffer.SegmentCount + previousReferenceListBuffer.SegmentEndCount);
+                    _bufferList[^1] = SegmentBufferVirtualInfo.FromPrevious(replaceBuffer, _bufferList[^2]);
                 }
                 capacityNeeded -= nextBuffer.Length;
             }
@@ -1063,9 +1059,7 @@ namespace KZDev.PerfUtils.Internals
                         _bufferList[0] = new SegmentBufferVirtualInfo(newBuffer, newBuffer.Length, newBuffer.SegmentCount);
                     else
                     {
-                        SegmentBufferVirtualInfo previousListBuffer = _bufferList[^2];
-                        _bufferList[^1] = new SegmentBufferVirtualInfo(newBuffer, newBuffer.Length + previousListBuffer.SegmentEndOffset,
-                            newBuffer.SegmentCount + previousListBuffer.SegmentEndCount);
+                        _bufferList[^1] = SegmentBufferVirtualInfo.FromPrevious(newBuffer, _bufferList[^2]);
                     }
                     break;
                 }
