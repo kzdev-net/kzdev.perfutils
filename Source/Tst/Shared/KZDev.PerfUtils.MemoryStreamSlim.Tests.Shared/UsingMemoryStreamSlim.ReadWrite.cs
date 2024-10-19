@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Kevin Zehrer
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-using System.IO;
 using System.Runtime.ExceptionServices;
 
 using FluentAssertions;
@@ -18,18 +17,6 @@ namespace KZDev.PerfUtils.Tests
     /// </summary>
     public partial class UsingMemoryStreamSlim
     {
-        //--------------------------------------------------------------------------------
-        /// <summary>
-        /// Static constructor for the <see cref="UsingMemoryStreamSlim"/> class.
-        /// </summary>
-        static UsingMemoryStreamSlim ()
-        {
-#if NATIVEMEMORY
-            MemoryStreamSlim.UseNativeLargeMemoryBuffers = true;
-#else
-            MemoryStreamSlim.UseNativeLargeMemoryBuffers = false;
-#endif
-        }
         //--------------------------------------------------------------------------------
         /// <summary>
         /// Test helper to instantiate a new <see cref="MemoryStreamSlim"/> object as the test subject service.

@@ -993,11 +993,13 @@ namespace KZDev.PerfUtils
 
         //--------------------------------------------------------------------------------
         /// <inheritdoc />
+#pragma warning disable HAA0601
         public override string ToString () =>
             IsDisposed ?
                 $@"(Disposed) ID = {Id}" :
                 IsOpen ? $@"ID = {Id}, Length = {Length}, Position = {Position}, Mode = {Mode.GetString()}" :
                     $@"(Closed) ID = {Id}";
+#pragma warning restore HAA0601
         //--------------------------------------------------------------------------------
 
         #endregion Overrides of Object

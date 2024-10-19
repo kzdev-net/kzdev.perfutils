@@ -29,6 +29,19 @@ namespace KZDev.PerfUtils.Tests
          * may have, the unit test explorer can get difficult to navigate.
          */
 
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Static constructor for the <see cref="UsingMemoryStreamSlimUnitTestBase"/> class.
+        /// </summary>
+        static UsingMemoryStreamSlimUnitTestBase ()
+        {
+#if NATIVEMEMORY
+            MemoryStreamSlim.UseNativeLargeMemoryBuffers = true;
+#else
+            MemoryStreamSlim.UseNativeLargeMemoryBuffers = false;
+#endif
+        }
+        //--------------------------------------------------------------------------------
         /// <summary>
         /// A set of sizes used for 'segmented' fill and read operations
         /// </summary>

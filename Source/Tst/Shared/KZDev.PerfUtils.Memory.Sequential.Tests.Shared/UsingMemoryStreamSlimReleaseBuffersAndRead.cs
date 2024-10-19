@@ -22,18 +22,6 @@ namespace KZDev.PerfUtils.Tests
         private const int MaximumTestLoops = 500;
         //--------------------------------------------------------------------------------
         /// <summary>
-        /// Static constructor for the <see cref="UsingMemoryStreamSlimReleaseBuffersAndRead"/> class.
-        /// </summary>
-        static UsingMemoryStreamSlimReleaseBuffersAndRead ()
-        {
-#if NATIVEMEMORY
-            MemoryStreamSlim.UseNativeLargeMemoryBuffers = true;
-#else
-            MemoryStreamSlim.UseNativeLargeMemoryBuffers = false;
-#endif
-        }
-        //--------------------------------------------------------------------------------
-        /// <summary>
         /// Initializes a new instance of the <see cref="UsingMemoryStreamSlimReleaseBuffersAndRead"/> class.
         /// </summary>
         /// <param name="xUnitTestOutputHelper">

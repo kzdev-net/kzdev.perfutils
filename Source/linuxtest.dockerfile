@@ -21,4 +21,4 @@ RUN dotnet restore
 RUN dotnet build --no-restore
 
 # Run the tests
-CMD ["dotnet", "test", "--no-build", "--filter", "Model!=Concurrency", "--logger", "xunit;LogFileName={assembly}.{framework}.results.xml", "--results-directory", "/app/Tst/linux-tests-results"]
+CMD ["dotnet", "test", "--no-build", "--logger", "xunit;LogFileName={assembly}.{framework}.results.xml", "--results-directory", "/app/Tst/linux-tests-results"]
