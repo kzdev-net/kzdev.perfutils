@@ -308,8 +308,6 @@ Global
 		Tst\Shared\KZDev.PerfUtils.Memory.Tests.Shared\KZDev.PerfUtils.Memory.Shared.projitems*{81f9cd93-4149-4d87-91e4-650ddd2d83cc}*SharedItemsImports = 5
 		Tst\Shared\KZDev.PerfUtils.Memory.Tests.Shared\KZDev.PerfUtils.Memory.Shared.projitems*{cba74df8-c294-4bc4-a0e5-bad1582da56a}*SharedItemsImports = 13
 		Tst\Shared\KZDev.PerfUtils.Memory.Tests.Shared\KZDev.PerfUtils.Memory.Shared.projitems*{e057e292-e832-49ed-8ad3-fa39e2b15991}*SharedItemsImports = 5
-		Tst\Shared\KZDev.PerfUtils.MemoryStreamSlim.Tests.Shared\KZDev.PerfUtils.MemoryStreamSlim.Tests.Shared.projitems*{e057e292-e832-49ed-8ad3-fa39e2b15991}*SharedItemsImports = 5
-		Tst\Shared\KZDev.PerfUtils.TestMocks.Shared\KZDev.PerfUtils.TestMocks.Shared.projitems*{e057e292-e832-49ed-8ad3-fa39e2b15991}*SharedItemsImports = 5
 		Tst\Shared\KZDev.PerfUtils.Memory.Tests.Shared\KZDev.PerfUtils.Memory.Shared.projitems*{e9cf827d-6ac1-4cef-88e3-746822d9f296}*SharedItemsImports = 5
 		Tst\Shared\KZDev.PerfUtils.MemoryStreamSlim.Tests.Shared\KZDev.PerfUtils.MemoryStreamSlim.Tests.Shared.projitems*{e9cf827d-6ac1-4cef-88e3-746822d9f296}*SharedItemsImports = 5
 		Tst\Shared\KZDev.PerfUtils.TestMocks.Shared\KZDev.PerfUtils.TestMocks.Shared.projitems*{e9cf827d-6ac1-4cef-88e3-746822d9f296}*SharedItemsImports = 5

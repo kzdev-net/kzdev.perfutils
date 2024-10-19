@@ -31,8 +31,4 @@
 
 	<Import Project="..\Shared\KZDev.PerfUtils.Memory.Tests.Shared\KZDev.PerfUtils.Memory.Shared.projitems" Label="Shared" />
 
-	<Import Project="..\Shared\KZDev.PerfUtils.MemoryStreamSlim.Tests.Shared\KZDev.PerfUtils.MemoryStreamSlim.Tests.Shared.projitems" Label="Shared" />
-
-	<Import Project="..\Shared\KZDev.PerfUtils.TestMocks.Shared\KZDev.PerfUtils.TestMocks.Shared.projitems" Label="Shared" />
-
 </Project>
