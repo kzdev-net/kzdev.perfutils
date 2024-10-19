@@ -23,7 +23,7 @@ namespace KZDev.PerfUtils.Tests
     public abstract class UsingMemoryStreamSlimUnitTestBase : UnitTestBase
     {
         /*
-         * NOTE: For a number of tests here, we purposely run a loop over a set of test values
+         * NOTE: For a number of tests in derived classes, we purposely run a loop over a set of test values
          * instead of using Theory type tests because the test explorer shows each Theory
          * value set as a unique test and given the large number of different test values we 
          * may have, the unit test explorer can get difficult to navigate.

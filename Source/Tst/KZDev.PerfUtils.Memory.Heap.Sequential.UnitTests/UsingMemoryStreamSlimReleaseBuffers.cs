@@ -38,6 +38,11 @@ namespace KZDev.PerfUtils.Tests
         /// Tests writing data to the stream and verifying that the contents of the other stream
         /// is identical to the data written.
         /// </summary>
+        /// <remarks>
+        /// Clearly this test is very specific to using GC Heap memory and would not apply
+        /// to using unmanaged memory, so this test is contained in the heap specific test
+        /// project.
+        /// </remarks>
         [Fact]
         public void UsingMemoryStreamSlimReleaseBuffers_CopyFullToStream_SettingReleaseMemoryProperlyReleasesMemory ()
         {
