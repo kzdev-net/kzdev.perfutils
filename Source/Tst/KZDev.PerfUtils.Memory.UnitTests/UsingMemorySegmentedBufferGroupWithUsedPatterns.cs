@@ -152,8 +152,8 @@ namespace KZDev.PerfUtils.Tests
         /// <param name="blockZeroFlags">
         /// The ulong array of block zero flags to set in the buffer group.
         /// </param>
-        private static void SetBlockUsedFlags (MemorySegmentedBufferGroup bufferGroup, 
-            ulong[] blockUsedFlags, ulong[] blockZeroFlags)
+        private static (int availableSegmentCount, Dictionary<int, List<int>> availableSegmentMap) 
+            SetBlockUsedFlags (MemorySegmentedBufferGroup bufferGroup, ulong[] blockUsedFlags, ulong[] blockZeroFlags)
         {
             // Get the number of segments in the buffer group
             int segmentFlagsToSet = GetSegmentCount(bufferGroup);
@@ -162,9 +162,14 @@ namespace KZDev.PerfUtils.Tests
             ulong[] setBlockUsedFlags = new ulong[blockFlagArraySize];
             ulong[] setBlockZeroFlags = new ulong[blockFlagArraySize];
             // Track the number of segments marked in use
+            int segmentsAvailable = segmentFlagsToSet;
             int segmentsInUse = 0;
             int blockFlagIndex = 0;
             ulong blockFlagMask = 1;
+            Dictionary<int, List<int>> availableSegmentMap = new();
+            // Track the running list of available segments
+            int? availableSegmentRunStart = null;
+            int availableSegmentRunCount = 0;
 
             // Loop through the requested flags
             for (int segmentIndex = 0; segmentIndex < segmentFlagsToSet; segmentIndex++)
@@ -175,6 +180,18 @@ namespace KZDev.PerfUtils.Tests
                 {
                     setBlockUsedFlags[blockFlagIndex] |= blockFlagMask;
                     segmentsInUse++;
+                    segmentsAvailable--;
+                    // Store and reset the available segment run tracking
+                    if (availableSegmentRunCount > 0)
+                    {
+                        UpdateAvailableSegmentMap(availableSegmentMap, ref availableSegmentRunStart, ref availableSegmentRunCount);
+                    }
+                }
+                else
+                {
+                    // Update the available segment run tracking
+                    availableSegmentRunStart??= segmentIndex;
+                    availableSegmentRunCount++;
                 }
 
                 // Set the block zero flag
@@ -194,10 +211,13 @@ namespace KZDev.PerfUtils.Tests
                 blockFlagMask = 1;
                 blockFlagIndex++;
             }
+            // Do a last update of the available segment map
+            UpdateAvailableSegmentMap(availableSegmentMap, ref availableSegmentRunStart, ref availableSegmentRunCount);
 
             BlockUsedFlagsField.SetValue(bufferGroup, setBlockUsedFlags);
             BlockZeroFlagsField.SetValue(bufferGroup, setBlockZeroFlags);
             SetSegmentsInUse(bufferGroup, segmentsInUse);
+            return (segmentsAvailable, availableSegmentMap);
         }
         //--------------------------------------------------------------------------------
         /// <summary>
@@ -213,8 +233,8 @@ namespace KZDev.PerfUtils.Tests
         /// <param name="blockZeroFlags">
         /// The boolean array of block zero flags to set in the buffer group.
         /// </param>
-        private static void SetBlockUsedFlags (MemorySegmentedBufferGroup bufferGroup, 
-            bool[] blockUsedFlags, bool[] blockZeroFlags)
+        private static (int availableSegmentCount, Dictionary<int, List<int>> availableSegmentMap)
+            SetBlockUsedFlags (MemorySegmentedBufferGroup bufferGroup, bool[] blockUsedFlags, bool[] blockZeroFlags)
         {
             // Get the number of segments in the buffer group
             int segmentFlagsToSet = GetSegmentCount(bufferGroup);
@@ -239,7 +259,7 @@ namespace KZDev.PerfUtils.Tests
                     setBlockZeroFlags[flagIndex] |= flagMask;
                 }
             }
-            SetBlockUsedFlags (bufferGroup, setBlockUsedFlags, setBlockZeroFlags);
+            return SetBlockUsedFlags (bufferGroup, setBlockUsedFlags, setBlockZeroFlags);
         }
         //--------------------------------------------------------------------------------
         /// <summary>
@@ -303,18 +323,7 @@ namespace KZDev.PerfUtils.Tests
             bool[] segmentInUseFlags = new bool[segmentCount];
             bool[] segmentZeroFlags = new bool[segmentCount];
             // Track the number of segments marked as available
-            int segmentsAvailable = segmentCount;
             int patternIndex = 0;
-            Dictionary<int, List<int>> availableSegmentMap = new();
-            // Track the running list of available segments
-            int? availableSegmentRunStart = null;
-            int availableSegmentRunCount = 0;
-            // If we have a skip count, we need to track the available segments
-            if (skipCount > 0)
-            {
-                availableSegmentRunStart = 0;
-                availableSegmentRunCount = skipCount;
-            }
             // Get the values for the first pattern
             (int inUseCount, int availableCount, bool availableAreZeroed) = pattern[patternIndex];
 
@@ -325,20 +334,12 @@ namespace KZDev.PerfUtils.Tests
                 if (inUseCount > 0)
                 {
                     segmentInUseFlags[segmentIndex] = true;
-                    segmentsAvailable--;
                     inUseCount--;
                     // Store and reset the available segment run tracking
-                    if (availableSegmentRunCount > 0)
-                    {
-                        UpdateAvailableSegmentMap(availableSegmentMap, ref availableSegmentRunStart, ref availableSegmentRunCount);
-                    }
                     continue;
                 }
                 if (availableCount > 0)
                 {
-                    // Update the available segment run tracking
-                    availableSegmentRunStart??= segmentIndex;
-                    availableSegmentRunCount++;
                     // Set the zero flag for the segment if needed
                     segmentZeroFlags[segmentIndex] = availableAreZeroed;
                     availableCount--;
@@ -350,12 +351,9 @@ namespace KZDev.PerfUtils.Tests
                 // But we also have to back up the segment index
                 segmentIndex--;
             }
-            // Do a last update of the available segment map
-            UpdateAvailableSegmentMap(availableSegmentMap, ref availableSegmentRunStart, ref availableSegmentRunCount);
 
             // Set the flags in the buffer group
-            SetBlockUsedFlags(bufferGroup, segmentInUseFlags, segmentZeroFlags);
-            return (segmentsAvailable, availableSegmentMap);
+            return SetBlockUsedFlags(bufferGroup, segmentInUseFlags, segmentZeroFlags);
         }
         //--------------------------------------------------------------------------------
         /// <summary>
@@ -436,7 +434,7 @@ namespace KZDev.PerfUtils.Tests
             UpdateAvailableSegmentMap(availableSegmentMap, ref availableSegmentRunStart, ref availableSegmentRunCount);
 
             // Set the flags in the buffer group
-            SetBlockUsedFlags(bufferGroup, segmentInUseFlags, segmentZeroFlags);
+            return SetBlockUsedFlags(bufferGroup, segmentInUseFlags, segmentZeroFlags);
             return (segmentsAvailable, availableSegmentMap);
         }
         //--------------------------------------------------------------------------------
@@ -1036,6 +1034,82 @@ namespace KZDev.PerfUtils.Tests
             }
         }
         //--------------------------------------------------------------------------------    
+        /// <summary>
+        /// Tests the <see cref="MemorySegmentedBufferGroup.GetBuffer(int, bool, MemorySegmentedBufferPool)"/> 
+        /// method to get the available buffers when the current used pattern is randomly generated.
+        /// This should return a series of repeating segment buffers based on the pattern that are zeroed.
+        /// </summary>
+        [Fact]
+        public void UsingMemorySegmentedBufferGroup_GetRemainingBuffers_WithRandomUsedBlockFlags_GetsProperBuffers ()
+        {
+            const int BlockFlagSetTestCount = 9;
+            for (int testLoop = 0; testLoop < 1000; testLoop++)
+            {
+                (MemorySegmentedBufferGroup sut, MemorySegmentedBufferPool bufferPool) = GetTestGroupAndPool(segmentCount: BlockFlagSetSize * BlockFlagSetTestCount);
+                ulong[] setUsedBlockFlags = Enumerable.Range(0, BlockFlagSetSize).Select(_ => GetTestUnsignedLongInteger()).ToArray();
+                //ulong[] setZeroBlockCounts = Enumerable.Range(0, BlockFlagSetSize).Select(blockIndex => GetTestUnsignedLongInteger() & ~(setUsedBlockCounts[blockIndex])).ToArray();
+                ulong[] setZeroBlockFlags = Enumerable.Repeat(0, BlockFlagSetSize).Select(_ => 0UL).ToArray();
+
+                (int availableSegments, Dictionary<int, List<int>> availableSegmentMap) = SetBlockUsedFlags(sut, setUsedBlockFlags, setZeroBlockFlags);
+
+                TestWriteLine($"Test Loop: {testLoop} - Used Block Flags: {string.Join(", ", setUsedBlockFlags.Select(flag => flag.ToString("X16")))} - Zero Block Flags: {string.Join(", ", setZeroBlockFlags.Select(flag => flag.ToString("X16")))}");
+
+                int expectedUsedSegments = sut.SegmentCount - availableSegments;
+                GetSegmentsInUse(sut).Should().Be(expectedUsedSegments);
+
+                // Walk through the available segments based on the size of those segments - we expect to get the larger segment groups first
+                IEnumerator<KeyValuePair<int, List<int>>> availableSegmentSizeEnumerator = availableSegmentMap
+                    .OrderByDescending(kvp => kvp.Key)
+                    .GetEnumerator();
+                availableSegmentSizeEnumerator.MoveNext().Should().BeTrue();
+
+                // The index of the current segment size offset in the available segment map
+                int availableSegmentSizeOffsetIndex = 0;
+
+                // Try to get all the available segments
+                while (availableSegments > 0)
+                {
+                    try
+                    {
+                        // Check if we need to move to the next segment size
+                        while (availableSegmentSizeOffsetIndex >= availableSegmentSizeEnumerator.Current.Value.Count)
+                        {
+                            availableSegmentSizeEnumerator.MoveNext().Should().BeTrue();
+                            availableSegmentSizeOffsetIndex = 0;
+                        }
+                        int expectedSegmentCount = availableSegmentSizeEnumerator.Current.Key;
+                        int expectedSegmentId = availableSegmentSizeEnumerator.Current.Value[availableSegmentSizeOffsetIndex++];
+                        int requestBufferSize = MemorySegmentedBufferGroup.StandardBufferSegmentSize * (availableSegments + 1);
+
+                        // We'll always request a zeroed buffer for these tests
+                        (SegmentBuffer buffer, GetBufferResult result) = sut.GetBuffer(requestBufferSize, true, bufferPool);
+                        expectedUsedSegments += buffer.SegmentCount;
+
+                        // We should get the next available segment in the group
+                        result.Should().Be(GetBufferResult.Available);
+                        // We should only get one segment back
+                        buffer.SegmentCount.Should().Be(expectedSegmentCount);
+                        buffer.Length.Should().Be(MemorySegmentedBufferGroup.StandardBufferSegmentSize * buffer.SegmentCount);
+                        GetSegmentsInUse(sut).Should().Be(expectedUsedSegments);
+                        availableSegments -= buffer.SegmentCount;
+                        buffer.IsAllZeroes().Should().BeTrue();
+                        buffer.BufferInfo.BlockId.Should().Be(sut.Id);
+                        buffer.BufferInfo.SegmentId.Should().Be(expectedSegmentId);
+                    }
+                    catch
+                    {
+                        TestWriteLine($"** Exception thrown with {availableSegments} segments left to get");
+                        throw;
+                    }
+                }
+
+                // An attempt to get another buffer should fail with the group full
+                int fullRequestBufferSize = MemorySegmentedBufferGroup.StandardBufferSegmentSize;
+                (SegmentBuffer _, GetBufferResult fullResult) = sut.GetBuffer(fullRequestBufferSize, true, bufferPool);
+                fullResult.Should().Be(GetBufferResult.GroupFull);
+            }
+        }
+        //--------------------------------------------------------------------------------    
 
         #endregion Get Any Remaining Buffers Tests
 
@@ -1068,7 +1142,7 @@ namespace KZDev.PerfUtils.Tests
                     sut.GetBuffer(requestBufferSize, true, bufferPool, preferredSegmentId);
                 expectedUsedSegments += buffer.SegmentCount;
 
-                // We should get the next available segment in the group
+                // We should get the next available segment in the group (NOT @ the preferred segment offset)
                 result.Should().Be(GetBufferResult.Available);
                 // We should only get one segment back
                 buffer.Length.Should().Be(MemorySegmentedBufferGroup.StandardBufferSegmentSize);
@@ -1116,7 +1190,7 @@ namespace KZDev.PerfUtils.Tests
                     sut.GetBuffer(requestBufferSize, true, bufferPool, preferredSegmentId);
                 expectedUsedSegments += buffer.SegmentCount;
 
-                // We should get the next available segment in the group
+                // We should get the next available segment in the group (NOT @ the preferred segment offset)
                 result.Should().Be(GetBufferResult.Available);
                 // We should only get one segment back
                 buffer.Length.Should().Be(MemorySegmentedBufferGroup.StandardBufferSegmentSize);
@@ -1164,7 +1238,7 @@ namespace KZDev.PerfUtils.Tests
                     sut.GetBuffer(requestBufferSize, true, bufferPool, preferredSegmentId);
                 expectedUsedSegments += buffer.SegmentCount;
 
-                // We should get the next available segment in the group
+                // We should get the next available segment in the group (NOT @ the preferred segment offset)
                 result.Should().Be(GetBufferResult.Available);
                 // We should only get one segment back
                 buffer.Length.Should().Be(MemorySegmentedBufferGroup.StandardBufferSegmentSize);
@@ -1212,7 +1286,7 @@ namespace KZDev.PerfUtils.Tests
                     sut.GetBuffer(requestBufferSize, true, bufferPool, preferredSegmentId);
                 expectedUsedSegments += buffer.SegmentCount;
 
-                // We should get the next available segment in the group
+                // We should get the next available segment in the group (NOT @ the preferred segment offset)
                 result.Should().Be(GetBufferResult.Available);
                 // We should only get one segment back
                 buffer.Length.Should().Be(MemorySegmentedBufferGroup.StandardBufferSegmentSize);
@@ -1262,7 +1336,7 @@ namespace KZDev.PerfUtils.Tests
                     sut.GetBuffer(requestBufferSize, true, bufferPool, preferredSegmentId);
                 expectedUsedSegments += buffer.SegmentCount;
 
-                // We should get the next available segment in the group
+                // We should get the next available segment in the group (NOT @ the preferred segment offset)
                 result.Should().Be(GetBufferResult.Available);
                 // We should only get one segment back
                 buffer.SegmentCount.Should().Be(1);
@@ -1313,7 +1387,7 @@ namespace KZDev.PerfUtils.Tests
                     sut.GetBuffer(requestBufferSize, true, bufferPool, preferredSegmentId);
                 expectedUsedSegments += buffer.SegmentCount;
 
-                // We should get the next available segment in the group
+                // We should get the next available segment in the group (NOT @ the preferred segment offset)
                 result.Should().Be(GetBufferResult.Available);
                 // We should only get one segment back
                 buffer.SegmentCount.Should().Be(1);
@@ -1378,7 +1452,7 @@ namespace KZDev.PerfUtils.Tests
                     sut.GetBuffer(requestBufferSize, true, bufferPool, preferredSegmentId);
                 expectedUsedSegments += buffer.SegmentCount;
 
-                // We should get the next available segment in the group
+                // We should get the next available segment in the group (NOT @ the preferred segment offset)
                 result.Should().Be(GetBufferResult.Available);
                 // We should only get one segment back
                 buffer.SegmentCount.Should().Be(expectedSegmentCount);
@@ -1441,7 +1515,7 @@ namespace KZDev.PerfUtils.Tests
                     sut.GetBuffer(requestBufferSize, true, bufferPool, preferredSegmentId);
                 expectedUsedSegments += buffer.SegmentCount;
 
-                // We should get the next available segment in the group
+                // We should get the next available segment in the group (NOT @ the preferred segment offset)
                 result.Should().Be(GetBufferResult.Available);
                 // We should only get one segment back
                 buffer.SegmentCount.Should().Be(expectedSegmentCount);
@@ -1535,7 +1609,88 @@ namespace KZDev.PerfUtils.Tests
                             sut.GetBuffer(requestBufferSize, true, bufferPool, preferredSegmentId);
                         expectedUsedSegments += buffer.SegmentCount;
 
-                        // We should get the next available segment in the group
+                        // We should get the next available segment in the group (NOT @ the preferred segment offset)
+                        result.Should().Be(GetBufferResult.Available);
+                        // We should only get one segment back
+                        buffer.SegmentCount.Should().Be(expectedSegmentCount);
+                        buffer.Length.Should().Be(MemorySegmentedBufferGroup.StandardBufferSegmentSize * buffer.SegmentCount);
+                        GetSegmentsInUse(sut).Should().Be(expectedUsedSegments);
+                        availableSegments -= buffer.SegmentCount;
+                        buffer.IsAllZeroes().Should().BeTrue();
+                        buffer.BufferInfo.BlockId.Should().Be(sut.Id);
+                        buffer.BufferInfo.SegmentId.Should().Be(expectedSegmentId);
+                        // Since we are always asking for the maximum segments available, we will never get the preferred segment
+                        bufferSegmentIsPreferred.Should().BeFalse();
+                        preferredSegmentId = expectedSegmentId + expectedSegmentCount;
+                    }
+                    catch
+                    {
+                        TestWriteLine($"** Exception thrown with {availableSegments} segments left to get");
+                        throw;
+                    }
+                }
+
+                // An attempt to get another buffer should fail with the group full
+                int fullRequestBufferSize = MemorySegmentedBufferGroup.StandardBufferSegmentSize;
+                (SegmentBuffer _, GetBufferResult fullResult) = sut.GetBuffer(fullRequestBufferSize, true, bufferPool);
+                fullResult.Should().Be(GetBufferResult.GroupFull);
+            }
+        }
+        //--------------------------------------------------------------------------------    
+        /// <summary>
+        /// Tests the <see cref="MemorySegmentedBufferGroup.GetBuffer(int, bool, MemorySegmentedBufferPool)"/> 
+        /// method to get the available buffers when the current used pattern is randomly generated.
+        /// This should return a series of repeating segment buffers based on the pattern that are zeroed.
+        /// </summary>
+        [Fact]
+        public void UsingMemorySegmentedBufferGroup_GetPreferredRemainingBuffers_WithRandomUsedBlockFlags_GetsProperBuffers ()
+        {
+            const int BlockFlagSetTestCount = 9;
+            for (int testLoop = 0; testLoop < 1000; testLoop++)
+            {
+                (MemorySegmentedBufferGroup sut, MemorySegmentedBufferPool bufferPool) = GetTestGroupAndPool(segmentCount: BlockFlagSetSize * BlockFlagSetTestCount);
+                ulong[] setUsedBlockFlags = Enumerable.Range(0, BlockFlagSetSize).Select(_ => GetTestUnsignedLongInteger()).ToArray();
+                //ulong[] setZeroBlockCounts = Enumerable.Range(0, BlockFlagSetSize).Select(blockIndex => GetTestUnsignedLongInteger() & ~(setUsedBlockCounts[blockIndex])).ToArray();
+                ulong[] setZeroBlockFlags = Enumerable.Repeat(0, BlockFlagSetSize).Select(_ => 0UL).ToArray();
+
+                (int availableSegments, Dictionary<int, List<int>> availableSegmentMap) = SetBlockUsedFlags(sut, setUsedBlockFlags, setZeroBlockFlags);
+
+                TestWriteLine($"Test Loop: {testLoop} - Used Block Flags: {string.Join(", ", setUsedBlockFlags.Select(flag => flag.ToString("X16")))} - Zero Block Flags: {string.Join(", ", setZeroBlockFlags.Select(flag => flag.ToString("X16")))}");
+
+                int expectedUsedSegments = sut.SegmentCount - availableSegments;
+                GetSegmentsInUse(sut).Should().Be(expectedUsedSegments);
+
+                // Walk through the available segments based on the size of those segments - we expect to get the larger segment groups first
+                IEnumerator<KeyValuePair<int, List<int>>> availableSegmentSizeEnumerator = availableSegmentMap
+                    .OrderByDescending(kvp => kvp.Key)
+                    .GetEnumerator();
+                availableSegmentSizeEnumerator.MoveNext().Should().BeTrue();
+
+                // The index of the current segment size offset in the available segment map
+                int availableSegmentSizeOffsetIndex = 0;
+                int preferredSegmentId = -1;
+
+                // Try to get all the available segments
+                while (availableSegments > 0)
+                {
+                    try
+                    {
+                        // Check if we need to move to the next segment size
+                        while (availableSegmentSizeOffsetIndex >= availableSegmentSizeEnumerator.Current.Value.Count)
+                        {
+                            availableSegmentSizeEnumerator.MoveNext().Should().BeTrue();
+                            availableSegmentSizeOffsetIndex = 0;
+                        }
+                        int expectedSegmentCount = availableSegmentSizeEnumerator.Current.Key;
+                        int expectedSegmentId = availableSegmentSizeEnumerator.Current.Value[availableSegmentSizeOffsetIndex++];
+                        int requestBufferSize = MemorySegmentedBufferGroup.StandardBufferSegmentSize * (availableSegments + 1);
+
+                        // We'll always request a zeroed buffer for these tests
+                        (SegmentBuffer buffer, GetBufferResult result, bool bufferSegmentIsPreferred) =
+                            sut.GetBuffer(requestBufferSize, true, bufferPool, preferredSegmentId);
+                        expectedUsedSegments += buffer.SegmentCount;
+
+                        // We should get the next available segment in the group (NOT @ the preferred segment offset)
                         result.Should().Be(GetBufferResult.Available);
                         // We should only get one segment back
                         buffer.SegmentCount.Should().Be(expectedSegmentCount);
