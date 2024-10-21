@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 using System.Buffers;
+using System.Diagnostics.CodeAnalysis;
 
 namespace KZDev.PerfUtils.Internals
 {
@@ -51,6 +52,7 @@ namespace KZDev.PerfUtils.Internals
         public override Span<byte> GetSpan () => new(_pointer, _length);
         //--------------------------------------------------------------------------------
         /// <inheritdoc />
+        [ExcludeFromCodeCoverage]
         public override MemoryHandle Pin (int elementIndex = 0)
         {
             if (elementIndex < 0 || elementIndex >= _length)
@@ -60,12 +62,14 @@ namespace KZDev.PerfUtils.Internals
         }
         //--------------------------------------------------------------------------------
         /// <inheritdoc />
+        [ExcludeFromCodeCoverage]
         public override void Unpin ()
         {
             // No action required. We didn't actually pin the memory - it is native memory.
         }
         //--------------------------------------------------------------------------------
         /// <inheritdoc />
+        [ExcludeFromCodeCoverage]
         protected override void Dispose (bool disposing)
         {
             // No managed resources to release - the native memory freeing is handled elsewhere.
