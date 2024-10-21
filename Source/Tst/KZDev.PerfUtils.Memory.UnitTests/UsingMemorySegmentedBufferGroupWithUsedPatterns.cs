@@ -944,6 +944,7 @@ namespace KZDev.PerfUtils.Tests
         /// This should return a series of repeating segment buffers based on the pattern that are zeroed.
         /// </summary>
         [Fact]
+        [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.LongRun)]
         public void UsingMemorySegmentedBufferGroup_GetRemainingBuffers_WithRandomUsedPatterns_GetsProperBuffers ()
         {
             for (int testLoop = 0; testLoop < 1000; testLoop++)
@@ -1040,6 +1041,7 @@ namespace KZDev.PerfUtils.Tests
         /// This should return a series of repeating segment buffers based on the pattern that are zeroed.
         /// </summary>
         [Fact]
+        [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.LongRun)]
         public void UsingMemorySegmentedBufferGroup_GetRemainingBuffers_WithRandomUsedBlockFlags_GetsProperBuffers ()
         {
             const int BlockFlagSetTestCount = 9;
@@ -1541,6 +1543,7 @@ namespace KZDev.PerfUtils.Tests
         /// This should return a series of repeating segment buffers based on the pattern that are zeroed.
         /// </summary>
         [Fact]
+        [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.LongRun)]
         public void UsingMemorySegmentedBufferGroup_GetPreferredRemainingBuffers_WithRandomUsedPatterns_GetsProperBuffers ()
         {
             for (int testLoop = 0; testLoop < 1000; testLoop++)
@@ -1642,6 +1645,7 @@ namespace KZDev.PerfUtils.Tests
         /// This should return a series of repeating segment buffers based on the pattern that are zeroed.
         /// </summary>
         [Fact]
+        [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.LongRun)]
         public void UsingMemorySegmentedBufferGroup_GetPreferredRemainingBuffers_WithRandomUsedBlockFlags_GetsProperBuffers ()
         {
             const int BlockFlagSetTestCount = 9;
@@ -1725,6 +1729,7 @@ namespace KZDev.PerfUtils.Tests
         /// method to get random buffers when the current used pattern is randomly generated.
         /// </summary>
         [Fact]
+        [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.LongRun)]
         public void UsingMemorySegmentedBufferGroup_GetRandomBuffers_WithRandomUsedBlockFlags_GetsProperBuffers ()
         {
             const int BlockFlagSetTestCount = 9;
@@ -1834,6 +1839,7 @@ namespace KZDev.PerfUtils.Tests
         /// method to get random buffers when the current used pattern is randomly generated.
         /// </summary>
         [Fact]
+        [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.LongRun)]
         public void UsingMemorySegmentedBufferGroup_GetRandomBuffers_WithRandomUsedPatterns_GetsProperBuffers ()
         {
             const int BlockFlagSetTestCount = 9;
