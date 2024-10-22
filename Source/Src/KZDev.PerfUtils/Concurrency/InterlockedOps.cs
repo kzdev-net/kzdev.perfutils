@@ -229,7 +229,8 @@ namespace KZDev.PerfUtils
         /// A variable containing the bits to clear. The result is stored in this variable.
         /// </param>
         /// <param name="clearBitsValue">
-        /// The value that holds the bits to clear in <paramref name="location1"/>
+        /// The value that holds the bits to clear in <paramref name="location1"/>. All the 
+        /// bits set in this value will be cleared in <paramref name="location1"/>.
         /// </param>
         /// <returns>
         /// A tuple containing the original value and the new value after the operation.
@@ -259,7 +260,8 @@ namespace KZDev.PerfUtils
         /// A variable containing the bits to clear. The result is stored in this variable.
         /// </param>
         /// <param name="clearBitsValue">
-        /// The value that holds the bits to clear in <paramref name="location1"/>
+        /// The value that holds the bits to clear in <paramref name="location1"/>. All the 
+        /// bits set in this value will be cleared in <paramref name="location1"/>.
         /// </param>
         /// <returns>
         /// A tuple containing the original value and the new value after the operation.
@@ -289,7 +291,8 @@ namespace KZDev.PerfUtils
         /// A variable containing the bits to clear. The result is stored in this variable.
         /// </param>
         /// <param name="clearBitsValue">
-        /// The value that holds the bits to clear in <paramref name="location1"/>
+        /// The value that holds the bits to clear in <paramref name="location1"/>. All the 
+        /// bits set in this value will be cleared in <paramref name="location1"/>.
         /// </param>
         /// <returns>
         /// A tuple containing the original value and the new value after the operation.
@@ -319,7 +322,8 @@ namespace KZDev.PerfUtils
         /// A variable containing the bits to clear. The result is stored in this variable.
         /// </param>
         /// <param name="clearBitsValue">
-        /// The value that holds the bits to clear in <paramref name="location1"/>
+        /// The value that holds the bits to clear in <paramref name="location1"/>. All the 
+        /// bits set in this value will be cleared in <paramref name="location1"/>.
         /// </param>
         /// <returns>
         /// A tuple containing the original value and the new value after the operation.
@@ -2019,7 +2023,8 @@ namespace KZDev.PerfUtils
         /// the current value of <paramref name="location1"/> as an argument.
         /// </param>
         /// <param name="clearBitsValue">
-        /// The value that holds the bits to clear in <paramref name="location1"/>
+        /// The value that holds the bits to clear in <paramref name="location1"/>. All the 
+        /// bits set in this value will be cleared in <paramref name="location1"/>.
         /// </param>
         /// <returns>
         /// A tuple containing the original value and the new value after the operation.
@@ -2068,7 +2073,8 @@ namespace KZDev.PerfUtils
         /// The argument to pass to the condition function <paramref name="condition"/>
         /// </param>
         /// <param name="clearBitsValue">
-        /// The value that holds the bits to clear in <paramref name="location1"/>
+        /// The value that holds the bits to clear in <paramref name="location1"/>. All the 
+        /// bits set in this value will be cleared in <paramref name="location1"/>.
         /// </param>
         /// <returns>
         /// A tuple containing the original value and the new value after the operation.
@@ -2111,7 +2117,8 @@ namespace KZDev.PerfUtils
         /// the current value of <paramref name="location1"/> as an argument.
         /// </param>
         /// <param name="clearBitsValue">
-        /// The value that holds the bits to clear in <paramref name="location1"/>
+        /// The value that holds the bits to clear in <paramref name="location1"/>. All the 
+        /// bits set in this value will be cleared in <paramref name="location1"/>.
         /// </param>
         /// <returns>
         /// A tuple containing the original value and the new value after the operation.
@@ -2160,7 +2167,8 @@ namespace KZDev.PerfUtils
         /// The argument to pass to the condition function <paramref name="condition"/>
         /// </param>
         /// <param name="clearBitsValue">
-        /// The value that holds the bits to clear in <paramref name="location1"/>
+        /// The value that holds the bits to clear in <paramref name="location1"/>. All the 
+        /// bits set in this value will be cleared in <paramref name="location1"/>.
         /// </param>
         /// <returns>
         /// A tuple containing the original value and the new value after the operation.
@@ -2203,7 +2211,8 @@ namespace KZDev.PerfUtils
         /// the current value of <paramref name="location1"/> as an argument.
         /// </param>
         /// <param name="clearBitsValue">
-        /// The value that holds the bits to clear in <paramref name="location1"/>
+        /// The value that holds the bits to clear in <paramref name="location1"/>. All the 
+        /// bits set in this value will be cleared in <paramref name="location1"/>.
         /// </param>
         /// <returns>
         /// A tuple containing the original value and the new value after the operation.
@@ -2252,7 +2261,8 @@ namespace KZDev.PerfUtils
         /// The argument to pass to the condition function <paramref name="condition"/>
         /// </param>
         /// <param name="clearBitsValue">
-        /// The value that holds the bits to clear in <paramref name="location1"/>
+        /// The value that holds the bits to clear in <paramref name="location1"/>. All the 
+        /// bits set in this value will be cleared in <paramref name="location1"/>.
         /// </param>
         /// <returns>
         /// A tuple containing the original value and the new value after the operation.
@@ -2295,11 +2305,12 @@ namespace KZDev.PerfUtils
         /// the current value of <paramref name="location1"/> as an argument.
         /// </param>
         /// <param name="clearBitsValue">
-        /// The value that holds the bits to clear in <paramref name="location1"/>
-        /// If the condition is not met, the original value is returned in both fields.
+        /// The value that holds the bits to clear in <paramref name="location1"/>. All the 
+        /// bits set in this value will be cleared in <paramref name="location1"/>.
         /// </param>
         /// <returns>
         /// A tuple containing the original value and the new value after the operation.
+        /// If the condition is not met, the original value is returned in both fields.
         /// </returns>
         /// <remarks>
         /// <para>
@@ -2344,11 +2355,12 @@ namespace KZDev.PerfUtils
         /// The argument to pass to the condition function <paramref name="condition"/>
         /// </param>
         /// <param name="clearBitsValue">
-        /// The value that holds the bits to clear in <paramref name="location1"/>
-        /// If the condition is not met, the original value is returned in both fields.
+        /// The value that holds the bits to clear in <paramref name="location1"/>. All the 
+        /// bits set in this value will be cleared in <paramref name="location1"/>.
         /// </param>
         /// <returns>
         /// A tuple containing the original value and the new value after the operation.
+        /// If the condition is not met, the original value is returned in both fields.
         /// </returns>
         /// <remarks>
         /// <para>

@@ -77,6 +77,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Articles", "Articles", "{B9
 		Docs\articles\copytoasync-throughput-benchmarks.md = Docs\articles\copytoasync-throughput-benchmarks.md
 		Docs\articles\dynamic-throughput-benchmarks.md = Docs\articles\dynamic-throughput-benchmarks.md
 		Docs\articles\getting-started.md = Docs\articles\getting-started.md
+		Docs\articles\interlockedops.md = Docs\articles\interlockedops.md
 		Docs\articles\memory-management.md = Docs\articles\memory-management.md
 		Docs\articles\memory-monitoring.md = Docs\articles\memory-monitoring.md
 		Docs\articles\MemoryStreamBenchmarks.BulkFillAndReadThroughputBenchmarks-report-github.md = Docs\articles\MemoryStreamBenchmarks.BulkFillAndReadThroughputBenchmarks-report-github.md
@@ -133,6 +134,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WorkFlows", "WorkFlows", "{
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KZDev.PerfUtils.Concurrency.UnitTests", "Tst\KZDev.PerfUtils.Concurrency.UnitTests\KZDev.PerfUtils.Concurrency.UnitTests.csproj", "{4770E59B-764A-44BC-B6E3-EB11B335EF7C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KZDev.PerfUtils.Examples", "Dev\KZDev.PerfUtils.Examples\KZDev.PerfUtils.Examples.csproj", "{2F0EF0E2-B9AC-4BEA-9A1D-3855A76F5C48}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -260,6 +263,14 @@ Global
 		{4770E59B-764A-44BC-B6E3-EB11B335EF7C}.Profile|Any CPU.Build.0 = Profile|Any CPU
 		{4770E59B-764A-44BC-B6E3-EB11B335EF7C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4770E59B-764A-44BC-B6E3-EB11B335EF7C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2F0EF0E2-B9AC-4BEA-9A1D-3855A76F5C48}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F0EF0E2-B9AC-4BEA-9A1D-3855A76F5C48}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F0EF0E2-B9AC-4BEA-9A1D-3855A76F5C48}.Package|Any CPU.ActiveCfg = Profile|Any CPU
+		{2F0EF0E2-B9AC-4BEA-9A1D-3855A76F5C48}.Package|Any CPU.Build.0 = Profile|Any CPU
+		{2F0EF0E2-B9AC-4BEA-9A1D-3855A76F5C48}.Profile|Any CPU.ActiveCfg = Profile|Any CPU
+		{2F0EF0E2-B9AC-4BEA-9A1D-3855A76F5C48}.Profile|Any CPU.Build.0 = Profile|Any CPU
+		{2F0EF0E2-B9AC-4BEA-9A1D-3855A76F5C48}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F0EF0E2-B9AC-4BEA-9A1D-3855A76F5C48}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -290,6 +301,7 @@ Global
 		{4EFA3802-BA4D-4CA0-B040-B02AE260910D} = {30D9D5E1-42BB-4230-8528-A6B339BD14AA}
 		{42188FFF-1E0E-44F4-9717-D6946CE2CA8E} = {CD9B846B-FEE3-4F43-929C-A4FCBD7D974C}
 		{4770E59B-764A-44BC-B6E3-EB11B335EF7C} = {F8C76B35-0758-433E-953B-0D7E9D63DE13}
+		{2F0EF0E2-B9AC-4BEA-9A1D-3855A76F5C48} = {C95F6A6E-49CC-47F9-AB44-D6904F56D83E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FE0AB859-B820-470E-AA57-2337B2495B50}
