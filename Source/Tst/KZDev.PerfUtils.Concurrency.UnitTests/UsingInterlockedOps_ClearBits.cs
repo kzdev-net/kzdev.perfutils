@@ -24,7 +24,7 @@ namespace KZDev.PerfUtils.Tests
             int variable = GetTestInteger();
 
             // Run the test a bunch of times
-            for (int loop = 0; loop < 1_000_000; loop++)
+            for (int loop = 0; loop < BitManagementTestLoopCount; loop++)
             {
                 int originalValue = variable;
                 int operationValue = GetTestInteger();
@@ -45,7 +45,7 @@ namespace KZDev.PerfUtils.Tests
             uint variable = GetTestUnsignedInteger();
 
             // Run the test a bunch of times
-            for (int loop = 0; loop < 1_000_000; loop++)
+            for (int loop = 0; loop < BitManagementTestLoopCount; loop++)
             {
                 uint originalValue = variable;
                 uint operationValue = GetTestUnsignedInteger();
@@ -66,7 +66,7 @@ namespace KZDev.PerfUtils.Tests
             long variable = GetTestLongInteger();
 
             // Run the test a bunch of times
-            for (long loop = 0; loop < 1_000_000; loop++)
+            for (long loop = 0; loop < BitManagementTestLoopCount; loop++)
             {
                 long originalValue = variable;
                 long operationValue = GetTestLongInteger();
@@ -87,7 +87,7 @@ namespace KZDev.PerfUtils.Tests
             ulong variable = GetTestUnsignedLongInteger();
 
             // Run the test a bunch of times
-            for (long loop = 0; loop < 1_000_000; loop++)
+            for (long loop = 0; loop < BitManagementTestLoopCount; loop++)
             {
                 ulong originalValue = variable;
                 ulong operationValue = GetTestUnsignedLongInteger();

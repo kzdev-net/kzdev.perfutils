@@ -17,6 +17,11 @@ namespace KZDev.PerfUtils.Tests
     /// </summary>
     public partial class UsingInterlockedOps
     {
+        /// <summary>
+        /// The number of increment loops will pass between each check for a caught exception
+        /// </summary>
+        private const int IncrementLoopExceptionCountFrequency = 1_000_000;
+
         //--------------------------------------------------------------------------------
         /// <summary>
         /// Tests a simple <see cref="int"/> operation on <see cref="InterlockedOps"/> with contention
@@ -176,7 +181,7 @@ namespace KZDev.PerfUtils.Tests
                                 {
                                     runTestSignal.Set();
                                 }
-                                if ((0 == incrementLoop % 1_000_000) && (exceptionDispatchInfo is not null))
+                                if ((0 == incrementLoop % IncrementLoopExceptionCountFrequency) && (exceptionDispatchInfo is not null))
                                 {
                                     break;
                                 }
@@ -360,7 +365,7 @@ namespace KZDev.PerfUtils.Tests
                                 {
                                     runTestSignal.Set();
                                 }
-                                if ((0 == incrementLoop % 1_000_000) && (exceptionDispatchInfo is not null))
+                                if ((0 == incrementLoop % IncrementLoopExceptionCountFrequency) && (exceptionDispatchInfo is not null))
                                 {
                                     break;
                                 }
@@ -541,7 +546,7 @@ namespace KZDev.PerfUtils.Tests
                             {
                                 runTestSignal.Set();
                             }
-                            if ((0 == incrementLoop % 1_000_000) && (exceptionDispatchInfo is not null))
+                            if ((0 == incrementLoop % IncrementLoopExceptionCountFrequency) && (exceptionDispatchInfo is not null))
                             {
                                 break;
                             }
@@ -719,7 +724,7 @@ namespace KZDev.PerfUtils.Tests
                             {
                                 runTestSignal.Set();
                             }
-                            if ((0 == incrementLoop % 1_000_000) && (exceptionDispatchInfo is not null))
+                            if ((0 == incrementLoop % IncrementLoopExceptionCountFrequency) && (exceptionDispatchInfo is not null))
                             {
                                 break;
                             }

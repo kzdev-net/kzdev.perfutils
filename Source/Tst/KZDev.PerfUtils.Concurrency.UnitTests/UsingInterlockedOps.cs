@@ -19,6 +19,17 @@ namespace KZDev.PerfUtils.Tests
         /// The number of times to loop through the contention tests
         /// </summary>
         private const int ContentionTestLoopCount = 100_000;
+
+        /// <summary>
+        /// The number of times we loop through for simple condition based tests (non-contention)
+        /// </summary>
+        private const int ConditionTestLoopCount = 1_000_000;
+
+        /// <summary>
+        /// The number of test loops to run for simple bit manipulation operations
+        /// </summary>
+        private const int BitManagementTestLoopCount = 1_000_000;
+
         /// <summary>
         /// A test integer value that is used to test the <see cref="InterlockedOps"/> methods
         /// with contention. This value is shared between threads, and we are counting on the
