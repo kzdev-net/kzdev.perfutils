@@ -27,6 +27,9 @@ namespace KZDev.PerfUtils.Tests
         /// Tests a simple <see cref="int"/> operation on <see cref="InterlockedOps"/> with contention
         /// and variety of values.
         /// </summary>
+        /// <param name="loopInitializer">
+        /// An optional callback that is executed before each test loop.
+        /// </param>
         /// <param name="operation">
         /// The operation to run in the 'test operation' thread.
         /// </param>
@@ -43,8 +46,8 @@ namespace KZDev.PerfUtils.Tests
         /// The verifier to run when the operation is found to have run.
         /// </param>
         private void UsingInterlockedOps_IntegerOperation_WithContention_SavesProperResult
-            (Action operation, int startValue, int maxIncrement, Predicate<int> operationRunCheckCondition,
-            Action<int, int> operationRunVerifier)
+            (Action? loopInitializer, Action operation, int startValue, int maxIncrement, 
+            Predicate<int> operationRunCheckCondition, Action<int, int> operationRunVerifier)
         {
             TimeSpan testCycleWaitTime = TimeSpan.FromSeconds(3);
             // A signal to the test threads that they should abort
@@ -153,6 +156,7 @@ namespace KZDev.PerfUtils.Tests
                         if (!runIncrementSignal.Wait(testCycleWaitTime))
                             throw new TimeoutException("Timed out waiting for the test increment signal");
                         runIncrementSignal.Reset();
+                        loopInitializer?.Invoke();
 
                         Interlocked.Exchange(ref _testContentionInteger, startValue);
                         int lastValue = _testContentionInteger;
@@ -167,8 +171,7 @@ namespace KZDev.PerfUtils.Tests
                                 int value = Interlocked.Increment(ref _testContentionInteger);
                                 if (operationRunCheckCondition(value))
                                 {
-                                    // We found the bit change, the value without the bit should be the
-                                    // last value we saw
+                                    // The test to check if the operation has run has a bit, check if we now have the correct value
                                     operationRunVerifier(value, ++lastValue);
                                     bitOperationFoundAsRun = true;
                                     hitLoopCounts.Add(incrementLoop);
@@ -211,6 +214,9 @@ namespace KZDev.PerfUtils.Tests
         /// Tests a simple <see cref="uint"/> operation on <see cref="InterlockedOps"/> with contention
         /// and variety of values.
         /// </summary>
+        /// <param name="loopInitializer">
+        /// An optional callback that is executed before each test loop.
+        /// </param>
         /// <param name="operation">
         /// The operation to run in the 'test operation' thread.
         /// </param>
@@ -227,8 +233,8 @@ namespace KZDev.PerfUtils.Tests
         /// The verifier to run when the operation is found to have run.
         /// </param>
         private void UsingInterlockedOps_UnsignedIntegerOperation_WithContention_SavesProperResult
-            (Action operation, uint startValue, uint maxIncrement, Predicate<uint> operationRunCheckCondition,
-            Action<uint, uint> operationRunVerifier)
+            (Action? loopInitializer, Action operation, uint startValue, uint maxIncrement, 
+            Predicate<uint> operationRunCheckCondition, Action<uint, uint> operationRunVerifier)
         {
             TimeSpan testCycleWaitTime = TimeSpan.FromSeconds(3);
             // A signal to the test threads that they should abort
@@ -337,6 +343,7 @@ namespace KZDev.PerfUtils.Tests
                         if (!runIncrementSignal.Wait(testCycleWaitTime))
                             throw new TimeoutException("Timed out waiting for the test increment signal");
                         runIncrementSignal.Reset();
+                        loopInitializer?.Invoke();
 
                         Interlocked.Exchange(ref _testContentionUnsignedInteger, startValue);
                         uint lastValue = _testContentionUnsignedInteger;
@@ -351,8 +358,7 @@ namespace KZDev.PerfUtils.Tests
                                 uint value = Interlocked.Increment(ref _testContentionUnsignedInteger);
                                 if (operationRunCheckCondition(value))
                                 {
-                                    // We found the bit change, the value without the bit should be the
-                                    // last value we saw
+                                    // The test to check if the operation has run has a bit, check if we now have the correct value
                                     operationRunVerifier(value, ++lastValue);
                                     bitOperationFoundAsRun = true;
                                     hitLoopCounts.Add(incrementLoop);
@@ -395,6 +401,9 @@ namespace KZDev.PerfUtils.Tests
         /// Tests a simple <see cref="long"/> operation on <see cref="InterlockedOps"/> with contention
         /// and variety of values.
         /// </summary>
+        /// <param name="loopInitializer">
+        /// An optional callback that is executed before each test loop.
+        /// </param>
         /// <param name="operation">
         /// The operation to run in the 'test operation' thread.
         /// </param>
@@ -411,8 +420,8 @@ namespace KZDev.PerfUtils.Tests
         /// The verifier to run when the operation is found to have run.
         /// </param>
         private void UsingInterlockedOps_LongIntegerOperation_WithContention_SavesProperResult
-            (Action operation, long startValue, long maxIncrement, Predicate<long> operationRunCheckCondition,
-            Action<long, long> operationRunVerifier)
+            (Action? loopInitializer, Action operation, long startValue, long maxIncrement, 
+            Predicate<long> operationRunCheckCondition, Action<long, long> operationRunVerifier)
         {
             TimeSpan testCycleWaitTime = TimeSpan.FromSeconds(3);
             // A signal to the test threads that they should abort
@@ -521,6 +530,7 @@ namespace KZDev.PerfUtils.Tests
                         if (!runIncrementSignal.Wait(testCycleWaitTime))
                             throw new TimeoutException("Timed out waiting for the test increment signal");
                         runIncrementSignal.Reset();
+                        loopInitializer?.Invoke();
 
                         Interlocked.Exchange(ref _testContentionLongInteger, startValue);
                         long lastValue = _testContentionLongInteger;
@@ -532,8 +542,7 @@ namespace KZDev.PerfUtils.Tests
                             long value = Interlocked.Increment(ref _testContentionLongInteger);
                             if (operationRunCheckCondition(value))
                             {
-                                // We found the bit change, the value without the bit should be the
-                                // last value we saw
+                                // The test to check if the operation has run has a bit, check if we now have the correct value
                                 operationRunVerifier(value, ++lastValue);
                                 bitOperationFoundAsRun = true;
                                 hitLoopCounts.Add(incrementLoop);
@@ -573,6 +582,9 @@ namespace KZDev.PerfUtils.Tests
         /// Tests a simple <see cref="ulong"/> operation on <see cref="InterlockedOps"/> with contention
         /// and variety of values.
         /// </summary>
+        /// <param name="loopInitializer">
+        /// An optional callback that is executed before each test loop.
+        /// </param>
         /// <param name="operation">
         /// The operation to run in the 'test operation' thread.
         /// </param>
@@ -589,8 +601,8 @@ namespace KZDev.PerfUtils.Tests
         /// The verifier to run when the operation is found to have run.
         /// </param>
         private void UsingInterlockedOps_UnsignedLongIntegerOperation_WithContention_SavesProperResult
-            (Action operation, ulong startValue, ulong maxIncrement, Predicate<ulong> operationRunCheckCondition,
-            Action<ulong, ulong> operationRunVerifier)
+            (Action? loopInitializer, Action operation, ulong startValue, ulong maxIncrement, 
+            Predicate<ulong> operationRunCheckCondition, Action<ulong, ulong> operationRunVerifier)
         {
             TimeSpan testCycleWaitTime = TimeSpan.FromSeconds(3);
             // A signal to the test threads that they should abort
@@ -699,6 +711,7 @@ namespace KZDev.PerfUtils.Tests
                         if (!runIncrementSignal.Wait(testCycleWaitTime))
                             throw new TimeoutException("Timed out waiting for the test increment signal");
                         runIncrementSignal.Reset();
+                        loopInitializer?.Invoke();
 
                         Interlocked.Exchange(ref _testContentionUnsignedLongInteger, startValue);
                         ulong lastValue = _testContentionUnsignedLongInteger;
@@ -710,8 +723,7 @@ namespace KZDev.PerfUtils.Tests
                             ulong value = Interlocked.Increment(ref _testContentionUnsignedLongInteger);
                             if (operationRunCheckCondition(value))
                             {
-                                // We found the bit change, the value without the bit should be the
-                                // last value we saw
+                                // The test to check if the operation has run has a bit, check if we now have the correct value
                                 operationRunVerifier(value, ++lastValue);
                                 bitOperationFoundAsRun = true;
                                 hitLoopCounts.Add(incrementLoop);

@@ -106,7 +106,7 @@ namespace KZDev.PerfUtils.Tests
         public void UsingInterlockedOps_ClearBitsInteger_WithContention_SavesProperResult ()
         {
             const int clearBitsValue = 0x4000_0000;
-            UsingInterlockedOps_IntegerOperation_WithContention_SavesProperResult(() =>
+            UsingInterlockedOps_IntegerOperation_WithContention_SavesProperResult(null, () =>
                     InterlockedOps.ClearBits(ref _testContentionInteger, clearBitsValue),
                 clearBitsValue, clearBitsValue - 1, incrementValue => (incrementValue & clearBitsValue) == 0,
                 (incrementValue, compareValue) => incrementValue.Should().Be(compareValue & ~clearBitsValue));
@@ -120,7 +120,7 @@ namespace KZDev.PerfUtils.Tests
         public void UsingInterlockedOps_ClearBitsUnsignedInteger_WithContention_SavesProperResult ()
         {
             const uint clearBitsValue = 0x8000_0000;
-            UsingInterlockedOps_UnsignedIntegerOperation_WithContention_SavesProperResult(() =>
+            UsingInterlockedOps_UnsignedIntegerOperation_WithContention_SavesProperResult(null, () =>
                     InterlockedOps.ClearBits(ref _testContentionUnsignedInteger, clearBitsValue),
                 clearBitsValue, clearBitsValue - 1, incrementValue => (incrementValue & clearBitsValue) == 0,
                 (incrementValue, compareValue) => incrementValue.Should().Be(compareValue & ~clearBitsValue));
@@ -134,7 +134,7 @@ namespace KZDev.PerfUtils.Tests
         public void UsingInterlockedOps_ClearBitsLongInteger_WithContention_SavesProperResult ()
         {
             const long clearBitsValue = 0x4000_0000_0000_0000;
-            UsingInterlockedOps_LongIntegerOperation_WithContention_SavesProperResult(() =>
+            UsingInterlockedOps_LongIntegerOperation_WithContention_SavesProperResult(null, () =>
                     InterlockedOps.ClearBits(ref _testContentionLongInteger, clearBitsValue),
                 clearBitsValue, clearBitsValue - 1, incrementValue => (incrementValue & clearBitsValue) == 0,
                 (incrementValue, compareValue) => incrementValue.Should().Be(compareValue & ~clearBitsValue));
@@ -148,7 +148,7 @@ namespace KZDev.PerfUtils.Tests
         public void UsingInterlockedOps_ClearBitsUnsignedLongInteger_WithContention_SavesProperResult ()
         {
             const ulong clearBitsValue = 0x8000_0000_0000_0000;
-            UsingInterlockedOps_UnsignedLongIntegerOperation_WithContention_SavesProperResult(() =>
+            UsingInterlockedOps_UnsignedLongIntegerOperation_WithContention_SavesProperResult(null, () =>
                     InterlockedOps.ClearBits(ref _testContentionUnsignedLongInteger, clearBitsValue),
                 clearBitsValue, clearBitsValue - 1, incrementValue => (incrementValue & clearBitsValue) == 0,
                 (incrementValue, compareValue) => incrementValue.Should().Be(compareValue & ~clearBitsValue));

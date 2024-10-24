@@ -9,7 +9,7 @@ namespace KZDev.PerfUtils.Tests
 {
     //################################################################################
     /// <summary>
-    /// Unit tests for the <see cref="InterlockedOps"/> Or operations.
+    /// Unit tests for the <see cref="InterlockedOps"/> Conditional Or operations.
     /// </summary>
     public partial class UsingInterlockedOps
     {
@@ -409,8 +409,8 @@ namespace KZDev.PerfUtils.Tests
         {
             const int orValue = 0x4000_0000;
             int conditionRanCount = 0;
-            UsingInterlockedOps_IntegerOperation_WithContention_SavesProperResult(() =>
-                    InterlockedOps.ConditionOr(ref _testContentionInteger,
+            UsingInterlockedOps_IntegerOperation_WithContention_SavesProperResult(() => conditionRanCount = 0,
+                () => InterlockedOps.ConditionOr(ref _testContentionInteger,
                         _ =>
                         {
                             // Track how many times the condition is checked.
@@ -434,8 +434,8 @@ namespace KZDev.PerfUtils.Tests
         {
             const int orValue = 0x4000_0000;
             int conditionRanCount = 0;
-            UsingInterlockedOps_IntegerOperation_WithContention_SavesProperResult(() =>
-                    InterlockedOps.ConditionOr(ref _testContentionInteger,
+            UsingInterlockedOps_IntegerOperation_WithContention_SavesProperResult(() => conditionRanCount = 0,
+                () => InterlockedOps.ConditionOr(ref _testContentionInteger,
                         (_, returnValue) =>
                         {
                             // Track how many times the condition is checked.
@@ -459,8 +459,8 @@ namespace KZDev.PerfUtils.Tests
         {
             const uint orValue = 0x8000_0000;
             int conditionRanCount = 0;
-            UsingInterlockedOps_UnsignedIntegerOperation_WithContention_SavesProperResult(() =>
-                    InterlockedOps.ConditionOr(ref _testContentionUnsignedInteger,
+            UsingInterlockedOps_UnsignedIntegerOperation_WithContention_SavesProperResult(() => conditionRanCount = 0,
+                () => InterlockedOps.ConditionOr(ref _testContentionUnsignedInteger,
                         _ =>
                         {
                             // Track how many times the condition is checked.
@@ -484,8 +484,8 @@ namespace KZDev.PerfUtils.Tests
         {
             const uint orValue = 0x8000_0000;
             int conditionRanCount = 0;
-            UsingInterlockedOps_UnsignedIntegerOperation_WithContention_SavesProperResult(() =>
-                    InterlockedOps.ConditionOr(ref _testContentionUnsignedInteger,
+            UsingInterlockedOps_UnsignedIntegerOperation_WithContention_SavesProperResult(() => conditionRanCount = 0,
+                () => InterlockedOps.ConditionOr(ref _testContentionUnsignedInteger,
                         (_, returnValue) =>
                         {
                             // Track how many times the condition is checked.
@@ -509,8 +509,8 @@ namespace KZDev.PerfUtils.Tests
         {
             const long orValue = 0x4000_0000_0000_0000;
             int conditionRanCount = 0;
-            UsingInterlockedOps_LongIntegerOperation_WithContention_SavesProperResult(() =>
-                    InterlockedOps.ConditionOr(ref _testContentionLongInteger,
+            UsingInterlockedOps_LongIntegerOperation_WithContention_SavesProperResult(() => conditionRanCount = 0,
+                () => InterlockedOps.ConditionOr(ref _testContentionLongInteger,
                         _ =>
                         {
                             // Track how many times the condition is checked.
@@ -534,8 +534,8 @@ namespace KZDev.PerfUtils.Tests
         {
             const long orValue = 0x4000_0000_0000_0000;
             int conditionRanCount = 0;
-            UsingInterlockedOps_LongIntegerOperation_WithContention_SavesProperResult(() =>
-                    InterlockedOps.ConditionOr(ref _testContentionLongInteger,
+            UsingInterlockedOps_LongIntegerOperation_WithContention_SavesProperResult(() => conditionRanCount = 0,
+                () => InterlockedOps.ConditionOr(ref _testContentionLongInteger,
                         (_, returnValue) =>
                         {
                             // Track how many times the condition is checked.
@@ -559,8 +559,8 @@ namespace KZDev.PerfUtils.Tests
         {
             const ulong orValue = 0x8000_0000_0000_0000;
             int conditionRanCount = 0;
-            UsingInterlockedOps_UnsignedLongIntegerOperation_WithContention_SavesProperResult(() =>
-                    InterlockedOps.ConditionOr(ref _testContentionUnsignedLongInteger,
+            UsingInterlockedOps_UnsignedLongIntegerOperation_WithContention_SavesProperResult(() => conditionRanCount = 0,
+                () => InterlockedOps.ConditionOr(ref _testContentionUnsignedLongInteger,
                         _ =>
                         {
                             // Track how many times the condition is checked.
@@ -584,8 +584,8 @@ namespace KZDev.PerfUtils.Tests
         {
             const ulong orValue = 0x8000_0000_0000_0000;
             int conditionRanCount = 0;
-            UsingInterlockedOps_UnsignedLongIntegerOperation_WithContention_SavesProperResult(() =>
-                    InterlockedOps.ConditionOr(ref _testContentionUnsignedLongInteger,
+            UsingInterlockedOps_UnsignedLongIntegerOperation_WithContention_SavesProperResult(() => conditionRanCount = 0,
+                () => InterlockedOps.ConditionOr(ref _testContentionUnsignedLongInteger,
                         (_, returnValue) =>
                         {
                             // Track how many times the condition is checked.

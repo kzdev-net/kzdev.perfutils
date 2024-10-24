@@ -848,7 +848,7 @@ namespace KZDev.PerfUtils
                 {
                     return (original, original);
                 }
-                result = original ^ value;
+                result = original & value;
             }
             while (Interlocked.CompareExchange(ref location1, result, original) != original);
             return (original, result);
@@ -900,7 +900,7 @@ namespace KZDev.PerfUtils
                 {
                     return (original, original);
                 }
-                result = original ^ value;
+                result = original & value;
             }
             while (Interlocked.CompareExchange(ref location1, result, original) != original);
             return (original, result);
