@@ -8,7 +8,10 @@
 
   <ItemGroup>
     <Folder Include="MemoryStreamSlim\" />
-    <Folder Include="InterlockedOps\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Src\KZDev.PerfUtils\KZDev.PerfUtils.csproj" />
   </ItemGroup>
 
 </Project>
