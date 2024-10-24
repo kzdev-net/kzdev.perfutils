@@ -4,6 +4,13 @@ using FluentAssertions;
 
 namespace KZDev.PerfUtils.Tests
 {
+    /*
+     * While it would be really nice to simplify these methods into a single generic taking
+     * the different integer types, the CLR/BCL support to do that is not available until
+     * .NET 7, and we are supporting earlier versions, so we have a lot of duplicate code
+     * here
+     */
+
     //################################################################################
     /// <summary>
     /// Internal helpers for unit tests for the <see cref="InterlockedOps"/> class.
@@ -12,9 +19,24 @@ namespace KZDev.PerfUtils.Tests
     {
         //--------------------------------------------------------------------------------
         /// <summary>
-        /// Tests the <see cref="InterlockedOps.ClearBits(ref int, int)"/> method with contention
+        /// Tests a simple <see cref="int"/> operation on <see cref="InterlockedOps"/> with contention
         /// and variety of values.
         /// </summary>
+        /// <param name="operation">
+        /// The operation to run in the 'test operation' thread.
+        /// </param>
+        /// <param name="startValue">
+        /// The starting value for the 'increment' thread loop.
+        /// </param>
+        /// <param name="maxIncrement">
+        /// The maximum increment value for the 'increment' thread loop.
+        /// </param>
+        /// <param name="operationRunCheckCondition">
+        /// The condition to check for the operation run.
+        /// </param>
+        /// <param name="operationRunVerifier">
+        /// The verifier to run when the operation is found to have run.
+        /// </param>
         private void UsingInterlockedOps_IntegerOperation_WithContention_SavesProperResult
             (Action operation, int startValue, int maxIncrement, Predicate<int> operationRunCheckCondition,
             Action<int, int> operationRunVerifier)
@@ -37,7 +59,67 @@ namespace KZDev.PerfUtils.Tests
             List<double> hitLoopCounts = new(ContentionTestLoopCount);
 
             // Set up two threads to run the test
-            Thread interlockedOperation = new Thread(() =>
+            Thread interlockedOperation = new Thread(InterlockedOperationThreadRun)
+            {
+                // We want the bit operation thread to run at a lower priority than the increment thread to cause
+                // possible context switching during the bit operation, but it should succeed at some point.
+                Priority = ThreadPriority.Lowest,
+                Name = "Operation Thread",
+                IsBackground = true
+            };
+            interlockedOperation.Start();
+
+            // Set up a thread to increment the value repeatedly looking for a bit change
+            // in the high order bit
+            Thread incrementThread = new Thread(IncrementThreadRun)
+            {
+                IsBackground = true,
+                Name = "Increment Thread"
+            };
+            incrementThread.Start();
+
+            try
+            {
+                // Now, run the test a bunch of times
+                for (int loop = 0; loop < ContentionTestLoopCount; loop++)
+                {
+                    // Signal the increment thread to run
+                    runIncrementSignal.Set();
+                    // Wait for the increment thread to finish
+                    incrementTestDoneSignal.Wait(5000).Should().BeTrue();
+                    if (exceptionDispatchInfo is not null)
+                    {
+                        TestWriteLine($"Exception found on loop #{loop}");
+                        break;
+                    }
+
+                    incrementTestDoneSignal.Reset();
+                    // Don't set the test reset on the last loop because that might cause the
+                    // increment thread to reset the signal and test the state of the abort
+                    // signal before we have a chance to set it below in the finally block.
+                    if (loop < ContentionTestLoopCount - 1)
+                        resetSignal.Set();
+                }
+            }
+            finally
+            {
+                // Shut down the test threads
+                abortSignal.Set();
+                // Set the signals to run the threads so that they loop around to the abort signal
+                resetSignal.Set();
+                runIncrementSignal.Set();
+                runTestSignal.Set();
+                // Wait for the threads to finish
+                incrementThread.Join(5000).Should().BeTrue();
+                TestWriteLine($"Increment Thread Stopped");
+                interlockedOperation.Join(5000).Should().BeTrue();
+                TestWriteLine($"Operation Thread Stopped");
+            }
+
+            exceptionDispatchInfo?.Throw();
+            TestWriteLine($"Average hit loop count: {hitLoopCounts.Average()}");
+
+            void InterlockedOperationThreadRun ()
             {
                 try
                 {
@@ -54,19 +136,9 @@ namespace KZDev.PerfUtils.Tests
                 {
                     exceptionDispatchInfo ??= ExceptionDispatchInfo.Capture(error);
                 }
-            })
-            {
-                // We want the bit operation thread to run at a lower priority than the increment thread to cause
-                // possible context switching during the bit operation, but it should succeed at some point.
-                Priority = ThreadPriority.Lowest,
-                Name = "Operation Thread",
-                IsBackground = true
-            };
-            interlockedOperation.Start();
+            }
 
-            // Set up a thread to increment the value repeatedly looking for a bit change
-            // in the high order bit
-            Thread incrementThread = new Thread(() =>
+            void IncrementThreadRun ()
             {
                 try
                 {
@@ -127,7 +199,63 @@ namespace KZDev.PerfUtils.Tests
                     exceptionDispatchInfo ??= ExceptionDispatchInfo.Capture(error);
                     incrementTestDoneSignal.Set();
                 }
-            })
+            }
+        }
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Tests a simple <see cref="uint"/> operation on <see cref="InterlockedOps"/> with contention
+        /// and variety of values.
+        /// </summary>
+        /// <param name="operation">
+        /// The operation to run in the 'test operation' thread.
+        /// </param>
+        /// <param name="startValue">
+        /// The starting value for the 'increment' thread loop.
+        /// </param>
+        /// <param name="maxIncrement">
+        /// The maximum increment value for the 'increment' thread loop.
+        /// </param>
+        /// <param name="operationRunCheckCondition">
+        /// The condition to check for the operation run.
+        /// </param>
+        /// <param name="operationRunVerifier">
+        /// The verifier to run when the operation is found to have run.
+        /// </param>
+        private void UsingInterlockedOps_UnsignedIntegerOperation_WithContention_SavesProperResult
+            (Action operation, uint startValue, uint maxIncrement, Predicate<uint> operationRunCheckCondition,
+            Action<uint, uint> operationRunVerifier)
+        {
+            TimeSpan testCycleWaitTime = TimeSpan.FromSeconds(3);
+            // A signal to the test threads that they should abort
+            ManualResetEventSlim abortSignal = new ManualResetEventSlim(false);
+            // A signal to the increment value test thread that it should run
+            ManualResetEventSlim runIncrementSignal = new ManualResetEventSlim(false);
+            // A signal to the bit operation value test thread that it should run
+            ManualResetEventSlim runTestSignal = new ManualResetEventSlim(false);
+            // A signal for resetting the tests for the next loop.
+            ManualResetEventSlim resetSignal = new ManualResetEventSlim(false);
+            // A signal for the increment test to indicate it is done
+            ManualResetEventSlim incrementTestDoneSignal = new ManualResetEventSlim(false);
+            // Capture any exceptions that occur in the test threads
+            ExceptionDispatchInfo? exceptionDispatchInfo = null;
+
+            // The value containing the bit we will use to test for contention
+            List<double> hitLoopCounts = new(ContentionTestLoopCount);
+
+            // Set up two threads to run the test
+            Thread interlockedOperation = new Thread(InterlockedOperationThreadRun)
+            {
+                // We want the bit operation thread to run at a lower priority than the increment thread to cause
+                // possible context switching during the bit operation, but it should succeed at some point.
+                Priority = ThreadPriority.Lowest,
+                Name = "Operation Thread",
+                IsBackground = true
+            };
+            interlockedOperation.Start();
+
+            // Set up a thread to increment the value repeatedly looking for a bit change
+            // in the high order bit
+            Thread incrementThread = new Thread(IncrementThreadRun)
             {
                 IsBackground = true,
                 Name = "Increment Thread"
@@ -174,35 +302,8 @@ namespace KZDev.PerfUtils.Tests
 
             exceptionDispatchInfo?.Throw();
             TestWriteLine($"Average hit loop count: {hitLoopCounts.Average()}");
-        }
-        //--------------------------------------------------------------------------------
-        /// <summary>
-        /// Tests the <see cref="InterlockedOps.ClearBits(ref uint, uint)"/> method with contention
-        /// and variety of values.
-        /// </summary>
-        private void UsingInterlockedOps_UnsignedIntegerOperation_WithContention_SavesProperResult
-            (Action operation, uint startValue, uint maxIncrement, Predicate<uint> operationRunCheckCondition,
-            Action<uint, uint> operationRunVerifier)
-        {
-            TimeSpan testCycleWaitTime = TimeSpan.FromSeconds(3);
-            // A signal to the test threads that they should abort
-            ManualResetEventSlim abortSignal = new ManualResetEventSlim(false);
-            // A signal to the increment value test thread that it should run
-            ManualResetEventSlim runIncrementSignal = new ManualResetEventSlim(false);
-            // A signal to the bit operation value test thread that it should run
-            ManualResetEventSlim runTestSignal = new ManualResetEventSlim(false);
-            // A signal for resetting the tests for the next loop.
-            ManualResetEventSlim resetSignal = new ManualResetEventSlim(false);
-            // A signal for the increment test to indicate it is done
-            ManualResetEventSlim incrementTestDoneSignal = new ManualResetEventSlim(false);
-            // Capture any exceptions that occur in the test threads
-            ExceptionDispatchInfo? exceptionDispatchInfo = null;
 
-            // The value containing the bit we will use to test for contention
-            List<double> hitLoopCounts = new(ContentionTestLoopCount);
-
-            // Set up two threads to run the test
-            Thread interlockedOperation = new Thread(() =>
+            void InterlockedOperationThreadRun ()
             {
                 try
                 {
@@ -219,19 +320,9 @@ namespace KZDev.PerfUtils.Tests
                 {
                     exceptionDispatchInfo ??= ExceptionDispatchInfo.Capture(error);
                 }
-            })
-            {
-                // We want the bit operation thread to run at a lower priority than the increment thread to cause
-                // possible context switching during the bit operation, but it should succeed at some point.
-                Priority = ThreadPriority.Lowest,
-                Name = "Operation Thread",
-                IsBackground = true
-            };
-            interlockedOperation.Start();
+            }
 
-            // Set up a thread to increment the value repeatedly looking for a bit change
-            // in the high order bit
-            Thread incrementThread = new Thread(() =>
+            void IncrementThreadRun ()
             {
                 try
                 {
@@ -292,7 +383,63 @@ namespace KZDev.PerfUtils.Tests
                     exceptionDispatchInfo ??= ExceptionDispatchInfo.Capture(error);
                     incrementTestDoneSignal.Set();
                 }
-            })
+            }
+        }
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Tests a simple <see cref="long"/> operation on <see cref="InterlockedOps"/> with contention
+        /// and variety of values.
+        /// </summary>
+        /// <param name="operation">
+        /// The operation to run in the 'test operation' thread.
+        /// </param>
+        /// <param name="startValue">
+        /// The starting value for the 'increment' thread loop.
+        /// </param>
+        /// <param name="maxIncrement">
+        /// The maximum increment value for the 'increment' thread loop.
+        /// </param>
+        /// <param name="operationRunCheckCondition">
+        /// The condition to check for the operation run.
+        /// </param>
+        /// <param name="operationRunVerifier">
+        /// The verifier to run when the operation is found to have run.
+        /// </param>
+        private void UsingInterlockedOps_LongIntegerOperation_WithContention_SavesProperResult
+            (Action operation, long startValue, long maxIncrement, Predicate<long> operationRunCheckCondition,
+            Action<long, long> operationRunVerifier)
+        {
+            TimeSpan testCycleWaitTime = TimeSpan.FromSeconds(3);
+            // A signal to the test threads that they should abort
+            ManualResetEventSlim abortSignal = new ManualResetEventSlim(false);
+            // A signal to the increment value test thread that it should run
+            ManualResetEventSlim runIncrementSignal = new ManualResetEventSlim(false);
+            // A signal to the bit operation value test thread that it should run
+            ManualResetEventSlim runTestSignal = new ManualResetEventSlim(false);
+            // A signal for resetting the tests for the next loop.
+            ManualResetEventSlim resetSignal = new ManualResetEventSlim(false);
+            // A signal for the increment test to indicate it is done
+            ManualResetEventSlim incrementTestDoneSignal = new ManualResetEventSlim(false);
+            // Capture any exceptions that occur in the test threads
+            ExceptionDispatchInfo? exceptionDispatchInfo = null;
+
+            // The value containing the bit we will use to test for contention
+            List<double> hitLoopCounts = new(ContentionTestLoopCount);
+
+            // Set up two threads to run the test
+            Thread interlockedOperation = new Thread(InterlockedOperationThreadRun)
+            {
+                // We want the bit operation thread to run at a lower priority than the increment thread to cause
+                // possible context switching during the bit operation, but it should succeed at some point.
+                Priority = ThreadPriority.Lowest,
+                Name = "Operation Thread",
+                IsBackground = true
+            };
+            interlockedOperation.Start();
+
+            // Set up a thread to increment the value repeatedly looking for a bit change
+            // in the high order bit
+            Thread incrementThread = new Thread(IncrementThreadRun)
             {
                 IsBackground = true,
                 Name = "Increment Thread"
@@ -302,7 +449,7 @@ namespace KZDev.PerfUtils.Tests
             try
             {
                 // Now, run the test a bunch of times
-                for (int loop = 0; loop < ContentionTestLoopCount; loop++)
+                for (long loop = 0; loop < ContentionTestLoopCount; loop++)
                 {
                     // Signal the increment thread to run
                     runIncrementSignal.Set();
@@ -339,35 +486,8 @@ namespace KZDev.PerfUtils.Tests
 
             exceptionDispatchInfo?.Throw();
             TestWriteLine($"Average hit loop count: {hitLoopCounts.Average()}");
-        }
-        //--------------------------------------------------------------------------------
-        /// <summary>
-        /// Tests the <see cref="InterlockedOps.ClearBits(ref long, long)"/> method with contention
-        /// and variety of values.
-        /// </summary>
-        private void UsingInterlockedOps_LongIntegerOperation_WithContention_SavesProperResult
-            (Action operation, long startValue, long maxIncrement, Predicate<long> operationRunCheckCondition,
-            Action<long, long> operationRunVerifier)
-        {
-            TimeSpan testCycleWaitTime = TimeSpan.FromSeconds(3);
-            // A signal to the test threads that they should abort
-            ManualResetEventSlim abortSignal = new ManualResetEventSlim(false);
-            // A signal to the increment value test thread that it should run
-            ManualResetEventSlim runIncrementSignal = new ManualResetEventSlim(false);
-            // A signal to the bit operation value test thread that it should run
-            ManualResetEventSlim runTestSignal = new ManualResetEventSlim(false);
-            // A signal for resetting the tests for the next loop.
-            ManualResetEventSlim resetSignal = new ManualResetEventSlim(false);
-            // A signal for the increment test to indicate it is done
-            ManualResetEventSlim incrementTestDoneSignal = new ManualResetEventSlim(false);
-            // Capture any exceptions that occur in the test threads
-            ExceptionDispatchInfo? exceptionDispatchInfo = null;
 
-            // The value containing the bit we will use to test for contention
-            List<double> hitLoopCounts = new(ContentionTestLoopCount);
-
-            // Set up two threads to run the test
-            Thread interlockedOperation = new Thread(() =>
+            void InterlockedOperationThreadRun ()
             {
                 try
                 {
@@ -384,19 +504,9 @@ namespace KZDev.PerfUtils.Tests
                 {
                     exceptionDispatchInfo ??= ExceptionDispatchInfo.Capture(error);
                 }
-            })
-            {
-                // We want the bit operation thread to run at a lower priority than the increment thread to cause
-                // possible context switching during the bit operation, but it should succeed at some point.
-                Priority = ThreadPriority.Lowest,
-                Name = "Operation Thread",
-                IsBackground = true
-            };
-            interlockedOperation.Start();
+            }
 
-            // Set up a thread to increment the value repeatedly looking for a bit change
-            // in the high order bit
-            Thread incrementThread = new Thread(() =>
+            void IncrementThreadRun ()
             {
                 try
                 {
@@ -451,7 +561,63 @@ namespace KZDev.PerfUtils.Tests
                     exceptionDispatchInfo ??= ExceptionDispatchInfo.Capture(error);
                     incrementTestDoneSignal.Set();
                 }
-            })
+            }
+        }
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Tests a simple <see cref="ulong"/> operation on <see cref="InterlockedOps"/> with contention
+        /// and variety of values.
+        /// </summary>
+        /// <param name="operation">
+        /// The operation to run in the 'test operation' thread.
+        /// </param>
+        /// <param name="startValue">
+        /// The starting value for the 'increment' thread loop.
+        /// </param>
+        /// <param name="maxIncrement">
+        /// The maximum increment value for the 'increment' thread loop.
+        /// </param>
+        /// <param name="operationRunCheckCondition">
+        /// The condition to check for the operation run.
+        /// </param>
+        /// <param name="operationRunVerifier">
+        /// The verifier to run when the operation is found to have run.
+        /// </param>
+        private void UsingInterlockedOps_UnsignedLongIntegerOperation_WithContention_SavesProperResult
+            (Action operation, ulong startValue, ulong maxIncrement, Predicate<ulong> operationRunCheckCondition,
+            Action<ulong, ulong> operationRunVerifier)
+        {
+            TimeSpan testCycleWaitTime = TimeSpan.FromSeconds(3);
+            // A signal to the test threads that they should abort
+            ManualResetEventSlim abortSignal = new ManualResetEventSlim(false);
+            // A signal to the increment value test thread that it should run
+            ManualResetEventSlim runIncrementSignal = new ManualResetEventSlim(false);
+            // A signal to the bit operation value test thread that it should run
+            ManualResetEventSlim runTestSignal = new ManualResetEventSlim(false);
+            // A signal for resetting the tests for the next loop.
+            ManualResetEventSlim resetSignal = new ManualResetEventSlim(false);
+            // A signal for the increment test to indicate it is done
+            ManualResetEventSlim incrementTestDoneSignal = new ManualResetEventSlim(false);
+            // Capture any exceptions that occur in the test threads
+            ExceptionDispatchInfo? exceptionDispatchInfo = null;
+
+            // The value containing the bit we will use to test for contention
+            List<double> hitLoopCounts = new(ContentionTestLoopCount);
+
+            // Set up two threads to run the test
+            Thread interlockedOperation = new Thread(InterlockedOperationThreadRun)
+            {
+                // We want the bit operation thread to run at a lower priority than the increment thread to cause
+                // possible context switching during the bit operation, but it should succeed at some point.
+                Priority = ThreadPriority.Lowest,
+                Name = "Operation Thread",
+                IsBackground = true
+            };
+            interlockedOperation.Start();
+
+            // Set up a thread to increment the value repeatedly looking for a bit change
+            // in the high order bit
+            Thread incrementThread = new Thread(IncrementThreadRun)
             {
                 IsBackground = true,
                 Name = "Increment Thread"
@@ -498,49 +664,8 @@ namespace KZDev.PerfUtils.Tests
 
             exceptionDispatchInfo?.Throw();
             TestWriteLine($"Average hit loop count: {hitLoopCounts.Average()}");
-        }
-        //--------------------------------------------------------------------------------
-        /// <summary>
-        /// General helper to run common test operations for the unsigned long integer operations.
-        /// </summary>
-        /// <param name="operation">
-        /// The operation to run in the 'test operation' thread.
-        /// </param>
-        /// <param name="startValue">
-        /// The starting value for the 'increment' thread loop.
-        /// </param>
-        /// <param name="maxIncrement">
-        /// The maximum increment value for the 'increment' thread loop.
-        /// </param>
-        /// <param name="operationRunCheckCondition">
-        /// The condition to check for the operation run.
-        /// </param>
-        /// <param name="operationRunVerifier">
-        /// The verifier to run when the operation is found to have run.
-        /// </param>
-        private void UsingInterlockedOps_UnsignedLongIntegerOperation_WithContention_SavesProperResult
-            (Action operation, ulong startValue, ulong maxIncrement, Predicate<ulong> operationRunCheckCondition,
-            Action<ulong, ulong> operationRunVerifier)
-        {
-            TimeSpan testCycleWaitTime = TimeSpan.FromSeconds(3);
-            // A signal to the test threads that they should abort
-            ManualResetEventSlim abortSignal = new ManualResetEventSlim(false);
-            // A signal to the increment value test thread that it should run
-            ManualResetEventSlim runIncrementSignal = new ManualResetEventSlim(false);
-            // A signal to the bit operation value test thread that it should run
-            ManualResetEventSlim runTestSignal = new ManualResetEventSlim(false);
-            // A signal for resetting the tests for the next loop.
-            ManualResetEventSlim resetSignal = new ManualResetEventSlim(false);
-            // A signal for the increment test to indicate it is done
-            ManualResetEventSlim incrementTestDoneSignal = new ManualResetEventSlim(false);
-            // Capture any exceptions that occur in the test threads
-            ExceptionDispatchInfo? exceptionDispatchInfo = null;
 
-            // The value containing the bit we will use to test for contention
-            List<double> hitLoopCounts = new(ContentionTestLoopCount);
-
-            // Set up two threads to run the test
-            Thread interlockedOperation = new Thread(() =>
+            void InterlockedOperationThreadRun ()
             {
                 try
                 {
@@ -557,19 +682,9 @@ namespace KZDev.PerfUtils.Tests
                 {
                     exceptionDispatchInfo ??= ExceptionDispatchInfo.Capture(error);
                 }
-            })
-            {
-                // We want the bit operation thread to run at a lower priority than the increment thread to cause
-                // possible context switching during the bit operation, but it should succeed at some point.
-                Priority = ThreadPriority.Lowest,
-                Name = "Operation Thread",
-                IsBackground = true
-            };
-            interlockedOperation.Start();
+            }
 
-            // Set up a thread to increment the value repeatedly looking for a bit change
-            // in the high order bit
-            Thread incrementThread = new Thread(() =>
+            void IncrementThreadRun ()
             {
                 try
                 {
@@ -624,53 +739,7 @@ namespace KZDev.PerfUtils.Tests
                     exceptionDispatchInfo ??= ExceptionDispatchInfo.Capture(error);
                     incrementTestDoneSignal.Set();
                 }
-            })
-            {
-                IsBackground = true,
-                Name = "Increment Thread"
-            };
-            incrementThread.Start();
-
-            try
-            {
-                // Now, run the test a bunch of times
-                for (long loop = 0; loop < ContentionTestLoopCount; loop++)
-                {
-                    // Signal the increment thread to run
-                    runIncrementSignal.Set();
-                    // Wait for the increment thread to finish
-                    incrementTestDoneSignal.Wait(5000).Should().BeTrue();
-                    if (exceptionDispatchInfo is not null)
-                    {
-                        TestWriteLine($"Exception found on loop #{loop}");
-                        break;
-                    }
-
-                    incrementTestDoneSignal.Reset();
-                    // Don't set the test reset on the last loop because that might cause the
-                    // increment thread to reset the signal and test the state of the abort
-                    // signal before we have a chance to set it below in the finally block.
-                    if (loop < ContentionTestLoopCount - 1)
-                        resetSignal.Set();
-                }
             }
-            finally
-            {
-                // Shut down the test threads
-                abortSignal.Set();
-                // Set the signals to run the threads so that they loop around to the abort signal
-                resetSignal.Set();
-                runIncrementSignal.Set();
-                runTestSignal.Set();
-                // Wait for the threads to finish
-                incrementThread.Join(5000).Should().BeTrue();
-                TestWriteLine($"Increment Thread Stopped");
-                interlockedOperation.Join(5000).Should().BeTrue();
-                TestWriteLine($"Operation Thread Stopped");
-            }
-
-            exceptionDispatchInfo?.Throw();
-            TestWriteLine($"Average hit loop count: {hitLoopCounts.Average()}");
         }
         //--------------------------------------------------------------------------------    
     }

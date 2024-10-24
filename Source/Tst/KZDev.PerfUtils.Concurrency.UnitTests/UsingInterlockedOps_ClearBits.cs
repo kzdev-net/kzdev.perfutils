@@ -9,8 +9,7 @@ namespace KZDev.PerfUtils.Tests
     /// <summary>
     /// Unit tests for the <see cref="InterlockedOps"/> ClearBits operations.
     /// </summary>
-    [Trait(TestConstants.TestTrait.Category, TestConstants.TestCategory.Concurrency)]
-    public partial class UsingInterlockedOps : UnitTestBase
+    public partial class UsingInterlockedOps
     {
         #region ClearBits Tests
 

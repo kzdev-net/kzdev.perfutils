@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Kevin Zehrer
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-using System.Diagnostics.CodeAnalysis;
-
 using FluentAssertions;
 
 namespace KZDev.PerfUtils.Tests
@@ -11,9 +9,7 @@ namespace KZDev.PerfUtils.Tests
     /// <summary>
     /// Unit tests for the <see cref="InterlockedOps"/> Xor operations.
     /// </summary>
-    [Trait(TestConstants.TestTrait.Category, TestConstants.TestCategory.Concurrency)]
-    [ExcludeFromCodeCoverage]
-    public partial class UsingInterlockedOps : UnitTestBase
+    public partial class UsingInterlockedOps
     {
         #region Xor Tests
 
@@ -107,7 +103,7 @@ namespace KZDev.PerfUtils.Tests
         {
             const int xorValue = 0x4000_0000;
             UsingInterlockedOps_IntegerOperation_WithContention_SavesProperResult(() =>
-                    InterlockedOps.ClearBits(ref _testContentionInteger, xorValue),
+                    InterlockedOps.Xor(ref _testContentionInteger, xorValue),
                 xorValue, xorValue - 1, incrementValue => (incrementValue & xorValue) != 0,
                 (incrementValue, compareValue) => incrementValue.Should().Be(compareValue | xorValue));
         }
@@ -121,7 +117,7 @@ namespace KZDev.PerfUtils.Tests
         {
             const uint xorValue = 0x8000_0000;
             UsingInterlockedOps_UnsignedIntegerOperation_WithContention_SavesProperResult(() =>
-                    InterlockedOps.ClearBits(ref _testContentionUnsignedInteger, xorValue),
+                    InterlockedOps.Xor(ref _testContentionUnsignedInteger, xorValue),
                 xorValue, xorValue - 1, incrementValue => (incrementValue & xorValue) != 0,
                 (incrementValue, compareValue) => incrementValue.Should().Be(compareValue | xorValue));
         }
@@ -135,7 +131,7 @@ namespace KZDev.PerfUtils.Tests
         {
             const long xorValue = 0x4000_0000_0000_0000;
             UsingInterlockedOps_LongIntegerOperation_WithContention_SavesProperResult(() =>
-                    InterlockedOps.ClearBits(ref _testContentionLongInteger, xorValue),
+                    InterlockedOps.Xor(ref _testContentionLongInteger, xorValue),
                 xorValue, xorValue - 1, incrementValue => (incrementValue & xorValue) != 0,
                 (incrementValue, compareValue) => incrementValue.Should().Be(compareValue | xorValue));
         }
