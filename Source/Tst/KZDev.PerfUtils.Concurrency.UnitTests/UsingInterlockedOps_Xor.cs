@@ -104,7 +104,7 @@ namespace KZDev.PerfUtils.Tests
             const int xorValue = 0x4000_0000;
             UsingInterlockedOps_IntegerOperation_WithContention_SavesProperResult(() =>
                     InterlockedOps.Xor(ref _testContentionInteger, xorValue),
-                xorValue, xorValue - 1, incrementValue => (incrementValue & xorValue) != 0,
+                0, xorValue - 1, incrementValue => (incrementValue & xorValue) != 0,
                 (incrementValue, compareValue) => incrementValue.Should().Be(compareValue | xorValue));
         }
         //--------------------------------------------------------------------------------
@@ -118,7 +118,7 @@ namespace KZDev.PerfUtils.Tests
             const uint xorValue = 0x8000_0000;
             UsingInterlockedOps_UnsignedIntegerOperation_WithContention_SavesProperResult(() =>
                     InterlockedOps.Xor(ref _testContentionUnsignedInteger, xorValue),
-                xorValue, xorValue - 1, incrementValue => (incrementValue & xorValue) != 0,
+                0, xorValue - 1, incrementValue => (incrementValue & xorValue) != 0,
                 (incrementValue, compareValue) => incrementValue.Should().Be(compareValue | xorValue));
         }
         //--------------------------------------------------------------------------------
@@ -132,7 +132,7 @@ namespace KZDev.PerfUtils.Tests
             const long xorValue = 0x4000_0000_0000_0000;
             UsingInterlockedOps_LongIntegerOperation_WithContention_SavesProperResult(() =>
                     InterlockedOps.Xor(ref _testContentionLongInteger, xorValue),
-                xorValue, xorValue - 1, incrementValue => (incrementValue & xorValue) != 0,
+                0, xorValue - 1, incrementValue => (incrementValue & xorValue) != 0,
                 (incrementValue, compareValue) => incrementValue.Should().Be(compareValue | xorValue));
         }
         //--------------------------------------------------------------------------------
@@ -146,7 +146,7 @@ namespace KZDev.PerfUtils.Tests
             const ulong xorValue = 0x8000_0000_0000_0000;
             UsingInterlockedOps_UnsignedLongIntegerOperation_WithContention_SavesProperResult(() =>
                     InterlockedOps.Xor(ref _testContentionUnsignedLongInteger, xorValue),
-                xorValue, xorValue - 1, incrementValue => (incrementValue & xorValue) != 0,
+                0, xorValue - 1, incrementValue => (incrementValue & xorValue) != 0,
                 (incrementValue, compareValue) => incrementValue.Should().Be(compareValue | xorValue));
         }
         //--------------------------------------------------------------------------------    

@@ -108,7 +108,7 @@ namespace KZDev.PerfUtils.Tests
             const int setBitsValue = 0x4000_0000;
             UsingInterlockedOps_IntegerOperation_WithContention_SavesProperResult(() =>
                     InterlockedOps.SetBits(ref _testContentionInteger, setBitsValue),
-                setBitsValue, setBitsValue - 1, incrementValue => (incrementValue & setBitsValue) != 0,
+                0, setBitsValue - 1, incrementValue => (incrementValue & setBitsValue) != 0,
                 (incrementValue, compareValue) => incrementValue.Should().Be(compareValue | setBitsValue));
         }
         //--------------------------------------------------------------------------------
@@ -122,7 +122,7 @@ namespace KZDev.PerfUtils.Tests
             const uint setBitsValue = 0x8000_0000;
             UsingInterlockedOps_UnsignedIntegerOperation_WithContention_SavesProperResult(() =>
                     InterlockedOps.SetBits(ref _testContentionUnsignedInteger, setBitsValue),
-                setBitsValue, setBitsValue - 1, incrementValue => (incrementValue & setBitsValue) != 0,
+                0, setBitsValue - 1, incrementValue => (incrementValue & setBitsValue) != 0,
                 (incrementValue, compareValue) => incrementValue.Should().Be(compareValue | setBitsValue));
         }
         //--------------------------------------------------------------------------------
@@ -136,7 +136,7 @@ namespace KZDev.PerfUtils.Tests
             const long setBitsValue = 0x4000_0000_0000_0000;
             UsingInterlockedOps_LongIntegerOperation_WithContention_SavesProperResult(() =>
                     InterlockedOps.SetBits(ref _testContentionLongInteger, setBitsValue),
-                setBitsValue, setBitsValue - 1, incrementValue => (incrementValue & setBitsValue) != 0,
+                0, setBitsValue - 1, incrementValue => (incrementValue & setBitsValue) != 0,
                 (incrementValue, compareValue) => incrementValue.Should().Be(compareValue | setBitsValue));
         }
         //--------------------------------------------------------------------------------
@@ -150,7 +150,7 @@ namespace KZDev.PerfUtils.Tests
             const ulong setBitsValue = 0x8000_0000_0000_0000;
             UsingInterlockedOps_UnsignedLongIntegerOperation_WithContention_SavesProperResult(() =>
                     InterlockedOps.SetBits(ref _testContentionUnsignedLongInteger, setBitsValue),
-                setBitsValue, setBitsValue - 1, incrementValue => (incrementValue & setBitsValue) != 0,
+                0, setBitsValue - 1, incrementValue => (incrementValue & setBitsValue) != 0,
                 (incrementValue, compareValue) => incrementValue.Should().Be(compareValue | setBitsValue));
         }
         //--------------------------------------------------------------------------------    

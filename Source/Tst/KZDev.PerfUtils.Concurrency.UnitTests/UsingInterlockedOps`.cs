@@ -156,7 +156,7 @@ namespace KZDev.PerfUtils.Tests
                         for (int rangeLoop = 0; rangeLoop < 5; rangeLoop++)
                         {
                             // Go into a loop incrementing the value and checking if we ever see the
-                            // high order bit change
+                            // test check condition hit
                             for (int incrementLoop = 0; incrementLoop < maxIncrement; incrementLoop++)
                             {
                                 int value = Interlocked.Increment(ref _testContentionInteger);
@@ -340,7 +340,7 @@ namespace KZDev.PerfUtils.Tests
                         for (int rangeLoop = 0; rangeLoop < 5; rangeLoop++)
                         {
                             // Go into a loop incrementing the value and checking if we ever see the
-                            // high order bit change
+                            // test check condition hit
                             for (int incrementLoop = 0; incrementLoop < maxIncrement; incrementLoop++)
                             {
                                 uint value = Interlocked.Increment(ref _testContentionUnsignedInteger);
@@ -521,7 +521,7 @@ namespace KZDev.PerfUtils.Tests
                         long lastValue = _testContentionLongInteger;
                         bool bitOperationFoundAsRun = false;
                         // Go into a loop incrementing the value and checking if we ever see the
-                        // high order bit change
+                        // test check condition hit
                         for (long incrementLoop = 0; incrementLoop < maxIncrement; incrementLoop++)
                         {
                             long value = Interlocked.Increment(ref _testContentionLongInteger);
@@ -699,7 +699,7 @@ namespace KZDev.PerfUtils.Tests
                         ulong lastValue = _testContentionUnsignedLongInteger;
                         bool bitOperationFoundAsRun = false;
                         // Go into a loop incrementing the value and checking if we ever see the
-                        // high order bit change
+                        // test check condition hit
                         for (ulong incrementLoop = 0; incrementLoop < maxIncrement; incrementLoop++)
                         {
                             ulong value = Interlocked.Increment(ref _testContentionUnsignedLongInteger);
