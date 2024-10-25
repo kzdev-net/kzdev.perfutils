@@ -23,7 +23,7 @@
         <PerfUtils-Pkg-Moq>4.20.72</PerfUtils-Pkg-Moq>
         <PerfUtils-Pkg-xunit>2.9.2</PerfUtils-Pkg-xunit>
         <PerfUtils-Pkg-xunit_runner_visualstudio>2.8.2</PerfUtils-Pkg-xunit_runner_visualstudio>
-        <PerfUtils-Pkg-XunitXml_TestLogger>4.0.254</PerfUtils-Pkg-XunitXml_TestLogger>
+        <PerfUtils-Pkg-XunitXml_TestLogger>4.1.0</PerfUtils-Pkg-XunitXml_TestLogger>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(TargetFramework)'=='net6.0'">
