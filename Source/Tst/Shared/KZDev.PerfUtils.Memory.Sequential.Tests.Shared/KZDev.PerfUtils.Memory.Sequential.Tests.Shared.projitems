@@ -9,6 +9,6 @@
     <Import_RootNamespace>KZDev.PerfUtils.Memory.Sequential.Tests.Shared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)UsingMemoryStreamSlim.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UsingMemoryStreamSlimReleaseBuffersAndRead.cs" />
   </ItemGroup>
 </Project>

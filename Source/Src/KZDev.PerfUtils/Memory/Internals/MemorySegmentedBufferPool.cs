@@ -4,6 +4,7 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
 namespace KZDev.PerfUtils.Internals
 {
@@ -33,7 +34,9 @@ namespace KZDev.PerfUtils.Internals
         /// Debug helper to display the state of the pool.
         /// </summary>
         [ExcludeFromCodeCoverage]
+#pragma warning disable HAA0601
         private string DebugDisplayValue => $"Native Memory = {_useNativeMemory}, Zero Pending = {_pendingZeroList.Count}, Group = {_arrayGroup.DebugDisplayValue}";
+#pragma warning restore HAA0601
 
         /// <summary>
         /// A flag indicating if we should use native memory for the buffers.
@@ -97,18 +100,22 @@ namespace KZDev.PerfUtils.Internals
                     // Now, loop through the pending list and zero out the buffers.
                     for (int loopIndex = 0; loopIndex < runLoops; loopIndex++)
                     {
-                        if (!pendingZeroList.TryTake(out SegmentBuffer buffer))
+                        if (!pendingZeroList.TryTake(out SegmentBuffer releaseBuffer))
                             break;
-                        buffer.Clear();
+                        releaseBuffer.Clear();
                         // Store the buffer back in the group.
-                        if (!generationArray.ReleaseBuffer(buffer, true))
+                        if (!generationArray.ReleaseBuffer(releaseBuffer, true))
                         {
                             // If we get here, this means that the buffer actually came from a generation that is newer
                             // than the one we grabbed a reference to. So, the buffer group was not found.
                             // We could try to get the most recent generation and just loop again,
                             // but we might just as well break out and let the next round just pick
                             // up from the beginning, since could possibly indicate things are pretty busy.
-                            moreWork = true;
+                            // We are going to take a bit of a performance hit here because we will zero the buffer more
+                            // than once, but we need to make sure this segment gets properly released, and we need to
+                            // put it back into the pending zero list to be zeroed out again on the next pass.
+                            // This is the safest this to do, and this condition will be extremely rare.
+                            pendingZeroList.Add(releaseBuffer);
                             break;
                         }
 
@@ -119,12 +126,12 @@ namespace KZDev.PerfUtils.Internals
                         // We have been running for too long, so we should stop and return the thread to the pool.
 
 #if FALSE
-                    // Check if we should dedicate a thread to this operation.
-                    if (pendingZeroList.Count > startPendingCount)
-                    {
-                        // We are falling behind, so we should consider dedicating a thread to this operation.
-                        // TODO: Consider dedicating a thread to this operation.
-                    }
+                        // Check if we should dedicate a thread to this operation.
+                        if (pendingZeroList.Count > startPendingCount)
+                        {
+                            // We are falling behind, so we should consider dedicating a thread to this operation.
+                            // TODO: Consider dedicating a thread to this operation.
+                        }
 #endif
                         break;
                     }
@@ -204,7 +211,7 @@ namespace KZDev.PerfUtils.Internals
         /// </summary>
         private void TriggerZeroProcessing ()
         {
-            if (Interlocked.CompareExchange (ref _zeroProcessingActive, 1, 0) != 0) return;
+            if (Interlocked.CompareExchange(ref _zeroProcessingActive, 1, 0) != 0) return;
             try
             {
 #if CONCURRENCY_TESTING   // Concurrency testing does not currently support async/await and/or ThreadPool.QueueUserWorkItem
@@ -229,15 +236,71 @@ namespace KZDev.PerfUtils.Internals
         /// <param name="clearNewAllocations">
         /// Indicates whether we need new allocations to be cleared.
         /// </param>
+        /// <param name="requestedSegmentCount">
+        /// The number of segments that are being requested.
+        /// </param>
+        /// <param name="generationArray">
+        /// The generation array that we are renting from.
+        /// </param>
+        /// <param name="preferredBlockInfo">
+        /// Information about the last block that was used to allocate a buffer. This is used
+        /// to try and allocate from the same block and next segment if possible
+        /// </param>
+        /// <returns>
+        /// A buffer that is the size of the buffer size for this pool and a flag indicating 
+        /// if the returned buffer is the next segment from the preferred block.
+        /// </returns>
+        private (SegmentBuffer Buffer, bool IsNextBlockSegment) 
+            RentFromGeneration (int requestedBufferSize, int requestedSegmentCount,
+            MemorySegmentedGroupGenerationArray generationArray, bool clearNewAllocations, 
+            in SegmentBufferInfo preferredBlockInfo)
+        {
+            // Try to rent from the preferred group first.
+            MemorySegmentedBufferGroup[] segmentGroupArray = generationArray.Groups;
+            MemorySegmentedBufferGroup? preferredGroup = null;
+            for (int groupIndex = 0; groupIndex < segmentGroupArray.Length; groupIndex++)
+            {
+                MemorySegmentedBufferGroup group = segmentGroupArray[groupIndex];
+                if (group.Id != preferredBlockInfo.BlockId)
+                    continue;
+                preferredGroup = group;
+                break;
+            }
+            // If we can't find that group for some reason, then just rent without the preferred block info.
+            if (preferredGroup is null)
+                return (RentFromGeneration(requestedBufferSize, requestedSegmentCount, generationArray, clearNewAllocations), false);
+
+            // Try to get the buffer from the preferred group.
+            (SegmentBuffer buffer, GetBufferResult getResult, bool segmentIsPreferredInBlock) =
+                preferredGroup.GetBuffer(requestedBufferSize, clearNewAllocations, this, preferredBlockInfo.SegmentId + preferredBlockInfo.SegmentCount);
+            return (getResult == GetBufferResult.Available) ? (buffer, segmentIsPreferredInBlock) :
+                // The group is either locked or the preferred segment was not available, so we will fall
+                // back to the normal rent operation.
+                (RentFromGeneration(requestedBufferSize, requestedSegmentCount, generationArray, clearNewAllocations), false);
+        }
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Helper to do the actual rent operation.
+        /// </summary>
+        /// <param name="requestedBufferSize">
+        /// The desired size of the buffer to rent.
+        /// </param>
+        /// <param name="clearNewAllocations">
+        /// Indicates whether we need new allocations to be cleared.
+        /// </param>
+        /// <param name="requestedSegmentCount">
+        /// The number of segments that are being requested.
+        /// </param>
+        /// <param name="generationArray">
+        /// The generation array that we are renting from.
+        /// </param>
         /// <returns>
         /// A buffer that is the size of the buffer size for this pool.
         /// </returns>
-        private SegmentBuffer RentInternal (int requestedBufferSize, bool clearNewAllocations)
+        private SegmentBuffer RentFromGeneration (int requestedBufferSize, int requestedSegmentCount,
+            MemorySegmentedGroupGenerationArray generationArray, bool clearNewAllocations)
         {
             int lockedLoops = 0;
-            int requestedSegmentCount = requestedBufferSize / MemorySegmentedBufferGroup.StandardBufferSegmentSize;
-            // Volatile read of the array group generation to get our local reference.
-            MemorySegmentedGroupGenerationArray generationArray = Volatile.Read(ref _arrayGroup);
             // For larger segment counts, we will look backwards in the group array since the latter groups are likely larger.
             bool lookBackwards = requestedSegmentCount >= (generationArray.MaxGroupSegmentCount / 2);
 
@@ -314,6 +377,46 @@ namespace KZDev.PerfUtils.Internals
         }
         //--------------------------------------------------------------------------------
         /// <summary>
+        /// Helper to do the actual rent operation.
+        /// </summary>
+        /// <param name="requestedBufferSize">
+        /// The desired size of the buffer to rent.
+        /// </param>
+        /// <param name="clearNewAllocations">
+        /// Indicates whether we need new allocations to be cleared.
+        /// </param>
+        /// <returns>
+        /// A buffer that is the size of the buffer size for this pool.
+        /// </returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private SegmentBuffer RentInternal (int requestedBufferSize, bool clearNewAllocations) =>
+            RentFromGeneration(requestedBufferSize, requestedBufferSize / MemorySegmentedBufferGroup.StandardBufferSegmentSize,
+                Volatile.Read(ref _arrayGroup), clearNewAllocations);
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Helper to do the actual rent operation.
+        /// </summary>
+        /// <param name="requestedBufferSize">
+        /// The desired size of the buffer to rent.
+        /// </param>
+        /// <param name="clearNewAllocations">
+        /// Indicates whether we need new allocations to be cleared.
+        /// </param>
+        /// <param name="preferredBlockInfo">
+        /// Information about the last block that was used to allocate a buffer. This is used
+        /// to try and allocate from the same block and next segment if possible
+        /// </param>
+        /// <returns>
+        /// A buffer that is the size of the buffer size for this pool and a flag indicating 
+        /// if the returned buffer is the next segment from the preferred block.
+        /// </returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private (SegmentBuffer Buffer, bool IsNextBlockSegment) RentInternal (int requestedBufferSize, 
+            bool clearNewAllocations, in SegmentBufferInfo preferredBlockInfo) =>
+            RentFromGeneration(requestedBufferSize, requestedBufferSize / MemorySegmentedBufferGroup.StandardBufferSegmentSize,
+                Volatile.Read(ref _arrayGroup), clearNewAllocations, preferredBlockInfo);
+        //--------------------------------------------------------------------------------
+        /// <summary>
         /// Initializes a new instance of the <see cref="MemorySegmentedBufferPool"/> class.
         /// </summary>
         /// <param name="useNativeMemory">
@@ -337,8 +440,39 @@ namespace KZDev.PerfUtils.Internals
         /// <returns>
         /// A buffer that is the size of the buffer size for this pool.
         /// </returns>
-        public SegmentBuffer Rent (int requestedBufferSize, bool clearNewAllocations) =>
-            RentInternal(requestedBufferSize, clearNewAllocations);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public SegmentBuffer Rent (int requestedBufferSize, bool clearNewAllocations)
+        {
+            Debug.Assert(requestedBufferSize > 0, "requestedBufferSize <= 0");
+            Debug.Assert(0 == (requestedBufferSize % MemorySegmentedBufferGroup.StandardBufferSegmentSize), "requestedBufferSize is not a multiple of the segment size");
+            return RentInternal (requestedBufferSize, clearNewAllocations);
+        }
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Returns a buffer that is the size of the buffer size for this pool.
+        /// </summary>
+        /// <param name="requestedBufferSize">
+        /// The desired size of the buffer to rent.
+        /// </param>
+        /// <param name="clearNewAllocations">
+        /// Indicates whether we need new allocations to be cleared.
+        /// </param>
+        /// <param name="preferredBlockInfo">
+        /// Information about the last block that was used to allocate a buffer. This is used
+        /// to try and allocate from the same block and next segment if possible
+        /// </param>
+        /// <returns>
+        /// A buffer that is the size of the buffer size for this pool and a flag indicating 
+        /// if the returned buffer is the next segment from the preferred block.
+        /// </returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public (SegmentBuffer Buffer, bool IsNextBlockSegment) RentFromPreferredBlock 
+            (int requestedBufferSize, bool clearNewAllocations, in SegmentBufferInfo preferredBlockInfo)
+        {
+            Debug.Assert(requestedBufferSize > 0, "requestedBufferSize <= 0");
+            Debug.Assert(0 == (requestedBufferSize % MemorySegmentedBufferGroup.StandardBufferSegmentSize), "requestedBufferSize is not a multiple of the segment size");
+            return RentInternal (requestedBufferSize, clearNewAllocations, preferredBlockInfo);
+        }
         //--------------------------------------------------------------------------------
         /// <summary>
         /// Returns a buffer to the pool.

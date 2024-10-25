@@ -319,6 +319,52 @@ namespace KZDev.PerfUtils.Tests
         /// It is assumed that the stream is writable and that the stream position is at the
         /// location where the random bytes should be written.
         /// </remarks>
+        /// <param name="randomSource">
+        /// The <see cref="IRandomSource"/> instance to use for generating random bytes.
+        /// </param>
+        /// <param name="stream">
+        /// The stream to fill with random bytes.
+        /// </param>
+        /// <param name="byteCount">
+        /// The number of bytes to write to the stream.
+        /// </param>
+        /// <returns>
+        /// An array that contains a copy of the bytes written to the stream.
+        /// </returns>
+        /// <param name="bySegmentSize">
+        /// The size of each segment used to write the data.
+        /// </param>
+        public static async Task<byte[]> FillStreamAndArrayWithRandomBytesWithYieldAsync (IRandomSource randomSource,
+            Stream stream, int byteCount, int bySegmentSize)
+        {
+            byte[] returnData = new byte[byteCount];
+            GetRandomBytes(returnData, byteCount);
+            int bytesLeft = byteCount;
+            int byteIndex = 0;
+            while (bytesLeft > 0)
+            {
+                int byteCountToWrite = Math.Min(bySegmentSize, bytesLeft);
+                // Randomly yield or just continue.
+                if (randomSource.GetRandomTrue(5))
+                {
+                    await Task.Yield();
+                }
+                await stream.WriteAsync(returnData, byteIndex, byteCountToWrite);
+                byteIndex += byteCountToWrite;
+                bytesLeft -= byteCountToWrite;
+            }
+            return returnData;
+        }
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Fills the provided stream with random bytes. The number of bytes written to the
+        /// stream is determined by the <paramref name="byteCount"/> parameter. This also 
+        /// returns the array of bytes that was written to the stream.
+        /// </summary>
+        /// <remarks>
+        /// It is assumed that the stream is writable and that the stream position is at the
+        /// location where the random bytes should be written.
+        /// </remarks>
         /// <param name="stream">
         /// The stream to fill with random bytes.
         /// </param>
@@ -349,7 +395,8 @@ namespace KZDev.PerfUtils.Tests
         //--------------------------------------------------------------------------------
         /// <summary>
         /// Fills the provided stream with random bytes. The number of bytes written to the
-        /// stream is determined by the <paramref name="byteCount"/> parameter.
+        /// stream is determined by the <paramref name="byteCount"/> parameter. This also 
+        /// returns the array of bytes that was written to the stream.
         /// </summary>
         /// <remarks>
         /// It is assumed that the stream is writable and that the stream position is at the
@@ -403,9 +450,6 @@ namespace KZDev.PerfUtils.Tests
         /// It is assumed that the stream is writable and that the stream position is at the
         /// location where the random bytes should be written.
         /// </remarks>
-        /// <param name="randomSource">
-        /// The <see cref="IRandomSource"/> instance to use for generating random bytes.
-        /// </param>
         /// <param name="stream">
         /// The stream to fill with random bytes.
         /// </param>
@@ -418,26 +462,66 @@ namespace KZDev.PerfUtils.Tests
         /// <param name="bySegmentSize">
         /// The size of each segment used to write the data.
         /// </param>
-        public static async Task<byte[]> FillStreamAndArrayWithRandomBytesWithYieldAsync (IRandomSource randomSource,
-            Stream stream, int byteCount, int bySegmentSize)
+        public static void FillStreamWithRandomBytes (Stream stream, int byteCount, int bySegmentSize)
         {
-            byte[] returnData = new byte[byteCount];
-            GetRandomBytes(returnData, byteCount);
+            byte[] fillData = new byte[byteCount];
+            GetRandomBytes(fillData, byteCount);
             int bytesLeft = byteCount;
             int byteIndex = 0;
             while (bytesLeft > 0)
             {
                 int byteCountToWrite = Math.Min(bySegmentSize, bytesLeft);
-                // Randomly yield or just continue.
-                if (randomSource.GetRandomTrue(5))
-                {
-                    await Task.Yield();
-                }
-                await stream.WriteAsync(returnData, byteIndex, byteCountToWrite);
+                stream.Write(fillData, byteIndex, byteCountToWrite);
                 byteIndex += byteCountToWrite;
                 bytesLeft -= byteCountToWrite;
             }
-            return returnData;
+        }
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Fills the provided stream with random bytes. The number of bytes written to the
+        /// stream is determined by the <paramref name="byteCount"/> parameter.
+        /// </summary>
+        /// <remarks>
+        /// It is assumed that the stream is writable and that the stream position is at the
+        /// location where the random bytes should be written.
+        /// </remarks>
+        /// <param name="stream">
+        /// The stream to fill with random bytes.
+        /// </param>
+        /// <param name="byteCount">
+        /// The number of bytes to write to the stream.
+        /// </param>
+        /// <returns>
+        /// An array that contains a copy of the bytes written to the stream.
+        /// </returns>
+        /// <param name="bySegmentSize">
+        /// The size of each segment used to write the data.
+        /// </param>
+        public static async Task FillStreamWithRandomBytesAsync (Stream stream, int byteCount, int bySegmentSize)
+        {
+            byte[] fillData = new byte[byteCount];
+            GetRandomBytes(fillData, byteCount);
+            int bytesLeft = byteCount;
+            int byteIndex = 0;
+            bool useMemoryInstance = false;
+
+            while (bytesLeft > 0)
+            {
+                int byteCountToWrite = Math.Min(bySegmentSize, bytesLeft);
+                // Alternate between using the memory instance and the array buffer
+                if (useMemoryInstance)
+                {
+                    Memory<byte> memory = new(fillData, byteIndex, byteCountToWrite);
+                    await stream.WriteAsync(memory);
+                }
+                else
+                {
+                    await stream.WriteAsync(fillData, byteIndex, byteCountToWrite);
+                }
+                byteIndex += byteCountToWrite;
+                bytesLeft -= byteCountToWrite;
+                useMemoryInstance = !useMemoryInstance;
+            }
         }
         //--------------------------------------------------------------------------------
     }

@@ -5,9 +5,9 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="coverlet.collector" Version="6.0.2" />
-		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
-		<PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
+		<PackageReference Include="coverlet.collector" Version="$(PerfUtils-Pkg-coverlet_collector)" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(PerfUtils-Pkg-Microsoft_NET_Test_Sdk)" />
+		<PackageReference Include="xunit.runner.visualstudio" Version="$(PerfUtils-Pkg-xunit_runner_visualstudio)" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -30,9 +30,5 @@
 	</ItemGroup>
 
 	<Import Project="..\Shared\KZDev.PerfUtils.Memory.Tests.Shared\KZDev.PerfUtils.Memory.Shared.projitems" Label="Shared" />
-
-	<Import Project="..\Shared\KZDev.PerfUtils.MemoryStreamSlim.Tests.Shared\KZDev.PerfUtils.MemoryStreamSlim.Tests.Shared.projitems" Label="Shared" />
-
-	<Import Project="..\Shared\KZDev.PerfUtils.TestMocks.Shared\KZDev.PerfUtils.TestMocks.Shared.projitems" Label="Shared" />
 
 </Project>

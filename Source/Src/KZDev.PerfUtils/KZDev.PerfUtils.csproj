@@ -7,12 +7,12 @@
 	<PropertyGroup Label="Package">
 		<Title>KZDev Performance Utilities</Title>
 		<PackageId>KZDev.PerfUtils</PackageId>
-		<PackageTags>KZDev,Utilities,Performance,MemoryStream,MemoryStreamSlim,Stream,GC,Garbage Collection</PackageTags>
+		<PackageTags>KZDev,Utilities,Performance,Concurrency,Interlocked,Interlocked-Xor,InterlockedOps,GC,Garbage-Collection,MemoryStream,MemoryStreamSlim,Stream</PackageTags>
 		<PackageReadmeFile>docs\README.md</PackageReadmeFile>
 		<PackageIcon>images\icon.png</PackageIcon>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<PackageDescription>Performance utilities for .NET projects, initially providing the `MemoryStreamSlim` class; a high-performance, memory-efficient, and easy-to-use replacement for the `MemoryStream` class that provides particular benefits for large or frequently used streams.</PackageDescription>
-		<PackageReleaseNotes>Initial release (version 1.0.0)</PackageReleaseNotes>
+		<PackageDescription>Performance utilities for .NET projects, including the 'MemoryStreamSlim' class; a high-performance, memory-efficient, and easy-to-use replacement for 'MemoryStream', and the 'InterlockedOps' class which has additional thread-safe atomic operations beyond those provided by the 'Interlocked' class.</PackageDescription>
+		<PackageReleaseNotes>Further MemoryStreamSlim performance enhancements and added InterlockedOps class (version 1.1.0).</PackageReleaseNotes>
 		<EmbedUntrackedSources>true</EmbedUntrackedSources>
 		<RepositoryUrl>https://github.com/kzdev-net/kzdev.perfutils</RepositoryUrl>
 	</PropertyGroup>
@@ -29,6 +29,7 @@
 	</PropertyGroup>
 	<ItemGroup Condition="'$(IsPacking)' != 'true'">
 		<InternalsVisibleTo Include="KZDev.PerfUtils.Common.UnitTests" />
+		<InternalsVisibleTo Include="KZDev.PerfUtils.Concurrency.UnitTests" />
 		<InternalsVisibleTo Include="KZDev.PerfUtils.Memory.UnitTests" />
 		<InternalsVisibleTo Include="KZDev.PerfUtils.Memory.Fixed.UnitTests" />
 		<InternalsVisibleTo Include="KZDev.PerfUtils.Memory.Native.UnitTests" />
@@ -39,7 +40,7 @@
 		<InternalsVisibleTo Include="MemoryStreamBenchmarks" />
 	</ItemGroup>
 	<ItemGroup Condition="'$(TargetFramework)' != 'net8.0'">
-	  <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="8.0.1" />
+		<PackageReference Include="System.Diagnostics.DiagnosticSource" Version="$(PerfUtils-Pkg-System_Diagnostics_DiagnosticSource)" />
 	</ItemGroup>
 	<ItemGroup>
 		<Compile Update="Resources\Strings.Designer.cs">

@@ -136,6 +136,50 @@ namespace KZDev.PerfUtils.Internals
         }
         //--------------------------------------------------------------------------------
         /// <summary>
+        /// Returns a new memory segment that has a count that is the sum of this segment 
+        /// count and the specified add length.
+        /// </summary>
+        /// <param name="addLength">
+        /// The number of segments to extend the current segment by.
+        /// </param>
+        /// <returns>
+        /// A new memory segment that represents the segment from the same address as this segment
+        /// but with an extended length.
+        /// </returns>
+        public MemorySegment Extend (int addLength) =>
+            IsNative ?
+                // Native memory...
+                // We create a new memory segment that is the combination of the previous buffer
+                // and the new buffer.
+                new MemorySegment(NativePointer, Offset, Count + addLength) :
+                // We create a new memory segment that is the combination of the previous buffer
+                // and the new buffer.
+                new MemorySegment(Array, Offset, Count + addLength);
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Merges this memory segment with the specified segment which is assumed to be
+        /// contiguous to this segment.
+        /// </summary>
+        /// <param name="nextSegment">
+        /// The segment to merge with this segment.
+        /// </param>
+        /// <returns>
+        /// A new memory segment that represents the concatenation of this segment and the next segment.
+        /// </returns>
+        public MemorySegment Concat (in MemorySegment nextSegment)
+        {
+            Debug.Assert(nextSegment.Offset == Offset + Count, "The next segment is not contiguous with this segment");
+            return IsNative ?
+                // Native memory...
+                // We create a new memory segment that is the combination of the previous buffer
+                // and the new buffer.
+                new MemorySegment (NativePointer, Offset, Count + nextSegment.Count) :
+                // We create a new memory segment that is the combination of the previous buffer
+                // and the new buffer.
+                new MemorySegment (Array, Offset, Count + nextSegment.Count);
+        }
+        //--------------------------------------------------------------------------------
+        /// <summary>
         /// Gets or sets the byte at the specified index.
         /// </summary>
         /// <param name="index">

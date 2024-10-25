@@ -1,8 +1,9 @@
 ﻿// Copyright (c) Kevin Zehrer
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-using FluentAssertions;
 using System.Runtime;
+
+using FluentAssertions;
 
 using Xunit.Abstractions;
 
@@ -14,17 +15,8 @@ namespace KZDev.PerfUtils.Tests
     /// parallel with other tests.
     /// </summary>
     [Trait(TestConstants.TestTrait.Category, "Memory")]
-    public partial class UsingMemoryStreamSlim : UnitTestBase
+    public class UsingMemoryStreamSlimReleaseBuffers : UsingMemoryStreamSlimUnitTestBase
     {
-        /// <summary>
-        /// The minimum number of test loops to run for the tests.
-        /// </summary>
-        private const int MinimumTestLoops = 100;
-        /// <summary>
-        /// The maximum number of test loops to run for the tests.
-        /// </summary>
-        private const int MaximumTestLoops = 500;
-
         //--------------------------------------------------------------------------------
         /// <summary>
         /// Initializes a new instance of the <see cref="UsingMemoryStreamSlim"/> class.
@@ -32,7 +24,7 @@ namespace KZDev.PerfUtils.Tests
         /// <param name="xUnitTestOutputHelper">
         /// The Xunit test output helper that can be used to output test messages
         /// </param>
-        public UsingMemoryStreamSlim (ITestOutputHelper xUnitTestOutputHelper) : base(xUnitTestOutputHelper)
+        public UsingMemoryStreamSlimReleaseBuffers (ITestOutputHelper xUnitTestOutputHelper) : base(xUnitTestOutputHelper)
         {
         }
         //--------------------------------------------------------------------------------
@@ -46,8 +38,13 @@ namespace KZDev.PerfUtils.Tests
         /// Tests writing data to the stream and verifying that the contents of the other stream
         /// is identical to the data written.
         /// </summary>
+        /// <remarks>
+        /// Clearly this test is very specific to using GC Heap memory and would not apply
+        /// to using unmanaged memory, so this test is contained in the heap specific test
+        /// project.
+        /// </remarks>
         [Fact]
-        public void UsingMemoryStreamSlim_CopyFullToStream_SettingReleaseMemoryProperlyReleasesMemory ()
+        public void UsingMemoryStreamSlimReleaseBuffers_CopyFullToStream_SettingReleaseMemoryProperlyReleasesMemory ()
         {
             int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
 

@@ -9,13 +9,19 @@
     <PropertyGroup Label="SourceGlobals">
         <Configurations>Debug;Release;Profile;Package</Configurations>
         <TargetFrameworks>net8.0;net6.0</TargetFrameworks>
-        <Version>1.0.0</Version>
+        <Version>1.1.0</Version>
         <Authors>Kevin Zehrer</Authors>
         <Copyright>Copyright © 2024 Kevin Zehrer. All rights reserved.</Copyright>
         <Product>KZDev Performance Utilities</Product>
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     </PropertyGroup>
-    <PropertyGroup Condition=" '$(Configuration)'=='Package' ">
+    <!-- 
+    Define source code project package version properties
+   -->
+    <PropertyGroup Condition="'$(TargetFramework)' != 'net8.0'">
+		<PerfUtils-Pkg-System_Diagnostics_DiagnosticSource>8.0.1</PerfUtils-Pkg-System_Diagnostics_DiagnosticSource>
+    </PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)'=='Package' ">
         <IsPacking>true</IsPacking>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(IsPacking)'=='' AND '$(Configuration)'!='Package' ">

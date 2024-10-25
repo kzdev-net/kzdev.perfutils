@@ -37,6 +37,23 @@ namespace KZDev.PerfUtils.Internals
         public static SegmentBufferInfo NoBlock { [DebuggerStepThrough] get; } = new(-1, -1, 0, null);
 
         /// <summary>
+        /// Helper to create a new segment buffer info from this segment buffer info and the new segment buffer
+        /// info which is assumed to represent the next segment buffer in contiguous memory.
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
+        public SegmentBufferInfo Concat(in SegmentBufferInfo other)
+        {
+            Debug.Assert(BlockId == other.BlockId, "BlockId must be the same for both segment buffer infos to concatenate.");
+            Debug.Assert(SegmentCount >= 0, "SegmentCount must be greater than or equal to 0.");
+            Debug.Assert(other.SegmentCount >= 0, "SegmentCount of the other segment buffer info must be greater than or equal to 0.");
+            Debug.Assert(SegmentId + SegmentCount == other.SegmentId, "The segment id of the other segment buffer info must be the next segment id in the block.");
+            Debug.Assert(BufferPool == other.BufferPool, "BufferPool must be the same for both segment buffer infos to concatenate.");
+
+            return new SegmentBufferInfo(BlockId, SegmentId, SegmentCount + other.SegmentCount, BufferPool);
+        }
+
+        /// <summary>
         /// Identifies the block that this segment references.
         /// </summary>
         public int BlockId { [DebuggerStepThrough] get; } = blockId;

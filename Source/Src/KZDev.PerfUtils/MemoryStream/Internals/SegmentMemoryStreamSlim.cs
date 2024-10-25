@@ -475,6 +475,45 @@ namespace KZDev.PerfUtils.Internals
         /// If <c>true</c>, then the buffer will be zeroed out before returning it, regardless
         /// of the settings for zeroing out buffers.
         /// </param>
+        /// <param name="preferredBlockInfo">
+        /// Information about the last block that was used to allocate a buffer. This is used
+        /// to try and allocate from the same block and next segment if possible
+        /// </param>
+        /// <returns>
+        /// The rented buffer and a flag indicating if the returned buffer is the next segment
+        /// from the preferred block.
+        /// </returns>
+        private (SegmentBuffer Buffer, bool IsNextBlockSegment) RentStandardBufferFromPreferredBlock
+            (int requestedBufferSize, bool forceZeroBytes, in SegmentBufferInfo preferredBlockInfo)
+        {
+            // If the preferred block info is the default, then just rent a standard buffer.
+            if (preferredBlockInfo.BufferPool is null)
+                return (RentStandardBuffer(requestedBufferSize, forceZeroBytes), false);
+
+            // Note - our buffer pool is a custom pool that only we will be using, so we don't 
+            // have to worry about non-cleared data from other users; but, it is static and 
+            // different instances of the stream may or may not have different security requirements,
+            // so if our settings are to clear the buffer, then we will clear it before returning it,
+            // but this is only done if the segments weren't cleared when they were stored.
+            MemorySegmentedBufferPool currentBufferPool = Volatile.Read(ref _bufferArrayPool);
+            // We do need to check if the current buffer pool is the same as the preferred block info.
+            if (currentBufferPool != preferredBlockInfo.BufferPool)
+                return (RentStandardBuffer(requestedBufferSize, forceZeroBytes), false);
+            return currentBufferPool.RentFromPreferredBlock(requestedBufferSize,
+                forceZeroBytes || (Settings.ZeroBufferBehavior != MemoryStreamSlimZeroBufferOption.None),
+                preferredBlockInfo);
+        }
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Rents a standard buffer from the buffer array pool.
+        /// </summary>
+        /// <param name="requestedBufferSize">
+        /// The desired size of the buffer to rent.
+        /// </param>
+        /// <param name="forceZeroBytes">
+        /// If <c>true</c>, then the buffer will be zeroed out before returning it, regardless
+        /// of the settings for zeroing out buffers.
+        /// </param>
         /// <returns>
         /// The rented buffer.
         /// </returns>
@@ -666,9 +705,7 @@ namespace KZDev.PerfUtils.Internals
                 _bufferList.Add(new SegmentBufferVirtualInfo(newBuffer, newBuffer.Length, newBuffer.SegmentCount));
                 return;
             }
-            SegmentBufferVirtualInfo previousListBuffer = _bufferList[^1];
-            _bufferList.Add(new SegmentBufferVirtualInfo(newBuffer, newBuffer.Length + previousListBuffer.SegmentEndOffset,
-                newBuffer.SegmentCount + previousListBuffer.SegmentEndCount));
+            _bufferList.Add(SegmentBufferVirtualInfo.FromPrevious(newBuffer, _bufferList[^1]));
         }
         //--------------------------------------------------------------------------------
         /// <summary>
@@ -839,8 +876,58 @@ namespace KZDev.PerfUtils.Internals
             // Now, allocate the rest of the standard buffers needed
             while (capacityNeeded > 0)
             {
-                SegmentBuffer nextBuffer = RentStandardBuffer((int)capacityNeeded, forceZeroBytes);
-                AddSegmentBufferToList(nextBuffer);
+                if (0 == _bufferList.Count)
+                {
+                    SegmentBuffer newBuffer = RentStandardBuffer((int)capacityNeeded, forceZeroBytes);
+                    AddSegmentBufferToList(newBuffer);
+                    capacityNeeded -= newBuffer.Length;
+                    continue;
+                }
+                // Get the next buffer from the preferred block if possible. We want to get some
+                // segments that are immediately after the last segment in the last buffer in the list
+                // if possible. This means we don't have to have another entry in the list, and we can
+                // just extend the last buffer in the list.
+                SegmentBuffer lastBuffer = _bufferList[^1].SegmentBuffer;
+                SegmentBufferInfo lastBufferInfo = lastBuffer.BufferInfo;
+                (SegmentBuffer nextBuffer, bool isNextBlockSegment) =
+                    RentStandardBufferFromPreferredBlock((int)capacityNeeded, forceZeroBytes, lastBufferInfo);
+
+                if (!isNextBlockSegment)
+                {
+                    // We couldn't get the preferred block, so we need to add a new buffer to the list
+                    AddSegmentBufferToList(nextBuffer);
+                    capacityNeeded -= nextBuffer.Length;
+                    continue;
+                }
+
+                // If the segment is from the next block, then we have just essentially
+                // extended the last buffer in the list. Update the information in the last
+                // buffer in the list to reflect the new buffer.
+                MemorySegment lastMemorySegment = lastBuffer.MemorySegment;
+
+                // Since we're extending the last buffer in the list, we need to be sure that 
+                // the current buffer will be properly selected when it's needed.
+                _currentBufferInvalid = true;
+                // We also check the current buffer information because....
+                //   It is a value type and so it is copied, and 
+                //   For efficiency, we don't replace _currentBufferInfo when selecting the current buffer
+                //       unless the index is different from the calculated current buffer index (in SelectCurrentBuffer())
+                if (_currentBufferInfo.Index == _bufferList.Count - 1)
+                    // Clear this out to force the current buffer to be recalculated
+                    _currentBufferInfo = CurrentBufferInfo.Empty;
+
+                // Now, we need to replace the last buffer in the list with the new buffer
+                SegmentBuffer replaceBuffer = lastBuffer.Concat(nextBuffer);
+
+                // Replace the last buffer in the list with the new buffer
+                if (_bufferList.Count == 1)
+                    _bufferList[^1] = new SegmentBufferVirtualInfo(replaceBuffer, replaceBuffer.Length, replaceBuffer.SegmentCount);
+                else
+                {
+                    // Adjust the virtual information for the last buffer in the list based on the 
+                    // new buffer and the second to last buffer in the list.
+                    _bufferList[^1] = SegmentBufferVirtualInfo.FromPrevious(replaceBuffer, _bufferList[^2]);
+                }
                 capacityNeeded -= nextBuffer.Length;
             }
         }
@@ -949,9 +1036,7 @@ namespace KZDev.PerfUtils.Internals
                         _bufferList[0] = new SegmentBufferVirtualInfo(newBuffer, newBuffer.Length, newBuffer.SegmentCount);
                     else
                     {
-                        SegmentBufferVirtualInfo previousListBuffer = _bufferList[^2];
-                        _bufferList[^1] = new SegmentBufferVirtualInfo(newBuffer, newBuffer.Length + previousListBuffer.SegmentEndOffset,
-                            newBuffer.SegmentCount + previousListBuffer.SegmentEndCount);
+                        _bufferList[^1] = SegmentBufferVirtualInfo.FromPrevious(newBuffer, _bufferList[^2]);
                     }
                     break;
                 }
@@ -1028,15 +1113,14 @@ namespace KZDev.PerfUtils.Internals
                     return;
                 }
             }
-            else
             // offsetPosition is negative - Check if we just moved within the same current buffer
-            if ((_currentBufferOffset + offsetPosition) >= 0)
+            else if ((_currentBufferOffset + offsetPosition) >= 0)
             {
                 _currentBufferOffset += offsetPosition;
                 PositionInternal += offsetPosition;
                 return;
             }
-            SetPositionAndCurrentBuffer(VirtualPosition + offsetPosition);
+            SetPositionAndCurrentBuffer(PositionInternal + offsetPosition);
         }
         //--------------------------------------------------------------------------------
         /// <summary>
@@ -1103,7 +1187,7 @@ namespace KZDev.PerfUtils.Internals
             // Based on the current position, we need to determine the buffer index and offset into that buffer
             if (offset == 0)
                 return (0, 0);
-            if (offset > _bufferList![^1].SegmentEndOffset)
+            if (offset >= _bufferList![^1].SegmentEndOffset)
                 // This is a special case where the virtual offset is beyond the end of the last buffer, so we need
                 // to return -1 as the index.
                 return (-1, 0);
@@ -1669,17 +1753,17 @@ namespace KZDev.PerfUtils.Internals
             ValidateCopyToArguments(destination, bufferSize);
             EnsureNotClosed();
 
+            // If we have no data, then we have nothing to copy
+            int bytesToCopy = LengthInternal - PositionInternal;
+            if (bytesToCopy <= 0)
+                return;
+
             if (destination is MemoryStreamSlim or MemoryStream)
             {
                 // We can optimize the copy operation by copying synchronously instead of asynchronously
                 await CopyToSyncAsAsync(destination, bufferSize, cancellationToken);
                 return;
             }
-
-            // If we have no data, then we have nothing to copy
-            int bytesToCopy = LengthInternal - PositionInternal;
-            if (bytesToCopy <= 0)
-                return;
 
             VerifyCurrentBuffer();
             // If we have a small buffer, then we can just copy the remaining data from the small buffer
@@ -1694,19 +1778,38 @@ namespace KZDev.PerfUtils.Internals
             int bufferOffset = _currentBufferOffset;   // Offset into the buffer being copied from
             int bufferIndex = _currentBufferInfo.Index;
             int newPosition = VirtualPosition;
+
+            // Set up the first write task
+            // We are not using a small buffer and length is not zero, so we must have a buffer list
+            SegmentBuffer currentBuffer = _bufferList![bufferIndex++].SegmentBuffer;
+            int copyLength = Math.Min(currentBuffer.Length - bufferOffset, bytesToCopy);
+
+            MemorySegment memorySegment = currentBuffer.MemorySegment;
+            ReadOnlyMemory<byte> writeMemory = memorySegment.AsReadOnlyMemory().Slice(bufferOffset, copyLength);
+            // Get the first write task
+            ValueTask writeTask = destination.WriteAsync(writeMemory, cancellationToken);
+            bytesToCopy -= copyLength;
+            newPosition += copyLength;
+
             while (bytesToCopy > 0)
             {
-                // We are not using a small buffer and length is not zero, so we must have a buffer list
-                SegmentBuffer currentBuffer = _bufferList![bufferIndex++].SegmentBuffer;
-                int copyLength = Math.Min(currentBuffer.Length - bufferOffset, bytesToCopy);
+                // We loop through the buffers and write the data to the destination stream by doing the
+                // setup for the next write as the previous write is running asynchronously.
+                currentBuffer = _bufferList![bufferIndex++].SegmentBuffer;
+                copyLength = Math.Min(currentBuffer.Length, bytesToCopy);
 
-                MemorySegment memorySegment = currentBuffer.MemorySegment;
-                await destination.WriteAsync(memorySegment.AsReadOnlyMemory().Slice(bufferOffset, copyLength), cancellationToken).ConfigureAwait(false);
+                memorySegment = currentBuffer.MemorySegment;
+                writeMemory = memorySegment.AsReadOnlyMemory()[..copyLength];
+
+                // Await the previous write task
+                await writeTask.ConfigureAwait(false);
+                // Move on to the next write task
+                writeTask = destination.WriteAsync(writeMemory, cancellationToken);
                 bytesToCopy -= copyLength;
                 newPosition += copyLength;
-                // For the remaining buffers, we will start at the beginning of the buffer
-                bufferOffset = 0;
             }
+            // Await the final write task
+            await writeTask.ConfigureAwait(false);
             SetPositionAndCurrentBuffer(newPosition);
         }
         //--------------------------------------------------------------------------------
@@ -1940,11 +2043,18 @@ namespace KZDev.PerfUtils.Internals
             {
                 // We need to ensure that we have the capacity for the new length
                 EnsureCapacity(newLength, true);
+                // Verify the current buffer in case that buffer is a small buffer. If we are using a buffer list,
+                // then we don't really need to verify the current buffer, but it has likely been invalidated by
+                // the EnsureCapacity call, so we will verify it anyway. There are cases where calling this while
+                // using a buffer list could result in the current buffer still being invalid, but with the buffer list
+                // case, we are clearing the buffers directly below anyway.
+                // BTW: The case where the buffer could still be invalid is when the current position is right beyond
+                // the last buffer in the list (Position == Length == Capacity).
                 VerifyCurrentBuffer();
             }
             // If the new length is greater than the current length, then we need to zero out the
             // remainder of our current buffer. Any new buffers will be zeroed out when they are allocated.
-            if (newLength > LengthInternal && !_currentBufferInfo.Buffer.IsEmpty)
+            if (newLength > LengthInternal)
             {
                 if (_currentBufferInfo.IsSmallBuffer)
                 {
@@ -1998,7 +2108,7 @@ namespace KZDev.PerfUtils.Internals
             {
                 SegmentBuffer currentBuffer = _bufferList![bufferIndex++].SegmentBuffer;
                 int copyLength = Math.Min(currentBuffer.Length, bytesToCopy);
-                currentBuffer[..copyLength].CopyTo(returnArray.AsSpan(bufferOffset));
+                currentBuffer[..copyLength].CopyTo(returnArray.AsSpan(bufferOffset, copyLength));
                 bufferOffset += copyLength;
                 bytesToCopy -= copyLength;
             }
@@ -2094,7 +2204,7 @@ namespace KZDev.PerfUtils.Internals
 
             // Copy the data to the stream
             // Write the data to the current buffer
-            buffer[..copyCount].CopyTo(_currentBufferInfo.Buffer.AsSpan(_currentBufferOffset, copyCount));
+            buffer.CopyTo(_currentBufferInfo.Buffer.AsSpan(_currentBufferOffset, copyCount));
             // Update the position and count values
             int newPosition = VirtualPosition + copyCount;
 

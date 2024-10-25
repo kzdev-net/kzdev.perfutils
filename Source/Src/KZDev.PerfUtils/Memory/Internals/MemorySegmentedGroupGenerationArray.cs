@@ -118,7 +118,9 @@ namespace KZDev.PerfUtils.Internals
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MemorySegmentedGroupGenerationArray"/> class.
+        /// Initializes a new instance of the <see cref="MemorySegmentedGroupGenerationArray"/> class. This is the
+        /// constructor used to create a new generation array from an existing array - to basically
+        /// expand the arrays available.
         /// </summary>
         /// <param name="sourceArray">
         /// The source array to copy existing groups from.
@@ -144,8 +146,9 @@ namespace KZDev.PerfUtils.Internals
             Array.Copy(sourceArray.Groups, Groups, sourceArray.Groups.Length);
             // Create a new group for the last group. We will double the segment count of the last group
             // to a point, then we will simply add 32 segments to the last group size.
-            int nextGroupShiftSegmentCount = sourceArray.Groups[^1].SegmentCount << 1;
-            int nextGroupLinearSegmentCount = sourceArray.Groups[^1].SegmentCount + 32;
+            int lastGroupSegmentCount = sourceArray.Groups[^1].SegmentCount;
+            int nextGroupShiftSegmentCount = lastGroupSegmentCount << 1;
+            int nextGroupLinearSegmentCount = lastGroupSegmentCount + 32;
             int nextGroupSegmentCount = Math.Min(MaxAllowedGroupSegmentCount, Math.Min(nextGroupLinearSegmentCount, nextGroupShiftSegmentCount));
             Groups[sourceArray.Groups.Length] = new MemorySegmentedBufferGroup(MaxGroupSegmentCount = nextGroupSegmentCount, useNativeMemory);
         }

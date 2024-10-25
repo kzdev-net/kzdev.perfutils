@@ -19,18 +19,6 @@ namespace KZDev.PerfUtils.Tests
     {
         //--------------------------------------------------------------------------------
         /// <summary>
-        /// Static constructor for the <see cref="UsingMemoryStreamSlim"/> class.
-        /// </summary>
-        static UsingMemoryStreamSlim ()
-        {
-#if NATIVEMEMORY
-            MemoryStreamSlim.UseNativeLargeMemoryBuffers = true;
-#else
-            MemoryStreamSlim.UseNativeLargeMemoryBuffers = false;
-#endif
-        }
-        //--------------------------------------------------------------------------------
-        /// <summary>
         /// Test helper to instantiate a new <see cref="MemoryStreamSlim"/> object as the test subject service.
         /// </summary>
         private Func<int, MemoryStreamSlim> CreateTestService { get; } =
@@ -404,7 +392,7 @@ namespace KZDev.PerfUtils.Tests
         [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.LongRun)]
         public async Task UsingMemoryStreamSlim_GetArray_ReturnsCorrectData ()
         {
-            int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
+            int[] testDataSizes = GenerateTestDataSizes(1000, 0xFFFF).ToArray();
             int testLoops = RandomSource.GetRandomInteger(MinimumTestLoops, MaximumTestLoops + 1);
 
             foreach (int testSegmentSize in TestSegmentSizes)
@@ -461,6 +449,7 @@ namespace KZDev.PerfUtils.Tests
         /// is identical to the data written.
         /// </summary>
         [Fact]
+        [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.MedRun)]
         public async Task UsingMemoryStreamSlim_CopyFullToStream_CopiesAllDataAsync ()
         {
             int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
@@ -487,6 +476,58 @@ namespace KZDev.PerfUtils.Tests
                     // Verify the contents
                     await VerifyContentsFromStartToEndInBlocksAsync(memoryStream, dataCopy, 0x61);
                 }
+        }
+        //--------------------------------------------------------------------------------    
+        /// <summary>
+        /// Tests writing data to the stream and verifying that the contents of the other stream
+        /// is identical to the data written.
+        /// </summary>
+        [Fact]
+        [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.MedRun)]
+        public async Task UsingMemoryStreamSlim_CopyFullToStream_OnManyThreads_CopiesAllDataAsync ()
+        {
+            int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
+
+            ExceptionDispatchInfo? taskException = null;
+
+            Task[] runningTasks = Enumerable.Range(0, Math.Max(8, Environment.ProcessorCount * 2)).Select(_ => Task.Run(async () =>
+            {
+                try
+                {
+
+                    foreach (int testSegmentSize in TestSegmentSizes)
+                        for (int testLoop = 0; testLoop < MaximumTestLoops; testLoop++)
+                        {
+                            int byteCount = testDataSizes[RandomSource.GetRandomInteger(testDataSizes.Length)];
+                            await using MemoryStreamSlim testService = CreateTestService(byteCount);
+                            TestWriteLine($"Running test loop {testLoop} with byte count of {byteCount} and segment size {testSegmentSize}");
+
+                            // Fill the stream with random bytes
+                            byte[] dataCopy =
+                                await MemoryTestPrep.FillStreamAndArrayWithRandomBytesAsync(testService, byteCount, testSegmentSize);
+                            using MemoryStream memoryStream = new MemoryStream();
+                            // Copy to the memory stream
+                            testService.Seek(0, SeekOrigin.Begin);
+                            await testService.CopyToAsync(memoryStream);
+                            testService.Position.Should().Be(testService.Length);
+                            testService.Length.Should().Be(byteCount);
+                            memoryStream.Position.Should().Be(memoryStream.Length);
+                            memoryStream.Length.Should().Be(byteCount);
+                            // Verify the contents
+                            // Alternate how we verify the data
+                            if (0 == (testLoop & 1))
+                                await VerifyContentsFromStartToEndOneReadAsync(memoryStream, dataCopy);
+                            else
+                                await VerifyContentsFromStartToEndInBlocksAsync(memoryStream, dataCopy, 0x61);
+                        }
+                }
+                catch (Exception error)
+                {
+                    taskException ??= ExceptionDispatchInfo.Capture(error);
+                }
+            })).ToArray();
+            await Task.WhenAll(runningTasks);
+            taskException?.Throw();
         }
         //--------------------------------------------------------------------------------    
         /// <summary>
@@ -529,20 +570,19 @@ namespace KZDev.PerfUtils.Tests
         /// is identical to the data written.
         /// </summary>
         [Fact]
+        [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.MedRun)]
         public async Task UsingMemoryStreamSlim_CopyFullToAsyncStream_OnManyThreads_CopiesAllDataAsync ()
         {
             int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
-            int testLoops = RandomSource.GetRandomInteger(MinimumTestLoops, MaximumTestLoops + 1);
 
             ExceptionDispatchInfo? taskException = null;
-
 
             Task[] runningTasks = Enumerable.Range(0, Math.Max(8, Environment.ProcessorCount * 2)).Select(_ => Task.Run(async () =>
             {
                 try
                 {
                     foreach (int testSegmentSize in TestSegmentSizes)
-                        for (int testLoop = 0; testLoop < testLoops; testLoop++)
+                        for (int testLoop = 0; testLoop < MaximumTestLoops; testLoop++)
                         {
                             int byteCount = testDataSizes[RandomSource.GetRandomInteger(testDataSizes.Length)];
                             await using MemoryStreamSlim testService = CreateTestService(byteCount);
@@ -562,7 +602,11 @@ namespace KZDev.PerfUtils.Tests
                             fileStream.Length.Should().Be(byteCount);
                             // Verify the contents - suspend any async delays
                             using SuspendFileStreamAsyncDelay verifySuspendScope = fileStream.SuspendAsyncDelay();
-                            await VerifyContentsFromStartToEndInBlocksAsync(fileStream, dataCopy, 0x61);
+                            // Alternate how we verify the data
+                            if (0 == (testLoop & 1))
+                                await VerifyContentsFromStartToEndOneReadAsync(fileStream, dataCopy);
+                            else
+                                await VerifyContentsFromStartToEndInBlocksAsync(fileStream, dataCopy, 0x61);
                         }
                 }
                 catch (Exception error)
@@ -579,6 +623,7 @@ namespace KZDev.PerfUtils.Tests
         /// stream is correct. is identical to the data written.
         /// </summary>
         [Fact]
+        [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.MedRun)]
         public void UsingMemoryStreamSlim_CopyToLargerStream_CopiesCorrectData ()
         {
             int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
@@ -625,6 +670,7 @@ namespace KZDev.PerfUtils.Tests
         /// stream is correct.
         /// </summary>
         [Fact]
+        [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.MedRun)]
         public async Task UsingMemoryStreamSlim_CopyToLargerStream_CopiesCorrectDataAsync ()
         {
             int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
@@ -667,10 +713,76 @@ namespace KZDev.PerfUtils.Tests
         }
         //--------------------------------------------------------------------------------    
         /// <summary>
+        /// Tests writing data to a larger stream and verifying that the contents of the other 
+        /// stream is correct.
+        /// </summary>
+        [Fact]
+        [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.LongRun)]
+        public async Task UsingMemoryStreamSlim_CopyToLargerStream_OnManyThreads_CopiesCorrectDataAsync ()
+        {
+            int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
+
+
+            ExceptionDispatchInfo? taskException = null;
+
+            Task[] runningTasks = Enumerable.Range(0, Math.Max(8, Environment.ProcessorCount * 2)).Select(_ => Task.Run(async () =>
+            {
+                try
+                {
+                    foreach (int testSegmentSize in TestSegmentSizes)
+                        for (int testLoop = 0; testLoop < MaximumTestLoops; testLoop++)
+                        {
+                            int byteCount = testDataSizes[RandomSource.GetRandomInteger(testDataSizes.Length)];
+                            await using MemoryStreamSlim testService = CreateTestService(byteCount);
+                            TestWriteLine($"Running test loop {testLoop} with byte count of {byteCount} and segment size {testSegmentSize}");
+
+                            // Fill the stream with random bytes
+                            byte[] dataCopy =
+                                await MemoryTestPrep.FillStreamAndArrayWithRandomBytesAsync(testService, byteCount, testSegmentSize);
+                            using MemoryStream memoryStream = new MemoryStream();
+                            byte[] otherDataCopy =
+                                await MemoryTestPrep.FillStreamAndArrayWithRandomBytesAsync(memoryStream, GetTestInteger(byteCount + 1, byteCount + 0x10_0000), testSegmentSize);
+
+                            // How much data do we want to write?
+                            int copySourceFrom = GetTestInteger(Math.Max(0, (byteCount > 10) ? byteCount - GetTestInteger(byteCount - 10) : byteCount));
+                            int copyCount = dataCopy.Length - copySourceFrom;
+                            int copyDestFrom = GetTestInteger(otherDataCopy.Length - copyCount);
+                            TestWriteLine($"  Destination stream size is {otherDataCopy.Length}, Copy Count = {copyCount}, Source Offset = {copySourceFrom}, Dest Offset = {copyDestFrom}");
+
+                            // Copy the data to the memory stream
+                            testService.Seek(copySourceFrom, SeekOrigin.Begin);
+                            memoryStream.Seek(copyDestFrom, SeekOrigin.Begin);
+
+                            // Copy to the memory stream
+                            await testService.CopyToAsync(memoryStream);
+                            testService.Position.Should().Be(testService.Length);
+                            memoryStream.Position.Should().Be(copyDestFrom + copyCount);
+                            memoryStream.Length.Should().Be(otherDataCopy.Length);
+                            // Update the expected data copy
+                            Array.Copy(dataCopy, copySourceFrom, otherDataCopy, copyDestFrom, copyCount);
+                            // Verify the contents
+                            // Alternate how we verify the data
+                            if (0 == (testLoop & 1))
+                                await VerifyContentsFromStartToEndOneReadAsync(memoryStream, otherDataCopy);
+                            else
+                                await VerifyContentsFromStartToEndInBlocksAsync(memoryStream, otherDataCopy, 0x61);
+                        }
+                }
+                catch (Exception error)
+                {
+                    taskException ??= ExceptionDispatchInfo.Capture(error);
+                }
+            })).ToArray();
+            await Task.WhenAll(runningTasks);
+            taskException?.Throw();
+        }
+        //--------------------------------------------------------------------------------    
+        /// <summary>
         /// Tests writing data to a larger asynchronous stream and verifying that the contents of the other 
         /// stream is correct.
         /// </summary>
         [Fact]
+        [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.MedRun)]
         public async Task UsingMemoryStreamSlim_CopyToLargerAsyncStream_CopiesCorrectDataAsync ()
         {
             int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
@@ -724,11 +836,10 @@ namespace KZDev.PerfUtils.Tests
         /// stream is correct.
         /// </summary>
         [Fact]
-        [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.MedRun)]
+        [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.LongRun)]
         public async Task UsingMemoryStreamSlim_CopyToLargerAsyncStream_OnManyThreads_CopiesCorrectDataAsync ()
         {
             int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
-            int testLoops = RandomSource.GetRandomInteger(MinimumTestLoops, MaximumTestLoops + 1);
 
             ExceptionDispatchInfo? taskException = null;
 
@@ -737,7 +848,7 @@ namespace KZDev.PerfUtils.Tests
                 try
                 {
                     foreach (int testSegmentSize in TestSegmentSizes)
-                        for (int testLoop = 0; testLoop < testLoops; testLoop++)
+                        for (int testLoop = 0; testLoop < MaximumTestLoops; testLoop++)
                         {
                             int byteCount = testDataSizes[RandomSource.GetRandomInteger(testDataSizes.Length)];
                             await using MemoryStreamSlim testService = CreateTestService(byteCount);
@@ -775,7 +886,11 @@ namespace KZDev.PerfUtils.Tests
                             Array.Copy(dataCopy, copySourceFrom, otherDataCopy, copyDestFrom, copyCount);
                             // Verify the contents - suspend any async delays
                             using SuspendFileStreamAsyncDelay verifySuspendScope = fileStream.SuspendAsyncDelay();
-                            await VerifyContentsFromStartToEndInBlocksAsync(fileStream, otherDataCopy, 0x61);
+                            // Alternate how we verify the data
+                            if (0 == (testLoop & 1))
+                                await VerifyContentsFromStartToEndOneReadAsync(fileStream, otherDataCopy);
+                            else
+                                await VerifyContentsFromStartToEndInBlocksAsync(fileStream, otherDataCopy, 0x61);
                         }
                 }
                 catch (Exception error)
@@ -880,6 +995,70 @@ namespace KZDev.PerfUtils.Tests
         }
         //--------------------------------------------------------------------------------    
         /// <summary>
+        /// Tests writing data to a smaller stream and verifying that the contents of the other 
+        /// stream is correct.
+        /// </summary>
+        [Fact]
+        [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.MedRun)]
+        public async Task UsingMemoryStreamSlim_CopyToSmallerStream_OnManyThreads_CopiesCorrectDataAsync ()
+        {
+            int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
+
+            ExceptionDispatchInfo? taskException = null;
+
+            Task[] runningTasks = Enumerable.Range(0, Math.Max(8, Environment.ProcessorCount * 2)).Select(_ => Task.Run(async () =>
+            {
+                try
+                {
+                    foreach (int testSegmentSize in TestSegmentSizes)
+                        for (int testLoop = 0; testLoop < MaximumTestLoops; testLoop++)
+                        {
+                            int byteCount = testDataSizes[RandomSource.GetRandomInteger(testDataSizes.Length)];
+                            await using MemoryStreamSlim testService = CreateTestService(byteCount);
+                            TestWriteLine($"Running test loop {testLoop} with byte count of {byteCount} and segment size {testSegmentSize}");
+
+                            // Fill the stream with random bytes
+                            byte[] dataCopy =
+                                await MemoryTestPrep.FillStreamAndArrayWithRandomBytesAsync(testService, byteCount, testSegmentSize);
+                            using MemoryStream memoryStream = new MemoryStream();
+                            byte[] otherDataCopy =
+                                await MemoryTestPrep.FillStreamAndArrayWithRandomBytesAsync(memoryStream, GetTestInteger(byteCount / 2, byteCount), testSegmentSize);
+
+                            // How much data do we want to write?
+                            int copyDestFrom = GetTestInteger(Math.Max(0, otherDataCopy.Length - GetTestInteger(Math.Min(otherDataCopy.Length, 10), Math.Max(11, otherDataCopy.Length - 10))));
+                            int copyCount = otherDataCopy.Length - copyDestFrom;
+                            int copySourceFrom = byteCount - copyCount;
+                            TestWriteLine($"  Destination stream size is {otherDataCopy.Length}, Copy Count = {copyCount}, Source Offset = {copySourceFrom}, Dest Offset = {copyDestFrom}");
+
+                            // Copy the data to the memory stream
+                            testService.Seek(copySourceFrom, SeekOrigin.Begin);
+                            memoryStream.Seek(copyDestFrom, SeekOrigin.Begin);
+
+                            // Copy to the memory stream
+                            await testService.CopyToAsync(memoryStream);
+                            testService.Position.Should().Be(copySourceFrom + copyCount);
+                            memoryStream.Position.Should().Be(memoryStream.Length);
+                            memoryStream.Length.Should().Be(otherDataCopy.Length);
+                            // Update the expected data copy
+                            Array.Copy(dataCopy, copySourceFrom, otherDataCopy, copyDestFrom, copyCount);
+                            // Verify the contents
+                            // Alternate how we verify the data
+                            if (0 == (testLoop & 1))
+                                await VerifyContentsFromStartToEndOneReadAsync(memoryStream, otherDataCopy);
+                            else
+                                await VerifyContentsFromStartToEndInBlocksAsync(memoryStream, otherDataCopy, 0x61);
+                        }
+                }
+                catch (Exception error)
+                {
+                    taskException ??= ExceptionDispatchInfo.Capture(error);
+                }
+            })).ToArray();
+            await Task.WhenAll(runningTasks);
+            taskException?.Throw();
+        }
+        //--------------------------------------------------------------------------------    
+        /// <summary>
         /// Tests writing data to a smaller asynchronous stream and verifying that the contents of the other 
         /// stream is correct.
         /// </summary>
@@ -941,8 +1120,6 @@ namespace KZDev.PerfUtils.Tests
         public async Task UsingMemoryStreamSlim_CopyToSmallerAsyncStream_OnManyThreads_CopiesCorrectDataAsync ()
         {
             int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
-            int testLoops = RandomSource.GetRandomInteger(MinimumTestLoops, MaximumTestLoops + 1);
-
 
             ExceptionDispatchInfo? taskException = null;
 
@@ -951,7 +1128,7 @@ namespace KZDev.PerfUtils.Tests
                 try
                 {
                     foreach (int testSegmentSize in TestSegmentSizes)
-                        for (int testLoop = 0; testLoop < testLoops; testLoop++)
+                        for (int testLoop = 0; testLoop < MaximumTestLoops; testLoop++)
                         {
                             int byteCount = testDataSizes[RandomSource.GetRandomInteger(testDataSizes.Length)];
                             await using MemoryStreamSlim testService = CreateTestService(byteCount);
@@ -989,7 +1166,11 @@ namespace KZDev.PerfUtils.Tests
                             Array.Copy(dataCopy, copySourceFrom, otherDataCopy, copyDestFrom, copyCount);
                             // Verify the contents - suspend any async delays
                             using SuspendFileStreamAsyncDelay verifySuspendScope = fileStream.SuspendAsyncDelay();
-                            await VerifyContentsFromStartToEndInBlocksAsync(fileStream, otherDataCopy, 0x61);
+                            // Alternate how we verify the data
+                            if (0 == (testLoop & 1))
+                                await VerifyContentsFromStartToEndOneReadAsync(fileStream, otherDataCopy);
+                            else
+                                await VerifyContentsFromStartToEndInBlocksAsync(fileStream, otherDataCopy, 0x61);
                         }
                 }
                 catch (Exception error)
@@ -1040,7 +1221,7 @@ namespace KZDev.PerfUtils.Tests
         /// verifying that the contents of the stream are consistent.
         /// </summary>
         [Fact]
-        [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.MedRun)]
+        [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.LongRun)]
         public void UsingMemoryStreamSlim_WriteWithChaos_WritesCorrectData ()
         {
             int[] testDataSizes = GenerateTestDataSizes(MemorySegmentedBufferGroup.StandardBufferSegmentSize, MemorySegmentedBufferGroup.StandardBufferSegmentSize * 20).ToArray();
@@ -1166,7 +1347,7 @@ namespace KZDev.PerfUtils.Tests
 
                     case 3:
                         {
-                            long newOffset = (0 == stream.Length) ? 0 : -RandomSource.GetRandomInteger(stream.Length);
+                            long newOffset = (0 == stream.Length) ? 0 : -RandomSource.GetRandomLongInteger(stream.Length);
                             dataCopyArrayPosition = (int)(stream.Length + newOffset);
                             stream.Seek(newOffset, SeekOrigin.End);
                         }
@@ -1187,6 +1368,178 @@ namespace KZDev.PerfUtils.Tests
 
                 stream.SetLength(newLength);
             }
+        }
+        //--------------------------------------------------------------------------------    
+        /// <summary>
+        /// Tests jumping around the stream space and randomly writing data to the stream and 
+        /// verifying that the contents of the stream are consistent.
+        /// </summary>
+        [Fact]
+        [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.LongRun)]
+        public async Task UsingMemoryStreamSlim_WriteWithChaos_OnManyThreads_WritesCorrectData ()
+        {
+            int[] testDataSizes = GenerateTestDataSizes(MemorySegmentedBufferGroup.StandardBufferSegmentSize, MemorySegmentedBufferGroup.StandardBufferSegmentSize * 20).ToArray();
+            int testLoops = RandomSource.GetRandomInteger(MinimumRandomPositionTestLoops / 8, MaximumRandomPositionTestLoops / 8);
+
+            ExceptionDispatchInfo? taskException = null;
+
+            Task[] runningTasks = Enumerable.Range(0, Math.Max(8, Environment.ProcessorCount * 2)).Select(_ => Task.Run(async () =>
+            {
+                try
+                {
+                    foreach (int testSegmentSize in TestSegmentSizes)
+                        for (int testLoop = 0; testLoop < testLoops; testLoop++)
+                        {
+                            int byteCount = testDataSizes[RandomSource.GetRandomInteger(testDataSizes.Length)];
+                            using MemoryStreamSlim testService = CreateTestService(byteCount);
+                            TestWriteLine($"Running test loop {testLoop} with byte count of {byteCount} and segment size {testSegmentSize}");
+
+                            // Get an array to compare the results to
+                            byte[] dataCopy = new byte[byteCount];
+                            // For fixed mode streams, we should start with the expected data array to be the same data as the initial stream contents
+                            if (testService.Mode == MemoryStreamSlimMode.Fixed)
+                                testService.Read(dataCopy, 0, byteCount);
+                            int dataCopyIndexPosition = 0;
+
+                            for (int chaosIndex = 0; chaosIndex < 1000; chaosIndex++)
+                            {
+                                switch (GetTestInteger() % 4)
+                                {
+                                    case 0:
+                                        WriteArrayDataToStream(testService, dataCopy, ref dataCopyIndexPosition);
+                                        break;
+
+                                    case 1:
+                                        WriteSpanDataToStream(testService, dataCopy, ref dataCopyIndexPosition);
+                                        break;
+
+                                    case 2:
+                                        WriteByteDataToStream(testService, dataCopy, ref dataCopyIndexPosition);
+                                        break;
+
+                                    case 3:
+                                        PositionStream(testService, byteCount, out dataCopyIndexPosition);
+                                        break;
+
+                                    case 4:
+                                        SeekStream(testService, byteCount, ref dataCopyIndexPosition);
+                                        break;
+
+                                    case 5:
+                                        SetStreamLength(testService, byteCount, dataCopy);
+                                        break;
+                                }
+                            }
+                            // Verify the contents
+                            testService.SetLength(Math.Max(testService.Length, dataCopy.Length));
+                            // Alternate how we verify the data
+                            if (0 == (testLoop & 1))
+                                await VerifyContentsFromStartToEndOneReadAsync(testService, dataCopy);
+                            else
+                                await VerifyContentsFromStartToEndInBlocksAsync(testService, dataCopy, 0x61);
+                        }
+
+                    void WriteArrayDataToStream (MemoryStreamSlim stream, byte[] dataCopyArray, ref int dataCopyArrayPosition)
+                    {
+                        int writePosition = (int)stream.Position;
+                        int spaceLeft = dataCopyArray.Length - writePosition;
+                        int byteCount = (spaceLeft < 10) ? spaceLeft : RandomSource.GetRandomInteger(1, spaceLeft / 2);
+                        byte[] writeData = MemoryTestPrep.GetRandomByteArray(byteCount);
+
+                        stream.Write(writeData);
+                        Array.Copy(writeData, 0, dataCopyArray, dataCopyArrayPosition, byteCount);
+                        dataCopyArrayPosition += byteCount;
+                    }
+
+                    void WriteSpanDataToStream (MemoryStreamSlim stream, byte[] dataCopyArray, ref int dataCopyArrayPosition)
+                    {
+                        int writePosition = (int)stream.Position;
+                        int spaceLeft = dataCopyArray.Length - writePosition;
+                        int byteCount = (spaceLeft < 10) ? spaceLeft : RandomSource.GetRandomInteger(1, spaceLeft / 2);
+                        byte[] writeData = MemoryTestPrep.GetRandomByteArray(byteCount);
+
+                        stream.Write(writeData.AsSpan());
+                        Array.Copy(writeData, 0, dataCopyArray, dataCopyArrayPosition, byteCount);
+                        dataCopyArrayPosition += byteCount;
+                    }
+
+                    void WriteByteDataToStream (MemoryStreamSlim stream, byte[] dataCopyArray, ref int dataCopyArrayPosition)
+                    {
+                        int writePosition = (int)stream.Position;
+                        int spaceLeft = dataCopyArray.Length - writePosition;
+                        if (spaceLeft < 1)
+                            return;
+                        byte writeData = GetRandomByte();
+                        stream.WriteByte(writeData);
+                        dataCopyArray[dataCopyArrayPosition++] = writeData;
+                    }
+
+                    void PositionStream (MemoryStreamSlim stream, int maxPosition, out int dataCopyArrayPosition)
+                    {
+                        int newPosition = (0 == maxPosition) ? 0 : RandomSource.GetRandomInteger(maxPosition);
+                        stream.Position = dataCopyArrayPosition = newPosition;
+                    }
+
+                    void SeekStream (MemoryStreamSlim stream, int maxPosition, ref int dataCopyArrayPosition)
+                    {
+                        int currentPosition = (int)stream.Position;
+
+                        switch (RandomSource.GetRandomInteger(4))
+                        {
+                            case 0:
+                                {
+                                    int newPosition = dataCopyArrayPosition = (0 == maxPosition) ? 0 : RandomSource.GetRandomInteger(maxPosition);
+                                    stream.Seek(newPosition, SeekOrigin.Begin);
+                                }
+                                break;
+
+                            case 1:
+                                {
+                                    int newOffset = (currentPosition == maxPosition) ? 0 : RandomSource.GetRandomInteger(maxPosition - currentPosition);
+                                    dataCopyArrayPosition += newOffset;
+                                    stream.Seek(newOffset, SeekOrigin.Current);
+                                }
+                                break;
+
+                            case 2:
+                                {
+                                    int newOffset = (0 == currentPosition) ? 0 : -RandomSource.GetRandomInteger(currentPosition);
+                                    dataCopyArrayPosition += newOffset;
+                                    stream.Seek(newOffset, SeekOrigin.Current);
+                                }
+                                break;
+
+                            case 3:
+                                {
+                                    long newOffset = (0 == stream.Length) ? 0 : -RandomSource.GetRandomLongInteger(stream.Length);
+                                    dataCopyArrayPosition = (int)(stream.Length + newOffset);
+                                    stream.Seek(newOffset, SeekOrigin.End);
+                                }
+                                break;
+                        }
+                    }
+
+                    void SetStreamLength (MemoryStreamSlim stream, int maxPosition, byte[] dataCopyArray)
+                    {
+                        int currentLength = (int)stream.Length;
+                        int newLength = (maxPosition < 2) ? maxPosition : RandomSource.GetRandomInteger(2, maxPosition);
+
+                        // Do we need to clear data in the copy?
+                        if ((stream.Mode == MemoryStreamSlimMode.Dynamic) && (newLength < currentLength))
+                        {
+                            Array.Clear(dataCopyArray, newLength, currentLength - newLength);
+                        }
+
+                        stream.SetLength(newLength);
+                    }
+                }
+                catch (Exception error)
+                {
+                    taskException ??= ExceptionDispatchInfo.Capture(error);
+                }
+            })).ToArray();
+            await Task.WhenAll(runningTasks);
+            taskException?.Throw();
         }
         //--------------------------------------------------------------------------------    
 

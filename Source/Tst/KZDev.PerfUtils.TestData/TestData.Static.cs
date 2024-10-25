@@ -39,6 +39,10 @@ namespace KZDev.PerfUtils.Tests
             }
         }
         //--------------------------------------------------------------------------------
+
+        #region Integer Methods
+
+        //--------------------------------------------------------------------------------
         /// <summary>
         /// Returns a random positive integer in the range of [0...int.MaxValue)
         /// </summary>
@@ -307,6 +311,281 @@ namespace KZDev.PerfUtils.Tests
         }
         //--------------------------------------------------------------------------------
 
+        #endregion Integer Methods
+
+        #region Unsigned Integer Methods
+
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Returns a random positive unsigned integer in the range of [0...uint.MaxValue)
+        /// </summary>
+        /// <returns>A random positive unsigned integer</returns>
+        public static uint GetTestUnsignedInteger (IRandomSource randomSource) => randomSource.GetRandomUnsignedInteger(0, uint.MaxValue);
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Returns a random positive unsigned integer in the range of [0...maxValue)
+        /// </summary>
+        /// <param name="randomSource">
+        /// The <see cref="IRandomSource"/> instance to use for generating values.
+        /// </param>
+        /// <param name="maxValue">
+        /// The maximum value to return.
+        /// </param>
+        /// <returns>
+        /// A random positive unsigned integer.
+        /// </returns>
+        public static uint GetTestUnsignedInteger (IRandomSource randomSource, uint maxValue)
+        {
+            return (maxValue == 0) ? 0 : randomSource.GetRandomUnsignedInteger(0, maxValue);
+        }
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets a random unsigned integer in the range of [minValue...maxValue)
+        /// </summary>
+        /// <param name="randomSource">
+        /// The <see cref="IRandomSource"/> instance to use for generating random bytes.
+        /// </param>
+        /// <param name="minValue">
+        /// The minimum value to return.
+        /// </param>
+        /// <param name="maxValue">
+        /// The maximum value to return.
+        /// </param>
+        /// <returns>
+        /// A random unsigned integer within the passed range of values.
+        /// </returns>
+        public static uint GetTestUnsignedInteger (IRandomSource randomSource, uint minValue, uint maxValue)
+        {
+            if (maxValue < minValue)
+                throw new ArgumentOutOfRangeException(nameof(maxValue), $"{nameof(maxValue)} must be greater than or equal to {nameof(minValue)}");
+            return (minValue == maxValue) ? minValue : randomSource.GetRandomUnsignedInteger(minValue, maxValue);
+        }
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Gets a collection of test integers in the range of [0...maxNumber)
+        /// </summary>
+        /// <param name="randomSource">
+        /// The <see cref="IRandomSource"/> instance to use for generating random bytes.
+        /// </param>
+        /// <param name="collectionSize">The size of collection set of integers to get</param>
+        /// <param name="maxNumber">The maximum number value to include in the collection.</param>
+        /// <returns>
+        /// An immutable array of integers.
+        /// </returns>
+        public static ImmutableArray<uint> GetTestUnsignedIntegerCollection (IRandomSource randomSource, int collectionSize, uint maxNumber) =>
+            GetTestUnsignedIntegerCollection(randomSource, collectionSize, 0, maxNumber);
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Gets a collection of test integers in the range of [minNumber...maxNumber)
+        /// </summary>
+        /// <param name="randomSource">
+        /// The <see cref="IRandomSource"/> instance to use for generating random bytes.
+        /// </param>
+        /// <param name="collectionSize">The size of collection set of integers to get</param>
+        /// <param name="maxNumber">The maximum number value to include in the collection.</param>
+        /// <param name="minNumber">The minimum number value to include in the collection.</param>
+        /// <returns>
+        /// An immutable array of integers.
+        /// </returns>
+        public static ImmutableArray<uint> GetTestUnsignedIntegerCollection (IRandomSource randomSource, int collectionSize, uint? minNumber = null, uint? maxNumber = null)
+        {
+            uint useMinNumber = minNumber ?? 0;
+            uint useMaxNumber = maxNumber ?? uint.MaxValue;
+            if (useMaxNumber < useMinNumber)
+                throw new ArgumentOutOfRangeException(nameof(maxNumber), $"{nameof(maxNumber)} must be greater than or equal to {nameof(minNumber)} ({useMinNumber})");
+            switch (collectionSize)
+            {
+                case < 0:
+                    throw new ArgumentOutOfRangeException(nameof(collectionSize), $"{nameof(collectionSize)} must be greater than or equal to zero");
+
+                case 0:
+                    return ImmutableArray<uint>.Empty;
+
+                case 1:
+                    return ImmutableArray.Create(GetTestUnsignedInteger(randomSource, useMinNumber, useMaxNumber));
+            }
+
+            ImmutableArray<uint>.Builder builder = ImmutableArray.CreateBuilder<uint>(collectionSize);
+
+            for (int i = 0; i < collectionSize; i++)
+                builder.Add(GetTestUnsignedInteger(randomSource, useMinNumber, useMaxNumber));
+
+            return builder.ToImmutable();
+        }
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Gets a collection of test integers in the range of [0...maxNumber)
+        /// </summary>
+        /// <param name="randomSource">
+        /// The <see cref="IRandomSource"/> instance to use for generating random bytes.
+        /// </param>
+        /// <param name="collectionSize">The size of collection set of integers to get</param>
+        /// <param name="maxNumber">The maximum number value to include in the collection.</param>
+        /// <returns>
+        /// An immutable array of integers.
+        /// </returns>
+        public static uint[] GetTestUnsignedIntegerMutableCollection (IRandomSource randomSource, int collectionSize, uint maxNumber) =>
+            GetTestUnsignedIntegerMutableCollection(randomSource, collectionSize, 0, maxNumber);
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Gets a collection of test integers in the range of [minNumber...maxNumber)
+        /// </summary>
+        /// <param name="randomSource">
+        /// The <see cref="IRandomSource"/> instance to use for generating random bytes.
+        /// </param>
+        /// <param name="collectionSize">The size of collection set of integers to get</param>
+        /// <param name="maxNumber">The maximum number value to include in the collection.</param>
+        /// <param name="minNumber">The minimum number value to include in the collection.</param>
+        /// <returns>
+        /// An immutable array of integers.
+        /// </returns>
+        public static uint[] GetTestUnsignedIntegerMutableCollection (IRandomSource randomSource, int collectionSize, uint? minNumber = null, uint? maxNumber = null)
+        {
+            uint useMinNumber = minNumber ?? 0;
+            uint useMaxNumber = maxNumber ?? uint.MaxValue;
+            if (useMaxNumber < useMinNumber)
+                throw new ArgumentOutOfRangeException(nameof(maxNumber), $"{nameof(maxNumber)} must be greater than or equal to {nameof(minNumber)} ({useMinNumber})");
+            switch (collectionSize)
+            {
+                case < 0:
+                    throw new ArgumentOutOfRangeException(nameof(collectionSize), $"{nameof(collectionSize)} must be greater than or equal to zero");
+
+                case 0:
+                    return [];
+
+                case 1:
+                    return [GetTestUnsignedInteger(randomSource, useMinNumber, useMaxNumber)];
+            }
+
+            uint[] returnArray = new uint[collectionSize];
+
+            for (int i = 0; i < collectionSize; i++)
+                returnArray[i] = GetTestUnsignedInteger(randomSource, useMinNumber, useMaxNumber);
+
+            return returnArray;
+        }
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Gets a set of unique test integers in the range of [0...maxNumber)
+        /// </summary>
+        /// <param name="randomSource">
+        /// The <see cref="IRandomSource"/> instance to use for generating random bytes.
+        /// </param>
+        /// <param name="setSize">The size of the set of integers to get.</param>
+        /// <param name="maxNumber">The maximum number value to include in the set.</param>
+        /// <returns>
+        /// An immutable array of unique integers.
+        /// </returns>
+        public static ImmutableArray<uint> GetTestUnsignedIntegerSet (IRandomSource randomSource, int setSize, uint maxNumber) =>
+            GetTestUnsignedIntegerSet(randomSource, setSize, 0, maxNumber);
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Gets a set of unique test integers in the range of [minNumber...maxNumber)
+        /// </summary>
+        /// <param name="randomSource">
+        /// The <see cref="IRandomSource"/> instance to use for generating random bytes.
+        /// </param>
+        /// <param name="setSize">The size of the set of integers to get.</param>
+        /// <param name="maxNumber">The maximum number value to include in the set.</param>
+        /// <param name="minNumber">The minimum number value to include in the set.</param>
+        /// <returns>
+        /// An immutable array of unique integers.
+        /// </returns>
+        public static ImmutableArray<uint> GetTestUnsignedIntegerSet (IRandomSource randomSource, int setSize, uint? minNumber = null, uint? maxNumber = null)
+        {
+            uint useMinNumber = minNumber ?? 0;
+            uint useMaxNumber = maxNumber ?? uint.MaxValue;
+            if (useMaxNumber < useMinNumber)
+                throw new ArgumentOutOfRangeException(nameof(maxNumber), $"{nameof(maxNumber)} must be greater than or equal to {nameof(minNumber)} ({useMinNumber})");
+            if (setSize > (useMaxNumber - useMinNumber + 1))
+                throw new ArgumentOutOfRangeException(nameof(setSize), $"{nameof(setSize)} must be less than or equal to the difference between {nameof(maxNumber)} ({useMaxNumber}) and {nameof(minNumber)} ({useMinNumber})");
+            switch (setSize)
+            {
+                case < 0:
+                    throw new ArgumentOutOfRangeException(nameof(setSize), $"{nameof(setSize)} must be greater than or equal to zero");
+
+                case 0:
+                    return ImmutableArray<uint>.Empty;
+
+                case 1:
+                    return ImmutableArray.Create(GetTestUnsignedInteger(randomSource, useMinNumber, useMaxNumber));
+            }
+
+            // Use a hash set to ensure uniqueness
+            HashSet<uint> returnList = new();
+
+            while (returnList.Count < setSize)
+            {
+                uint nextNumber = GetTestUnsignedInteger(randomSource, useMinNumber, useMaxNumber);
+                returnList.Add(nextNumber);
+            }
+
+            return returnList.ToImmutableArray();
+        }
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Gets a mutable set of unique test integers in the range of [0...maxNumber)
+        /// </summary>
+        /// <param name="randomSource">
+        /// The <see cref="IRandomSource"/> instance to use for generating random bytes.
+        /// </param>
+        /// <param name="setSize">The size of the set of integers to get.</param>
+        /// <param name="maxNumber">The maximum number value to include in the set.</param>
+        /// <returns>
+        /// An immutable array of unique integers.
+        /// </returns>
+        public static uint[] GetTestUnsignedIntegerMutableSet (IRandomSource randomSource, int setSize, uint maxNumber) =>
+            GetTestUnsignedIntegerMutableSet(randomSource, setSize, 0, maxNumber);
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Gets a mutable set of unique test integers in the range of [minNumber...maxNumber)
+        /// </summary>
+        /// <param name="randomSource">
+        /// The <see cref="IRandomSource"/> instance to use for generating random bytes.
+        /// </param>
+        /// <param name="setSize">The size of the set of integers to get.</param>
+        /// <param name="maxNumber">The maximum number value to include in the set.</param>
+        /// <param name="minNumber">The minimum number value to include in the set.</param>
+        /// <returns>
+        /// An immutable array of unique integers.
+        /// </returns>
+        public static uint[] GetTestUnsignedIntegerMutableSet (IRandomSource randomSource, int setSize, uint? minNumber = null, uint? maxNumber = null)
+        {
+            uint useMinNumber = minNumber ?? 0;
+            uint useMaxNumber = maxNumber ?? uint.MaxValue;
+            if (useMaxNumber < useMinNumber)
+                throw new ArgumentOutOfRangeException(nameof(maxNumber), $"{nameof(maxNumber)} must be greater than or equal to {nameof(minNumber)} ({useMinNumber})");
+            if (setSize > (useMaxNumber - useMinNumber + 1))
+                throw new ArgumentOutOfRangeException(nameof(setSize), $"{nameof(setSize)} must be less than or equal to the difference between {nameof(maxNumber)} ({useMaxNumber}) and {nameof(minNumber)} ({useMinNumber})");
+            switch (setSize)
+            {
+                case < 0:
+                    throw new ArgumentOutOfRangeException(nameof(setSize), $"{nameof(setSize)} must be greater than or equal to zero");
+
+                case 0:
+                    return [];
+
+                case 1:
+                    return [GetTestUnsignedInteger(randomSource, useMinNumber, useMaxNumber)];
+            }
+
+            // Use a hash set to ensure uniqueness
+            HashSet<uint> returnList = new();
+
+            while (returnList.Count < setSize)
+            {
+                uint nextNumber = GetTestUnsignedInteger(randomSource, useMinNumber, useMaxNumber);
+                returnList.Add(nextNumber);
+            }
+
+            return [.. returnList];
+        }
+        //--------------------------------------------------------------------------------
+
+        #endregion Unsigned Integer Methods
+
+        #region Long Integer Methods
+
         //--------------------------------------------------------------------------------
         /// <summary>
         /// Returns a random positive long integer in the range of [0...long.MaxValue)
@@ -573,6 +852,281 @@ namespace KZDev.PerfUtils.Tests
         }
         //--------------------------------------------------------------------------------
 
+        #endregion Long Integer Methods
+
+        #region Unsigned Long Integer Methods
+
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Returns a random positive unsigned long integer in the range of [0...ulong.MaxValue)
+        /// </summary>
+        /// <returns>A random positive unsigned long integer</returns>
+        public static ulong GetTestUnsignedLongInteger (IRandomSource randomSource) => randomSource.GetRandomUnsignedLongInteger(0, ulong.MaxValue);
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Returns a random positive unsigned long integer in the range of [0...maxValue)
+        /// </summary>
+        /// <param name="randomSource">
+        /// The <see cref="IRandomSource"/> instance to use for generating values.
+        /// </param>
+        /// <param name="maxValue">
+        /// The maximum value to return.
+        /// </param>
+        /// <returns>
+        /// A random positive unsigned long integer.
+        /// </returns>
+        public static ulong GetTestUnsignedLongInteger (IRandomSource randomSource, ulong maxValue)
+        {
+            return (maxValue == 0) ? 0 : randomSource.GetRandomUnsignedLongInteger(0, maxValue);
+        }
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        ///  Gets a random unsigned long integer in the range of [minValue...maxValue)
+        /// </summary>
+        /// <param name="randomSource">
+        /// The <see cref="IRandomSource"/> instance to use for generating random bytes.
+        /// </param>
+        /// <param name="minValue">
+        /// The minimum value to return.
+        /// </param>
+        /// <param name="maxValue">
+        /// The maximum value to return.
+        /// </param>
+        /// <returns>
+        /// A random unsigned long integer within the passed range of values.
+        /// </returns>
+        public static ulong GetTestUnsignedLongInteger (IRandomSource randomSource, ulong minValue, ulong maxValue)
+        {
+            if (maxValue < minValue)
+                throw new ArgumentOutOfRangeException(nameof(maxValue), $"{nameof(maxValue)} must be greater than or equal to {nameof(minValue)}");
+            return (minValue == maxValue) ? minValue : randomSource.GetRandomUnsignedLongInteger(minValue, maxValue);
+        }
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Gets a collection of test integers in the range of [0...maxNumber)
+        /// </summary>
+        /// <param name="randomSource">
+        /// The <see cref="IRandomSource"/> instance to use for generating random bytes.
+        /// </param>
+        /// <param name="collectionSize">The size of collection set of integers to get</param>
+        /// <param name="maxNumber">The maximum number value to include in the collection.</param>
+        /// <returns>
+        /// An immutable array of integers.
+        /// </returns>
+        public static ImmutableArray<ulong> GetTestUnsignedLongIntegerCollection (IRandomSource randomSource, int collectionSize, ulong maxNumber) =>
+            GetTestUnsignedLongIntegerCollection(randomSource, collectionSize, 0, maxNumber);
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Gets a collection of test integers in the range of [minNumber...maxNumber)
+        /// </summary>
+        /// <param name="randomSource">
+        /// The <see cref="IRandomSource"/> instance to use for generating random bytes.
+        /// </param>
+        /// <param name="collectionSize">The size of collection set of integers to get</param>
+        /// <param name="maxNumber">The maximum number value to include in the collection.</param>
+        /// <param name="minNumber">The minimum number value to include in the collection.</param>
+        /// <returns>
+        /// An immutable array of integers.
+        /// </returns>
+        public static ImmutableArray<ulong> GetTestUnsignedLongIntegerCollection (IRandomSource randomSource, int collectionSize, ulong? minNumber = null, ulong? maxNumber = null)
+        {
+            ulong useMinNumber = minNumber ?? 0;
+            ulong useMaxNumber = maxNumber ?? ulong.MaxValue;
+            if (useMaxNumber < useMinNumber)
+                throw new ArgumentOutOfRangeException(nameof(maxNumber), $"{nameof(maxNumber)} must be greater than or equal to {nameof(minNumber)} ({useMinNumber})");
+            switch (collectionSize)
+            {
+                case < 0:
+                    throw new ArgumentOutOfRangeException(nameof(collectionSize), $"{nameof(collectionSize)} must be greater than or equal to zero");
+
+                case 0:
+                    return ImmutableArray<ulong>.Empty;
+
+                case 1:
+                    return ImmutableArray.Create(GetTestUnsignedLongInteger(randomSource, useMinNumber, useMaxNumber));
+            }
+
+            ImmutableArray<ulong>.Builder builder = ImmutableArray.CreateBuilder<ulong>(collectionSize);
+
+            for (int i = 0; i < collectionSize; i++)
+                builder.Add(GetTestUnsignedLongInteger(randomSource, useMinNumber, useMaxNumber));
+
+            return builder.ToImmutable();
+        }
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Gets a collection of test integers in the range of [0...maxNumber)
+        /// </summary>
+        /// <param name="randomSource">
+        /// The <see cref="IRandomSource"/> instance to use for generating random bytes.
+        /// </param>
+        /// <param name="collectionSize">The size of collection set of integers to get</param>
+        /// <param name="maxNumber">The maximum number value to include in the collection.</param>
+        /// <returns>
+        /// An immutable array of integers.
+        /// </returns>
+        public static ulong[] GetTestUnsignedLongIntegerMutableCollection (IRandomSource randomSource, int collectionSize, ulong maxNumber) =>
+            GetTestUnsignedLongIntegerMutableCollection(randomSource, collectionSize, 0, maxNumber);
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Gets a collection of test integers in the range of [minNumber...maxNumber)
+        /// </summary>
+        /// <param name="randomSource">
+        /// The <see cref="IRandomSource"/> instance to use for generating random bytes.
+        /// </param>
+        /// <param name="collectionSize">The size of collection set of integers to get</param>
+        /// <param name="maxNumber">The maximum number value to include in the collection.</param>
+        /// <param name="minNumber">The minimum number value to include in the collection.</param>
+        /// <returns>
+        /// An immutable array of integers.
+        /// </returns>
+        public static ulong[] GetTestUnsignedLongIntegerMutableCollection (IRandomSource randomSource, int collectionSize, ulong? minNumber = null, ulong? maxNumber = null)
+        {
+            ulong useMinNumber = minNumber ?? 0;
+            ulong useMaxNumber = maxNumber ?? ulong.MaxValue;
+            if (useMaxNumber < useMinNumber)
+                throw new ArgumentOutOfRangeException(nameof(maxNumber), $"{nameof(maxNumber)} must be greater than or equal to {nameof(minNumber)} ({useMinNumber})");
+            switch (collectionSize)
+            {
+                case < 0:
+                    throw new ArgumentOutOfRangeException(nameof(collectionSize), $"{nameof(collectionSize)} must be greater than or equal to zero");
+
+                case 0:
+                    return [];
+
+                case 1:
+                    return [GetTestUnsignedLongInteger(randomSource, useMinNumber, useMaxNumber)];
+            }
+
+            ulong[] returnArray = new ulong[collectionSize];
+
+            for (int i = 0; i < collectionSize; i++)
+                returnArray[i] = GetTestUnsignedLongInteger(randomSource, useMinNumber, useMaxNumber);
+
+            return returnArray;
+        }
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Gets a set of unique test integers in the range of [0...maxNumber)
+        /// </summary>
+        /// <param name="randomSource">
+        /// The <see cref="IRandomSource"/> instance to use for generating random bytes.
+        /// </param>
+        /// <param name="setSize">The size of the set of integers to get.</param>
+        /// <param name="maxNumber">The maximum number value to include in the set.</param>
+        /// <returns>
+        /// An immutable array of unique integers.
+        /// </returns>
+        public static ImmutableArray<ulong> GetTestUnsignedLongIntegerSet (IRandomSource randomSource, int setSize, ulong maxNumber) =>
+            GetTestUnsignedLongIntegerSet(randomSource, setSize, 0, maxNumber);
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Gets a set of unique test integers in the range of [minNumber...maxNumber)
+        /// </summary>
+        /// <param name="randomSource">
+        /// The <see cref="IRandomSource"/> instance to use for generating random bytes.
+        /// </param>
+        /// <param name="setSize">The size of the set of integers to get.</param>
+        /// <param name="maxNumber">The maximum number value to include in the set.</param>
+        /// <param name="minNumber">The minimum number value to include in the set.</param>
+        /// <returns>
+        /// An immutable array of unique integers.
+        /// </returns>
+        public static ImmutableArray<ulong> GetTestUnsignedLongIntegerSet (IRandomSource randomSource, int setSize, ulong? minNumber = null, ulong? maxNumber = null)
+        {
+            long useSetSize = setSize;
+            ulong useMinNumber = minNumber ?? 0;
+            ulong useMaxNumber = maxNumber ?? ulong.MaxValue;
+            if (useMaxNumber < useMinNumber)
+                throw new ArgumentOutOfRangeException(nameof(maxNumber), $"{nameof(maxNumber)} must be greater than or equal to {nameof(minNumber)} ({useMinNumber})");
+            if (useSetSize < 0)
+                throw new ArgumentOutOfRangeException(nameof(setSize), $"{nameof(setSize)} must be greater than or equal to zero");
+            if ((ulong)useSetSize > (useMaxNumber - useMinNumber + 1))
+                throw new ArgumentOutOfRangeException(nameof(setSize), $"{nameof(setSize)} must be less than or equal to the difference between {nameof(maxNumber)} ({useMaxNumber}) and {nameof(minNumber)} ({useMinNumber})");
+            switch (useSetSize)
+            {
+                case 0:
+                    return ImmutableArray<ulong>.Empty;
+
+                case 1:
+                    return ImmutableArray.Create(GetTestUnsignedLongInteger(randomSource, useMinNumber, useMaxNumber));
+            }
+
+            // Use a hash set to ensure uniqueness
+            HashSet<ulong> returnList = new();
+
+            while (returnList.Count < setSize)
+            {
+                ulong nextNumber = GetTestUnsignedLongInteger(randomSource, useMinNumber, useMaxNumber);
+                returnList.Add(nextNumber);
+            }
+
+            return returnList.ToImmutableArray();
+        }
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Gets a mutable set of unique test integers in the range of [0...maxNumber)
+        /// </summary>
+        /// <param name="randomSource">
+        /// The <see cref="IRandomSource"/> instance to use for generating random bytes.
+        /// </param>
+        /// <param name="setSize">The size of the set of integers to get.</param>
+        /// <param name="maxNumber">The maximum number value to include in the set.</param>
+        /// <returns>
+        /// An immutable array of unique integers.
+        /// </returns>
+        public static ulong[] GetTestUnsignedLongIntegerMutableSet (IRandomSource randomSource, int setSize, ulong maxNumber) =>
+            GetTestUnsignedLongIntegerMutableSet(randomSource, setSize, 0, maxNumber);
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Gets a mutable set of unique test integers in the range of [minNumber...maxNumber)
+        /// </summary>
+        /// <param name="randomSource">
+        /// The <see cref="IRandomSource"/> instance to use for generating random bytes.
+        /// </param>
+        /// <param name="setSize">The size of the set of integers to get.</param>
+        /// <param name="maxNumber">The maximum number value to include in the set.</param>
+        /// <param name="minNumber">The minimum number value to include in the set.</param>
+        /// <returns>
+        /// An immutable array of unique integers.
+        /// </returns>
+        public static ulong[] GetTestUnsignedLongIntegerMutableSet (IRandomSource randomSource, int setSize, ulong? minNumber = null, ulong? maxNumber = null)
+        {
+            long useSetSize = setSize;
+            ulong useMinNumber = minNumber ?? 0;
+            ulong useMaxNumber = maxNumber ?? ulong.MaxValue;
+            if (useMaxNumber < useMinNumber)
+                throw new ArgumentOutOfRangeException(nameof(maxNumber), $"{nameof(maxNumber)} must be greater than or equal to {nameof(minNumber)} ({useMinNumber})");
+            if (useSetSize < 0)
+                throw new ArgumentOutOfRangeException(nameof(setSize), $"{nameof(setSize)} must be greater than or equal to zero");
+            if ((ulong)useSetSize > (useMaxNumber - useMinNumber + 1))
+                throw new ArgumentOutOfRangeException(nameof(setSize), $"{nameof(setSize)} must be less than or equal to the difference between {nameof(maxNumber)} ({useMaxNumber}) and {nameof(minNumber)} ({useMinNumber})");
+            switch (useSetSize)
+            {
+                case 0:
+                    return [];
+
+                case 1:
+                    return [GetTestUnsignedLongInteger(randomSource, useMinNumber, useMaxNumber)];
+            }
+
+            // Use a hash set to ensure uniqueness
+            HashSet<ulong> returnList = new();
+
+            while (returnList.Count < setSize)
+            {
+                ulong nextNumber = GetTestUnsignedLongInteger(randomSource, useMinNumber, useMaxNumber);
+                returnList.Add(nextNumber);
+            }
+
+            return [.. returnList];
+        }
+        //--------------------------------------------------------------------------------
+
+        #endregion Unsigned Long Integer Methods
+
+        #region Double Methods
+
         //--------------------------------------------------------------------------------
         /// <summary>
         /// Allocates and returns a byte array of the specified length filled with 
@@ -658,6 +1212,7 @@ namespace KZDev.PerfUtils.Tests
         }
         //--------------------------------------------------------------------------------
 
+        #endregion Double Methods
     }
     //################################################################################
 }

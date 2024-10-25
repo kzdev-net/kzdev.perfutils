@@ -1,14 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<ItemGroup>
-		<PackageReference Include="Bogus" Version="35.6.1" />
-		<PackageReference Include="FluentAssertions" Version="6.12.1" />
-		<PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.1" />
-		<PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
-		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
-		<PackageReference Include="Moq" Version="4.20.72" />
-		<PackageReference Include="xunit" Version="2.9.2" />
-		<PackageReference Include="XunitXml.TestLogger" Version="4.0.254" />
+		<PackageReference Include="Bogus" Version="$(PerfUtils-Pkg-Bogus)" />
+		<PackageReference Include="FluentAssertions" Version="$(PerfUtils-Pkg-FluentAssertions)" />
+		<PackageReference Include="Microsoft.Extensions.Configuration" Version="$(PerfUtils-Pkg-Microsoft_Extensions_Configuration)" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(PerfUtils-Pkg-Microsoft_Extensions_DependencyInjection)" />
+		<PackageReference Include="Microsoft.Extensions.Hosting" Version="$(PerfUtils-Pkg-Microsoft_Extensions_Hosting)" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(PerfUtils-Pkg-Microsoft_NET_Test_Sdk)" />
+		<PackageReference Include="Moq" Version="$(PerfUtils-Pkg-Moq)" />
+		<PackageReference Include="xunit" Version="$(PerfUtils-Pkg-xunit)" />
+		<PackageReference Include="XunitXml.TestLogger" Version="$(PerfUtils-Pkg-XunitXml_TestLogger)" />
 	</ItemGroup>
 
 	<ItemGroup>

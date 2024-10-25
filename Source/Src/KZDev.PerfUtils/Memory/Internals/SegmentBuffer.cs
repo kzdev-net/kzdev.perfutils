@@ -19,7 +19,9 @@ namespace KZDev.PerfUtils.Internals
         /// Debug helper to display the state of this object.
         /// </summary>
         [ExcludeFromCodeCoverage]
+#pragma warning disable HAA0601
         internal string DebugDisplayValue => IsEmpty && (BufferInfo.BlockId < 0) ? "Empty" : $"{BufferInfo.DebugDisplayValue}, Length {Length}, {(IsRaw ? "Raw" : "NotRaw")}, Segment: {MemorySegment.DebugDisplayValue}";
+#pragma warning restore HAA0601
 
         /// <summary>
         /// The raw buffer that this segment references, if any.
@@ -136,24 +138,24 @@ namespace KZDev.PerfUtils.Internals
         }
         //--------------------------------------------------------------------------------
         /// <summary>
-        /// Initializes a new instance of the <see cref="SegmentBuffer"/> struct with a 
-        /// raw byte buffer.
+        /// Merges this segment with another segment which is assumed to follow this segment
+        /// in the internal allocated buffer.
         /// </summary>
-        /// <param name="buffer">
-        /// The raw byte buffer.
+        /// <param name="nextBuffer">
+        /// The next segment to merge with this segment.
         /// </param>
-        /// <param name="bufferInfo">
-        /// The meta-data information about this buffer segment.
-        /// </param>
-        public SegmentBuffer (byte[] buffer, in SegmentBufferInfo bufferInfo)
+        /// <returns>
+        /// A new <see cref="SegmentBuffer"/> instance that represents the merged segments.
+        /// </returns>
+        public SegmentBuffer Concat (in SegmentBuffer nextBuffer)
         {
-            Debug.Assert(buffer is not null, "buffer is not null");
-            Debug.Assert(buffer.Length > 0, "buffer.Length <= 0");
-            Debug.Assert(bufferInfo.SegmentCount > 0, "bufferInfo.SegmentCount <= 0");
+            Debug.Assert(!IsRaw, "IsRaw");
+            Debug.Assert(!nextBuffer.IsRaw, "other.IsRaw");
+            Debug.Assert(BufferInfo.SegmentId + BufferInfo.SegmentCount == nextBuffer.BufferInfo.SegmentId, "next buffer doesn't follow this buffer in the allocated memory");
+            Debug.Assert(BufferInfo.BlockId == nextBuffer.BufferInfo.BlockId, "next buffer is from a different block");
 
-            RawBuffer = buffer;
-            MemorySegment = new MemorySegment(buffer);
-            BufferInfo = bufferInfo;
+            // Get the new memory segment that is the combination of the two segments and create the new segment buffer
+            return new SegmentBuffer(MemorySegment.Extend(nextBuffer.Length), BufferInfo.Concat(nextBuffer.BufferInfo));
         }
         //--------------------------------------------------------------------------------
         /// <summary>
