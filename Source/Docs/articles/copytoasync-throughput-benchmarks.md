@@ -13,20 +13,20 @@ Once the stream size approaches 1MB, the `RecyclableMemoryStream` class starts t
 
 By far, the `MemoryStream` class performs the worst in terms of memory allocation performance in this scenario under all conditions.
 
-_Given that file systems managed by the OS and related drivers employ a series of buffer and caching mechanisms, the [emulation](#asynchronous-stream-emulation) approach used in this benchmark is not a perfect representation of the actual performance of the `CopyToAsync` method in a real-world file-based scenario. However, it does provide a means to compare the performance of the different stream classes in a consistent and deterministic way for asynchronous I/O operations that do incur regular asynchronous latencies._
+_Given that file systems managed by the OS and related drivers employ a series of buffer and caching mechanisms, the [emulation](#asynchronous-stream-emulation) approach used in this benchmark is not a perfect representation of the actual performance of the `CopyToAsync` method in a real-world **local** file-based scenario. However, it does provide a means to compare the performance of the different stream classes in a consistent and deterministic way for asynchronous I/O operations that do incur regular asynchronous latencies such as for **network** based files on file servers, etc._
 
 ### Benchmark Operation
 
 A single benchmark operation consists of performing a loop of steps that does the following:
 
 1. Create a new stream instance with a capacity set to the operation data size.
-1. Bulk-write the test data synchronously to the stream.
+1. Write the test data synchronously to the stream (either in a single write or segmented based on the [BulkFile](#bulkfill) parameter).
 1. Call CopyToAsync() on the stream passing a mock asynchronous File I/O stream destination.
 1. Dispose of the stream instance.
 
 The [number of loops](./benchmarks.md#loop-count-impact) in each operation is determined by the [`DataSize`](#datasize) parameter to keep each benchmark reasonably consistent in duration, but the loop count is always the same for all classes being compared for any given DataSize parameter value.
 
-`MemoryStreamSlim` and `RecyclableMemoryStream` classes are created with the option to zero out memory buffers when they are no longer used disabled to keep the benchmark performance focused on the `CopyToAsync()` call. The `MemoryStream` class has no option to zero out memory buffers (used memory is always cleared), so this parameter does not apply to that class.
+`MemoryStreamSlim` and `RecyclableMemoryStream` classes are created with the option to zero out memory buffers when they are no longer used disabled to keep the benchmark performance focused on the `CopyToAsync()` call. The `MemoryStream` class has no option to zero out memory buffers (used memory is always cleared - i.e. internal buffers are allocated with `new byte[]`), so this parameter does not apply to that class.
 
 #### Asynchronous Stream Emulation
 
