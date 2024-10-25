@@ -381,7 +381,7 @@ namespace KZDev.PerfUtils
         /// is repeated until either the condition is not met, or the operation is successful.
         /// </para>
         /// <para>
-        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// This means that if another thread changes the value of <paramref name="location1"/> between
         /// when it is read, and when the condition is processed, the <paramref name="condition"/>
         /// could be called multiple times before the operation is successful.
         /// </para>
@@ -440,7 +440,7 @@ namespace KZDev.PerfUtils
         /// is repeated until either the condition is not met, or the operation is successful.
         /// </para>
         /// <para>
-        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// This means that if another thread changes the value of <paramref name="location1"/> between
         /// when it is read, and when the condition is processed, the <paramref name="condition"/>
         /// could be called multiple times before the operation is successful.
         /// </para>
@@ -492,7 +492,7 @@ namespace KZDev.PerfUtils
         /// is repeated until either the condition is not met, or the operation is successful.
         /// </para>
         /// <para>
-        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// This means that if another thread changes the value of <paramref name="location1"/> between
         /// when it is read, and when the condition is processed, the <paramref name="condition"/>
         /// could be called multiple times before the operation is successful.
         /// </para>
@@ -551,7 +551,7 @@ namespace KZDev.PerfUtils
         /// is repeated until either the condition is not met, or the operation is successful.
         /// </para>
         /// <para>
-        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// This means that if another thread changes the value of <paramref name="location1"/> between
         /// when it is read, and when the condition is processed, the <paramref name="condition"/>
         /// could be called multiple times before the operation is successful.
         /// </para>
@@ -603,7 +603,7 @@ namespace KZDev.PerfUtils
         /// is repeated until either the condition is not met, or the operation is successful.
         /// </para>
         /// <para>
-        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// This means that if another thread changes the value of <paramref name="location1"/> between
         /// when it is read, and when the condition is processed, the <paramref name="condition"/>
         /// could be called multiple times before the operation is successful.
         /// </para>
@@ -662,7 +662,7 @@ namespace KZDev.PerfUtils
         /// is repeated until either the condition is not met, or the operation is successful.
         /// </para>
         /// <para>
-        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// This means that if another thread changes the value of <paramref name="location1"/> between
         /// when it is read, and when the condition is processed, the <paramref name="condition"/>
         /// could be called multiple times before the operation is successful.
         /// </para>
@@ -714,7 +714,7 @@ namespace KZDev.PerfUtils
         /// is repeated until either the condition is not met, or the operation is successful.
         /// </para>
         /// <para>
-        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// This means that if another thread changes the value of <paramref name="location1"/> between
         /// when it is read, and when the condition is processed, the <paramref name="condition"/>
         /// could be called multiple times before the operation is successful.
         /// </para>
@@ -773,7 +773,7 @@ namespace KZDev.PerfUtils
         /// is repeated until either the condition is not met, or the operation is successful.
         /// </para>
         /// <para>
-        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// This means that if another thread changes the value of <paramref name="location1"/> between
         /// when it is read, and when the condition is processed, the <paramref name="condition"/>
         /// could be called multiple times before the operation is successful.
         /// </para>
@@ -831,7 +831,7 @@ namespace KZDev.PerfUtils
         /// is repeated until either the condition is not met, or the operation is successful.
         /// </para>
         /// <para>
-        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// This means that if another thread changes the value of <paramref name="location1"/> between
         /// when it is read, and when the condition is processed, the <paramref name="condition"/>
         /// could be called multiple times before the operation is successful.
         /// </para>
@@ -935,7 +935,7 @@ namespace KZDev.PerfUtils
         /// is repeated until either the condition is not met, or the operation is successful.
         /// </para>
         /// <para>
-        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// This means that if another thread changes the value of <paramref name="location1"/> between
         /// when it is read, and when the condition is processed, the <paramref name="condition"/>
         /// could be called multiple times before the operation is successful.
         /// </para>
@@ -1039,7 +1039,7 @@ namespace KZDev.PerfUtils
         /// is repeated until either the condition is not met, or the operation is successful.
         /// </para>
         /// <para>
-        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// This means that if another thread changes the value of <paramref name="location1"/> between
         /// when it is read, and when the condition is processed, the <paramref name="condition"/>
         /// could be called multiple times before the operation is successful.
         /// </para>
@@ -1143,7 +1143,7 @@ namespace KZDev.PerfUtils
         /// is repeated until either the condition is not met, or the operation is successful.
         /// </para>
         /// <para>
-        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// This means that if another thread changes the value of <paramref name="location1"/> between
         /// when it is read, and when the condition is processed, the <paramref name="condition"/>
         /// could be called multiple times before the operation is successful.
         /// </para>
@@ -1253,7 +1253,7 @@ namespace KZDev.PerfUtils
         /// is repeated until either the condition is not met, or the operation is successful.
         /// </para>
         /// <para>
-        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// This means that if another thread changes the value of <paramref name="location1"/> between
         /// when it is read, and when the condition is processed, the <paramref name="condition"/>
         /// could be called multiple times before the operation is successful.
         /// </para>
@@ -1357,7 +1357,7 @@ namespace KZDev.PerfUtils
         /// is repeated until either the condition is not met, or the operation is successful.
         /// </para>
         /// <para>
-        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// This means that if another thread changes the value of <paramref name="location1"/> between
         /// when it is read, and when the condition is processed, the <paramref name="condition"/>
         /// could be called multiple times before the operation is successful.
         /// </para>
@@ -1461,7 +1461,7 @@ namespace KZDev.PerfUtils
         /// is repeated until either the condition is not met, or the operation is successful.
         /// </para>
         /// <para>
-        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// This means that if another thread changes the value of <paramref name="location1"/> between
         /// when it is read, and when the condition is processed, the <paramref name="condition"/>
         /// could be called multiple times before the operation is successful.
         /// </para>
@@ -1565,7 +1565,7 @@ namespace KZDev.PerfUtils
         /// is repeated until either the condition is not met, or the operation is successful.
         /// </para>
         /// <para>
-        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// This means that if another thread changes the value of <paramref name="location1"/> between
         /// when it is read, and when the condition is processed, the <paramref name="condition"/>
         /// could be called multiple times before the operation is successful.
         /// </para>
@@ -1678,7 +1678,7 @@ namespace KZDev.PerfUtils
         /// is repeated until either the condition is not met, or the operation is successful.
         /// </para>
         /// <para>
-        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// This means that if another thread changes the value of <paramref name="location1"/> between
         /// when it is read, and when the condition is processed, the <paramref name="condition"/>
         /// could be called multiple times before the operation is successful.
         /// </para>
@@ -1726,7 +1726,7 @@ namespace KZDev.PerfUtils
         /// is repeated until either the condition is not met, or the operation is successful.
         /// </para>
         /// <para>
-        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// This means that if another thread changes the value of <paramref name="location1"/> between
         /// when it is read, and when the condition is processed, the <paramref name="condition"/>
         /// could be called multiple times before the operation is successful.
         /// </para>
@@ -1768,7 +1768,7 @@ namespace KZDev.PerfUtils
         /// is repeated until either the condition is not met, or the operation is successful.
         /// </para>
         /// <para>
-        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// This means that if another thread changes the value of <paramref name="location1"/> between
         /// when it is read, and when the condition is processed, the <paramref name="condition"/>
         /// could be called multiple times before the operation is successful.
         /// </para>
@@ -1816,7 +1816,7 @@ namespace KZDev.PerfUtils
         /// is repeated until either the condition is not met, or the operation is successful.
         /// </para>
         /// <para>
-        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// This means that if another thread changes the value of <paramref name="location1"/> between
         /// when it is read, and when the condition is processed, the <paramref name="condition"/>
         /// could be called multiple times before the operation is successful.
         /// </para>
@@ -1858,7 +1858,7 @@ namespace KZDev.PerfUtils
         /// is repeated until either the condition is not met, or the operation is successful.
         /// </para>
         /// <para>
-        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// This means that if another thread changes the value of <paramref name="location1"/> between
         /// when it is read, and when the condition is processed, the <paramref name="condition"/>
         /// could be called multiple times before the operation is successful.
         /// </para>
@@ -1906,7 +1906,7 @@ namespace KZDev.PerfUtils
         /// is repeated until either the condition is not met, or the operation is successful.
         /// </para>
         /// <para>
-        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// This means that if another thread changes the value of <paramref name="location1"/> between
         /// when it is read, and when the condition is processed, the <paramref name="condition"/>
         /// could be called multiple times before the operation is successful.
         /// </para>
@@ -1948,7 +1948,7 @@ namespace KZDev.PerfUtils
         /// is repeated until either the condition is not met, or the operation is successful.
         /// </para>
         /// <para>
-        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// This means that if another thread changes the value of <paramref name="location1"/> between
         /// when it is read, and when the condition is processed, the <paramref name="condition"/>
         /// could be called multiple times before the operation is successful.
         /// </para>
@@ -1996,7 +1996,7 @@ namespace KZDev.PerfUtils
         /// is repeated until either the condition is not met, or the operation is successful.
         /// </para>
         /// <para>
-        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// This means that if another thread changes the value of <paramref name="location1"/> between
         /// when it is read, and when the condition is processed, the <paramref name="condition"/>
         /// could be called multiple times before the operation is successful.
         /// </para>
@@ -2046,7 +2046,7 @@ namespace KZDev.PerfUtils
         /// is repeated until either the condition is not met, or the operation is successful.
         /// </para>
         /// <para>
-        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// This means that if another thread changes the value of <paramref name="location1"/> between
         /// when it is read, and when the condition is processed, the <paramref name="condition"/>
         /// could be called multiple times before the operation is successful.
         /// </para>
@@ -2096,7 +2096,7 @@ namespace KZDev.PerfUtils
         /// is repeated until either the condition is not met, or the operation is successful.
         /// </para>
         /// <para>
-        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// This means that if another thread changes the value of <paramref name="location1"/> between
         /// when it is read, and when the condition is processed, the <paramref name="condition"/>
         /// could be called multiple times before the operation is successful.
         /// </para>
@@ -2140,7 +2140,7 @@ namespace KZDev.PerfUtils
         /// is repeated until either the condition is not met, or the operation is successful.
         /// </para>
         /// <para>
-        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// This means that if another thread changes the value of <paramref name="location1"/> between
         /// when it is read, and when the condition is processed, the <paramref name="condition"/>
         /// could be called multiple times before the operation is successful.
         /// </para>
@@ -2190,7 +2190,7 @@ namespace KZDev.PerfUtils
         /// is repeated until either the condition is not met, or the operation is successful.
         /// </para>
         /// <para>
-        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// This means that if another thread changes the value of <paramref name="location1"/> between
         /// when it is read, and when the condition is processed, the <paramref name="condition"/>
         /// could be called multiple times before the operation is successful.
         /// </para>
@@ -2234,7 +2234,7 @@ namespace KZDev.PerfUtils
         /// is repeated until either the condition is not met, or the operation is successful.
         /// </para>
         /// <para>
-        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// This means that if another thread changes the value of <paramref name="location1"/> between
         /// when it is read, and when the condition is processed, the <paramref name="condition"/>
         /// could be called multiple times before the operation is successful.
         /// </para>
@@ -2284,7 +2284,7 @@ namespace KZDev.PerfUtils
         /// is repeated until either the condition is not met, or the operation is successful.
         /// </para>
         /// <para>
-        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// This means that if another thread changes the value of <paramref name="location1"/> between
         /// when it is read, and when the condition is processed, the <paramref name="condition"/>
         /// could be called multiple times before the operation is successful.
         /// </para>
@@ -2328,7 +2328,7 @@ namespace KZDev.PerfUtils
         /// is repeated until either the condition is not met, or the operation is successful.
         /// </para>
         /// <para>
-        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// This means that if another thread changes the value of <paramref name="location1"/> between
         /// when it is read, and when the condition is processed, the <paramref name="condition"/>
         /// could be called multiple times before the operation is successful.
         /// </para>
@@ -2378,7 +2378,7 @@ namespace KZDev.PerfUtils
         /// is repeated until either the condition is not met, or the operation is successful.
         /// </para>
         /// <para>
-        /// This means that if a thread changes the value of <paramref name="location1"/> between
+        /// This means that if another thread changes the value of <paramref name="location1"/> between
         /// when it is read, and when the condition is processed, the <paramref name="condition"/>
         /// could be called multiple times before the operation is successful.
         /// </para>

@@ -24,14 +24,14 @@ The [`InterlockedOps`](xref:KZDev.PerfUtils.InterlockedOps) class provides a set
 
 These include operations such as:
 
-- Xor : Exclusive OR operation on any integer types.
-- ClearBits : Clear bits on any integer types.
-- SetBits : Set bits on any integer types.
-- ConditionAnd : Conditionally update bits using an AND operation on any integer types.
-- ConditionOr : Conditionally update bits using an OR operation on any integer types.
-- ConditionXor : Conditionally update bits using an XOR operation on any integer types.
-- ConditionClearBits : Conditionally clear bits on any integer types.
-- ConditionSetBits : Conditionally set bits on any integer types.
+* Xor : Exclusive OR operation on any integer types.
+* ClearBits : Clear bits on any integer types.
+* SetBits : Set bits on any integer types.
+* ConditionAnd : Conditionally update bits using an AND operation on any integer types.
+* ConditionOr : Conditionally update bits using an OR operation on any integer types.
+* ConditionXor : Conditionally update bits using an XOR operation on any integer types.
+* ConditionClearBits : Conditionally clear bits on any integer types.
+* ConditionSetBits : Conditionally set bits on any integer types.
 
 The [`Interlocked Operations`](./interlockedops.md) topic discusses these operations in more detail.
 

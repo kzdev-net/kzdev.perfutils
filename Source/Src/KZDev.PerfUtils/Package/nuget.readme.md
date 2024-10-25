@@ -1,6 +1,6 @@
 # KZDev.PerfUtils
 
-This package contains the `MemoryStreamSlim` class; a high-performance, memory-efficient, and easy-to-use replacement for the `MemoryStream` class that provides particular benefits for large or frequently used streams.
+This package contains the `MemoryStreamSlim` class; a high-performance, memory-efficient, and easy-to-use replacement for the `MemoryStream` class that provides particular performance benefits for large or frequently used streams. The package also contains the `InterlockedOps` class, which provides additional atomic thread-safe operations to extend the functionality of the `Interlocked` class in the .NET Class Library.
 
 ## Features
 
@@ -12,7 +12,37 @@ This package contains the `MemoryStreamSlim` class; a high-performance, memory-e
 * Simple replacement for `MemoryStream` with the same API, other than the constructor.
 * Optionally allows using native memory for storage, which allows even more flexibility to minimize GC pressure.
 
-## Example
+`InterlockedOps` is a static class providing the following thread-safe atomic operations:
+
+* Xor : Exclusive OR operation on any integer types.
+* ClearBits : Clear bits on any integer types.
+* SetBits : Set bits on any integer types.
+* ConditionAnd : Conditionally update bits using an AND operation on any integer types.
+* ConditionOr : Conditionally update bits using an OR operation on any integer types.
+* ConditionXor : Conditionally update bits using an XOR operation on any integer types.
+* ConditionClearBits : Conditionally clear bits on any integer types.
+* ConditionSetBits : Conditionally set bits on any integer types.
+
+## InterlockedOps Example
+
+Below is an example of how to use the `InterlockedOps` class to perform an atomic XOR operation on an integer variable. The `Xor` method is used to toggle a bit flag between `1` and `0` in a thread-safe manner and returns a boolean value indicating if the bit flag was set to 1.
+
+```csharp
+using KZDev.PerfUtils;
+
+public class XorExample
+{
+    private int _flag;
+
+    public bool ToggleFlag ()
+    {
+        int originalValue = InterlockedOps.Xor(ref _flag, 1);
+        return originalValue == 0;
+    }
+}
+```
+
+## MemoryStreamSlim Example
 
 Below is an example of how to use the `MemoryStreamSlim` class. Other than instantiation using the `Create` method, the API is identical to the standard `MemoryStream` class. It is always a best practice to dispose of the `MemoryStreamSlim` instance when it is no longer needed.
 
@@ -34,7 +64,7 @@ using (MemoryStreamSlim stream = MemoryStreamSlim.Create())
 }
 ```
 
-## Compare to RecyclableMemoryStream
+### Compare to RecyclableMemoryStream
 
 The `MemoryStreamSlim` class is similar in concept and purpose to the [`RecyclableMemoryStream`](https://www.nuget.org/packages/Microsoft.IO.RecyclableMemoryStream) class from Microsoft however the internal implementation of buffer management is quite different. Also, compared to `RecyclableMemoryStream`, the `MemoryStreamSlim` class is designed to:
 
@@ -44,8 +74,10 @@ The `MemoryStreamSlim` class is similar in concept and purpose to the [`Recyclab
 * Incur fewer garbage collections.
 * Perform on par or better in terms of throughput performance.
 * Provide more consistent performance across different workloads.
-* Treat security as a priority and opt-out rather than opt-in.
+* Treat security as a priority and opt-out rather than opt-in zero'ing unused memory.
 * Optionally allow using native memory for storage to avoid GC pressure impact altogether.
+
+Performance comparisons are also available in the [Benchmarks](https://kzdev-net.github.io/kzdev.perfutils/articles/benchmarks.html) documentation section.
 
 ## Documentation
 
@@ -53,4 +85,4 @@ Full documentation for the package is available on the [PerfUtils Documentation]
 
 ## Future Features
 
-The roadmap plan for this package is to add several additional helpful performance focused utilities. These will be forthcoming as time permits, so this first release is focused just on the `MemoryStreamSlim` class.
+The roadmap plan for this package is to add several additional helpful performance focused utilities. These will be forthcoming as time permits.
