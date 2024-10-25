@@ -23,6 +23,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{F8C76B35-0758-433E-953B-0D7E9D63DE13}"
 	ProjectSection(SolutionItems) = preProject
 		Tst\Directory.Build.props = Tst\Directory.Build.props
+		Src\Directory.Build.props = Src\Directory.Build.props
 		linuxtest.dockerfile = linuxtest.dockerfile
 		Tst\README.md = Tst\README.md
 	EndProjectSection
