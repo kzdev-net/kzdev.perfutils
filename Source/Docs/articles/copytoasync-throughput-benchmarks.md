@@ -48,6 +48,10 @@ The amount of data to write to the stream in each operation loop. The data is a 
 
 When `true`, the stream is instantiated with the current loop iteration data size as the initial capacity. When `false`, the stream is created with the default capacity (no initial capacity specified). The results show no notable difference in performance between the two options, but is included in this benchmark to clarify that fact.
 
+#### BulkFill
+
+When `true`, the stream is initially filled with random data in a single bulk write operation. When `false`, the stream is filled with random data in a loop of write operations. The initial stream data fill operation is similar to the operations used in the [Bulk Fill and Read](./dynamic-throughput-benchmarks.md#bulk-fill-and-read) (**BulkFill** is _true_) and [Segmented Fill and Read](./dynamic-throughput-benchmarks.md#segmented-fill-and-read) (**BulkFill** is _false_) benchmarks. The results show no notable difference in performance between the two options, but is included in this benchmark to clarify that fact.
+
 ## Benchmark Results
 
 The results of the benchmarks are found in the [`CopyToAsync()`](./MemoryStreamBenchmarks.CopyToAsyncThroughputBenchmarks-report-github.md) benchmark output.
