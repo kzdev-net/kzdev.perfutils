@@ -44,20 +44,27 @@ The conditional methods all return a value type that has the original variable v
 There are also overloads of the condition operations that take a predicate argument to avoid closures when the predicate needs additional values to process the conditional logic.
 
 ```csharp
-public class Example
+public class ConditionXorExample
 {
-  private int _value;
+    private int _flags;
 
-  public void UpdateValue(int newValue, bool condition)
-  {
-    if (condition)
+    public bool ToggleFlags (Predicate<int> condition, int flagBits)
     {
-      InterlockedOps.And(ref _value, newValue);
+        (int originalValue, int newValue) = InterlockedOps.ConditionXor(ref _flags, condition, flagBits);
+        return originalValue != newValue;
     }
-    else
+}
+```
+
+```csharp
+public class ConditionClearBitsExample
+{
+    private int _flags;
+
+    public bool ClearFlags<T> (Func<int, T, bool> condition, T conditionArgument, int flagBits)
     {
-      InterlockedOps.Or(ref _value, newValue);
+        (int originalValue, int newValue) = InterlockedOps.ConditionClearBits(ref _flags, condition, conditionArgument, flagBits);
+        return originalValue != newValue;
     }
-  }
 }
 ```

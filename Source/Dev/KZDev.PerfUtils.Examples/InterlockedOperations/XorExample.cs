@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using KZDev.PerfUtils;
-
-namespace KZDev.PerfUtils.Examples
+﻿namespace KZDev.PerfUtils.Examples
 {
     public class XorExample
     {

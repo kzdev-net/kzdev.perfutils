@@ -18,6 +18,23 @@ The [`Memory Monitoring`](./memory-monitoring.md) topic discusses how you can mo
 
 The [`Benchmarks`](./benchmarks.md) topic covers the benchmarks used to examine the performance benefits provided by the `MemoryStreamSlim` class.
 
+## Interlocked Operations
+
+The [`InterlockedOps`](xref:KZDev.PerfUtils.InterlockedOps) class provides a set of static helper methods that provide additional functionality that is not currently available in the `Interlocked` class.
+
+These include operations such as:
+
+- Xor : Exclusive OR operation on any integer types.
+- ClearBits : Clear bits on any integer types.
+- SetBits : Set bits on any integer types.
+- ConditionAnd : Conditionally update bits using an AND operation on any integer types.
+- ConditionOr : Conditionally update bits using an OR operation on any integer types.
+- ConditionXor : Conditionally update bits using an XOR operation on any integer types.
+- ConditionClearBits : Conditionally clear bits on any integer types.
+- ConditionSetBits : Conditionally set bits on any integer types.
+
+The [`Interlocked Operations`](./interlockedops.md) topic discusses these operations in more detail.
+
 ## Future Features
 
-The roadmap plan for this package is to add several additional helpful performance-focused utilities. These will be forthcoming as time permits, so this first release is focused on the `MemoryStreamSlim` class.
+The roadmap plan for this package is to add several additional helpful performance-focused utilities. These will be forthcoming as time permits.
