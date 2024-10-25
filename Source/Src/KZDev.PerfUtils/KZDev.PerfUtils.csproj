@@ -7,12 +7,12 @@
 	<PropertyGroup Label="Package">
 		<Title>KZDev Performance Utilities</Title>
 		<PackageId>KZDev.PerfUtils</PackageId>
-		<PackageTags>KZDev,Utilities,Performance,MemoryStream,MemoryStreamSlim,Stream,GC,Garbage-Collection</PackageTags>
+		<PackageTags>KZDev,Utilities,Performance,Concurrency,Interlocked,Interlocked-Xor,InterlockedOps,GC,Garbage-Collection,MemoryStream,MemoryStreamSlim,Stream</PackageTags>
 		<PackageReadmeFile>docs\README.md</PackageReadmeFile>
 		<PackageIcon>images\icon.png</PackageIcon>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageDescription>Performance utilities for .NET projects, initially providing the `MemoryStreamSlim` class; a high-performance, memory-efficient, and easy-to-use replacement for the `MemoryStream` class that provides particular benefits for large or frequently used streams.</PackageDescription>
-		<PackageReleaseNotes>Further MemoryStreamSlim performance enhancements (version 1.0.1)</PackageReleaseNotes>
+		<PackageReleaseNotes>Further MemoryStreamSlim performance enhancements (version 1.1.0) and added InterlockedOps class.</PackageReleaseNotes>
 		<EmbedUntrackedSources>true</EmbedUntrackedSources>
 		<RepositoryUrl>https://github.com/kzdev-net/kzdev.perfutils</RepositoryUrl>
 	</PropertyGroup>
