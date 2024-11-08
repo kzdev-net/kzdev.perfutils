@@ -29,7 +29,13 @@ namespace KZDev.PerfUtils
         /// capacity.
         /// </summary>
         [ThreadStatic]
-        private static StringBuilder?[]? _threadCachedInstances;
+#if NOT_PACKAGING
+        internal
+#else
+        private
+#endif
+        // ReSharper disable once InconsistentNaming
+        static StringBuilder?[]? _threadCachedInstances;
 
         //--------------------------------------------------------------------------------
         /// <summary>
@@ -37,6 +43,64 @@ namespace KZDev.PerfUtils
         /// </summary>
         private static StringBuilder?[] ThreadCachedInstances =>
             _threadCachedInstances ??= new StringBuilder?[GetCacheIndex(MaxCachedCapacity) + 1];
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Put the <see cref="StringBuilder"/> instance back into the cache at the specified index.
+        /// </summary>
+        /// <param name="cachedInstances">
+        /// The list of cached instances to store the instance in.
+        /// </param>
+        /// <param name="storeIndex">
+        /// The target index to store the instance in.
+        /// </param>
+        /// <param name="stringBuilder">
+        /// The string builder instance to return.
+        /// </param>
+        public static void ReleaseToIndex (StringBuilder stringBuilder, StringBuilder?[] cachedInstances, 
+            int storeIndex)
+        {
+            StringBuilder? currentCachedInstance = cachedInstances[storeIndex];
+            // Keep the larger capacity instance.
+            if (currentCachedInstance is null)
+            {
+                cachedInstances[storeIndex] = stringBuilder;
+                return;
+            }
+            // Larger capacity instances are more expensive to allocate, and we know that
+            // the maximum capacity we will cache is relatively small AND are only
+            // cached at the thread level (which often come and go frequently), so we
+            // are willing to store the larger capacity instances in lower slots and keep
+            // them around since they have already been allocated.
+            if (currentCachedInstance.Capacity >= stringBuilder.Capacity)
+            {
+                // We are willing to store instances in lower slots because we primarily
+                // want to eliminate instantiating new instances, and this is better than
+                // just letting this instance get GC'd.
+                if (storeIndex == 0)
+                    return;
+                ReleaseToIndex(stringBuilder, cachedInstances, --storeIndex);
+                return;
+            }
+            // We will place the released instance in the current slot and check if we can
+            // move the currently cached instance to a lower slot.
+            if (storeIndex > 0)
+            {
+                ReleaseToIndex(currentCachedInstance, cachedInstances, --storeIndex);
+            }
+            cachedInstances[storeIndex] = stringBuilder;
+        }
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Put the <see cref="StringBuilder"/> instance back into the cache at the specified index.
+        /// </summary>
+        /// <param name="storeIndex">
+        /// The target index to store the instance in.
+        /// </param>
+        /// <param name="stringBuilder">
+        /// The string builder instance to return.
+        /// </param>
+        public static void ReleaseToIndex (StringBuilder stringBuilder, int storeIndex) =>
+            ReleaseToIndex(stringBuilder, ThreadCachedInstances, storeIndex);
         //--------------------------------------------------------------------------------
         /// <summary>
         /// Gets the index in the cached instances that should be used for string builder instances
@@ -96,31 +160,7 @@ namespace KZDev.PerfUtils
             // We won't cache larger instances
             if (stringBuilder.Capacity > MaxCachedCapacity)
                 return;
-            int saveIndex = GetCacheIndex(stringBuilder.Capacity);
-            StringBuilder?[] cachedInstances = ThreadCachedInstances;
-            StringBuilder? currentCachedInstance = cachedInstances[saveIndex];
-            // Keep the larger capacity instance.
-            if (currentCachedInstance is not null)
-            {
-                if (currentCachedInstance.Capacity >= stringBuilder.Capacity)
-                {
-                    // We are willing to store instances in lower slots because we primarily
-                    // want to eliminate instantiating new instances, and this is better than
-                    // just letting this instance get GC'd.
-                    if (saveIndex == 0)
-                        return;
-                    cachedInstances[--saveIndex] ??= stringBuilder;
-                    return;
-                }
-                // We will place the released instance in the current slot and check if we can
-                // move the currently cached instance to a lower slot.
-                if (saveIndex > 0)
-                {
-                    // Let the previous one in the lower index (very likely smaller), be GC'd
-                    cachedInstances[--saveIndex] = currentCachedInstance;
-                }
-            }
-            cachedInstances[saveIndex] = stringBuilder;
+            ReleaseToIndex(stringBuilder, GetCacheIndex(stringBuilder.Capacity));
         }
         //--------------------------------------------------------------------------------
         /// <summary>

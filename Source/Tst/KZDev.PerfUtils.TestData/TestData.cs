@@ -559,10 +559,109 @@ namespace KZDev.PerfUtils.Tests
 
         #endregion Unsigned Long Integer Methods
 
+        #region Byte Methods
+
         //--------------------------------------------------------------------------------
         /// <summary>
-        /// Allocates and returns a byte array of a random length between <paramref name="minSize"/> and
-        /// <paramref name="maxSize"/> filled with random byte values.
+        /// Allocates and returns a byte array of the specified length filled with 
+        /// random byte values.
+        /// </summary>
+        /// <param name="arraySize">
+        /// The size of the array to return.
+        /// </param>
+        /// <returns>
+        /// A byte array of <paramref name="arraySize"/> size filled with random bytes.
+        /// </returns>
+        public static byte[] GetRandomBytes (int arraySize)
+        {
+            byte[] bytes = new byte[arraySize];
+            SecureRandomSource.GetRandomBytes(bytes);
+            return bytes;
+        }
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Allocates and returns a byte array of a random length between <paramref name="minArraySize"/> and
+        /// <paramref name="maxArraySize"/> filled with random byte values.
+        /// </summary>
+        /// <param name="minArraySize">
+        /// The minimum array size to return.
+        /// </param>
+        /// <param name="maxArraySize">
+        /// The maximum array size to return.
+        /// </param>
+        /// <returns>
+        /// A byte array of random size filled with random byte values.
+        /// </returns>
+        public byte[] GetRandomBytes (int minArraySize, int maxArraySize) => 
+            GetRandomBytes(SecureRandomSource, minArraySize, maxArraySize);
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Fills the passed byte array with random byte values.
+        /// </summary>
+        /// <param name="byteArray">
+        /// The array to be filled with random byte values.
+        /// </param>
+        /// <returns>
+        /// The number of bytes that were written to the array.
+        /// </returns>
+        public static int GetRandomBytes (byte[] byteArray) => SecureRandomSource.GetRandomBytes(byteArray);
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Fills <paramref name="byteCount"/> bytes into the passed byte array with random byte values.
+        /// </summary>
+        /// <param name="byteArray">
+        /// The array to be filled with random byte values.
+        /// </param>
+        /// <param name="byteCount">
+        /// The number of bytes to write to the array.
+        /// </param>
+        /// <returns>
+        /// The number of bytes that were written to the array.
+        /// </returns>
+        public static int GetRandomBytes (byte[] byteArray, int byteCount)
+        {
+            if (byteCount < 0)
+                throw new ArgumentOutOfRangeException(nameof(byteCount), $"{nameof(byteCount)} must be greater than or equal to zero");
+            return byteArray is null ?
+                throw new ArgumentNullException(nameof(byteArray)) :
+                SecureRandomSource.GetRandomBytes(byteArray, Math.Min(byteArray.Length, byteCount));
+        }
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Returns a random byte value.
+        /// </summary>
+        /// <returns>
+        /// The random byte value
+        /// </returns>
+        public static byte GetRandomByte () => (byte)SecureRandomSource.GetRandomInteger(byte.MaxValue + 1);
+        //--------------------------------------------------------------------------------
+
+        #endregion Byte Methods
+
+        #region Char Methods
+
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Returns a random char value.
+        /// </summary>
+        /// <returns>
+        /// The random char value
+        /// </returns>
+        public static char GetRandomChar (char minValue, char maxValue) => 
+            (char)SecureRandomSource.GetRandomInteger(minValue, maxValue);
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Returns a random printable ASCII char value.
+        /// </summary>
+        /// <returns>
+        /// The random printable ASCII char value
+        /// </returns>
+        public static char GetRandomChar () =>
+            (char)SecureRandomSource.GetRandomInteger(32, 127);
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Allocates and returns an ASCII char array of a random length between <paramref name="minSize"/> and
+        /// <paramref name="maxSize"/> filled with random ASCII char values.
         /// </summary>
         /// <param name="minSize">
         /// The minimum array size to return.
@@ -571,11 +670,32 @@ namespace KZDev.PerfUtils.Tests
         /// The maximum array size to return.
         /// </param>
         /// <returns>
-        /// A byte array of random size filled with random byte values.
+        /// A char array of random size filled with random char values.
         /// </returns>
-        public byte[] GetRandomBytes (int minSize, int maxSize) => GetRandomBytes(SecureRandomSource, minSize, maxSize);
+        public static char[] GetRandomChars (int minSize, int maxSize) =>
+            Enumerable
+                .Range(0, GetTestInteger(SecureRandomSource, minSize, maxSize))
+                .Select(i => GetRandomChar(SecureRandomSource))
+                .ToArray();
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Allocates and returns an ASCII based string of a random length between <paramref name="minLength"/> and
+        /// <paramref name="maxLength"/> filled with random ASCII char values.
+        /// </summary>
+        /// <param name="minLength">
+        /// The minimum string length to return.
+        /// </param>
+        /// <param name="maxLength">
+        /// The maximum string length to return.
+        /// </param>
+        /// <returns>
+        /// A string of random size filled with random char values.
+        /// </returns>
+        public static string GetRandomString (int minLength, int maxLength) =>
+            new(GetRandomChars(minLength, maxLength));
         //--------------------------------------------------------------------------------
 
+        #endregion Char Methods
     }
     //################################################################################
 }
