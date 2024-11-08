@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 using KZDev.PerfUtils.Helpers;
@@ -56,38 +57,42 @@ namespace KZDev.PerfUtils
         /// <param name="stringBuilder">
         /// The string builder instance to return.
         /// </param>
-        public static void ReleaseToIndex (StringBuilder stringBuilder, StringBuilder?[] cachedInstances, 
+        private static void ReleaseToIndex (StringBuilder stringBuilder, StringBuilder?[] cachedInstances,
             int storeIndex)
         {
-            StringBuilder? currentCachedInstance = cachedInstances[storeIndex];
-            // Keep the larger capacity instance.
-            if (currentCachedInstance is null)
-            {
-                cachedInstances[storeIndex] = stringBuilder;
+            if (storeIndex < 0)
                 return;
-            }
-            // Larger capacity instances are more expensive to allocate, and we know that
-            // the maximum capacity we will cache is relatively small AND are only
-            // cached at the thread level (which often come and go frequently), so we
-            // are willing to store the larger capacity instances in lower slots and keep
-            // them around since they have already been allocated.
-            if (currentCachedInstance.Capacity >= stringBuilder.Capacity)
+            while (true)
             {
-                // We are willing to store instances in lower slots because we primarily
-                // want to eliminate instantiating new instances, and this is better than
-                // just letting this instance get GC'd.
-                if (storeIndex == 0)
+                StringBuilder? currentCachedInstance = cachedInstances[storeIndex];
+                // Keep the larger capacity instance.
+                if (currentCachedInstance is null)
+                {
+                    cachedInstances[storeIndex] = stringBuilder;
                     return;
-                ReleaseToIndex(stringBuilder, cachedInstances, --storeIndex);
-                return;
+                }
+
+                // Larger capacity instances are more expensive to allocate, and we know that
+                // the maximum capacity we will cache is relatively small (<= MaxCachedCapacity) AND are only
+                // cached at the thread level (which often come and go frequently), so we
+                // are willing to store the larger capacity instances in lower slots and keep
+                // them around since they have already been allocated.
+                if (currentCachedInstance.Capacity >= stringBuilder.Capacity)
+                {
+                    // We are willing to store instances in lower slots because we primarily
+                    // want to eliminate instantiating new instances, and this is better than
+                    // just letting this instance get GC'd.
+                    if (storeIndex == 0) return;
+                    storeIndex--;
+                    continue;
+                }
+
+                // We will place the released instance in the current slot and check if we can
+                // move the currently cached instance to a lower slot.
+                ReleaseToIndex(currentCachedInstance, cachedInstances, storeIndex - 1);
+                cachedInstances[storeIndex] = stringBuilder;
+                break;
             }
-            // We will place the released instance in the current slot and check if we can
-            // move the currently cached instance to a lower slot.
-            if (storeIndex > 0)
-            {
-                ReleaseToIndex(currentCachedInstance, cachedInstances, --storeIndex);
-            }
-            cachedInstances[storeIndex] = stringBuilder;
         }
         //--------------------------------------------------------------------------------
         /// <summary>
@@ -99,6 +104,7 @@ namespace KZDev.PerfUtils
         /// <param name="stringBuilder">
         /// The string builder instance to return.
         /// </param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void ReleaseToIndex (StringBuilder stringBuilder, int storeIndex) =>
             ReleaseToIndex(stringBuilder, ThreadCachedInstances, storeIndex);
         //--------------------------------------------------------------------------------
@@ -112,6 +118,7 @@ namespace KZDev.PerfUtils
         /// </param>
         /// <returns>
         /// </returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static int GetCacheIndex (int capacity) =>
             capacity > MaxCachedCapacity ? -1 : BitOperations.Log2((uint)capacity - 1 | 15) - 3;
         //--------------------------------------------------------------------------------
