@@ -14,7 +14,12 @@ namespace KZDev.PerfUtils
         /// <summary>
         /// The maximum capacity of a <see cref="StringBuilder"/> instance that can be cached.
         /// </summary>
-        internal const int MaxCachedCapacity = 2048;
+#if NOT_PACKAGING
+        internal
+#else
+        private
+#endif
+        const int MaxCachedCapacity = 2048;
 
         /// <summary>
         /// The default capacity of a <see cref="StringBuilder"/> instance when a specific capacity
@@ -23,7 +28,12 @@ namespace KZDev.PerfUtils
         /// <remarks>
         /// This it the value of <see cref="StringBuilder"/>.DefaultCapacity.
         /// </remarks>
-        internal const int DefaultCapacity = 16;
+#if NOT_PACKAGING
+        internal
+#else
+        private
+#endif  
+        const int DefaultCapacity = 16;
 
         /// <summary>
         /// A set of thread-level cached instances of <see cref="StringBuilder"/> based on 
@@ -38,6 +48,25 @@ namespace KZDev.PerfUtils
         // ReSharper disable once InconsistentNaming
         static StringBuilder?[]? _threadCachedInstances;
 
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Gets the index in the cached instances that should be used for string builder instances
+        /// of the given capacity with the provided capacity being less than or equal to the 
+        /// current capacity of the string builder at that index, nothing greater than the 
+        /// given maximum capacity and all instances below the default capacity being stored in the first index.
+        /// </summary>
+        /// <param name="capacity">
+        /// </param>
+        /// <returns>
+        /// </returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#if NOT_PACKAGING
+        internal
+#else
+        private
+#endif
+        static int GetCacheIndex (int capacity) =>
+            capacity > MaxCachedCapacity ? -1 : BitOperations.Log2((uint)capacity - 1 | 15) - 3;
         //--------------------------------------------------------------------------------
         /// <summary>
         /// Gets the thread-level cached instances of <see cref="StringBuilder"/>.
@@ -107,20 +136,6 @@ namespace KZDev.PerfUtils
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void ReleaseToIndex (StringBuilder stringBuilder, int storeIndex) =>
             ReleaseToIndex(stringBuilder, ThreadCachedInstances, storeIndex);
-        //--------------------------------------------------------------------------------
-        /// <summary>
-        /// Gets the index in the cached instances that should be used for string builder instances
-        /// of the given capacity with the provided capacity being less than or equal to the 
-        /// current capacity of the string builder at that index, nothing greater than the 
-        /// given maximum capacity and all instances below the default capacity being stored in the first index.
-        /// </summary>
-        /// <param name="capacity">
-        /// </param>
-        /// <returns>
-        /// </returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static int GetCacheIndex (int capacity) =>
-            capacity > MaxCachedCapacity ? -1 : BitOperations.Log2((uint)capacity - 1 | 15) - 3;
         //--------------------------------------------------------------------------------
         /// <summary>
         /// Get a StringBuilder for the specified capacity.
