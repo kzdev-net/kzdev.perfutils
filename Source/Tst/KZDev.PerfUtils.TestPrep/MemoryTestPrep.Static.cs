@@ -79,7 +79,7 @@ namespace KZDev.PerfUtils.Tests
         public static byte[] GetRandomByteArray (int byteCount)
         {
             byte[] returnData = new byte[byteCount];
-            GetRandomBytes(returnData, byteCount);
+            GetRandomBytes(SecureRandomSource, returnData, byteCount);
             return returnData;
         }
         //--------------------------------------------------------------------------------
@@ -118,7 +118,7 @@ namespace KZDev.PerfUtils.Tests
             while (byteCount > 0)
             {
                 int bytesToGet = (int)Math.Min(byteCount, GetTestLongInteger(randomSource, bufferLength + 1));
-                int bytesToWrite = GetRandomBytes(byteBuffer, bytesToGet);
+                int bytesToWrite = GetRandomBytes(SecureRandomSource, byteBuffer, bytesToGet);
                 stream.Write(byteBuffer, 0, bytesToWrite);
                 byteCount -= bytesToWrite;
             }
@@ -159,7 +159,7 @@ namespace KZDev.PerfUtils.Tests
             while (byteCount > 0)
             {
                 int bytesToGet = (int)Math.Min(byteCount, GetTestLongInteger(randomSource, bufferLength + 1));
-                int bytesToWrite = GetRandomBytes(byteBuffer, bytesToGet);
+                int bytesToWrite = GetRandomBytes(SecureRandomSource, byteBuffer, bytesToGet);
                 // Randomly yield or just continue.
                 if (randomSource.GetRandomTrue(5))
                 {
@@ -247,7 +247,7 @@ namespace KZDev.PerfUtils.Tests
             Stream stream, int byteCount)
         {
             byte[] returnData = new byte[byteCount];
-            GetRandomBytes(returnData, byteCount);
+            GetRandomBytes(SecureRandomSource, returnData, byteCount);
             stream.Write(returnData, 0, byteCount);
             return returnData;
         }
@@ -272,7 +272,7 @@ namespace KZDev.PerfUtils.Tests
         public static async Task<byte[]> FillStreamAndArrayWithRandomBytesAsync (Stream stream, int byteCount)
         {
             byte[] returnData = new byte[byteCount];
-            GetRandomBytes(returnData, byteCount);
+            GetRandomBytes(SecureRandomSource, returnData, byteCount);
             await stream.WriteAsync(returnData, 0, byteCount);
             return returnData;
         }
@@ -301,7 +301,7 @@ namespace KZDev.PerfUtils.Tests
             Stream stream, int byteCount)
         {
             byte[] returnData = new byte[byteCount];
-            GetRandomBytes(returnData, byteCount);
+            GetRandomBytes(SecureRandomSource, returnData, byteCount);
             // Randomly yield or just continue.
             if (randomSource.GetRandomTrue(5))
             {
@@ -338,7 +338,7 @@ namespace KZDev.PerfUtils.Tests
             Stream stream, int byteCount, int bySegmentSize)
         {
             byte[] returnData = new byte[byteCount];
-            GetRandomBytes(returnData, byteCount);
+            GetRandomBytes(SecureRandomSource, returnData, byteCount);
             int bytesLeft = byteCount;
             int byteIndex = 0;
             while (bytesLeft > 0)
@@ -380,7 +380,7 @@ namespace KZDev.PerfUtils.Tests
         public static byte[] FillStreamAndArrayWithRandomBytes (Stream stream, int byteCount, int bySegmentSize)
         {
             byte[] returnData = new byte[byteCount];
-            GetRandomBytes(returnData, byteCount);
+            GetRandomBytes(SecureRandomSource, returnData, byteCount);
             int bytesLeft = byteCount;
             int byteIndex = 0;
             while (bytesLeft > 0)
@@ -417,7 +417,7 @@ namespace KZDev.PerfUtils.Tests
         public static async Task<byte[]> FillStreamAndArrayWithRandomBytesAsync (Stream stream, int byteCount, int bySegmentSize)
         {
             byte[] returnData = new byte[byteCount];
-            GetRandomBytes(returnData, byteCount);
+            GetRandomBytes(SecureRandomSource, returnData, byteCount);
             int bytesLeft = byteCount;
             int byteIndex = 0;
             bool useMemoryInstance = false;
@@ -465,7 +465,7 @@ namespace KZDev.PerfUtils.Tests
         public static void FillStreamWithRandomBytes (Stream stream, int byteCount, int bySegmentSize)
         {
             byte[] fillData = new byte[byteCount];
-            GetRandomBytes(fillData, byteCount);
+            GetRandomBytes(SecureRandomSource, fillData, byteCount);
             int bytesLeft = byteCount;
             int byteIndex = 0;
             while (bytesLeft > 0)
@@ -500,7 +500,7 @@ namespace KZDev.PerfUtils.Tests
         public static async Task FillStreamWithRandomBytesAsync (Stream stream, int byteCount, int bySegmentSize)
         {
             byte[] fillData = new byte[byteCount];
-            GetRandomBytes(fillData, byteCount);
+            GetRandomBytes(SecureRandomSource, fillData, byteCount);
             int bytesLeft = byteCount;
             int byteIndex = 0;
             bool useMemoryInstance = false;

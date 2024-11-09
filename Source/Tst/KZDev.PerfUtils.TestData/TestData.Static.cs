@@ -1153,6 +1153,44 @@ namespace KZDev.PerfUtils.Tests
             return bytes;
         }
         //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Fills the passed byte array with random byte values.
+        /// </summary>
+        /// <param name="arraySizeRandomSource">
+        /// The <see cref="IRandomSource"/> instance to use for getting a size of the array.
+        /// </param>
+        /// <param name="byteArray">
+        /// The array to be filled with random byte values.
+        /// </param>
+        /// <returns>
+        /// The number of bytes that were written to the array.
+        /// </returns>
+        public static int GetRandomBytes (IRandomSource arraySizeRandomSource, byte[] byteArray) => arraySizeRandomSource.GetRandomBytes(byteArray);
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Fills <paramref name="byteCount"/> bytes into the passed byte array with random byte values.
+        /// </summary>
+        /// <param name="arraySizeRandomSource">
+        /// The <see cref="IRandomSource"/> instance to use for getting a size of the array.
+        /// </param>
+        /// <param name="byteArray">
+        /// The array to be filled with random byte values.
+        /// </param>
+        /// <param name="byteCount">
+        /// The number of bytes to write to the array.
+        /// </param>
+        /// <returns>
+        /// The number of bytes that were written to the array.
+        /// </returns>
+        public static int GetRandomBytes (IRandomSource arraySizeRandomSource, byte[] byteArray, int byteCount)
+        {
+            if (byteCount < 0)
+                throw new ArgumentOutOfRangeException(nameof(byteCount), $"{nameof(byteCount)} must be greater than or equal to zero");
+            return byteArray is null ?
+                throw new ArgumentNullException(nameof(byteArray)) :
+                arraySizeRandomSource.GetRandomBytes(byteArray, Math.Min(byteArray.Length, byteCount));
+        }
+        //--------------------------------------------------------------------------------
 
         #endregion Byte Methods
 

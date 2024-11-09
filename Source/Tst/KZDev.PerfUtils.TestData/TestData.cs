@@ -572,10 +572,10 @@ namespace KZDev.PerfUtils.Tests
         /// <returns>
         /// A byte array of <paramref name="arraySize"/> size filled with random bytes.
         /// </returns>
-        public static byte[] GetRandomBytes (int arraySize)
+        public byte[] GetRandomBytes (int arraySize)
         {
             byte[] bytes = new byte[arraySize];
-            SecureRandomSource.GetRandomBytes(bytes);
+            RandomSource.GetRandomBytes(bytes);
             return bytes;
         }
         //--------------------------------------------------------------------------------
@@ -593,7 +593,7 @@ namespace KZDev.PerfUtils.Tests
         /// A byte array of random size filled with random byte values.
         /// </returns>
         public byte[] GetRandomBytes (int minArraySize, int maxArraySize) => 
-            GetRandomBytes(SecureRandomSource, minArraySize, maxArraySize);
+            GetRandomBytes(RandomSource, minArraySize, maxArraySize);
         //--------------------------------------------------------------------------------
         /// <summary>
         /// Fills the passed byte array with random byte values.
@@ -604,7 +604,7 @@ namespace KZDev.PerfUtils.Tests
         /// <returns>
         /// The number of bytes that were written to the array.
         /// </returns>
-        public static int GetRandomBytes (byte[] byteArray) => SecureRandomSource.GetRandomBytes(byteArray);
+        public int GetRandomBytes (byte[] byteArray) => RandomSource.GetRandomBytes(byteArray);
         //--------------------------------------------------------------------------------
         /// <summary>
         /// Fills <paramref name="byteCount"/> bytes into the passed byte array with random byte values.
@@ -618,13 +618,13 @@ namespace KZDev.PerfUtils.Tests
         /// <returns>
         /// The number of bytes that were written to the array.
         /// </returns>
-        public static int GetRandomBytes (byte[] byteArray, int byteCount)
+        public int GetRandomBytes (byte[] byteArray, int byteCount)
         {
             if (byteCount < 0)
                 throw new ArgumentOutOfRangeException(nameof(byteCount), $"{nameof(byteCount)} must be greater than or equal to zero");
             return byteArray is null ?
                 throw new ArgumentNullException(nameof(byteArray)) :
-                SecureRandomSource.GetRandomBytes(byteArray, Math.Min(byteArray.Length, byteCount));
+                RandomSource.GetRandomBytes(byteArray, Math.Min(byteArray.Length, byteCount));
         }
         //--------------------------------------------------------------------------------
         /// <summary>
@@ -633,7 +633,7 @@ namespace KZDev.PerfUtils.Tests
         /// <returns>
         /// The random byte value
         /// </returns>
-        public static byte GetRandomByte () => (byte)SecureRandomSource.GetRandomInteger(byte.MaxValue + 1);
+        public byte GetRandomByte () => (byte)RandomSource.GetRandomInteger(byte.MaxValue + 1);
         //--------------------------------------------------------------------------------
 
         #endregion Byte Methods
@@ -647,8 +647,8 @@ namespace KZDev.PerfUtils.Tests
         /// <returns>
         /// The random char value
         /// </returns>
-        public static char GetRandomChar (char minValue, char maxValue) => 
-            (char)SecureRandomSource.GetRandomInteger(minValue, maxValue);
+        public char GetRandomChar (char minValue, char maxValue) => 
+            (char)RandomSource.GetRandomInteger(minValue, maxValue);
         //--------------------------------------------------------------------------------
         /// <summary>
         /// Returns a random printable ASCII char value.
@@ -656,8 +656,8 @@ namespace KZDev.PerfUtils.Tests
         /// <returns>
         /// The random printable ASCII char value
         /// </returns>
-        public static char GetRandomChar () =>
-            (char)SecureRandomSource.GetRandomInteger(32, 127);
+        public char GetRandomChar () =>
+            (char)RandomSource.GetRandomInteger(32, 127);
         //--------------------------------------------------------------------------------
         /// <summary>
         /// Allocates and returns an ASCII char array of a random length between <paramref name="minSize"/> and
@@ -672,10 +672,10 @@ namespace KZDev.PerfUtils.Tests
         /// <returns>
         /// A char array of random size filled with random char values.
         /// </returns>
-        public static char[] GetRandomChars (int minSize, int maxSize) =>
+        public char[] GetRandomChars (int minSize, int maxSize) =>
             Enumerable
-                .Range(0, GetTestInteger(SecureRandomSource, minSize, maxSize))
-                .Select(i => GetRandomChar(SecureRandomSource))
+                .Range(0, GetTestInteger(RandomSource, minSize, maxSize))
+                .Select(i => GetRandomChar(RandomSource))
                 .ToArray();
         //--------------------------------------------------------------------------------
         /// <summary>
@@ -691,7 +691,7 @@ namespace KZDev.PerfUtils.Tests
         /// <returns>
         /// A string of random size filled with random char values.
         /// </returns>
-        public static string GetRandomString (int minLength, int maxLength) =>
+        public string GetRandomString (int minLength, int maxLength) =>
             new(GetRandomChars(minLength, maxLength));
         //--------------------------------------------------------------------------------
 

@@ -27,7 +27,7 @@ namespace KZDev.PerfUtils.Tests
         private static byte[] GetSourceBuffer (int length)
         {
             byte[] buffer = new byte[length];
-            GetRandomBytes(buffer, length);
+            GetRandomBytes(SecureRandomSource, buffer, length);
             return buffer;
         }
         //--------------------------------------------------------------------------------
