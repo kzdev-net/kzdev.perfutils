@@ -11,11 +11,17 @@ using Microsoft.IO;
 namespace MemoryStreamBenchmarks
 {
     /// <summary>
-    /// Benchmarks for the <see cref="MemoryStreamSlim"/> utility class where the stream is filled and read in bulk.
+    /// Benchmarks for the <see cref="MemoryStreamSlim"/> utility class where the stream 
+    /// is filled and read in segments.
     /// </summary>
     [MemoryDiagnoser]
-    public class BulkFillAndReadThroughputBenchmarks : FillAndReadThroughputBenchmarks
+    public class SegmentedFillAndReadThroughputBenchmarks : FillAndReadThroughputBenchmarks
     {
+        /// <summary>
+        /// The size of the segments to fill and read in.
+        /// </summary>
+        private const int SegmentSize = 0x1000;  // 4KB
+
         //--------------------------------------------------------------------------------
         /// <summary>
         /// Processes the bulk fill and read operation on the stream
@@ -29,7 +35,7 @@ namespace MemoryStreamBenchmarks
         private void ProcessStream (Stream stream, int dataLength)
         {
             stream.Position = 0;
-            streamUtility.BulkFillAndRead(stream, fillData!, readBuffer!, dataLength);
+            streamUtility.SegmentFillAndRead(stream, fillData!, readBuffer!, dataLength, SegmentSize);
         }
         //--------------------------------------------------------------------------------
         /// <summary>
@@ -43,12 +49,9 @@ namespace MemoryStreamBenchmarks
             if (fillData is not null)
                 return;
 
-            int allocateDataSize = DataSize;
-            if (GrowEachLoop)
-                allocateDataSize += (LoopCount * LoopGrowAmount);
-            fillData = new byte[allocateDataSize];
-            readBuffer = new byte[allocateDataSize];
-            TestData.GetRandomBytes(fillData, allocateDataSize);
+            fillData = new byte[SegmentSize];
+            readBuffer = new byte[SegmentSize];
+            TestData.GetRandomBytes(TestData.SecureRandomSource, fillData, SegmentSize);
             MemoryStreamSlimOptions = new MemoryStreamSlimOptions() { ZeroBufferBehavior = ZeroBuffers ? MemoryStreamSlimZeroBufferOption.OnRelease : MemoryStreamSlimZeroBufferOption.None };
         }
         //--------------------------------------------------------------------------------
@@ -64,7 +67,7 @@ namespace MemoryStreamBenchmarks
         /// <summary>
         /// Benchmark using MemoryStream
         /// </summary>
-        [Benchmark(Baseline = true, Description = "MemoryStream bulk fill and read")]
+        [Benchmark(Baseline = true, Description = "MemoryStream segmented fill and read")]
         public void UseMemoryStream ()
         {
             int processDataLength = DataSize;
@@ -80,7 +83,7 @@ namespace MemoryStreamBenchmarks
         /// <summary>
         /// Benchmark using RecyclableMemoryStream
         /// </summary>
-        [Benchmark(Description = "RecyclableMemoryStream bulk fill and read")]
+        [Benchmark(Description = "RecyclableMemoryStream segmented fill and read")]
         public void UseRecyclableMemoryStream ()
         {
             int processDataLength = DataSize;
@@ -88,7 +91,7 @@ namespace MemoryStreamBenchmarks
             {
                 using RecyclableMemoryStream stream = CapacityOnCreate ?
                     BenchMarkHelpers.GetMemoryStreamManager(ZeroBuffers, ExponentialBufferGrowth).GetStream("benchmark", processDataLength) :
-                    BenchMarkHelpers.GetMemoryStreamManager(ZeroBuffers, ExponentialBufferGrowth).GetStream();
+                    BenchMarkHelpers.GetMemoryStreamManager(ZeroBuffers, ExponentialBufferGrowth).GetStream("benchmark");
                 ProcessStream(stream, processDataLength);
                 if (GrowEachLoop)
                     processDataLength += LoopGrowAmount;
@@ -98,13 +101,15 @@ namespace MemoryStreamBenchmarks
         /// <summary>
         /// Benchmark using MemoryStreamSlim
         /// </summary>
-        [Benchmark(Description = "MemoryStreamSlim bulk fill and read")]
+        [Benchmark(Description = "MemoryStreamSlim segmented fill and read")]
         public void UseMemoryStreamSlim ()
         {
             int processDataLength = DataSize;
             for (int loopIndex = 0; loopIndex < LoopCount; loopIndex++)
             {
-                using MemoryStreamSlim stream = CapacityOnCreate ? MemoryStreamSlim.Create(processDataLength, MemoryStreamSlimOptions) : MemoryStreamSlim.Create(MemoryStreamSlimOptions);
+                using MemoryStreamSlim stream = CapacityOnCreate ? 
+                    MemoryStreamSlim.Create(processDataLength, MemoryStreamSlimOptions) : 
+                    MemoryStreamSlim.Create(MemoryStreamSlimOptions);
                 ProcessStream(stream, processDataLength);
                 if (GrowEachLoop)
                     processDataLength += LoopGrowAmount;

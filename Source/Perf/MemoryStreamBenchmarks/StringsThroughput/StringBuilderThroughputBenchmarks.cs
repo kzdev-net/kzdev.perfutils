@@ -37,7 +37,7 @@ namespace MemoryStreamBenchmarks
         /// </summary>
         public int LoopCount
         {
-            get => _setLoopCount ?? 50;
+            get => _setLoopCount ?? 50_000;
             set => _setLoopCount = (value < 1) ? null : value;
         }
         //--------------------------------------------------------------------------------
@@ -63,10 +63,14 @@ namespace MemoryStreamBenchmarks
         {
             for (int buildSourceIndex = 0; buildSourceIndex < _buildSourceStrings.Length; buildSourceIndex++)
             {
+                int runningStringLength = 0;
                 List<string> buildList = _buildSourceStrings[buildSourceIndex];
-                for (int stringIndex = 0; stringIndex < 200; stringIndex++)
+                for (int stringIndex = 0; stringIndex < 50; stringIndex++)
                 {
-                    buildList.Add(TestData.GetRandomString(TestData.SecureRandomSource, 50, 512));
+                    string nextString = TestData.GetRandomString(TestData.SecureRandomSource, 10, 50);
+                    if ((runningStringLength += nextString.Length) >= StringBuilderCache.MaxCachedCapacity)
+                        break;
+                    buildList.Add(nextString);
                 }
             }
         }

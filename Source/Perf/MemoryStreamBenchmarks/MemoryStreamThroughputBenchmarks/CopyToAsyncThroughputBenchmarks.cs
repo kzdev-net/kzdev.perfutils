@@ -134,7 +134,7 @@ namespace MemoryStreamBenchmarks
             // the internal memory management of the file stream on the benchmarks as we
             // write to that stream.
             _fileStream = new FileStreamMock(allocateDataSize);
-            TestData.GetRandomBytes(fillData, allocateDataSize);
+            TestData.GetRandomBytes(TestData.SecureRandomSource, fillData, allocateDataSize);
             // Avoid any benchmark impacts from clearing memory buffers
             MemoryStreamSlimOptions = new MemoryStreamSlimOptions() { ZeroBufferBehavior = MemoryStreamSlimZeroBufferOption.None };
         }
