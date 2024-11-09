@@ -184,7 +184,7 @@ namespace KZDev.PerfUtils.Strings.UnitTests
         {
             // Be sure our test starts with a cleared cache
             StringBuilderCache._threadCachedInstances = null;
-            string expected = GetRandomString(10, 20);
+            string expected = GetRandomString(10, StringBuilderCache.DefaultCapacity);
 
             StringBuilder builder = StringBuilderCache.Acquire();
             builder.Append(expected);
@@ -206,9 +206,9 @@ namespace KZDev.PerfUtils.Strings.UnitTests
         {
             // Be sure our test starts with a cleared cache
             StringBuilderCache._threadCachedInstances = null;
-            string addString = GetRandomString(10, 20);
+            string addString = GetRandomString(10, StringBuilderCache.DefaultCapacity);
             int getCapacity = StringBuilderCache.DefaultCapacity;
-            List<StringBuilder> usedBuilders = new();
+            List<StringBuilder> usedBuilders = [];
 
             while (getCapacity <= StringBuilderCache.MaxCachedCapacity)
             {
@@ -220,6 +220,11 @@ namespace KZDev.PerfUtils.Strings.UnitTests
             }
             StringBuilder?[]? checkCacheList = StringBuilderCache._threadCachedInstances;
 
+            // Display the value of each entry in the check cache list
+            for (int checkIndex = 0; checkIndex < checkCacheList.Length; checkIndex++)
+            {
+                TestWriteLine($"Cache list entry {checkIndex} is {(checkCacheList[checkIndex] is StringBuilder builder ? builder.ToString() : "<<null>>")}");
+            }
             checkCacheList.Should().BeEquivalentTo(usedBuilders);
         }
         //--------------------------------------------------------------------------------    
@@ -233,9 +238,9 @@ namespace KZDev.PerfUtils.Strings.UnitTests
         {
             // Be sure our test starts with a cleared cache
             StringBuilderCache._threadCachedInstances = null;
-            string addString = GetRandomString(10, 20);
+            string addString = GetRandomString(10, StringBuilderCache.DefaultCapacity);
             // We only use the capacity value to indicate the different cache slots
-            // that we will use, but we always get the max size
+            // that we will use, but we always get the max capacity
             int checkCapacity = StringBuilderCache.DefaultCapacity;
             List<StringBuilder> usedBuilders = new();
 
