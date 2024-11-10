@@ -29,7 +29,7 @@ During the write operation, the data is written in 4KB chunks, and once the stre
 
 ### Benchmark Parameters
 
-The following parameters were used in the benchmarks. These will appear as columns in the benchmark results along with the [standard BenchmarkDotNet columns](./benchmarks.md#legend).
+The following parameters were used in the benchmarks. These will appear as columns in the benchmark results along with the [standard BenchmarkDotNet columns](./memorystream-benchmarks.md#legend).
 
 #### ZeroBuffers
 

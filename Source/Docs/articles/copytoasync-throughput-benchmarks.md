@@ -24,7 +24,7 @@ A single benchmark operation consists of performing a loop of steps that does th
 1. Call CopyToAsync() on the stream passing a mock asynchronous File I/O stream destination.
 1. Dispose of the stream instance.
 
-The [number of loops](./benchmarks.md#loop-count-impact) in each operation is determined by the [`DataSize`](#datasize) parameter to keep each benchmark reasonably consistent in duration, but the loop count is always the same for all classes being compared for any given DataSize parameter value.
+The [number of loops](./memorystream-benchmarks.md#loop-count-impact) in each operation is determined by the [`DataSize`](#datasize) parameter to keep each benchmark reasonably consistent in duration, but the loop count is always the same for all classes being compared for any given DataSize parameter value.
 
 `MemoryStreamSlim` and `RecyclableMemoryStream` classes are created with the option to zero out memory buffers when they are no longer used disabled to keep the benchmark performance focused on the `CopyToAsync()` call. The `MemoryStream` class has no option to zero out memory buffers (used memory is always cleared - i.e. internal buffers are allocated with `new byte[]`), so this parameter does not apply to that class.
 
@@ -38,7 +38,7 @@ This is all done to provide a consistent and deterministic performance compariso
 
 ### Benchmark Parameters
 
-The following parameters were used in the benchmarks. These will appear as columns in the benchmark results along with the [standard BenchmarkDotNet columns](./benchmarks.md#legend).
+The following parameters were used in the benchmarks. These will appear as columns in the benchmark results along with the [standard BenchmarkDotNet columns](./memorystream-benchmarks.md#legend).
 
 #### DataSize
 

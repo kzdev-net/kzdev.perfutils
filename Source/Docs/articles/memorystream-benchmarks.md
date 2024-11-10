@@ -1,4 +1,4 @@
-﻿# Benchmarks
+﻿# MemoryStream Benchmarks
 
 As previously mentioned, the general goals and approach to ease GC pressure and reduce memory traffic are the same for both `MemoryStreamSlim` and `RecyclableMemoryStream`. So, for benchmarking purposes, the standard `MemoryStream` class, `RecyclableMemoryStream`, and `MemoryStreamSlim` are compared side-by-side for performance under a number of use cases.
 

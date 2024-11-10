@@ -16,7 +16,7 @@ The [`Memory Management`](./memory-management.md) topic provides some insight in
 
 The [`Memory Monitoring`](./memory-monitoring.md) topic discusses how you can monitor memory usage and allocations with `MemoryStreamSlim` using the `Metrics` and `Events` features of the .NET runtime.
 
-The [`Benchmarks`](./benchmarks.md) topic covers the benchmarks used to examine the performance benefits provided by the `MemoryStreamSlim` class.
+The [`Benchmarks`](./memorystream-benchmarks.md) topic covers the benchmarks used to examine the performance benefits provided by the `MemoryStreamSlim` class.
 
 ## Interlocked Operations
 

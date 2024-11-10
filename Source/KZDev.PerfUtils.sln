@@ -72,7 +72,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Styles", "Styles", "{587889
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Articles", "Articles", "{B94D886A-CDE3-4650-908C-4243A5C532B7}"
 	ProjectSection(SolutionItems) = preProject
-		Docs\articles\benchmarks.md = Docs\articles\benchmarks.md
 		Docs\articles\continuous-growth-throughput-benchmarks.md = Docs\articles\continuous-growth-throughput-benchmarks.md
 		Docs\articles\copytoasync-throughput-benchmarks.md = Docs\articles\copytoasync-throughput-benchmarks.md
 		Docs\articles\dynamic-throughput-benchmarks.md = Docs\articles\dynamic-throughput-benchmarks.md
@@ -81,6 +80,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Articles", "Articles", "{B9
 		Docs\articles\memory-management.md = Docs\articles\memory-management.md
 		Docs\articles\memory-monitoring.md = Docs\articles\memory-monitoring.md
 		Docs\articles\MemoryStreamBenchmarks.BulkFillAndReadThroughputBenchmarks-report-github.md = Docs\articles\MemoryStreamBenchmarks.BulkFillAndReadThroughputBenchmarks-report-github.md
+		Docs\articles\memorystream-benchmarks.md = Docs\articles\memorystream-benchmarks.md
 		Docs\articles\MemoryStreamBenchmarks.BulkFillAndReadThroughputBenchmarks-report.html = Docs\articles\MemoryStreamBenchmarks.BulkFillAndReadThroughputBenchmarks-report.html
 		Docs\articles\MemoryStreamBenchmarks.ContinuousGrowFillAndReadThroughputBenchmarks-report-github.md = Docs\articles\MemoryStreamBenchmarks.ContinuousGrowFillAndReadThroughputBenchmarks-report-github.md
 		Docs\articles\MemoryStreamBenchmarks.ContinuousGrowFillAndReadThroughputBenchmarks-report.html = Docs\articles\MemoryStreamBenchmarks.ContinuousGrowFillAndReadThroughputBenchmarks-report.html
@@ -94,6 +94,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Articles", "Articles", "{B9
 		Docs\articles\MemoryStreamBenchmarks.WrapperFillAndReadThroughputBenchmarks-report.html = Docs\articles\MemoryStreamBenchmarks.WrapperFillAndReadThroughputBenchmarks-report.html
 		Docs\articles\memorystreamslim.md = Docs\articles\memorystreamslim.md
 		Docs\articles\set-loop-count-throughput-benchmarks.md = Docs\articles\set-loop-count-throughput-benchmarks.md
+		Docs\articles\stringbuildercache-benchmarks.md = Docs\articles\stringbuildercache-benchmarks.md
+		Docs\articles\stringbuildercache-throughput-benchmarks.md = Docs\articles\stringbuildercache-throughput-benchmarks.md
+		Docs\articles\stringbuildercache.md = Docs\articles\stringbuildercache.md
 		Docs\articles\toc.yml = Docs\articles\toc.yml
 		Docs\articles\wrapper-throughput-benchmarks.md = Docs\articles\wrapper-throughput-benchmarks.md
 	EndProjectSection
@@ -137,7 +140,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KZDev.PerfUtils.Concurrency
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KZDev.PerfUtils.Examples", "Dev\KZDev.PerfUtils.Examples\KZDev.PerfUtils.Examples.csproj", "{2F0EF0E2-B9AC-4BEA-9A1D-3855A76F5C48}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KZDev.PerfUtils.Strings.UnitTests", "Tst\KZDev.PerfUtils.Strings.UnitTests\KZDev.PerfUtils.Strings.UnitTests.csproj", "{F7CED94F-D445-4ACB-AA59-438B3A05068F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KZDev.PerfUtils.Strings.UnitTests", "Tst\KZDev.PerfUtils.Strings.UnitTests\KZDev.PerfUtils.Strings.UnitTests.csproj", "{F7CED94F-D445-4ACB-AA59-438B3A05068F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
