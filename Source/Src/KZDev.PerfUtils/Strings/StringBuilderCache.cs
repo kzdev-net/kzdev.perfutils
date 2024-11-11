@@ -11,6 +11,49 @@ namespace KZDev.PerfUtils
     /// </summary>
     public static class StringBuilderCache
     {
+        //================================================================================
+        /// <summary>
+        /// Represents a scope in which a cached <see cref="StringBuilder"/> instance is 
+        /// retrieved and released back to the cache.
+        /// </summary>
+        public readonly struct StringBuilderScope : IDisposable
+        {
+            /// <summary>
+            /// Initializes a new instance of the <see cref="StringBuilderScope"/> struct.
+            /// </summary>
+            /// <param name="capacity">
+            /// The capacity of the <see cref="StringBuilder"/> instance to acquire.
+            /// </param>
+            internal StringBuilderScope (int capacity)
+            {
+                StringBuilder = Acquire(capacity);
+            }
+            //--------------------------------------------------------------------------------
+            /// <summary>
+            /// Gets the <see cref="StringBuilder"/> instance that was retrieved from the
+            /// cache for this scope.
+            /// </summary>
+            public StringBuilder StringBuilder { get; }
+            //--------------------------------------------------------------------------------
+            /// <inheritdoc />
+            public void Dispose ()
+            {
+                Release(StringBuilder);
+            }
+            //--------------------------------------------------------------------------------
+            /// <summary>
+            /// Operator to implicitly convert the <see cref="StringBuilderScope"/> instance to a
+            /// <see cref="StringBuilder"/> for use in code that expects a <see cref="StringBuilder"/>.
+            /// </summary>
+            /// <param name="scope">
+            /// The scope instance to convert to a <see cref="StringBuilder"/>.
+            /// </param>
+            public static implicit operator StringBuilder (in StringBuilderScope scope) =>
+                scope.StringBuilder;
+            //--------------------------------------------------------------------------------
+        }
+        //================================================================================
+
         /// <summary>
         /// The maximum capacity of a <see cref="StringBuilder"/> instance that can be cached.
         /// </summary>
