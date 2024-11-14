@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "StringsBenchmarks": {
+      "commandName": "Project",
+      "commandLineArgs": "--filter *StringBuilder*"
+    }
+  }
+}
