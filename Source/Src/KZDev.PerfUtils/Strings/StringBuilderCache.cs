@@ -14,55 +14,6 @@ namespace KZDev.PerfUtils
     public static class StringBuilderCache
     {
         //================================================================================
-        /// <summary>
-        /// Represents a scope in which a cached <see cref="Builder"/> instance is 
-        /// retrieved and released back to the cache.
-        /// </summary>
-        public readonly struct StringBuilderScope : IDisposable
-        {
-            /// <summary>
-            /// Initializes a new instance of the <see cref="StringBuilderScope"/> struct.
-            /// </summary>
-            /// <param name="capacity">
-            /// The capacity of the <see cref="Builder"/> instance to acquire.
-            /// </param>
-            internal StringBuilderScope (int capacity)
-            {
-                Builder = Acquire(capacity);
-            }
-            //--------------------------------------------------------------------------------
-            /// <summary>
-            /// Gets the <see cref="Builder"/> instance that was retrieved from the
-            /// cache for this scope.
-            /// </summary>
-            public StringBuilder Builder { get; }
-            //--------------------------------------------------------------------------------
-            /// <inheritdoc />
-            public void Dispose ()
-            {
-                Release(Builder);
-            }
-            //--------------------------------------------------------------------------------
-            /// <summary>
-            /// Returns the string value of the <see cref="Builder"/> instance
-            /// </summary>
-            /// <returns>
-            /// The string value of the <see cref="Builder"/> instance.
-            /// </returns>
-            public override string ToString () => Builder.ToString();
-            //--------------------------------------------------------------------------------
-            /// <summary>
-            /// Operator to implicitly convert the <see cref="StringBuilderScope"/> instance to a
-            /// <see cref="Builder"/> for use in code that expects a <see cref="Builder"/>.
-            /// </summary>
-            /// <param name="scope">
-            /// The scope instance to convert to a <see cref="Builder"/>.
-            /// </param>
-            public static implicit operator StringBuilder (in StringBuilderScope scope) =>
-                scope.Builder;
-            //--------------------------------------------------------------------------------
-        }
-        //================================================================================
 
         /// <summary>
         /// The maximum number of cached <see cref="StringBuilder"/> instances that will be

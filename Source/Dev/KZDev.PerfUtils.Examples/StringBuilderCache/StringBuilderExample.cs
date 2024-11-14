@@ -20,5 +20,14 @@ namespace KZDev.PerfUtils.Examples
             stringBuilder.Append("World!");
             Console.WriteLine(StringBuilderCache.GetStringAndRelease(stringBuilder));
         }
+
+        public static void GetScopeAndString()
+        {
+            using StringBuilderScope builderScope = StringBuilderCache.GetScope();
+            StringBuilder builder = builderScope.Builder;
+            builder.Append("Hello, ");
+            builder.Append("World!");
+            Console.WriteLine(builderScope.ToString());
+        }
     }
 }

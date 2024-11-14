@@ -116,7 +116,7 @@ namespace MemoryStreamBenchmarks
         {
             RunThreads(LoopCount, () =>
             {
-                using StringBuilderCache.StringBuilderScope builderScope =
+                using StringBuilderScope builderScope =
                     StringBuilderCache.GetScope();
                 BuildString(builderScope);
                 string builtString = builderScope.ToString();

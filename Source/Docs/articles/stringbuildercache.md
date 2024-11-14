@@ -37,12 +37,56 @@ class Program
 {
 		static void Main()
 		{
-        StringBuilder stringBuilder = StringBuilderCache.Acquire();
-        stringBuilder.Append("Hello, ");
-        stringBuilder.Append("World!");
-        Console.WriteLine(StringBuilderCache.GetStringAndRelease(stringBuilder));
+				StringBuilder stringBuilder = StringBuilderCache.Acquire();
+				stringBuilder.Append("Hello, ");
+				stringBuilder.Append("World!");
+				Console.WriteLine(StringBuilderCache.GetStringAndRelease(stringBuilder));
 		}
 }
 ```
 
-The `StringBuilderCache` class is thread-safe so that you can use it in multi-threaded scenarios without issue. The pool of `StringBuilder` instances is created per thread, so each thread has its pool of `StringBuilder` instances. This means that the `StringBuilder` instances are not shared between threads, and the pool is not a global pool that all threads share. This is done to avoid contention between threads for the pool of `StringBuilder` instances. Even with this per-thread approach, there is no issue with releasing a `StringBuilder` instance on a different thread than it was acquired on, so you can pass `StringBuilder` instances between threads without issue, and `StringBuilder` instances can be used in async methods without issue.
+To ensure that the `StringBuilder` instance is returned to the pool, you must call the `Release` method on the `StringBuilderCache` class or use the `GetStringAndRelease` method. If the `StringBuilder` is not returned to the cache, it will simply get garbage collected like any other object, but you will not get the full performance benefit of having the case in those cases. 
+
+For cases where an exception may be thrown and to be sure the `StringBuilder` is still returned to the cache, you should use a try-finally block to release the instance.
+
+```csharp
+using KZDev.PerfUtils;
+
+class Program
+{
+		static void Main()
+		{
+				StringBuilder stringBuilder = StringBuilderCache.Acquire();
+				try
+				{
+						stringBuilder.Append("Hello, ");
+						stringBuilder.Append("World!");
+						Console.WriteLine(stringBuilder.ToString());
+				}
+				finally
+				{
+						StringBuilderCache.Release(stringBuilder);
+				}
+		}
+}
+```
+
+Alternatively, you can use the `StringBuilderCache` class with the `using` statement to get an instance of [`StringBuilderScope`](xref:KZDev.PerfUtils.StringBuilderScope) to ensure that the `StringBuilder` instance is returned to the pool when you are done with it.
+
+```csharp
+using KZDev.PerfUtils;
+
+class Program
+{
+		static void Main()
+		{
+				using StringBuilderScope builderScope = StringBuilderCache.GetScope();
+				StringBuilder builder = builderScope.Builder;
+				builder.Append("Hello, ");
+				builder.Append("World!");
+				Console.WriteLine(builderScope.ToString());
+		}
+}
+```
+
+The `StringBuilderCache` class is thread-safe so that you can use it in multi-threaded scenarios without issue.
