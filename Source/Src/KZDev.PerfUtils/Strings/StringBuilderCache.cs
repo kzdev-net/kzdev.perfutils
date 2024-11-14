@@ -15,7 +15,7 @@ namespace KZDev.PerfUtils
     {
         //================================================================================
         /// <summary>
-        /// Represents a scope in which a cached <see cref="StringBuilder"/> instance is 
+        /// Represents a scope in which a cached <see cref="Builder"/> instance is 
         /// retrieved and released back to the cache.
         /// </summary>
         public readonly struct StringBuilderScope : IDisposable
@@ -24,43 +24,46 @@ namespace KZDev.PerfUtils
             /// Initializes a new instance of the <see cref="StringBuilderScope"/> struct.
             /// </summary>
             /// <param name="capacity">
-            /// The capacity of the <see cref="StringBuilder"/> instance to acquire.
+            /// The capacity of the <see cref="Builder"/> instance to acquire.
             /// </param>
             internal StringBuilderScope (int capacity)
             {
-                StringBuilder = Acquire(capacity);
+                Builder = Acquire(capacity);
             }
             //--------------------------------------------------------------------------------
             /// <summary>
-            /// Gets the <see cref="StringBuilder"/> instance that was retrieved from the
+            /// Gets the <see cref="Builder"/> instance that was retrieved from the
             /// cache for this scope.
             /// </summary>
-            public StringBuilder StringBuilder { get; }
+            public StringBuilder Builder { get; }
             //--------------------------------------------------------------------------------
             /// <inheritdoc />
             public void Dispose ()
             {
-                Release(StringBuilder);
+                Release(Builder);
             }
             //--------------------------------------------------------------------------------
             /// <summary>
             /// Operator to implicitly convert the <see cref="StringBuilderScope"/> instance to a
-            /// <see cref="StringBuilder"/> for use in code that expects a <see cref="StringBuilder"/>.
+            /// <see cref="Builder"/> for use in code that expects a <see cref="Builder"/>.
             /// </summary>
             /// <param name="scope">
-            /// The scope instance to convert to a <see cref="StringBuilder"/>.
+            /// The scope instance to convert to a <see cref="Builder"/>.
             /// </param>
             public static implicit operator StringBuilder (in StringBuilderScope scope) =>
-                scope.StringBuilder;
+                scope.Builder;
             //--------------------------------------------------------------------------------
         }
         //================================================================================
 
         /// <summary>
         /// The maximum number of cached <see cref="StringBuilder"/> instances that will be
-        /// in the global cache.
+        /// in the global cache for each cached capacity size.
         /// </summary>
-        private static readonly int MaxGlobalCacheCount = Math.Max(1, Environment.ProcessorCount / 2);
+        /// <remarks>
+        /// We don't keep a global cache in a browser environment.
+        /// </remarks>
+        internal static readonly int MaxGlobalCacheCount = OperatingSystem.IsBrowser() ? 0 : 2;
 
         /// <summary>
         /// The maximum capacity of a <see cref="StringBuilder"/> instance that can be cached.
@@ -144,12 +147,15 @@ namespace KZDev.PerfUtils
         /// </returns>
         private static ConcurrentBag<StringBuilder>? GetGlobalCacheBag (int capacityIndex, bool createIfNeeded = false)
         {
+            if (MaxGlobalCacheCount == 0)
+                return null;
             if (!createIfNeeded)
             {
                 ConcurrentBag<StringBuilder>?[]? localGlobalCache = _globalCache;
                 return localGlobalCache?[capacityIndex];
             }
 
+            // Getting the GlobalCache property will create the cache list if needed.
             ConcurrentBag<StringBuilder>?[] globalCache = GlobalCache;
             ConcurrentBag<StringBuilder>? returnBag = globalCache[capacityIndex];
             if (returnBag is not null)
@@ -196,11 +202,16 @@ namespace KZDev.PerfUtils
         /// </param>
         private static void ReleaseToGlobalIndex (StringBuilder stringBuilder, int storeIndex)
         {
-            ConcurrentBag<StringBuilder> cacheBag = GetGlobalCacheBag(storeIndex, true)!;
-            if (cacheBag.Count >= MaxGlobalCacheCount)
+            ConcurrentBag<StringBuilder>? cacheBag = GetGlobalCacheBag(storeIndex, true);
+            if (cacheBag is null || (cacheBag.Count >= MaxGlobalCacheCount))
             {
+                // Not going to cache this instance
                 return;
             }
+            // By checking the size first, we may exceed the maximum count, but that is
+            // really not a big issue since we are only caching a small number of instances
+            // and as threads come and go, globally cached instances will be pulled from the 
+            // list to be used when thread static instances are initially available.
             cacheBag.Add(stringBuilder);
         }
         //--------------------------------------------------------------------------------
@@ -319,8 +330,12 @@ namespace KZDev.PerfUtils
             while (cacheIndex < cacheBagCount)
             {
                 // Get the bag that the instance should be in
-                ConcurrentBag<StringBuilder>? globalBag = GetGlobalCacheBag (cacheIndex);
-                if (globalBag?.TryTake (out StringBuilder? cachedInstance) ?? false) return cachedInstance;
+                ConcurrentBag<StringBuilder>? globalBag = GetGlobalCacheBag(cacheIndex);
+                if (globalBag?.TryTake(out StringBuilder? cachedInstance) ?? false)
+                {
+                    cachedInstance.Clear();
+                    return cachedInstance;
+                }
                 // Try the next larger capacity group
                 cacheIndex++;
             }

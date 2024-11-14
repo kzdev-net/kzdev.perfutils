@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Text;
 
 using FluentAssertions;
@@ -143,6 +144,7 @@ namespace KZDev.PerfUtils.Strings.UnitTests
         {
             // Be sure our test starts with a cleared cache
             StringBuilderCache._threadCache = null;
+            StringBuilderCache._globalCache = null;
             string expected = GetRandomString(10, 20);
 
             StringBuilder builder = StringBuilderCache.Acquire();
@@ -184,6 +186,7 @@ namespace KZDev.PerfUtils.Strings.UnitTests
         {
             // Be sure our test starts with a cleared cache
             StringBuilderCache._threadCache = null;
+            StringBuilderCache._globalCache = null;
             string expected = GetRandomString(10, StringBuilderCache.DefaultCapacity);
 
             StringBuilder builder = StringBuilderCache.Acquire();
@@ -206,6 +209,7 @@ namespace KZDev.PerfUtils.Strings.UnitTests
         {
             // Be sure our test starts with a cleared cache
             StringBuilderCache._threadCache = null;
+            StringBuilderCache._globalCache = null;
             string addString = GetRandomString(10, StringBuilderCache.DefaultCapacity);
             int getCapacity = StringBuilderCache.DefaultCapacity;
             List<StringBuilder> usedBuilders = [];
@@ -238,6 +242,7 @@ namespace KZDev.PerfUtils.Strings.UnitTests
         {
             // Be sure our test starts with a cleared cache
             StringBuilderCache._threadCache = null;
+            StringBuilderCache._globalCache = null;
             string addString = GetRandomString(10, StringBuilderCache.DefaultCapacity);
             // We only use the capacity value to indicate the different cache slots
             // that we will use, but we always get the max capacity
@@ -255,6 +260,56 @@ namespace KZDev.PerfUtils.Strings.UnitTests
             usedBuilders.ForEach(builder => StringBuilderCache.Release(builder));
             StringBuilder?[]? checkCacheList = StringBuilderCache._threadCache;
             // The cache list should contain all the builders we used
+            checkCacheList.Should().BeEquivalentTo(usedBuilders);
+        }
+        //--------------------------------------------------------------------------------    
+        /// <summary>
+        /// Tests getting multiple <see cref="StringBuilder"/> instances from the cache for all the
+        /// expected cacheable sizes, building a string and returning the instances, and verifying
+        /// that they are stored in the internal <see cref="StringBuilderCache"/> cache lists.
+        /// </summary>
+        [Fact]
+        public void UsingStringBuilderCache_AcquireMultipleBuildStringOfDifferentCapacitySizesAndRelease_InstancesStoredInCache ()
+        {
+            // Be sure our test starts with a cleared cache
+            StringBuilderCache._threadCache = null;
+            StringBuilderCache._globalCache = null;
+            int perCapacityCount = StringBuilderCache.MaxGlobalCacheCount + 1;
+            List<StringBuilder> perCapacityList = new(perCapacityCount);
+            string addString = GetRandomString(10, StringBuilderCache.DefaultCapacity);
+            int getCapacity = StringBuilderCache.DefaultCapacity;
+            List<StringBuilder> usedBuilders = [];
+
+            while (getCapacity <= StringBuilderCache.MaxCachedCapacity)
+            {
+                perCapacityList.Clear();
+                for (int getBuildInstance = 0; getBuildInstance < perCapacityCount; getBuildInstance++)
+                {
+                    StringBuilder builder = StringBuilderCache.Acquire(getCapacity);
+                    builder.Append(addString);
+                    usedBuilders.Add(builder);
+                    perCapacityList.Add(builder);
+                }
+                // Now, release them all, they should be placed in the thread static cache first,
+                // then into the global cache
+                foreach (StringBuilder builder in perCapacityList)
+                {
+                    StringBuilderCache.Release(builder);
+                }
+                getCapacity <<= 1;
+            }
+            StringBuilder?[]? threadCacheList = StringBuilderCache._threadCache;
+            threadCacheList.Should().NotBeNull();
+            ConcurrentBag<StringBuilder>?[]? globalCacheList = StringBuilderCache._globalCache;
+            globalCacheList.Should().NotBeNull();
+            StringBuilder[] checkCacheList = threadCacheList!.Where(builder => builder is not null)
+                .Concat(globalCacheList!.SelectMany(list => list ?? [])).ToArray();
+
+            // Display the value of each entry in the check cache list
+            for (int checkIndex = 0; checkIndex < checkCacheList.Length; checkIndex++)
+            {
+                TestWriteLine($"Cache list entry {checkIndex} is {(checkCacheList[checkIndex] is StringBuilder builder ? builder.ToString() : "<<null>>")}");
+            }
             checkCacheList.Should().BeEquivalentTo(usedBuilders);
         }
         //--------------------------------------------------------------------------------    
