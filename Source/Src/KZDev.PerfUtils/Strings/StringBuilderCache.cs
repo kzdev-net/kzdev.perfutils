@@ -356,7 +356,7 @@ namespace KZDev.PerfUtils
             // Normalize the capacity to the default capacity if it is less than the default capacity.
             if (capacity < DefaultCapacity)
                 capacity = DefaultCapacity;
-            if ((capacity > MaxCachedCapacity) || (_threadCache is null))
+            if (capacity > MaxCachedCapacity)
                 return new StringBuilder(capacity);
 
             // First index is the first index of the cached list we will check, but we can 
@@ -364,6 +364,9 @@ namespace KZDev.PerfUtils
             int firstIndex = GetCacheIndex(capacity);
             if (firstIndex < 0)
                 return new StringBuilder(capacity);
+
+            if (_threadCache is null)
+                return AcquireFromGlobal(capacity, firstIndex);
 
             // Get a local reference to the cache.
             StringBuilder?[] threadCache = _threadCache;

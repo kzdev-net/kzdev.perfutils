@@ -29,14 +29,14 @@ namespace MemoryStreamBenchmarks
         /// <summary>
         /// The specifically set loop iteration count for the benchmarks
         /// </summary>
-        private int? _setLoopCount;
+        protected int? _setLoopCount;
 
         /// <summary>
         /// The number of loop iterations to perform for each benchmark
         /// </summary>
-        public int LoopCount
+        public virtual int LoopCount
         {
-            get => _setLoopCount ?? 50_000;
+            get => _setLoopCount ?? 500_000;
             set => _setLoopCount = (value < 1) ? null : value;
         }
         //--------------------------------------------------------------------------------
@@ -44,7 +44,7 @@ namespace MemoryStreamBenchmarks
         /// Adds the individual string segments to the string builder
         /// </summary>
         /// <param name="builder"></param>
-        protected void BuildString (StringBuilder builder)
+        protected virtual void BuildString (StringBuilder builder)
         {
             List<string> sourceList = _buildSourceStrings[_buildSourceIndex];
             for (int stringIndex = 0; stringIndex < sourceList.Count; stringIndex++)

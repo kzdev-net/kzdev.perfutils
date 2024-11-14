@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Kevin Zehrer
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-using BenchmarkDotNet.Attributes;
+using System.Text;
 
 using KZDev.PerfUtils;
 using KZDev.PerfUtils.Tests;
@@ -9,11 +9,10 @@ using KZDev.PerfUtils.Tests;
 namespace MemoryStreamBenchmarks
 {
     /// <summary>
-    /// Benchmarks for the <see cref="StringBuilderCache"/> utility class where the builder
+    /// Base class for benchmarks for the <see cref="StringBuilderCache"/> utility class where the builder
     /// is acquired with varying capacities, built with multiple string segments and
     /// then released.
     /// </summary>
-    [MemoryDiagnoser]
     public abstract class StringBuilderMultipleCapacityThroughputBenchmarkBase : StringBuilderThroughputBenchmarkBase
     {
         /// <summary>
@@ -31,11 +30,33 @@ namespace MemoryStreamBenchmarks
         /// Gets the capacity to use for the next acquire of a StringBuilder
         /// </summary>
         /// <returns></returns>
-        protected int GetNextCapacity ()
+        protected virtual int GetNextCapacity ()
         {
             int returnValue = _useCapacities[_useCapacityIndex];
             _useCapacityIndex = (_useCapacityIndex + 1) % _useCapacities.Length;
             return returnValue;
+        }
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Adds the individual string segments to the string builder. We override this
+        /// method for this method to be sure that the capacity of the builder does not
+        /// exceed the capacity set when the builder was acquired, because we want the
+        /// builder returned to the right cache slot.
+        /// </summary>
+        /// <param name="builder"></param>
+        protected override void BuildString (StringBuilder builder)
+        {
+            List<string> sourceList = _buildSourceStrings[_buildSourceIndex];
+            for (int stringIndex = 0; stringIndex < sourceList.Count; stringIndex++)
+            {
+                string addString = sourceList[stringIndex];
+                if (stringIndex > 0 && (addString.Length + builder.Length > builder.Capacity))
+                {
+                    break;
+                }
+                builder.Append(addString);
+            }
+            _buildSourceIndex = (_buildSourceIndex + 1) % _buildSourceStrings.Length;
         }
         //--------------------------------------------------------------------------------
         /// <summary>
