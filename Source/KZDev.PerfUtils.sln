@@ -95,6 +95,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Articles", "Articles", "{B9
 		Docs\articles\memorystreamslim.md = Docs\articles\memorystreamslim.md
 		Docs\articles\set-loop-count-throughput-benchmarks.md = Docs\articles\set-loop-count-throughput-benchmarks.md
 		Docs\articles\stringbuildercache-benchmarks.md = Docs\articles\stringbuildercache-benchmarks.md
+		Docs\articles\stringbuildercache-multithread-throughput-benchmarks.md = Docs\articles\stringbuildercache-multithread-throughput-benchmarks.md
 		Docs\articles\stringbuildercache-throughput-benchmarks.md = Docs\articles\stringbuildercache-throughput-benchmarks.md
 		Docs\articles\stringbuildercache.md = Docs\articles\stringbuildercache.md
 		Docs\articles\toc.yml = Docs\articles\toc.yml

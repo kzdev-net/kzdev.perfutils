@@ -198,7 +198,7 @@ namespace KZDev.PerfUtils
         {
             if (storeIndex < 0)
                 return false;
-            while (true)
+            while (storeIndex >= 0)
             {
                 StringBuilder? currentCachedInstance = cachedInstances[storeIndex];
                 if (currentCachedInstance is null)
@@ -217,7 +217,6 @@ namespace KZDev.PerfUtils
                     // We are willing to store instances in lower slots because we primarily
                     // want to eliminate instantiating new instances, and this is better than
                     // just letting this instance get GC'd.
-                    if (storeIndex == 0) return false;
                     storeIndex--;
                     continue;
                 }

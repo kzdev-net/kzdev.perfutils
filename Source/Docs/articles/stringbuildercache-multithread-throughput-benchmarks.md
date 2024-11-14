@@ -1,4 +1,4 @@
-﻿# StringBuilder Throughput Benchmarks
+﻿# Multi-Threaded StringBuilder Throughput Benchmarks
 
 
 ## Summary 

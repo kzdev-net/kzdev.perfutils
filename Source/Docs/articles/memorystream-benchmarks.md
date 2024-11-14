@@ -34,11 +34,13 @@ Since the benchmark results can create rather large tables, and the Markdown tab
 
 ## Benchmark Scenarios
 
-The benchmark scenarios are broken down into three main categories: 
+The benchmark scenarios are broken down into five categories: 
 
 - Dynamic Throughput
 - Wrapper Throughput
 - Continuous Growth Throughput
+- CopyToAsync Throughput
+- Set Loop Count Throughput
 
 ### Dynamic Throughput
 
@@ -86,6 +88,6 @@ This is another reason why the ['Set Loop Count'](./set-loop-count-throughput-be
 
 The benchmarks published here used the following versions of the libraries:
 
-- `MemoryStreamSlim` version: 1.1.0
+- `MemoryStreamSlim` version: 1.2.0
 - `RecyclableMemoryStream` version: 3.0.1
-- `MemoryStream` version: .NET 8.0.10
+- `MemoryStream` version: .NET 8.0.11

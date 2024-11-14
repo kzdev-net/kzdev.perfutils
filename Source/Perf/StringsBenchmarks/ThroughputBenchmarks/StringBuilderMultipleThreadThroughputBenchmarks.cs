@@ -16,7 +16,7 @@ namespace MemoryStreamBenchmarks
     /// Benchmarks for the <see cref="StringBuilderCache"/> utility class where there 
     /// are multiple threads that are acquiring, building and releasing string builders.
     /// </summary>
-    [Config(typeof(Config))]
+    //[Config(typeof(Config))]
     [MemoryDiagnoser]
     public class StringBuilderMultipleThreadThroughputBenchmarks : StringBuilderMultipleThreadThroughputBenchmarkBase
     {
@@ -28,19 +28,20 @@ namespace MemoryStreamBenchmarks
                     .WithId("Multithread StringBuilderCache"));
             }
         }
-
-        /// <summary>
-        /// The index into the capacities list for the current capacity to use
-        /// </summary>
-        [ThreadStatic]
-        protected int _threadUseCapacityIndex = 0;
-
         //--------------------------------------------------------------------------------
-        protected override int GetNextCapacity ()
+        /// <summary>
+        /// Overriding this back to the original implementation where we build out a string full size
+        /// regardless of the capacity of the builder.
+        /// </summary>
+        /// <param name="builder"></param>
+        protected override void BuildString (StringBuilder builder)
         {
-            int returnValue = _useCapacities[_threadUseCapacityIndex];
-            _threadUseCapacityIndex = (_threadUseCapacityIndex + 1) % _useCapacities.Length;
-            return returnValue;
+            List<string> sourceList = _buildSourceStrings[_buildSourceIndex];
+            for (int stringIndex = 0; stringIndex < sourceList.Count; stringIndex++)
+            {
+                builder.Append(sourceList[stringIndex]);
+            }
+            _buildSourceIndex = (_buildSourceIndex + 1) % _buildSourceStrings.Length;
         }
         //--------------------------------------------------------------------------------
         /// <summary>
@@ -100,7 +101,7 @@ namespace MemoryStreamBenchmarks
         {
             RunThreads(LoopCount, () =>
             {
-                StringBuilder builder = new(GetNextCapacity());
+                StringBuilder builder = new();
                 BuildString(builder);
                 string builtString = builder.ToString();
                 GC.KeepAlive(builtString);
@@ -116,7 +117,7 @@ namespace MemoryStreamBenchmarks
             RunThreads(LoopCount, () =>
             {
                 using StringBuilderScope builderScope =
-                    StringBuilderCache.GetScope(GetNextCapacity());
+                    StringBuilderCache.GetScope();
                 BuildString(builderScope);
                 string builtString = builderScope.ToString();
                 GC.KeepAlive(builtString);

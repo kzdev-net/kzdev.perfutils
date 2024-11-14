@@ -13,23 +13,13 @@ namespace MemoryStreamBenchmarks
     /// is acquired with varying capacities, built with multiple string segments and
     /// then released across multiple threads
     /// </summary>
-    public abstract class StringBuilderMultipleThreadThroughputBenchmarkBase : StringBuilderMultipleCapacityThroughputBenchmarkBase
+    public abstract class StringBuilderMultipleThreadThroughputBenchmarkBase : StringBuilderThroughputBenchmarkBase
     {
 
         /// <summary>
         /// Information passed to the start of each thread
         /// </summary>
         protected record ThreadControl (int LoopCount, Action Callback);
-
-        /// <summary>
-        /// The seeding value for Random
-        /// </summary>
-        private const int SeedValue = 47921;
-
-        /// <summary>
-        /// The random source
-        /// </summary>
-        protected static readonly Random Random = new(SeedValue);
 
         /// <summary>
         /// Indicates when a thread can start
@@ -94,8 +84,8 @@ namespace MemoryStreamBenchmarks
             get
             {
                 int processorCount = Environment.ProcessorCount;
-                yield return 2;
-                if (processorCount > 7)
+                yield return Math.Min(4, processorCount);
+                if (processorCount > 9)
                     yield return processorCount / 2;
                 yield return processorCount;
                 yield return processorCount * 2;
