@@ -63,7 +63,8 @@ namespace KZDev.PerfUtils
         /// <remarks>
         /// We don't keep a global cache in a browser environment.
         /// </remarks>
-        internal static readonly int MaxGlobalCacheCount = OperatingSystem.IsBrowser() ? 0 : 2;
+        internal static readonly int MaxGlobalCacheCount = OperatingSystem.IsBrowser() ? 0 : 
+            Math.Min(4, Math.Max(2, Environment.ProcessorCount / 2));
 
         /// <summary>
         /// The maximum capacity of a <see cref="StringBuilder"/> instance that can be cached.

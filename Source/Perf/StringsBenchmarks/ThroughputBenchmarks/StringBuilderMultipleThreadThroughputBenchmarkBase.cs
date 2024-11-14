@@ -94,7 +94,6 @@ namespace MemoryStreamBenchmarks
             get
             {
                 int processorCount = Environment.ProcessorCount;
-                yield return 1;
                 yield return 2;
                 if (processorCount > 7)
                     yield return processorCount / 2;

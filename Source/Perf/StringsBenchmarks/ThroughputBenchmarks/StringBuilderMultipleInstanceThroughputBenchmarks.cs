@@ -57,7 +57,7 @@ namespace MemoryStreamBenchmarks
         /// <summary>
         /// Benchmark using unique StringBuilder instances
         /// </summary>
-        //[Benchmark(Baseline = true, Description = "Multiple In-Flight Unique StringBuilders")]
+        [Benchmark(Baseline = true, Description = "Multiple In-Flight Unique StringBuilders")]
         public void UseStringBuilder ()
         {
             for (int loopIndex = 0; loopIndex < LoopCount; loopIndex++)
