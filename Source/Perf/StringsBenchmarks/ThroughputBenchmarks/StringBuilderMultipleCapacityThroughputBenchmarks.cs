@@ -11,21 +11,18 @@ namespace MemoryStreamBenchmarks
 {
     /// <summary>
     /// Benchmarks for the <see cref="StringBuilderCache"/> utility class where the builder
-    /// is acquired with default capacity, built with multiple string segments and
+    /// is acquired with varying capacities, built with multiple string segments and
     /// then released.
     /// </summary>
     [MemoryDiagnoser]
-    public class StringBuilderThroughputBenchmarks : StringBuilderThroughputBenchmarkBase
+    public class StringBuilderMultipleCapacityThroughputBenchmarks : StringBuilderMultipleCapacityThroughputBenchmarkBase
     {
         //--------------------------------------------------------------------------------
         /// <summary>
         /// Common global setup for the benchmark methods
         /// </summary>
         [GlobalSetup]
-        public void GlobalSetup ()
-        {
-            BaseGlobalSetup();
-        }
+        public void GlobalSetup () => BaseGlobalSetup();
         //--------------------------------------------------------------------------------
         /// <summary>
         /// Common global cleanup for the benchmark methods
@@ -36,12 +33,12 @@ namespace MemoryStreamBenchmarks
         /// <summary>
         /// Benchmark using unique StringBuilder instances
         /// </summary>
-        [Benchmark(Baseline = true, Description = "Unique StringBuilders")]
+        [Benchmark(Baseline = true, Description = "Random Capacity Unique StringBuilders")]
         public void UseStringBuilder ()
         {
             for (int loopIndex = 0; loopIndex < LoopCount; loopIndex++)
             {
-                StringBuilder builder = new();
+                StringBuilder builder = new(GetNextCapacity());
                 BuildString(builder);
                 string builtString = builder.ToString();
                 GC.KeepAlive(builtString);
@@ -51,12 +48,12 @@ namespace MemoryStreamBenchmarks
         /// <summary>
         /// Benchmark using StringBuilderCache
         /// </summary>
-        [Benchmark(Description = "Cached StringBuilders")]
+        [Benchmark(Description = "Random Capacity Cached StringBuilders")]
         public void UseStringBuilderCache ()
         {
             for (int loopIndex = 0; loopIndex < LoopCount; loopIndex++)
             {
-                StringBuilder builder = StringBuilderCache.Acquire();
+                StringBuilder builder = StringBuilderCache.Acquire(GetNextCapacity());
                 BuildString(builder);
                 string builtString = StringBuilderCache.GetStringAndRelease(builder);
                 GC.KeepAlive(builtString);
