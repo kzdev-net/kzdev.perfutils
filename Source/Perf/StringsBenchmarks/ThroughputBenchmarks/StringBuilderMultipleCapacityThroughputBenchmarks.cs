@@ -53,10 +53,11 @@ namespace MemoryStreamBenchmarks
         {
             for (int loopIndex = 0; loopIndex < LoopCount; loopIndex++)
             {
-                StringBuilder builder = StringBuilderCache.Acquire(GetNextCapacity());
-                BuildString(builder);
-                string builtString = StringBuilderCache.GetStringAndRelease(builder);
-                GC.KeepAlive(builtString);
+                using StringBuilderCache.StringBuilderScope builderScope = 
+                    StringBuilderCache.GetScope (GetNextCapacity());
+                BuildString (builderScope);
+                string builtString = builderScope.ToString();
+                GC.KeepAlive (builtString);
             }
         }
         //--------------------------------------------------------------------------------

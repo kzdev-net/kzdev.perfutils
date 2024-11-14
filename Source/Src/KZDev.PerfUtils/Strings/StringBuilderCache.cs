@@ -44,6 +44,14 @@ namespace KZDev.PerfUtils
             }
             //--------------------------------------------------------------------------------
             /// <summary>
+            /// Returns the string value of the <see cref="Builder"/> instance
+            /// </summary>
+            /// <returns>
+            /// The string value of the <see cref="Builder"/> instance.
+            /// </returns>
+            public override string ToString () => Builder.ToString();
+            //--------------------------------------------------------------------------------
+            /// <summary>
             /// Operator to implicitly convert the <see cref="StringBuilderScope"/> instance to a
             /// <see cref="Builder"/> for use in code that expects a <see cref="Builder"/>.
             /// </summary>
@@ -414,6 +422,21 @@ namespace KZDev.PerfUtils
             Release(stringBuilder);
             return result;
         }
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Gets a <see cref="StringBuilderScope"/> instance that provides a cached
+        /// <see cref="StringBuilder"/> instance and releases it back to the cache when
+        /// the scope is disposed.
+        /// </summary>
+        /// <param name="capacity">
+        /// The capacity of the <see cref="StringBuilder"/> instance to acquire.
+        /// </param>
+        /// <returns>
+        /// A <see cref="StringBuilderScope"/> instance that provides a cached 
+        /// <see cref="StringBuilder"/> instance.
+        /// </returns>
+        public static StringBuilderScope GetScope (int capacity = DefaultCapacity) =>
+            new StringBuilderScope(capacity);
         //--------------------------------------------------------------------------------
     }
 }

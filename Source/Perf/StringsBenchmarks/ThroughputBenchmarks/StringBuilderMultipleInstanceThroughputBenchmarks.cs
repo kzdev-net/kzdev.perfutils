@@ -62,7 +62,7 @@ namespace MemoryStreamBenchmarks
         {
             for (int loopIndex = 0; loopIndex < LoopCount; loopIndex++)
             {
-                StringBuilder builder = new(GetNextCapacity());
+                StringBuilder builder = new();
                 BuildString(builder);
                 string builtString = builder.ToString();
                 // Store the builder in the in-flight buffer
@@ -80,11 +80,12 @@ namespace MemoryStreamBenchmarks
         {
             for (int loopIndex = 0; loopIndex < LoopCount; loopIndex++)
             {
-                StringBuilder builder = StringBuilderCache.Acquire(GetNextCapacity());
-                BuildString(builder);
-                string builtString = builder.ToString();
+                using StringBuilderCache.StringBuilderScope builderScope =
+                    StringBuilderCache.GetScope();
+                BuildString(builderScope);
+                string builtString = builderScope.ToString();
                 // Store the builder in the in-flight buffer
-                _activeBuilders[_activeBuilderHeadIndex] = builder;
+                _activeBuilders[_activeBuilderHeadIndex] = builderScope;
                 _activeBuilderHeadIndex = (_activeBuilderHeadIndex + 1) % _activeBuilders.Length;
                 if (_activeBuilderHeadIndex == _activeBuilderTailIndex)
                 {

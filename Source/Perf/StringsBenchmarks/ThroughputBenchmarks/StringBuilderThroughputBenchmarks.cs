@@ -56,9 +56,10 @@ namespace MemoryStreamBenchmarks
         {
             for (int loopIndex = 0; loopIndex < LoopCount; loopIndex++)
             {
-                StringBuilder builder = StringBuilderCache.Acquire();
-                BuildString(builder);
-                string builtString = StringBuilderCache.GetStringAndRelease(builder);
+                using StringBuilderCache.StringBuilderScope builderScope =
+                    StringBuilderCache.GetScope();
+                BuildString(builderScope);
+                string builtString = builderScope.ToString();
                 GC.KeepAlive(builtString);
             }
         }

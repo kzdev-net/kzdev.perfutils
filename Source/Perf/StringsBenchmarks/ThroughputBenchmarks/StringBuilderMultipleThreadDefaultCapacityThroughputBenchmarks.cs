@@ -18,7 +18,7 @@ namespace MemoryStreamBenchmarks
     /// </summary>
     [Config(typeof(Config))]
     [MemoryDiagnoser]
-    public class StringBuilderMultipleThreadThroughputBenchmarks : StringBuilderMultipleThreadThroughputBenchmarkBase
+    public class StringBuilderMultipleThreadDefaultCapacityThroughputBenchmarks : StringBuilderMultipleThreadThroughputBenchmarkBase
     {
         private class Config : ManualConfig
         {
@@ -28,19 +28,20 @@ namespace MemoryStreamBenchmarks
                     .WithId("Multithread StringBuilderCache"));
             }
         }
-
-        /// <summary>
-        /// The index into the capacities list for the current capacity to use
-        /// </summary>
-        [ThreadStatic]
-        protected int _threadUseCapacityIndex = 0;
-
         //--------------------------------------------------------------------------------
-        protected override int GetNextCapacity ()
+        /// <summary>
+        /// Overriding this back to the original implementation where we build out a string full size
+        /// regardless of the capacity of the builder.
+        /// </summary>
+        /// <param name="builder"></param>
+        protected override void BuildString (StringBuilder builder)
         {
-            int returnValue = _useCapacities[_threadUseCapacityIndex];
-            _threadUseCapacityIndex = (_threadUseCapacityIndex + 1) % _useCapacities.Length;
-            return returnValue;
+            List<string> sourceList = _buildSourceStrings[_buildSourceIndex];
+            for (int stringIndex = 0; stringIndex < sourceList.Count; stringIndex++)
+            {
+                builder.Append(sourceList[stringIndex]);
+            }
+            _buildSourceIndex = (_buildSourceIndex + 1) % _buildSourceStrings.Length;
         }
         //--------------------------------------------------------------------------------
         /// <summary>
@@ -95,12 +96,12 @@ namespace MemoryStreamBenchmarks
         /// <summary>
         /// Benchmark using unique StringBuilder instances
         /// </summary>
-        [Benchmark(Baseline = true, Description = "Multi-Thread Unique StringBuilders")]
+        [Benchmark(Baseline = true, Description = "Multi-Thread Default Unique StringBuilders")]
         public void UseStringBuilder ()
         {
             RunThreads(LoopCount, () =>
             {
-                StringBuilder builder = new(GetNextCapacity());
+                StringBuilder builder = new();
                 BuildString(builder);
                 string builtString = builder.ToString();
                 GC.KeepAlive(builtString);
@@ -110,13 +111,13 @@ namespace MemoryStreamBenchmarks
         /// <summary>
         /// Benchmark using StringBuilderCache
         /// </summary>
-        [Benchmark(Description = "Multi-Thread Cached StringBuilders")]
+        [Benchmark(Description = "Multi-Thread Default Cached StringBuilders")]
         public void UseStringBuilderCache ()
         {
             RunThreads(LoopCount, () =>
             {
                 using StringBuilderCache.StringBuilderScope builderScope =
-                    StringBuilderCache.GetScope(GetNextCapacity());
+                    StringBuilderCache.GetScope();
                 BuildString(builderScope);
                 string builtString = builderScope.ToString();
                 GC.KeepAlive(builtString);

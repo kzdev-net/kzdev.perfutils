@@ -52,6 +52,7 @@ namespace MemoryStreamBenchmarks
                 string addString = sourceList[stringIndex];
                 if (stringIndex > 0 && (addString.Length + builder.Length > builder.Capacity))
                 {
+                    builder.Append(addString.Substring(0, builder.Capacity - builder.Length));
                     break;
                 }
                 builder.Append(addString);
