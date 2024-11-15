@@ -125,10 +125,17 @@ namespace KZDev.PerfUtils.Internals
         /// <param name="sourceArray">
         /// The source array to copy existing groups from.
         /// </param>
+        /// <param name="neededBufferSize">
+        /// The size that is needed for the buffer that we are trying to rent. We use this
+        /// to minimize the number of array generations that we create if we know that the
+        /// size of the generation array we would otherwise be creating is going to be too
+        /// small for our immediate needs.
+        /// </param>
         /// <param name="useNativeMemory">
         /// Indicates if native memory should be used for the buffers.
         /// </param>
-        public MemorySegmentedGroupGenerationArray (MemorySegmentedGroupGenerationArray sourceArray, bool useNativeMemory)
+        public MemorySegmentedGroupGenerationArray (MemorySegmentedGroupGenerationArray sourceArray, 
+            int neededBufferSize, bool useNativeMemory)
         {
             Debug.Assert(sourceArray is not null, $"Passed {nameof(sourceArray)} is null!");
 #if CONCURRENCY_TESTING  // For the concurrency testing builds, we use GUID IDs - because using Interlocked operations in static construction makes Concura deadlock
@@ -147,7 +154,7 @@ namespace KZDev.PerfUtils.Internals
             // Create a new group for the last group. We will double the segment count of the last group
             // to a point, then we will simply add 32 segments to the last group size.
             int lastGroupSegmentCount = sourceArray.Groups[^1].SegmentCount;
-            int nextGroupShiftSegmentCount = lastGroupSegmentCount << 1;
+            int nextGroupShiftSegmentCount = Math.Max(lastGroupSegmentCount << 1, (neededBufferSize / MemorySegmentedBufferGroup.StandardBufferSegmentSize));
             int nextGroupLinearSegmentCount = lastGroupSegmentCount + 32;
             int nextGroupSegmentCount = Math.Min(MaxAllowedGroupSegmentCount, Math.Min(nextGroupLinearSegmentCount, nextGroupShiftSegmentCount));
             Groups[sourceArray.Groups.Length] = new MemorySegmentedBufferGroup(MaxGroupSegmentCount = nextGroupSegmentCount, useNativeMemory);
