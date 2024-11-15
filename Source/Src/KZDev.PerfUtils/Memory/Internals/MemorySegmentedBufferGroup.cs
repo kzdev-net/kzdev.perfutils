@@ -429,30 +429,29 @@ namespace KZDev.PerfUtils.Internals
         }
 
         /// <summary>
-        /// Returns information about the series of segments that are all free and with
-        /// the same zeroed status starting at the specified segment index and using
-        /// the provided flag index and mask.
+        /// Returns information about the series of segments that are all free 
+        /// starting at the specified segment index and using the provided flag index and mask.
         /// </summary>
         /// <returns>
-        /// The number of contiguous free segments with the same zeroed state as well
-        /// as the next flag index and mask to continuously check for the next similar series of
+        /// The number of contiguous free segments with the next flag index and mask to 
+        /// continuously check for the next similar series of
         /// segments.
         /// </returns>
         private (int SegmentCount, bool Zeroed, int NextFlagIndex, ulong NextFlagMask)
-            GetFreeSegmentSeriesFromIndex (int checkingSegmentIndex, int flagIndex, ulong flagMask)
+            GetFreeSegmentSeriesFromIndex (int checkingSegmentIndex, int flagIndex, ulong flagMask, int maxCount)
         {
             Debug.Assert(checkingSegmentIndex >= 0, "checkingSegmentIndex < 0");
+            Debug.Assert(maxCount > 0, "maxCount <= 0");
             // Get the flag set for the segment index.
             ulong flagGroup = _blockUsedFlags[flagIndex];
             ulong zeroFlagGroup = _blockZeroFlags[flagIndex];
             // Get the free status of this segment.
             bool segmentIsFree = (flagGroup & flagMask) == 0;
             // Get the initial zero state of the segment.
-            bool initialSegmentZeroState = (zeroFlagGroup & flagMask) != 0;
-            bool segmentZeroState = initialSegmentZeroState;
+            bool allSegmentsZeroed = (zeroFlagGroup & flagMask) != 0;
             int foundSegmentCount = 0;
 
-            while (segmentIsFree && (segmentZeroState == initialSegmentZeroState))
+            while (segmentIsFree)
             {
                 // Increment the number we have
                 foundSegmentCount++;
@@ -477,22 +476,25 @@ namespace KZDev.PerfUtils.Internals
                     flagMask <<= 1;
                 }
                 segmentIsFree = (flagGroup & flagMask) == 0;
-                segmentZeroState = (zeroFlagGroup & flagMask) != 0;
+                if ((zeroFlagGroup & flagMask) == 0)
+                    allSegmentsZeroed = false;
+                if (foundSegmentCount >= maxCount)
+                    break;
             }
-            return (foundSegmentCount, initialSegmentZeroState, flagIndex, flagMask);
+            return (foundSegmentCount, allSegmentsZeroed, flagIndex, flagMask);
         }
 
         /// <summary>
-        /// Returns information about the series of segments that are of the same state
+        /// Returns information about the series of segments that are of the same used/free state
         /// starting at the specified segment index and using the provided flag index and mask.
         /// </summary>
         /// <returns>
-        /// The series number of segments, if they are used, and if they are zeroed 
+        /// The series number of segments, if they are used, and if they are all zeroed 
         /// as well as the next flag index and mask to continuously check for the next 
         /// similar series of segments.
         /// </returns>
         private (int SegmentCount, bool Used, bool Zeroed, int NextFlagIndex, ulong NextFlagMask)
-            GetSimilarStateSegmentSeriesFrom (int startingSegmentIndex, int flagIndex, ulong flagMask)
+            GetSimilarSegmentSeriesFrom (int startingSegmentIndex, int flagIndex, ulong flagMask, int maxFreeSegmentCount)
         {
             Debug.Assert(startingSegmentIndex >= 0, "startingSegmentIndex < 0");
             // Get the flag set for the segment index.
@@ -506,20 +508,20 @@ namespace KZDev.PerfUtils.Internals
                 return (usedSegmentCount, true, false, usedNextFlagIndex, usedNextFlagMask);
             }
             (int freeSegmentCount, bool freeZeroed, int freeNextFlagIndex, ulong freeNextFlagMask) =
-                GetFreeSegmentSeriesFromIndex(startingSegmentIndex, flagIndex, flagMask);
+                GetFreeSegmentSeriesFromIndex(startingSegmentIndex, flagIndex, flagMask, maxFreeSegmentCount);
             return (freeSegmentCount, false, freeZeroed, freeNextFlagIndex, freeNextFlagMask);
         }
 
         /// <summary>
-        /// Looks for the series of segments that are unused with the same zeroed status that 
-        /// are closest to the requested number of segments.
+        /// Looks for the series of segments that are unused together with a size at least as
+        /// large as the requested number of segments, or the next largest we can find.
         /// </summary>
         /// <returns>
         /// Values indicating the first segment in the series, the number of contiguous segments,
-        /// the zeroed state of those segments, as well as the starting flag index and mask 
+        /// whether all the segments are zeroed, as well as the starting flag index and mask 
         /// for the series of segments.
         /// </returns>
-        private UnusedSegmentRange GetClosestUnusedSegmentSeries (int requestedSegments)
+        private UnusedSegmentRange GetFirstUnusedSegmentSeries (int requestedSegments)
         {
             // Get the starting segment index and the flag index and mask for the segment index.
             int flagIndex = 0;
@@ -530,12 +532,12 @@ namespace KZDev.PerfUtils.Internals
             int totalUnusedSegmentCount = _segmentCount - Volatile.Read(ref _segmentsInUse);
             int observedUnusedSegmentCount = 0;
 
-            // Check every segment for the best match.
+            // Check every segment for the first or best match.
             while (currentSegmentIndex < _segmentCount)
             {
                 // Get the next series of segments that are in the same state.
                 (int seriesSegmentCount, bool seriesSegmentsUsed, bool seriesSegmentsZeroed, int nextFlagIndex, ulong nextFlagMask) =
-                    GetSimilarStateSegmentSeriesFrom(currentSegmentIndex, flagIndex, flagMask);
+                    GetSimilarSegmentSeriesFrom(currentSegmentIndex, flagIndex, flagMask, requestedSegments);
                 // If we found no matches, then we are done.
                 if (seriesSegmentCount == 0)
                     break;
@@ -548,8 +550,8 @@ namespace KZDev.PerfUtils.Internals
                     continue;
                 }
                 // If we have the exact number of segments we want, this is a perfect match, then we are done.
-                if (seriesSegmentCount == requestedSegments)
-                    return new(segmentIndex: currentSegmentIndex, segmentCount: seriesSegmentCount, zeroed: seriesSegmentsZeroed, flagIndex: flagIndex, flagMask: flagMask);
+                if (seriesSegmentCount >= requestedSegments)
+                    return new(segmentIndex: currentSegmentIndex, segmentCount: requestedSegments, zeroed: seriesSegmentsZeroed, flagIndex: flagIndex, flagMask: flagMask);
 
                 // If we have a better match than the current best match, then update the best match.
                 if ((bestMatch.SegmentCount == 0) /* No match yet */ ||
@@ -582,10 +584,9 @@ namespace KZDev.PerfUtils.Internals
         private (int SegmentIndex, int SegmentCount, bool Zeroed) ReserveSegments (int requestedSegments)
         {
             Debug.Assert(requestedSegments > 1, "requestedSegments <= 1");
-            // Find a series of segments that are unused and with the same zeroed status that are closest 
-            // to the requested number of segments.
+            // Find a series of segments that are unused that are closest to the requested number of segments.
             (int startingSegmentIndex, int segmentCount, bool zeroed, int flagIndex, ulong flagMask) =
-                GetClosestUnusedSegmentSeries(requestedSegments);
+                GetFirstUnusedSegmentSeries(requestedSegments);
             Debug.Assert(segmentCount > 0, "segmentCount <= 0");
             // Get the flag set for the segment index.
             ulong flagGroup = _blockUsedFlags[flagIndex];

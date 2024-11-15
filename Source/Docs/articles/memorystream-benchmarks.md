@@ -88,6 +88,7 @@ This is another reason why the ['Set Loop Count'](./set-loop-count-throughput-be
 
 The benchmarks published here used the following versions of the libraries:
 
+- `BenchmarkDotNet` version: 0.14.0
 - `MemoryStreamSlim` version: 1.2.0
 - `RecyclableMemoryStream` version: 3.0.1
 - `MemoryStream` version: .NET 8.0.11

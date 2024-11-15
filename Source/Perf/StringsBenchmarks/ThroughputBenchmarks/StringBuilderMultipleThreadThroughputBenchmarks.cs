@@ -5,7 +5,6 @@ using System.Text;
 
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
-using BenchmarkDotNet.Engines;
 using BenchmarkDotNet.Jobs;
 
 using KZDev.PerfUtils;
@@ -16,7 +15,7 @@ namespace MemoryStreamBenchmarks
     /// Benchmarks for the <see cref="StringBuilderCache"/> utility class where there 
     /// are multiple threads that are acquiring, building and releasing string builders.
     /// </summary>
-    //[Config(typeof(Config))]
+    [Config(typeof(Config))]
     [MemoryDiagnoser]
     public class StringBuilderMultipleThreadThroughputBenchmarks : StringBuilderMultipleThreadThroughputBenchmarkBase
     {
@@ -24,7 +23,9 @@ namespace MemoryStreamBenchmarks
         {
             public Config ()
             {
-                AddJob(Job.Default.WithStrategy(RunStrategy.Monitoring)
+                AddJob(Job.Default
+                    .WithMaxIterationCount(count: 30)
+                    .WithMaxWarmupCount(count: 20)
                     .WithId("Multithread StringBuilderCache"));
             }
         }

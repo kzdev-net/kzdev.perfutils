@@ -4,7 +4,6 @@
 using BenchmarkDotNet.Attributes;
 
 using KZDev.PerfUtils;
-using KZDev.PerfUtils.Tests;
 
 namespace MemoryStreamBenchmarks
 {
@@ -89,7 +88,8 @@ namespace MemoryStreamBenchmarks
                     yield return processorCount / 2;
                 yield return processorCount;
                 yield return processorCount * 2;
-                yield return processorCount * 4;
+                if (processorCount < 17)
+                    yield return processorCount * 4;
             }
         }
         //--------------------------------------------------------------------------------

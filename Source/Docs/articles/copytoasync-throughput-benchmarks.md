@@ -20,7 +20,7 @@ _Given that file systems managed by the OS and related drivers employ a series o
 A single benchmark operation consists of performing a loop of steps that does the following:
 
 1. Create a new stream instance with a capacity set to the operation data size.
-1. Write the test data synchronously to the stream (either in a single write or segmented based on the [BulkFile](#bulkfill) parameter).
+1. Write the test data synchronously to the stream (either in a single write or segmented based on the [BulkInitialFill](#bulkinitialfill) parameter).
 1. Call CopyToAsync() on the stream passing a mock asynchronous File I/O stream destination.
 1. Dispose of the stream instance.
 
@@ -48,9 +48,9 @@ The amount of data to write to the stream in each operation loop. The data is a 
 
 When `true`, the stream is instantiated with the current loop iteration data size as the initial capacity. When `false`, the stream is created with the default capacity (no initial capacity specified). The results show no notable difference in performance between the two options, but is included in this benchmark to clarify that fact.
 
-#### BulkFill
+#### BulkInitialFill
 
-When `true`, the stream is initially filled with random data in a single bulk write operation. When `false`, the stream is filled with random data in a loop of write operations. The initial stream data fill operation is similar to the operations used in the [Bulk Fill and Read](./dynamic-throughput-benchmarks.md#bulk-fill-and-read) (**BulkFill** is _true_) and [Segmented Fill and Read](./dynamic-throughput-benchmarks.md#segmented-fill-and-read) (**BulkFill** is _false_) benchmarks. The results show no notable difference in performance between the two options, but is included in this benchmark to clarify that fact.
+When `true`, the stream is initially filled with random data in a single bulk write operation. When `false`, the stream is filled with random data in a loop of write operations. The initial stream data fill operation is similar to the operations used in the [Bulk Fill and Read](./dynamic-throughput-benchmarks.md#bulk-fill-and-read) (**BulkInitialFill** is _true_) and [Segmented Fill and Read](./dynamic-throughput-benchmarks.md#segmented-fill-and-read) (**BulkInitialFill** is _false_) benchmarks. The results show no notable difference in performance between the two options, but is included in this benchmark to clarify that fact.
 
 ## Benchmark Results
 
