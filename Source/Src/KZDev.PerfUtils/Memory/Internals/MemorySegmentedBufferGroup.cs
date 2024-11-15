@@ -27,7 +27,11 @@ namespace KZDev.PerfUtils.Internals
         /// <summary>
         /// The group is full.
         /// </summary>
-        GroupFull
+        GroupFull,
+        /// <summary>
+        /// The group has been released (no longer available)
+        /// </summary>
+        Released
     }
     //================================================================================
     /// <summary>

@@ -278,8 +278,8 @@ namespace KZDev.PerfUtils.Internals
             (SegmentBuffer buffer, GetBufferResult getResult, bool segmentIsPreferredInBlock) =
                 preferredGroup.GetBuffer(requestedBufferSize, clearNewAllocations, this, preferredBlockInfo.SegmentId + preferredBlockInfo.SegmentCount);
             return (getResult == GetBufferResult.Available) ? (buffer, segmentIsPreferredInBlock) :
-                // The group is either locked or the preferred segment was not available, so we will fall
-                // back to the normal rent operation.
+                // The group is either locked, released, full, or the preferred segment was not available,
+                // so we will fall back to the normal rent operation.
                 (RentFromGeneration(requestedBufferSize, generationArray, clearNewAllocations), false);
         }
         //--------------------------------------------------------------------------------
@@ -307,7 +307,8 @@ namespace KZDev.PerfUtils.Internals
             while (true)
             {
                 bool anyGroupsLocked = false;
-                for (int groupIndex = 0; groupIndex < groupCount; groupIndex++)
+                // The larger blocks are later in the array, so we will start at the end.
+                for (int groupIndex = groupCount - 1; groupIndex >= 0; groupIndex--)
                 {
                     (SegmentBuffer buffer, GetBufferResult getResult) =
                         generationArray.Groups[groupIndex].GetBuffer(requestedBufferSize, clearNewAllocations, this);
