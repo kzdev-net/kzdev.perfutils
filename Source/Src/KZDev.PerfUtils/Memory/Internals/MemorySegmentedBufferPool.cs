@@ -14,8 +14,18 @@ namespace KZDev.PerfUtils.Internals
     /// standard sized buffers in the <see cref="SegmentMemoryStreamSlim"/> class.
     /// </summary>
     [DebuggerDisplay($"{{{nameof(DebugDisplayValue)}}}")]
-    internal class MemorySegmentedBufferPool
+    internal class MemorySegmentedBufferPool : IDisposable
     {
+        /// <summary>
+        /// The timer frequency to trim the buffer groups.
+        /// </summary>
+        private const int TrimTimerIntervalMs =
+#if DEBUG
+            20_000;
+#else
+            250_000;
+#endif
+
         /// <summary>
         /// The maximum number of milliseconds that we will spend zeroing out buffers because we 
         /// process in a thread pool thread. This is a balance between zeroing out buffers quickly
@@ -31,6 +41,16 @@ namespace KZDev.PerfUtils.Internals
         private const int PreferMaximumZeroOperationsPerCycle = 100;
 
         /// <summary>
+        /// A flag indicating if the zero processing operation is currently active.
+        /// </summary>
+        /// <remarks>
+        /// The /* volatile */ comment is here to remind us that all accesses to this field
+        /// should be done using the Volatile class, but we want to be explicit about it in the
+        /// code, so we don't actually use the volatile keyword here.
+        /// </remarks>
+        private /* volatile */ int _zeroProcessingActive;
+
+        /// <summary>
         /// Debug helper to display the state of the pool.
         /// </summary>
         [ExcludeFromCodeCoverage]
@@ -44,19 +64,14 @@ namespace KZDev.PerfUtils.Internals
         private readonly bool _useNativeMemory;
 
         /// <summary>
-        /// A flag indicating if the zero processing operation is currently active.
-        /// </summary>
-        /// <remarks>
-        /// The /* volatile */ comment is here to remind us that all accesses to this field
-        /// should be done using the Volatile class, but we want to be explicit about it in the
-        /// code, so we don't actually use the volatile keyword here.
-        /// </remarks>
-        private /* volatile */ int _zeroProcessingActive;
-
-        /// <summary>
         /// A list of returned buffers that are awaiting zeroing.
         /// </summary>
         private readonly ConcurrentBag<SegmentBuffer> _pendingZeroList = [];
+
+        /// <summary>
+        /// A timer that is used to trim the buffer pool groups in the generation array.
+        /// </summary>
+        private readonly Timer _trimTimer;
 
         /// <summary>
         /// The current array of buffer groups that are available.
@@ -152,6 +167,53 @@ namespace KZDev.PerfUtils.Internals
             {
                 // Ignored - there really isn't anything we can do here.
             }
+        }
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Timer callback to trim the buffer groups from the specified generation array.
+        /// </summary>
+        /// <param name="state">
+        /// The timer state object - passes the buffer pool instance
+        /// </param>
+        private static void TrimBufferGroups (object? state)
+        {
+            // Get the pool being trimmed.
+            MemorySegmentedBufferPool trimPool = (MemorySegmentedBufferPool)state!;
+            // Get the generation array to trim.
+            MemorySegmentedGroupGenerationArray generationArray = trimPool._arrayGroup;
+            if (!generationArray.TrimGroups())
+                return;
+            // If we trimmed groups, we should contract the array group.
+            trimPool.ContractArrayGroup(generationArray);
+        }
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// When there is at least one buffer group that has been released, then we should
+        /// actually contract the array group to remove the empty groups. This helper method
+        /// creates a new generation with the released groups removed and then tries to set
+        /// that as the current generation.
+        /// </summary>
+        /// <param name="currentGeneration">
+        /// The generation instance that was processed to trim groups from, and should have
+        /// those groups removed by creating a contracted copy.
+        /// </param>
+        private void ContractArrayGroup (MemorySegmentedGroupGenerationArray currentGeneration)
+        {
+            // We will try to contract the array group if the current generation is the 
+            // generation passed in. If it is not, then we will just return.
+            MemorySegmentedGroupGenerationArray activeGeneration = _arrayGroup;
+            if (activeGeneration.GenerationId != currentGeneration.GenerationId)
+                return;
+            // We don't want to affect the current generation array directly, 
+            // so we will create a new one with the contract helper method.
+            MemorySegmentedGroupGenerationArray newGeneration = currentGeneration.ContractArray();
+            // Now, try to set the new generation as the current generation, and just to minimize the
+            // chance of missing a new generation, we will confirm that the current generation is still
+            // what we expect it to be, and otherwise assume that the current generation has been updated,
+            // and we should return that instead.
+            Interlocked.CompareExchange(ref _arrayGroup, newGeneration, activeGeneration);
+            // We either assigned our newly created generation as the current generation, or we let it
+            // get GC collected
         }
         //--------------------------------------------------------------------------------
         /// <summary>
@@ -400,6 +462,7 @@ namespace KZDev.PerfUtils.Internals
         {
             _useNativeMemory = useNativeMemory;
             _arrayGroup = MemorySegmentedGroupGenerationArray.GetInitialArray(useNativeMemory);
+            _trimTimer = new Timer(TrimBufferGroups, this, TrimTimerIntervalMs, TrimTimerIntervalMs);
         }
         //--------------------------------------------------------------------------------
         /// <summary>
@@ -515,6 +578,18 @@ namespace KZDev.PerfUtils.Internals
             return firstSegment;
         }
         //--------------------------------------------------------------------------------
+
+        #region Implementation of IDisposable
+
+        //--------------------------------------------------------------------------------
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            _trimTimer.Dispose();
+        }
+        //--------------------------------------------------------------------------------
+
+        #endregion
     }
     //################################################################################
 }

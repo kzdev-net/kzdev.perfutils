@@ -124,12 +124,12 @@ namespace KZDev.PerfUtils.Internals
 #pragma warning restore HAA0601
 
         /// <summary>
-        /// The high bit mask for a ulong.
+        /// The high bit mask for an unsigned long.
         /// </summary>
         internal const ulong HighBitMask = 0x8000_0000_0000_0000;
 
         /// <summary>
-        /// The size of the block flag set/group (contained in a ulong)
+        /// The size of the block flag set/group (contained in an unsigned long)
         /// </summary>
         internal const int BlockFlagSetSize = 64;  // 64 bits in a ulong
 
@@ -159,24 +159,9 @@ namespace KZDev.PerfUtils.Internals
         private static int _lastGroupId;
 
         /// <summary>
-        /// A bitmask of flags indicating which buffers are in use.
-        /// </summary>
-        private readonly ulong[] _blockUsedFlags;
-
-        /// <summary>
-        /// A bitmask of flags indicating which buffers are zeroed.
-        /// </summary>
-        private readonly ulong[] _blockZeroFlags;
-
-        /// <summary>
         /// The total number of segments that we have in this block that can be used for buffers.
         /// </summary>
         private readonly int _segmentCount;
-
-        /// <summary>
-        /// Indicates if we are using native memory for the buffers instead of GC memory.
-        /// </summary>
-        private readonly bool _useNativeMemory;
 
         /// <summary>
         /// A flag indicating if the group is locked for use.
@@ -199,6 +184,28 @@ namespace KZDev.PerfUtils.Internals
         private /* volatile */ int _segmentsInUse;
 
         /// <summary>
+        /// Tracks a count of every time the group has been emptied. This is used as a 
+        /// sort of 'version' for determining when the group can be trimmed/released
+        /// </summary>
+        private /* volatile */ uint _emptiedCount;
+
+        /// <summary>
+        /// The value of _emptiedCount the last time the trim operation was executed to
+        /// check for whether this group can be released or not.
+        /// </summary>
+        private /* volatile */ uint _lastTrimCheckEmptiedCount = uint.MaxValue;
+
+        /// <summary>
+        /// A bitmask of flags indicating which buffers are in use.
+        /// </summary>
+        private readonly ulong[] _blockUsedFlags;
+
+        /// <summary>
+        /// A bitmask of flags indicating which buffers are zeroed.
+        /// </summary>
+        private readonly ulong[] _blockZeroFlags;
+
+        /// <summary>
         /// The chunk of memory that we segment out for the buffers in this group.
         /// </summary>
         private byte[]? _bufferBlock;
@@ -207,6 +214,16 @@ namespace KZDev.PerfUtils.Internals
         /// The pointer to the buffer block if we are using native memory.
         /// </summary>
         private byte* _bufferBlockPtr;
+
+        /// <summary>
+        /// Indicates if we are using native memory for the buffers instead of GC memory.
+        /// </summary>
+        private readonly bool _useNativeMemory;
+
+        /// <summary>
+        /// Indicates whether this group has been released.
+        /// </summary>
+        private bool _released;
 
         /// <summary>
         /// Updates the total number of allocated segments. The update amount can be negative.
@@ -238,6 +255,11 @@ namespace KZDev.PerfUtils.Internals
             [DebuggerStepThrough]
             get => Volatile.Read(ref _segmentsInUse) == _segmentCount;
         }
+
+        /// <summary>
+        /// Returns whether this buffer group has been marked as released.
+        /// </summary>
+        internal bool IsReleased => Volatile.Read(ref _released);
 
         /// <summary>
         /// Gets the flag index and mask to use for the specified segment index.
@@ -313,10 +335,12 @@ namespace KZDev.PerfUtils.Internals
             _blockUsedFlags[flagIndex] = usedFlagGroup;
             _blockZeroFlags[flagIndex] = zeroFlagGroup;
             // Update the number of segments in use.
-            if (segmentCount == 1)
-                Interlocked.Decrement(ref _segmentsInUse);
-            else
+            int newSegmentsInUse = (segmentCount == 1) ?
+                Interlocked.Decrement(ref _segmentsInUse) :
                 Interlocked.Add(ref _segmentsInUse, segmentCount * -1);
+            if (newSegmentsInUse > 0)
+                return;
+            Interlocked.Increment(ref _emptiedCount);
         }
 
         /// <summary>
@@ -794,23 +818,9 @@ namespace KZDev.PerfUtils.Internals
         private bool AllocateBufferIfNeeded () => _useNativeMemory ? AllocateNativeBufferIfNeeded() : AllocateHeapBufferIfNeeded();
 
         /// <summary>
-        /// Static constructor for the <see cref="MemorySegmentedBufferGroup"/> class.
+        /// Performs the operation of releasing the internal memory used by the buffer group.
         /// </summary>
-        static MemorySegmentedBufferGroup ()
-        {
-            // Create the observable gauges for the total allocated memory.
-#pragma warning disable HAA0601
-            MemoryMeter.Meter.CreateObservableGauge("segment_memory.gc_allocated", static () => Volatile.Read(ref _totalGcSegmentsAllocated),
-                unit: "{segments}", description: $"The total number of GC heap segments (of {StandardBufferSegmentSize:N0} bytes) allocated for the segmented memory buffers");
-            MemoryMeter.Meter.CreateObservableGauge("segment_memory.native_allocated", static () => Volatile.Read(ref _totalNativeSegmentsAllocated),
-                unit: "{segments}", description: $"The total number of native heap segments (of {StandardBufferSegmentSize:N0} bytes) allocated for the segmented memory buffers");
-#pragma warning restore HAA0601
-        }
-
-        /// <summary>
-        /// Finalizes an instance of the <see cref="MemorySegmentedBufferGroup"/> class.
-        /// </summary>
-        ~MemorySegmentedBufferGroup ()
+        private void ReleaseInternalMemory ()
         {
             if (_bufferBlock is not null)
             {
@@ -828,6 +838,75 @@ namespace KZDev.PerfUtils.Internals
             NativeMemory.Free(_bufferBlockPtr);
             _bufferBlockPtr = null;
             UtilsEventSource.Log.BufferNativeMemoryReleased(_segmentCount * StandardBufferSegmentSize);
+        }
+        /// <summary>
+        /// Checks if this group is currently available for release and whether the group
+        /// is empty, and has been empty for the last two consecutive checks of emptiness.
+        /// </summary>
+        /// <param name="releaseMemoryOnly">
+        /// If this is <see langword="true"/>, then we will only release the memory associated 
+        /// with this group if we would have otherwise fully released the group. This allows
+        /// us to have the group available for use again, but we can at least release the
+        /// memory associated with this instance.
+        /// </param>
+        /// <returns>
+        /// <see langword="true"/> if the group is available for release, <see langword="false"/> otherwise.
+        /// </returns>
+        private bool ReleaseGroup (bool releaseMemoryOnly)
+        {
+            if (Interlocked.CompareExchange(ref _locked, 1, 0) == 1)
+                return false;
+            try
+            {
+                // If this is already released, just return
+                if (_released)
+                    return true;
+                // If we have segments in use, then we can't release the group.
+                if (_segmentsInUse > 0)
+                    return false;
+                // If the tracking emptied count is the same as the last time we checked,
+                // then we can release the group, otherwise return false.
+                if (_emptiedCount != _lastTrimCheckEmptiedCount)
+                {
+                    _lastTrimCheckEmptiedCount = _emptiedCount;
+                    return false;
+                }
+                // Now, we are ready to release the group, but check whether
+                // we should simply release the memory associated with the group
+                // or if we should fully release the group.
+                if (releaseMemoryOnly)
+                {
+                    ReleaseInternalMemory();
+                    // Reset our tracking values
+                    _emptiedCount = 0;
+                    _lastTrimCheckEmptiedCount = uint.MaxValue;
+                    // We may have released memory, but we didn't mark the group as released,
+                    // so return false.
+                    return false;
+                }
+                _released = true;
+                ReleaseInternalMemory();
+                GC.SuppressFinalize(this);
+                return true;
+            }
+            finally
+            {
+                Volatile.Write(ref _locked, 0);
+            }
+        }
+
+        /// <summary>
+        /// Static constructor for the <see cref="MemorySegmentedBufferGroup"/> class.
+        /// </summary>
+        static MemorySegmentedBufferGroup ()
+        {
+            // Create the observable gauges for the total allocated memory.
+#pragma warning disable HAA0601
+            MemoryMeter.Meter.CreateObservableGauge("segment_memory.gc_allocated", static () => Volatile.Read(ref _totalGcSegmentsAllocated),
+                unit: "{segments}", description: $"The total number of GC heap segments (of {StandardBufferSegmentSize:N0} bytes) allocated for the segmented memory buffers");
+            MemoryMeter.Meter.CreateObservableGauge("segment_memory.native_allocated", static () => Volatile.Read(ref _totalNativeSegmentsAllocated),
+                unit: "{segments}", description: $"The total number of native heap segments (of {StandardBufferSegmentSize:N0} bytes) allocated for the segmented memory buffers");
+#pragma warning restore HAA0601
         }
 
         /// <summary>
@@ -849,6 +928,34 @@ namespace KZDev.PerfUtils.Internals
             _blockUsedFlags = new ulong[flagArraySize];
             _blockZeroFlags = new ulong[flagArraySize];
         }
+
+        /// <summary>
+        /// Finalizes an instance of the <see cref="MemorySegmentedBufferGroup"/> class.
+        /// </summary>
+        ~MemorySegmentedBufferGroup ()
+        {
+            ReleaseInternalMemory();
+        }
+
+        /// <summary>
+        /// Checks if this group is currently available for release and whether the group
+        /// is empty, and has been empty for the last two consecutive checks of emptiness.
+        /// </summary>
+        /// <returns>
+        /// <see langword="true"/> if the group is available for release, <see langword="false"/> otherwise.
+        /// </returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool ReleaseGroup () => ReleaseGroup(false);
+
+        /// <summary>
+        /// Checks if this group is currently available for release and whether the group
+        /// is empty, and has been empty for the last two consecutive checks of emptiness.
+        /// </summary>
+        /// <returns>
+        /// <see langword="true"/> if the group is available for release, <see langword="false"/> otherwise.
+        /// </returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool ReleaseUnusedMemory () => ReleaseGroup(true);
 
         /// <summary>
         /// Attempts to store a buffer in the group.
@@ -927,6 +1034,9 @@ namespace KZDev.PerfUtils.Internals
                 return (SegmentBuffer.Empty, GetBufferResult.GroupLocked, false);
             try
             {
+                // Check if this group has been trimmed/released
+                if (_released)
+                    return (SegmentBuffer.Empty, GetBufferResult.Released, false);
                 // We allocate the block when needed. It is not ideal that we are doing an allocation while holding the lock, but
                 // we hope that with it being uninitialized, it will be fast enough, plus the return code of any race condition callers
                 // will allow them to handle the lock externally. If we didn't hold the lock and just did the allocation, then we could
@@ -938,7 +1048,7 @@ namespace KZDev.PerfUtils.Internals
                 if (segmentsNeeded == 1)
                 {
                     // Try to get the preferred segment first.
-                    if (preferredFirstSegmentIndex >=0) 
+                    if (preferredFirstSegmentIndex >=0)
                     {
                         (segmentIsPreferred, segmentsZeroed) = TryReserveSegment(preferredFirstSegmentIndex);
                         if (segmentIsPreferred)

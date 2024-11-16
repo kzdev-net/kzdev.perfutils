@@ -354,7 +354,10 @@ namespace KZDev.PerfUtils.Internals
             // By exchanging the buffer array pool, we are effectively releasing the current pool once
             // all the current buffers are returned to the pool which results in all the references to 
             // the pool being released so the GC can collect it and all the buffers.
-            Interlocked.Exchange(ref _bufferArrayPool, new MemorySegmentedBufferPool(InternalUseNativeLargeMemoryBuffers));
+            MemorySegmentedBufferPool previousPool = 
+                Interlocked.Exchange(ref _bufferArrayPool, new MemorySegmentedBufferPool(InternalUseNativeLargeMemoryBuffers));
+            // Fully release the previous pool
+            previousPool.Dispose();
         }
         //--------------------------------------------------------------------------------
 
