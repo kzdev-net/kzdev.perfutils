@@ -7,12 +7,14 @@
 ### Benchmark Operations
 
 
+
 ### Benchmark Parameters
 
-
-### HTML Reports
-
-Since the benchmark results can create rather large tables, and the Markdown tables can be hard to absorb with the horizontal and vertical table scrolling, the results are also provided in separate HTML files for each scenario. 
+The following parameters were used in the benchmarks. These will appear as columns in the benchmark results along with the [standard BenchmarkDotNet columns](./stringbuildercache-benchmarks.md#legend).
 
 
-They can be found [here](./MemoryStreamBenchmarks.BulkFillAndReadThroughputBenchmarks-report.html) for the `Bulk Fill And Read` scenario and [here](./MemoryStreamBenchmarks.SegmentedFillAndReadThroughputBenchmarks-report.html) for the `Segmented Fill And Read` scenario.
+### HTML Report
+
+Since the benchmark results can create rather large tables, and the Markdown tables can be hard to absorb with the horizontal and vertical table scrolling, the results are also provided in a separate HTML file. 
+
+This can be found [here](./StringsBenchmarks.StringBuilderThroughputBenchmarks-report.html).

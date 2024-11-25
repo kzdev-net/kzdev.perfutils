@@ -7,7 +7,7 @@ using BenchmarkDotNet.Attributes;
 
 using KZDev.PerfUtils;
 
-namespace MemoryStreamBenchmarks
+namespace StringsBenchmarks
 {
     /// <summary>
     /// Benchmarks for the <see cref="StringBuilderCache"/> utility class where the builder
