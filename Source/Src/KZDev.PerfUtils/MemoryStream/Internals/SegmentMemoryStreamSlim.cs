@@ -1756,6 +1756,12 @@ namespace KZDev.PerfUtils.Internals
             ValidateCopyToArguments(destination, bufferSize);
             EnsureNotClosed();
 
+            // If the buffer size is a conservative size to avoid the LOH, we can bump it up considerably
+            // because we don't allocate a  buffer for copying, we are just copying the data from the buffers
+            // we already have in memory. But, since we are doing an async copy, it could make sense to 
+            // not make any one single operation too large, so we'll keep it at a reasonable size.
+            bufferSize = Math.Max(StandardAsyncCopyBufferSize, bufferSize);
+
             // If we have no data, then we have nothing to copy
             int bytesToCopy = LengthInternal - PositionInternal;
             if (bytesToCopy <= 0)
@@ -1777,6 +1783,7 @@ namespace KZDev.PerfUtils.Internals
                 OffsetPositionAndSetCurrentBuffer(bytesToCopy);
                 return;
             }
+
             // If we have a buffer list, then we need to copy the data from the standard buffers
             int bufferOffset = _currentBufferOffset;   // Offset into the buffer being copied from
             int bufferIndex = _currentBufferInfo.Index;
@@ -1785,7 +1792,9 @@ namespace KZDev.PerfUtils.Internals
             // Set up the first write task
             // We are not using a small buffer and length is not zero, so we must have a buffer list
             SegmentBuffer currentBuffer = _bufferList![bufferIndex++].SegmentBuffer;
-            int copyLength = Math.Min(currentBuffer.Length - bufferOffset, bytesToCopy);
+            int bufferRemainingCount = currentBuffer.Length - bufferOffset;
+            // Limit the copy length to the buffer size, the remaining data in the buffer, and the remaining data to copy
+            int copyLength = Math.Min(bufferSize, Math.Min(bufferRemainingCount, bytesToCopy));
 
             MemorySegment memorySegment = currentBuffer.MemorySegment;
             ReadOnlyMemory<byte> writeMemory = memorySegment.AsReadOnlyMemory().Slice(bufferOffset, copyLength);
@@ -1798,11 +1807,25 @@ namespace KZDev.PerfUtils.Internals
             {
                 // We loop through the buffers and write the data to the destination stream by doing the
                 // setup for the next write as the previous write is running asynchronously.
-                currentBuffer = _bufferList![bufferIndex++].SegmentBuffer;
-                copyLength = Math.Min(currentBuffer.Length, bytesToCopy);
+
+                // Check if we were limited from copying all the bytes in the buffer (based on the buffer size)
+                if (copyLength < bufferRemainingCount)
+                {
+                    // Move the buffer offset
+                    bufferOffset += copyLength;
+                    bufferRemainingCount = currentBuffer.Length - bufferOffset;
+                }
+                else
+                {
+                    // We need to move to the next buffer
+                    bufferOffset = 0;
+                    currentBuffer = _bufferList![bufferIndex++].SegmentBuffer;
+                    bufferRemainingCount = currentBuffer.Length;
+                }
+                copyLength = Math.Min(bufferSize, Math.Min(bufferRemainingCount, bytesToCopy));
 
                 memorySegment = currentBuffer.MemorySegment;
-                writeMemory = memorySegment.AsReadOnlyMemory()[..copyLength];
+                writeMemory = memorySegment.AsReadOnlyMemory().Slice(bufferOffset, copyLength);
 
                 // Await the previous write task
                 await writeTask.ConfigureAwait(false);

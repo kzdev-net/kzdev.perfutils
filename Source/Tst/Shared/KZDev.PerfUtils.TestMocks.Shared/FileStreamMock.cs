@@ -73,6 +73,11 @@ namespace KZDev.PerfUtils.Tests
         private int _asyncCallCount;
 
         /// <summary>
+        /// The 'amount of data' that has been processed in async operations
+        /// </summary>
+        private int _asyncOperationDataCount;
+
+        /// <summary>
         /// The number of active suspensions of the async delay scopes that exist
         /// </summary>
         private int _asyncSuspendCount;
@@ -118,8 +123,11 @@ namespace KZDev.PerfUtils.Tests
         /// Returns a task to emulate an I/O delay
         /// </summary>
         /// <returns></returns>
-        private async Task GetAsyncDelay (AsyncDelayType operationType)
+        private async Task GetAsyncDelay (AsyncDelayType operationType, int dataSize)
         {
+            // We assume that the mock stream is used by a single thread, but to keep the
+            // values consistent, we will use Interlocked operations to update them as 
+            // a memory fence when needed.
             if ((AsyncDelayType.None == _delayAsyncOperationsType) ||
                 (0 == (_delayAsyncOperationsType & operationType)))
             {
@@ -130,18 +138,23 @@ namespace KZDev.PerfUtils.Tests
                 return;
             }
 
-            // For every one in 16 calls, we will delay the async operation
+            // For every one in 8 calls, we will delay the async operation - or at least
+            // check if we should delay.
+            int dataProcessed = (_asyncOperationDataCount += dataSize);
             int callCount = Interlocked.Increment(ref _asyncCallCount);
-            if (0 == (15 & callCount))
-            {
-                await Task.Delay(10).ConfigureAwait(false);
+            if (0 != (7 & callCount))
                 return;
-            }
-            // Otherwise, for every fourth call, we simulate a near immediate async operation with a yield
-            if (0 == (3 & callCount))
-            {
-                await Task.Yield();
-            }
+
+            // Let's assume that we can process 2 GB per second, but every two operations 
+            // incur a 1 ms overhead
+            int delayMilliseconds = (int)(((long)dataProcessed * 1000) / 2_000_000_000) + (callCount / 2);
+            // If we don't even have an 8 ms delay, then wait for the next check
+            if (delayMilliseconds < 8)
+                return;
+            // Adjust the tracking values to reflect our delay
+            _asyncCallCount -= callCount;
+            Interlocked.Add(ref _asyncOperationDataCount, -dataProcessed);
+            await Task.Delay(delayMilliseconds).ConfigureAwait(false);
         }
         //--------------------------------------------------------------------------------
         /// <summary>
@@ -154,7 +167,7 @@ namespace KZDev.PerfUtils.Tests
         /// <returns></returns>
         private async Task<int> ReadForCopyToAsync (byte[] buffer, int offset, int count, CancellationToken cancellationToken)
         {
-            await GetAsyncDelay(AsyncDelayType.CopyTo).ConfigureAwait(false);
+            await GetAsyncDelay(AsyncDelayType.CopyTo, count).ConfigureAwait(false);
             return await _internalStream.ReadAsync(buffer, offset, count, cancellationToken).ConfigureAwait(false);
         }
         //--------------------------------------------------------------------------------
@@ -284,28 +297,28 @@ namespace KZDev.PerfUtils.Tests
         /// <inheritdoc />
         public override async Task<int> ReadAsync (byte[] buffer, int offset, int count, CancellationToken cancellationToken)
         {
-            await GetAsyncDelay(AsyncDelayType.Read).ConfigureAwait(false);
+            await GetAsyncDelay(AsyncDelayType.Read, count).ConfigureAwait(false);
             return await _internalStream.ReadAsync(buffer, offset, count, cancellationToken).ConfigureAwait(false);
         }
         //--------------------------------------------------------------------------------
         /// <inheritdoc />
         public override async ValueTask<int> ReadAsync (Memory<byte> buffer, CancellationToken cancellationToken = default)
         {
-            await GetAsyncDelay(AsyncDelayType.Read).ConfigureAwait(false);
+            await GetAsyncDelay(AsyncDelayType.Read, buffer.Length).ConfigureAwait(false);
             return await _internalStream.ReadAsync(buffer, cancellationToken).ConfigureAwait(false);
         }
         //--------------------------------------------------------------------------------
         /// <inheritdoc />
         public override async Task WriteAsync (byte[] buffer, int offset, int count, CancellationToken cancellationToken)
         {
-            await GetAsyncDelay(AsyncDelayType.Write).ConfigureAwait(false);
+            await GetAsyncDelay(AsyncDelayType.Write, count).ConfigureAwait(false);
             await _internalStream.WriteAsync(buffer, offset, count, cancellationToken).ConfigureAwait(false);
         }
         //--------------------------------------------------------------------------------
         /// <inheritdoc />
         public override async ValueTask WriteAsync (ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken = default)
         {
-            await GetAsyncDelay(AsyncDelayType.Write).ConfigureAwait(false);
+            await GetAsyncDelay(AsyncDelayType.Write, buffer.Length).ConfigureAwait(false);
             await _internalStream.WriteAsync(buffer, cancellationToken).ConfigureAwait(false);
         }
         //--------------------------------------------------------------------------------

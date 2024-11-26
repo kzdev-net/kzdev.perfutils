@@ -25,22 +25,17 @@ namespace KZDev.PerfUtils.Internals
 #endif
         const int InitialSegmentCount = 4;
 
-        /// <summary>
-        /// The maximum number of segments for a group that will be added to the array when it grows.
-        /// </summary>
-#if NOT_PACKAGING
-        internal
-#else
-        private
-#endif
-        const int MaxAllowedGroupSegmentCount = 512;
-
 #if !CONCURRENCY_TESTING  // For the concurrency testing builds, we use GUID IDs - because using Interlocked operations in static construction makes Concura deadlock
         /// <summary>
         /// The last generation number used.
         /// </summary>
         private static int _lastGeneration;
 #endif
+
+        /// <summary>
+        /// The maximum number of segments for a group that will be added to the array when it grows.
+        /// </summary>
+        protected internal const int MaxAllowedGroupSegmentCount = 512;
 
         /// <summary>
         /// The array of buffer groups.
