@@ -168,6 +168,7 @@ namespace KZDev.PerfUtils.Internals
         /// </returns>
         public MemorySegment Concat (in MemorySegment nextSegment)
         {
+            // TODO - Need unit tests for this.
             Debug.Assert(nextSegment.Offset == Offset + Count, "The next segment is not contiguous with this segment");
             return IsNative ?
                 // Native memory...
@@ -283,6 +284,7 @@ namespace KZDev.PerfUtils.Internals
         {
             if (IsNative)
             {
+                // TODO - Need unit tests for this.
                 fixed (byte* pWriteBuffer = destination)
                 {
                     Buffer.MemoryCopy(_nativePointer + _offset, pWriteBuffer + destinationIndex, destination.Length - destinationIndex, _count);
@@ -307,6 +309,7 @@ namespace KZDev.PerfUtils.Internals
 
             if (IsNative)
             {
+                // TODO - Need unit tests for this.
                 if (destination.IsNative)
                 {
                     Buffer.MemoryCopy(_nativePointer + _offset, destination._nativePointer + destination._offset, destination._count, _count);
@@ -341,6 +344,7 @@ namespace KZDev.PerfUtils.Internals
         /// </returns>
         public MemorySegment Slice (int index)
         {
+            // TODO - Need unit tests for this.
             if ((uint)index > (uint)_count)
             {
                 ThrowHelper.ThrowArgumentOutOfRange_IndexMustBeLessOrEqualException(nameof(index));

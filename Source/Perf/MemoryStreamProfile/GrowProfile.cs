@@ -98,11 +98,11 @@ namespace MemoryStreamProfile
             MeasureProfiler.StopCollectingData();
             MeasureProfiler.SaveData();
 
-            Console.WriteLine(@"Press 'S' to stop");
-            while (Console.ReadKey().Key != ConsoleKey.S)
-            {
-                // Do nothing
-            }
+            //Console.WriteLine(@"Press 'S' to stop");
+            //while (Console.ReadKey().Key != ConsoleKey.S)
+            //{
+            //    // Do nothing
+            //}
         }
     }
 }

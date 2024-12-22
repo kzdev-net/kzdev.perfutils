@@ -177,6 +177,7 @@ namespace KZDev.PerfUtils.Internals
         /// </param>
         private static void TrimBufferGroups (object? state)
         {
+            // TODO - Guard against running this more than once simultaneously.
             // Get the pool being trimmed.
             MemorySegmentedBufferPool trimPool = (MemorySegmentedBufferPool)state!;
             // Get the generation array to trim.

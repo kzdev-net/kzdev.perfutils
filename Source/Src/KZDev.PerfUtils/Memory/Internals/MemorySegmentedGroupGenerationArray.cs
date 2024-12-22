@@ -290,7 +290,7 @@ namespace KZDev.PerfUtils.Internals
         public bool TrimGroups ()
         {
             // For the very first (smallest and initial) group, we check if we can release
-            // the associated memory, btu we don't fully release the group.
+            // the associated memory, but we don't fully release the group.
             Groups[0].ReleaseUnusedMemory();
             // For the rest of the groups, we check if we can release the group entirely
             bool anyGroupsTrimmed = false;

@@ -70,10 +70,12 @@ namespace KZDev.PerfUtils.Internals
         public override long CapacityLong
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            // TODO - Need unit tests for this.
             get => _wrappedStream.Capacity;
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             set
             {
+                // TODO - Need unit tests for this.
                 switch (value)
                 {
                     case < 0:
@@ -182,6 +184,7 @@ namespace KZDev.PerfUtils.Internals
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override int Read (Span<byte> destinationBuffer)
         {
+            // TODO - Need unit tests for this.
             return _wrappedStream.Read(destinationBuffer);
         }
         //--------------------------------------------------------------------------------
@@ -269,6 +272,7 @@ namespace KZDev.PerfUtils.Internals
         {
             if (IsDisposed)
             {
+                // TODO - Need unit tests for this.
                 if (!disposing) return; // Somehow we are being called from the finalizer after we've been disposed
                 throw new ObjectDisposedException(nameof(MemoryStreamSlim));
             }
