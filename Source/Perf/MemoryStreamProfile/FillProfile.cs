@@ -5,8 +5,6 @@ using System.Diagnostics;
 
 using JetBrains.Profiler.Api;
 
-using KZDev.PerfUtils;
-
 using MemoryStreamBenchmarks;
 
 namespace MemoryStreamProfile
@@ -18,7 +16,7 @@ namespace MemoryStreamProfile
             SegmentedFillAndReadThroughputBenchmarks fillTest = new()
             {
                 DataSize = 0xC80_0000,
-                LoopCount = 1_000_000,
+                LoopCount = 200, //1_000_000,
                 CapacityOnCreate = true,
                 GrowEachLoop = false,
                 ZeroBuffers = false
@@ -82,7 +80,7 @@ namespace MemoryStreamProfile
                 TimeSpan elapsed = stopwatch.Elapsed;
                 TimeSpan processorTime = Process.GetCurrentProcess().TotalProcessorTime - startProcessorTime;
                 Console.WriteLine($@"Elapsed time: {elapsed}, Processor time: {processorTime}");
-                MemoryStreamSlim.ReleaseMemoryBuffers();
+                //MemoryStreamSlim.ReleaseMemoryBuffers();
             }
 
             GC.Collect(GC.MaxGeneration);
@@ -95,6 +93,23 @@ namespace MemoryStreamProfile
             MemoryProfiler.CollectAllocations(false);
             MeasureProfiler.StopCollectingData();
             MeasureProfiler.SaveData();
+
+            Stopwatch waitStopWatch = Stopwatch.StartNew();
+            bool finalGcRun = false;
+
+            Console.WriteLine(@"Press 'S' to stop");
+            while (Console.ReadKey().Key != ConsoleKey.S)
+            {
+                if (finalGcRun)
+                    continue;
+                if (waitStopWatch.ElapsedMilliseconds > 100_000)
+                {
+                    GC.Collect(GC.MaxGeneration);
+                    finalGcRun = true;
+                    Console.WriteLine(@"Final GC run");
+                }
+                // Do nothing
+            }
         }
     }
 }

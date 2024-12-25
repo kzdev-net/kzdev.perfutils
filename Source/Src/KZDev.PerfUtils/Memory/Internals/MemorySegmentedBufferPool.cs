@@ -23,7 +23,7 @@ namespace KZDev.PerfUtils.Internals
 #if DEBUG
             20_000;
 #else
-            250_000;
+            600_000;
 #endif
 
         /// <summary>
@@ -72,6 +72,12 @@ namespace KZDev.PerfUtils.Internals
         /// A timer that is used to trim the buffer pool groups in the generation array.
         /// </summary>
         private readonly Timer _trimTimer;
+
+        /// <summary>
+        /// When this value is non-zero, it indicates that the callback for the 
+        /// trimming timer is active.
+        /// </summary>
+        private int _trimmingActive;
 
         /// <summary>
         /// The current array of buffer groups that are available.
@@ -177,15 +183,26 @@ namespace KZDev.PerfUtils.Internals
         /// </param>
         private static void TrimBufferGroups (object? state)
         {
-            // TODO - Guard against running this more than once simultaneously.
             // Get the pool being trimmed.
             MemorySegmentedBufferPool trimPool = (MemorySegmentedBufferPool)state!;
-            // Get the generation array to trim.
-            MemorySegmentedGroupGenerationArray generationArray = trimPool._arrayGroup;
-            if (!generationArray.TrimGroups())
+
+            // Avoid running this if it is already running.
+            if (Interlocked.CompareExchange(ref trimPool._trimmingActive, 1, 0) != 0)
                 return;
-            // If we trimmed groups, we should contract the array group.
-            trimPool.ContractArrayGroup(generationArray);
+            try
+            {
+                // Get the generation array to trim.
+                MemorySegmentedGroupGenerationArray generationArray = trimPool._arrayGroup;
+                if (!generationArray.TrimGroups())
+                    return;
+                // If we trimmed groups, we should contract the array group.
+                trimPool.ContractArrayGroup(generationArray);
+            }
+            finally
+            {
+                // Indicate that we are done processing.
+                trimPool._trimmingActive = 0;
+            }
         }
         //--------------------------------------------------------------------------------
         /// <summary>
@@ -264,7 +281,7 @@ namespace KZDev.PerfUtils.Internals
              * the more likely use case of this race condition not happening.
              * 
              */
-            MemorySegmentedGroupGenerationArray newGeneration = 
+            MemorySegmentedGroupGenerationArray newGeneration =
                 new MemorySegmentedGroupGenerationArray(currentGeneration, neededBufferSize, _useNativeMemory);
             // Now, try to set the new generation as the current generation, and just to minimize the
             // chance of missing a new generation, we will confirm that the current generation is still
@@ -319,7 +336,7 @@ namespace KZDev.PerfUtils.Internals
         /// if the returned buffer is the next segment from the preferred block.
         /// </returns>
         private (SegmentBuffer Buffer, bool IsNextBlockSegment)
-            RentFromGeneration (int requestedBufferSize, MemorySegmentedGroupGenerationArray generationArray, 
+            RentFromGeneration (int requestedBufferSize, MemorySegmentedGroupGenerationArray generationArray,
             bool clearNewAllocations, in SegmentBufferInfo preferredBlockInfo)
         {
             // Try to rent from the preferred group first.
@@ -361,7 +378,7 @@ namespace KZDev.PerfUtils.Internals
         /// <returns>
         /// A buffer that is the size of the buffer size for this pool.
         /// </returns>
-        private SegmentBuffer RentFromGeneration (int requestedBufferSize, 
+        private SegmentBuffer RentFromGeneration (int requestedBufferSize,
             MemorySegmentedGroupGenerationArray generationArray, bool clearNewAllocations)
         {
             int lockedLoops = 0;
@@ -584,7 +601,7 @@ namespace KZDev.PerfUtils.Internals
 
         //--------------------------------------------------------------------------------
         /// <inheritdoc />
-        public void Dispose()
+        public void Dispose ()
         {
             _trimTimer.Dispose();
         }

@@ -70,12 +70,10 @@ namespace KZDev.PerfUtils.Internals
         public override long CapacityLong
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            // TODO - Need unit tests for this.
             get => _wrappedStream.Capacity;
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             set
             {
-                // TODO - Need unit tests for this.
                 switch (value)
                 {
                     case < 0:
@@ -175,18 +173,11 @@ namespace KZDev.PerfUtils.Internals
         //--------------------------------------------------------------------------------
         /// <inheritdoc />
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override int Read (byte[] buffer, int offset, int count)
-        {
-            return _wrappedStream.Read(buffer, offset, count);
-        }
+        public override int Read (byte[] buffer, int offset, int count) => _wrappedStream.Read(buffer, offset, count);
         //--------------------------------------------------------------------------------
         /// <inheritdoc />
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override int Read (Span<byte> destinationBuffer)
-        {
-            // TODO - Need unit tests for this.
-            return _wrappedStream.Read(destinationBuffer);
-        }
+        public override int Read (Span<byte> destinationBuffer) => _wrappedStream.Read(destinationBuffer);
         //--------------------------------------------------------------------------------
         /// <inheritdoc />
         public override Task<int> ReadAsync (byte[] buffer, int offset, int count,
@@ -272,7 +263,6 @@ namespace KZDev.PerfUtils.Internals
         {
             if (IsDisposed)
             {
-                // TODO - Need unit tests for this.
                 if (!disposing) return; // Somehow we are being called from the finalizer after we've been disposed
                 throw new ObjectDisposedException(nameof(MemoryStreamSlim));
             }

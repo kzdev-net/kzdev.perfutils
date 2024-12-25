@@ -392,9 +392,7 @@ namespace KZDev.PerfUtils.Tests
         [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.LongRun)]
         public async Task UsingMemoryStreamSlim_GetArray_ReturnsCorrectData ()
         {
-            // TODO - Add native memory unit tests like this
-
-            int[] testDataSizes = GenerateTestDataSizes(1000, 0xFFFF).ToArray();
+            int[] testDataSizes = GenerateTestDataSizes(5000, 0xF_FFFF).ToArray();
             int testLoops = RandomSource.GetRandomInteger(MinimumTestLoops, MaximumTestLoops + 1);
 
             foreach (int testSegmentSize in TestSegmentSizes)
