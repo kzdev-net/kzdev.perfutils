@@ -58,7 +58,7 @@ namespace StringsBenchmarks
         /// <summary>
         /// The working threads for the benchmarks
         /// </summary>
-        protected Thread?[]? _workThreads;
+        protected Thread?[]? workThreads;
 
         /// <summary>
         /// The number of threads to use
@@ -69,10 +69,10 @@ namespace StringsBenchmarks
         /// <summary>
         /// The number of loop iterations to perform for each benchmark
         /// </summary>
-        public virtual int LoopCount
+        public override int LoopCount
         {
-            get => _setLoopCount ?? 50_000;
-            set => _setLoopCount = (value < 1) ? null : value;
+            get => setLoopCount ?? 50_000;
+            set => setLoopCount = (value < 1) ? null : value;
         }
 
         /// <summary>
@@ -104,10 +104,10 @@ namespace StringsBenchmarks
         private void ShutdownThreads ()
         {
             ThreadShutdownSignal.Set();
-            ThreadShutdownCountDown.Wait();
+            ThreadShutdownCountDown!.Wait();
             for (int clearIndex = 0; clearIndex < ThreadCount; clearIndex++)
             {
-                _workThreads[clearIndex] = null;
+                workThreads![clearIndex] = null;
             }
         }
         //--------------------------------------------------------------------------------
@@ -134,7 +134,7 @@ namespace StringsBenchmarks
         public void GlobalSetup ()
         {
             BaseGlobalSetup();
-            _workThreads = new Thread?[ThreadCount];
+            workThreads = new Thread?[ThreadCount];
             ThreadRunCountDown = new CountdownEvent(ThreadCount);
             ThreadShutdownCountDown = new CountdownEvent(ThreadCount);
             ThreadReadyCountDown = new CountdownEvent(ThreadCount);

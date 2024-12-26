@@ -37,12 +37,12 @@ namespace StringsBenchmarks
         /// <param name="builder"></param>
         protected override void BuildString (StringBuilder builder)
         {
-            List<string> sourceList = _buildSourceStrings[_buildSourceIndex];
+            List<string> sourceList = buildSourceStrings[buildSourceIndex];
             for (int stringIndex = 0; stringIndex < sourceList.Count; stringIndex++)
             {
                 builder.Append(sourceList[stringIndex]);
             }
-            _buildSourceIndex = (_buildSourceIndex + 1) % _buildSourceStrings.Length;
+            buildSourceIndex = (buildSourceIndex + 1) % buildSourceStrings.Length;
         }
         //--------------------------------------------------------------------------------
         /// <summary>
@@ -85,12 +85,12 @@ namespace StringsBenchmarks
             ThreadShutdownCountDown!.Reset();
             for (int index = 0; index < ThreadCount; index++)
             {
-                _workThreads![index] = new Thread(ThreadRun)
+                workThreads![index] = new Thread(ThreadRun)
                 {
                     IsBackground = true,
                     Name = $"Benchmark Thread {index}"
                 };
-                _workThreads[index]!.Start();
+                workThreads[index]!.Start();
             }
         }
         //--------------------------------------------------------------------------------

@@ -19,25 +19,25 @@ namespace StringsBenchmarks
         /// <summary>
         /// The source strings that will be used for building benchmark strings
         /// </summary>
-        protected List<string>[] _buildSourceStrings = [[], [], [], [], [], [], [], [], []];
+        protected List<string>[] buildSourceStrings = [[], [], [], [], [], [], [], [], []];
 
         /// <summary>
         /// The current list that is being used to build the strings
         /// </summary>
-        protected int _buildSourceIndex = 0;
+        protected int buildSourceIndex = 0;
 
         /// <summary>
         /// The specifically set loop iteration count for the benchmarks
         /// </summary>
-        protected int? _setLoopCount;
+        protected int? setLoopCount;
 
         /// <summary>
         /// The number of loop iterations to perform for each benchmark
         /// </summary>
         public virtual int LoopCount
         {
-            get => _setLoopCount ?? 500_000;
-            set => _setLoopCount = (value < 1) ? null : value;
+            get => setLoopCount ?? 500_000;
+            set => setLoopCount = (value < 1) ? null : value;
         }
         //--------------------------------------------------------------------------------
         /// <summary>
@@ -46,12 +46,12 @@ namespace StringsBenchmarks
         /// <param name="builder"></param>
         protected virtual void BuildString (StringBuilder builder)
         {
-            List<string> sourceList = _buildSourceStrings[_buildSourceIndex];
+            List<string> sourceList = buildSourceStrings[buildSourceIndex];
             for (int stringIndex = 0; stringIndex < sourceList.Count; stringIndex++)
             {
                 builder.Append(sourceList[stringIndex]);
             }
-            _buildSourceIndex = (_buildSourceIndex + 1) % _buildSourceStrings.Length;
+            buildSourceIndex = (buildSourceIndex + 1) % buildSourceStrings.Length;
         }
         //--------------------------------------------------------------------------------
         /// <summary>
@@ -59,10 +59,10 @@ namespace StringsBenchmarks
         /// </summary>
         protected virtual void BaseGlobalSetup ()
         {
-            for (int buildSourceIndex = 0; buildSourceIndex < _buildSourceStrings.Length; buildSourceIndex++)
+            for (int buildSourceStringIndex = 0; buildSourceStringIndex < buildSourceStrings.Length; buildSourceStringIndex++)
             {
                 int runningStringLength = 0;
-                List<string> buildList = _buildSourceStrings[buildSourceIndex];
+                List<string> buildList = buildSourceStrings[buildSourceIndex];
                 for (int stringIndex = 0; stringIndex < 50; stringIndex++)
                 {
                     string nextString = TestData.GetRandomString(TestData.SecureRandomSource, 10, 50);
@@ -71,7 +71,7 @@ namespace StringsBenchmarks
                     buildList.Add(nextString);
                 }
             }
-            _buildSourceIndex = 0;
+            buildSourceIndex = 0;
         }
         //--------------------------------------------------------------------------------
         /// <summary>
@@ -79,7 +79,7 @@ namespace StringsBenchmarks
         /// </summary>
         protected virtual void BaseGlobalCleanup ()
         {
-            _buildSourceStrings = Array.Empty<List<string>>();
+            buildSourceStrings = [];
         }
         //--------------------------------------------------------------------------------
     }

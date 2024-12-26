@@ -106,11 +106,11 @@ namespace KZDev.PerfUtils.Internals
             /// </param>
             public void Deconstruct (out int segmentIndex, out int segmentCount, out bool zeroed, out int flagIndex, out ulong flagMask)
             {
-                segmentIndex = this.SegmentIndex;
-                segmentCount = this.SegmentCount;
-                zeroed = this.Zeroed;
-                flagIndex = this.FlagIndex;
-                flagMask = this.FlagMask;
+                segmentIndex = SegmentIndex;
+                segmentCount = SegmentCount;
+                zeroed = Zeroed;
+                flagIndex = FlagIndex;
+                flagMask = FlagMask;
             }
         }
         //================================================================================
