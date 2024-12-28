@@ -1,6 +1,6 @@
 ﻿# StringBuilderCache Benchmarks
 
-The benchmark tests for the `StringBuilderCache` are simple comparisons of the throughput time and memory consumption differences between using the `StringBuilderCache` and the standard `StringBuilder` class (instantiating a new instance for each use). There are just two benchmark scenarios, one for a single thread that repeatedly uses the `StringBuilder` class, and one for a multi-threaded scenario where multiple threads are using the `StringBuilder` class simultaneously. The results are presented in the following sections.
+The benchmark tests for the `StringBuilderCache` are simple comparisons of the throughput time and memory consumption differences between using the `StringBuilderCache` and the standard `StringBuilder` class (instantiating a new instance for each use). There are just two benchmark scenarios, one for a single thread that repeatedly uses the `StringBuilder` class, and one for a multi-threaded scenario where multiple threads are using `StringBuilder` class instances simultaneously. The results are presented in the following sections.
 
 ## Benchmark Setup
 
@@ -50,7 +50,7 @@ For this scenario, the streams are instantiated with an already allocated and av
 
 ### Allocations
 
-The very nature of building a string in memory requires memory allocations. So, the allocation values in the benchmarks are substantially large. The meaning as standalone values don't interpret to give much insight, but like most benchmarking, the important thing to note is the comparison and _**difference**_ in allocations between the `StringBuilder` and `StringBuilderCache` classes. It is easier to use the ` Alloc Ratio` column for this comparison. The strings built for the benchmarks are identical for both classes, so the allocations are directly comparable.
+The very nature of building a string in memory requires memory allocations. So, the allocation values in the benchmarks are substantially large. The meaning of this information as standalone values don't provide much insight, but like most benchmarking, the important thing to note is the comparison and _**difference**_ in allocations between the `StringBuilder` and `StringBuilderCache` classes. It is easier to use the ` Alloc Ratio` column for this comparison. The strings built for the benchmarks are identical for both classes, so the allocations are directly comparable.
 
 ## Versions
 

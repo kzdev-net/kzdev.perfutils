@@ -105,6 +105,7 @@ namespace StringsBenchmarks
                 StringBuilder builder = new();
                 BuildString(builder);
                 string builtString = builder.ToString();
+                // So the built string is not optimized away...
                 GC.KeepAlive(builtString);
             });
         }
@@ -121,6 +122,7 @@ namespace StringsBenchmarks
                     StringBuilderCache.GetScope();
                 BuildString(builderScope);
                 string builtString = builderScope.ToString();
+                // So the built string is not optimized away...
                 GC.KeepAlive(builtString);
             });
         }

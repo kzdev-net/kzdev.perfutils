@@ -11,11 +11,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Folder Include="MemoryStreamSlim\" />
+		<ProjectReference Include="..\..\Src\KZDev.PerfUtils\KZDev.PerfUtils.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\Src\KZDev.PerfUtils\KZDev.PerfUtils.csproj" />
+	  <Folder Include="MemoryStreamSlim\" />
 	</ItemGroup>
 
 </Project>

@@ -14,9 +14,16 @@ See the individual [documentation pages](./articles/getting-started.md) and the 
 
 * Throughput performance is better than the standard `MemoryStream`.
 * Much lower memory traffic and far fewer garbage collections than the standard `MemoryStream`.
-* Eliminates Large Object Heap (LOH) fragmentation caused by frequent use and release of single-byte arrays used by the standard `MemoryStream`.
+* Eliminates Large Object Heap (LOH) fragmentation caused by frequent use and release of various sized byte arrays used by the standard `MemoryStream`.
 * Simple replacement for `MemoryStream` with the same API, other than the constructor.
 * Optionally allows using native memory for storage, which allows even more flexibility to minimize GC pressure.
+
+`StringBuilderCache` is a static class that provides a thread-safe cache of `StringBuilder` instances to reduce the number of allocations and deallocations of `StringBuilder` objects in high-throughput scenarios with simple operations:
+
+* Acquire : Get a `StringBuilder` instance from the cache.
+* Release : Return a `StringBuilder` instance to the cache.
+* GetStringAndRelease : Get the string from a `StringBuilder` instance and return it to the cache.
+* GetScope : Get a `using` scoped `StringBuilder` instance from the cache and return it to the cache when the scope is exited.
 
 `InterlockedOps` is a static class providing the following thread-safe atomic operations:
 
@@ -28,6 +35,24 @@ See the individual [documentation pages](./articles/getting-started.md) and the 
 * ConditionXor : Conditionally update bits using an XOR operation on any integer types.
 * ConditionClearBits : Conditionally clear bits on any integer types.
 * ConditionSetBits : Conditionally set bits on any integer types.
+
+## StringBuilderCache Example
+
+Below is an example of how to use the `StringBuilderCache` class to reduce the number of allocations and deallocations of `StringBuilder` objects in high-throughput scenarios. The `GetStringAndRelease` method is used to get the string from a `StringBuilder` instance and return it to the cache.
+```csharp
+using KZDev.PerfUtils;
+
+public class StringBuilderExample
+{
+    public static void GetStringAndRelease ()
+    {
+        StringBuilder stringBuilder = StringBuilderCache.Acquire();
+        stringBuilder.Append("Hello, ");
+        stringBuilder.Append("World!");
+        Console.WriteLine(StringBuilderCache.GetStringAndRelease(stringBuilder));
+    }
+}
+```
 
 ## InterlockedOps Example
 
