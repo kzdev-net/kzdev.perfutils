@@ -110,6 +110,7 @@ The `MemoryStreamSlim` class is similar in concept and purpose to the [`Recyclab
 * Perform on par or better in terms of throughput performance.
 * Provide more consistent performance across different workloads.
 * Treat security as a priority and opt-out rather than opt-in zero'ing unused memory.
+* Automatically trim and release extra memory when possible.
 * Optionally allow using native memory for storage to avoid GC pressure altogether.
 
 One other important difference is that `MemoryStreamSlim` is specifically designed to be used for dynamically sized memory streams and not as a `Stream` wrapper around existing in-memory byte arrays. `RecyclableMemoryStream` is designed to be used in both scenarios, but that approach can lead to some significant performance issues and non-deterministic behaviors. This is covered more in the full documentation. Performance comparisons are also available in the [Benchmarks](./articles/memorystream-benchmarks.md) section.
