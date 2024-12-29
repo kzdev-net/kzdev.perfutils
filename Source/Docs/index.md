@@ -4,7 +4,11 @@ _layout: landing
 
 # PerfUtils
 
-The `KZDev.PerfUtils` package contains the [`MemoryStreamSlim`](./articles/memorystreamslim.md) class; a high-performance, memory-efficient, easy-to-use replacement for the `MemoryStream` class that provides particular performance benefits for large or frequently used streams. The package also contains the [`InterlockedOps`](./articles/interlockedops.md) class, which provides additional atomic thread-safe operations to extend the functionality of the `Interlocked` class in the .NET Class Library.
+The `KZDev.PerfUtils` package contains the following performance utility classes:
+
+- [`MemoryStreamSlim`](./articles/memorystreamslim.md) - a high-performance, memory-efficient, easy-to-use replacement for the `MemoryStream` class that provides particular performance benefits for large or frequently used streams. 
+- [`StringBuilderCache`](./articles/stringbuildercache.md) - a thread-safe cache of `StringBuilder` instances to improve speed and reduce the overhead of memory allocations associated with using the `StringBuilder` class. 
+- [`InterlockedOps`](./articles/interlockedops.md) - which provides additional atomic thread-safe operations to extend the functionality of the `Interlocked` class in the .NET Class Library.
 
 See the individual [documentation pages](./articles/getting-started.md) and the [API Reference](xref:KZDev.PerfUtils) for more detailed information.
 
@@ -85,13 +89,13 @@ using KZDev.PerfUtils;
 // dispose of the MemoryStreamSlim instance when it is no longer needed.
 using (MemoryStreamSlim stream = MemoryStreamSlim.Create())
 {
-		// Write some data to the stream
-		stream.Write(new byte[] { 1, 2, 3, 4, 5 }, 0, 5);
+	// Write some data to the stream
+	stream.Write(new byte[] { 1, 2, 3, 4, 5 }, 0, 5);
 
-		// Read the data back from the stream
-		stream.Position = 0;
-		byte[] buffer = new byte[5];
-		stream.Read(buffer, 0, 5);
+	// Read the data back from the stream
+	stream.Position = 0;
+	byte[] buffer = new byte[5];
+	stream.Read(buffer, 0, 5);
 }
 ```
 

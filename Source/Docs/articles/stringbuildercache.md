@@ -10,7 +10,7 @@ The [`StringBuilderCache`](xref:KZDev.PerfUtils.StringBuilderCache) class in thi
 
 ## Usage
 
-Using `StringBuilderCache` is very simple. The class provides a static method, `Acquire`, that returns a `StringBuilder` instance from the pool. When you are done with the StringBuilder instance, you return the instance to the pool either directly with a call to the [`Release`](xref:KZDev.PerfUtils.StringBuilderCache.Release) method on the `StringBuilderCache` class, or you can get the built string and return the `StringBuilder` instance to the pool in one step with the [`GetStringAndRelease`](xref:KZDev.PerfUtils.StringBuilderCache.GetStringAndRelease) method.
+Using `StringBuilderCache` is very simple. The class provides a static method, `Acquire`, that returns a `StringBuilder` instance from the pool. When you are done with the StringBuilder instance, you return the instance to the pool either directly with a call to the [`Release`](xref:KZDev.PerfUtils.StringBuilderCache.Release(System.Text.StringBuilder)) method on the `StringBuilderCache` class, or you can get the built string and return the `StringBuilder` instance to the pool in one step with the [`GetStringAndRelease`](xref:KZDev.PerfUtils.StringBuilderCache.GetStringAndRelease(System.Text.StringBuilder)) method.
 
 ```csharp
 using KZDev.PerfUtils;
