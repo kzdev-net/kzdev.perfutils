@@ -5,6 +5,8 @@
 - name: StringBuilder Cache
   href: stringbuildercache.md
   items:
+    - name: Monitoring
+      href: stringbuildercache-monitoring.md
     - name: Benchmarks
       href: stringbuildercache-benchmarks.md
 - name: Memory Stream

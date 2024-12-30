@@ -21,6 +21,7 @@ See the individual [documentation pages](./articles/getting-started.md) and the 
 * Eliminates Large Object Heap (LOH) fragmentation caused by frequent use and release of various sized byte arrays used by the standard `MemoryStream`.
 * Simple replacement for `MemoryStream` with the same API, other than the constructor.
 * Optionally allows using native memory for storage, which allows even more flexibility to minimize GC pressure.
+* Monitoring with `Metrics` and `Events` features of the .NET runtime.
 
 `StringBuilderCache` is a static class that provides a thread-safe cache of `StringBuilder` instances to reduce the number of allocations and deallocations of `StringBuilder` objects in high-throughput scenarios with simple operations:
 
@@ -28,6 +29,7 @@ See the individual [documentation pages](./articles/getting-started.md) and the 
 * Release : Return a `StringBuilder` instance to the cache.
 * GetStringAndRelease : Get the string from a `StringBuilder` instance and return it to the cache.
 * GetScope : Get a `using` scoped `StringBuilder` instance from the cache and return it to the cache when the scope is exited.
+* Monitoring with `Events` feature of the .NET runtime for detailed cache management.
 
 `InterlockedOps` is a static class providing the following thread-safe atomic operations:
 
@@ -111,6 +113,7 @@ The `MemoryStreamSlim` class is similar in concept and purpose to the [`Recyclab
 * Provide more consistent performance across different workloads.
 * Treat security as a priority and opt-out rather than opt-in zero'ing unused memory.
 * Automatically trim and release extra memory when possible.
+* Monitoring available through .NET counter `Metrics` as well as `Events`.
 * Optionally allow using native memory for storage to avoid GC pressure altogether.
 
 One other important difference is that `MemoryStreamSlim` is specifically designed to be used for dynamically sized memory streams and not as a `Stream` wrapper around existing in-memory byte arrays. `RecyclableMemoryStream` is designed to be used in both scenarios, but that approach can lead to some significant performance issues and non-deterministic behaviors. This is covered more in the full documentation. Performance comparisons are also available in the [Benchmarks](./articles/memorystream-benchmarks.md) section.

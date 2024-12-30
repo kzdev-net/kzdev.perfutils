@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 
 using KZDev.PerfUtils.Helpers;
+using KZDev.PerfUtils.Observability;
 
 namespace KZDev.PerfUtils
 {
@@ -171,8 +172,9 @@ namespace KZDev.PerfUtils
             // By checking the size first, we may exceed the maximum count, but that is
             // really not a big issue since we are only caching a small number of instances
             // and as threads come and go, globally cached instances will be pulled from the 
-            // list to be used when thread static instances are initially available.
+            // list to be used when thread static instances are initially unavailable.
             cacheBag.Add(stringBuilder);
+            UtilsEventSource.Log.StringBuilderCacheStore(stringBuilder.Capacity, true);
         }
         //--------------------------------------------------------------------------------
         /// <summary>
@@ -204,6 +206,7 @@ namespace KZDev.PerfUtils
                 if (currentCachedInstance is null)
                 {
                     cachedInstances[storeIndex] = stringBuilder;
+                    UtilsEventSource.Log.StringBuilderCacheStore(stringBuilder.Capacity, false);
                     return true;
                 }
 
@@ -226,6 +229,7 @@ namespace KZDev.PerfUtils
                 if (!ReleaseToIndexOrLower(currentCachedInstance, cachedInstances, storeIndex - 1))
                     return false;
                 cachedInstances[storeIndex] = stringBuilder;
+                UtilsEventSource.Log.StringBuilderCacheStore(stringBuilder.Capacity, false);
                 return true;
             }
             return false;
@@ -279,7 +283,14 @@ namespace KZDev.PerfUtils
         private static StringBuilder AcquireFromGlobal (int capacity, int cacheIndex)
         {
             if (Volatile.Read(ref _globalCache) is null)
-                return new StringBuilder(capacity);
+            {
+                // If we don't have a global cache, then we don't have any cached instances
+                // to return.
+                UtilsEventSource.Log.StringBuilderCacheMiss(capacity);
+                StringBuilder returnBuilder = new StringBuilder(capacity);
+                UtilsEventSource.Log.StringBuilderCreate(capacity, returnBuilder.Capacity);
+                return returnBuilder;
+            }
             // If we are looking in the global cache, then we know that the local cache
             // has been checked (and exists), so we will use the size of the local cache
             // to determine the index count we have and check at higher indexes for larger
@@ -293,12 +304,16 @@ namespace KZDev.PerfUtils
                 if (globalBag?.TryTake(out StringBuilder? cachedInstance) ?? false)
                 {
                     cachedInstance.Clear();
+                    UtilsEventSource.Log.StringBuilderCacheHit(capacity, cachedInstance.Capacity, true);
                     return cachedInstance;
                 }
                 // Try the next larger capacity group
                 cacheIndex++;
             }
-            return new StringBuilder(capacity);
+            UtilsEventSource.Log.StringBuilderCacheMiss(capacity);
+            StringBuilder builder = new StringBuilder(capacity);
+            UtilsEventSource.Log.StringBuilderCreate(capacity, builder.Capacity);
+            return builder;
         }
         //--------------------------------------------------------------------------------
         /// <summary>
@@ -316,13 +331,22 @@ namespace KZDev.PerfUtils
             if (capacity < DefaultCapacity)
                 capacity = DefaultCapacity;
             if (capacity > MaxCachedCapacity)
-                return new StringBuilder(capacity);
+            {
+                StringBuilder returnBuilder = new StringBuilder(capacity);
+                UtilsEventSource.Log.StringBuilderCreate(capacity, returnBuilder.Capacity);
+                return returnBuilder;
+            }
 
             // First index is the first index of the cached list we will check, but we can 
             // also return instances that currently have a larger capacity.
             int firstIndex = GetCacheIndex(capacity);
             if (firstIndex < 0)
-                return new StringBuilder(capacity);
+            {
+                UtilsEventSource.Log.StringBuilderCacheMiss(capacity);
+                StringBuilder returnBuilder = new StringBuilder(capacity);
+                UtilsEventSource.Log.StringBuilderCreate(capacity, returnBuilder.Capacity);
+                return returnBuilder;
+            }
 
             if (_threadCache is null)
                 return AcquireFromGlobal(capacity, firstIndex);
@@ -338,6 +362,7 @@ namespace KZDev.PerfUtils
 
                 threadCache[checkIndex] = null;
                 cachedInstance.Clear();
+                UtilsEventSource.Log.StringBuilderCacheHit(capacity, cachedInstance.Capacity, false);
                 return cachedInstance;
             }
             // Then resort to the global cache.
@@ -385,8 +410,7 @@ namespace KZDev.PerfUtils
         /// A <see cref="StringBuilderScope"/> instance that provides a cached 
         /// <see cref="StringBuilder"/> instance.
         /// </returns>
-        public static StringBuilderScope GetScope (int capacity = DefaultCapacity) =>
-            new StringBuilderScope(capacity);
+        public static StringBuilderScope GetScope (int capacity = DefaultCapacity) => new(capacity);
         //--------------------------------------------------------------------------------
     }
 }

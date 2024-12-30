@@ -89,4 +89,9 @@ class Program
 }
 ```
 
-The `StringBuilderCache` class is thread-safe so that you can use it in multi-threaded scenarios without issue.
+> Note: The `StringBuilderCache` class is thread-safe so that you can use it in multi-threaded scenarios without issue.
+
+
+## Monitoring
+
+`StringBuilderCache` provides the ability to monitor the cache usage using the `Events` feature of the .NET runtime. [Read More](./stringbuildercache-monitoring.md)
