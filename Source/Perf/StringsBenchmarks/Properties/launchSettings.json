@@ -2,7 +2,7 @@
   "profiles": {
     "StringsBenchmarks": {
       "commandName": "Project",
-      "commandLineArgs": "--filter *StringBuilderMultipleInstance*"
+      "commandLineArgs": "--filter *StringBuilderThroughput*"
     }
   }
 }

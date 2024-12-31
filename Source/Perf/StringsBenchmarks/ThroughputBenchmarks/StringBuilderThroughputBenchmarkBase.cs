@@ -62,7 +62,7 @@ namespace StringsBenchmarks
             for (int buildSourceStringIndex = 0; buildSourceStringIndex < buildSourceStrings.Length; buildSourceStringIndex++)
             {
                 int runningStringLength = 0;
-                List<string> buildList = buildSourceStrings[buildSourceIndex];
+                List<string> buildList = buildSourceStrings[buildSourceStringIndex];
                 for (int stringIndex = 0; stringIndex < 50; stringIndex++)
                 {
                     string nextString = TestData.GetRandomString(TestData.SecureRandomSource, 10, 50);
