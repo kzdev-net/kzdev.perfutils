@@ -138,11 +138,11 @@ namespace KZDev.PerfUtils.Tests
                 return;
             }
 
-            // For every one in 8 calls, we will delay the async operation - or at least
-            // check if we should delay.
+            // For every one in 8 calls, or processing 10MB of data, we will delay the async
+            // operation - or at least check if we should delay.
             int dataProcessed = (_asyncOperationDataCount += dataSize);
             int callCount = Interlocked.Increment(ref _asyncCallCount);
-            if (0 != (7 & callCount))
+            if ((0 != (7 & callCount)) && (dataProcessed < 10_000_000))
                 return;
 
             // Let's assume that we can process 2 GB per second, but every two operations 
