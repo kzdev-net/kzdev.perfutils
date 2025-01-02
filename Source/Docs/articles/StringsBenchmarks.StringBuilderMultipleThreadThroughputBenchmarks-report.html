@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='utf-8' />
+<title>StringsBenchmarks.StringBuilderMultipleThreadThroughputBenchmarks-20241231-042954</title>
+
+<style type="text/css">
+	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
+	td, th { padding: 6px 13px; border: 1px solid #ddd; text-align: right; }
+	tr { background-color: #fff; border-top: 1px solid #ccc; }
+	tr:nth-child(even) { background: #f8f8f8; }
+</style>
+</head>
+<body>
+<pre><code>
+BenchmarkDotNet v0.14.0, Windows 11 (10.0.22631.4602/23H2/2023Update/SunValley3)
+Intel Core i9-14900K, 1 CPU, 32 logical and 24 physical cores
+.NET SDK 9.0.101
+  [Host]                         : .NET 8.0.11 (8.0.1124.51707), X64 RyuJIT AVX2
+  Multithread StringBuilderCache : .NET 8.0.11 (8.0.1124.51707), X64 RyuJIT AVX2
+</code></pre>
+<pre><code>Job=Multithread StringBuilderCache  InvocationCount=1  MaxIterationCount=30  
+MaxWarmupIterationCount=20  UnrollFactor=1  
+</code></pre>
+
+<table>
+<thead><tr><th>Method                        </th><th>ThreadCount</th><th>Mean </th><th>Error</th><th>StdDev</th><th>Ratio</th><th>Gen0  </th><th>Gen1  </th><th>Allocated</th><th>Alloc Ratio</th>
+</tr>
+</thead><tbody><tr><td>&#39;Multi-Thread Unique StringBuilders&#39;</td><td>4</td><td>47.09 ms</td><td>0.305 ms</td><td>0.255 ms</td><td>1.00</td><td>87000.0000</td><td>4000.0000</td><td>1364.03 MB</td><td>1.00</td>
+</tr><tr><td>&#39;Multi-Thread Cached StringBuilders&#39;</td><td>4</td><td>28.17 ms</td><td>0.480 ms</td><td>0.449 ms</td><td>0.60</td><td>42000.0000</td><td>-</td><td>551.86 MB</td><td>0.40</td>
+</tr><tr><td>&#39;Multi-Thread Unique StringBuilders&#39;</td><td>16</td><td>431.10 ms</td><td>1.943 ms</td><td>1.817 ms</td><td>1.00</td><td>391000.0000</td><td>94000.0000</td><td>6150.17 MB</td><td>1.00</td>
+</tr><tr><td>&#39;Multi-Thread Cached StringBuilders&#39;</td><td>16</td><td>146.82 ms</td><td>0.817 ms</td><td>0.724 ms</td><td>0.34</td><td>174000.0000</td><td>-</td><td>2287.2 MB</td><td>0.37</td>
+</tr><tr><td>&#39;Multi-Thread Unique StringBuilders&#39;</td><td>32</td><td>1,112.96 ms</td><td>3.728 ms</td><td>3.304 ms</td><td>1.00</td><td>773000.0000</td><td>378000.0000</td><td>12231.45 MB</td><td>1.00</td>
+</tr><tr><td>&#39;Multi-Thread Cached StringBuilders&#39;</td><td>32</td><td>429.55 ms</td><td>8.221 ms</td><td>8.074 ms</td><td>0.39</td><td>347000.0000</td><td>-</td><td>4698.66 MB</td><td>0.38</td>
+</tr><tr><td>&#39;Multi-Thread Unique StringBuilders&#39;</td><td>64</td><td>2,103.34 ms</td><td>5.419 ms</td><td>4.804 ms</td><td>1.00</td><td>1475000.0000</td><td>1153000.0000</td><td>23502.95 MB</td><td>1.00</td>
+</tr><tr><td>&#39;Multi-Thread Cached StringBuilders&#39;</td><td>64</td><td>869.08 ms</td><td>2.541 ms</td><td>2.122 ms</td><td>0.41</td><td>696000.0000</td><td>-</td><td>9075.77 MB</td><td>0.39</td>
+</tr></tbody></table>
+</body>
+</html>

@@ -81,7 +81,7 @@ namespace MemoryStreamBenchmarks
         /// Controls if the stream is initially filled with the data in a single operation or in segments
         /// </summary>
         [ParamsAllValues]
-        public bool BulkFill { get; set; } = false;
+        public bool BulkInitialFill { get; set; } = false;
 
         /// <summary>
         /// The different ways to create the stream instances, by specifying capacity or not
@@ -112,7 +112,7 @@ namespace MemoryStreamBenchmarks
         /// </param>
         private Task ProcessStreamAsync (Stream stream, int dataLength)
         {
-            return BulkFill ? 
+            return BulkInitialFill ? 
                 streamUtility.BulkFillCopyToAsync(stream, _fileStream!, fillData!, dataLength) :
                 streamUtility.SegmentFillCopyToAsync(stream, _fileStream!, fillData!, dataLength, SegmentSize);
         }
@@ -134,7 +134,7 @@ namespace MemoryStreamBenchmarks
             // the internal memory management of the file stream on the benchmarks as we
             // write to that stream.
             _fileStream = new FileStreamMock(allocateDataSize);
-            TestData.GetRandomBytes(fillData, allocateDataSize);
+            TestData.GetRandomBytes(TestData.SecureRandomSource, fillData, allocateDataSize);
             // Avoid any benchmark impacts from clearing memory buffers
             MemoryStreamSlimOptions = new MemoryStreamSlimOptions() { ZeroBufferBehavior = MemoryStreamSlimZeroBufferOption.None };
         }

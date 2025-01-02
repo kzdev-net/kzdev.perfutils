@@ -392,11 +392,10 @@ namespace KZDev.PerfUtils.Tests
         [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.LongRun)]
         public async Task UsingMemoryStreamSlim_GetArray_ReturnsCorrectData ()
         {
-            int[] testDataSizes = GenerateTestDataSizes(1000, 0xFFFF).ToArray();
-            int testLoops = RandomSource.GetRandomInteger(MinimumTestLoops, MaximumTestLoops + 1);
+            int[] testDataSizes = GenerateTestDataSizes(5000, 0xF_FFFF).ToArray();
 
             foreach (int testSegmentSize in TestSegmentSizes)
-                for (int testLoop = 0; testLoop < testLoops; testLoop++)
+                for (int testLoop = 0; testLoop < 50; testLoop++)
                 {
                     int byteCount = testDataSizes[RandomSource.GetRandomInteger(testDataSizes.Length)];
                     await using MemoryStreamSlim testService = CreateTestService(byteCount);

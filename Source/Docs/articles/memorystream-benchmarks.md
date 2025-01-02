@@ -1,4 +1,4 @@
-﻿# Benchmarks
+﻿# MemoryStream Benchmarks
 
 As previously mentioned, the general goals and approach to ease GC pressure and reduce memory traffic are the same for both `MemoryStreamSlim` and `RecyclableMemoryStream`. So, for benchmarking purposes, the standard `MemoryStream` class, `RecyclableMemoryStream`, and `MemoryStreamSlim` are compared side-by-side for performance under a number of use cases.
 
@@ -34,11 +34,13 @@ Since the benchmark results can create rather large tables, and the Markdown tab
 
 ## Benchmark Scenarios
 
-The benchmark scenarios are broken down into three main categories: 
+The benchmark scenarios are broken down into five categories: 
 
 - Dynamic Throughput
 - Wrapper Throughput
 - Continuous Growth Throughput
+- CopyToAsync Throughput
+- Set Loop Count Throughput
 
 ### Dynamic Throughput
 
@@ -86,6 +88,7 @@ This is another reason why the ['Set Loop Count'](./set-loop-count-throughput-be
 
 The benchmarks published here used the following versions of the libraries:
 
-- `MemoryStreamSlim` version: 1.1.0
+- `BenchmarkDotNet` version: 0.14.0
+- `MemoryStreamSlim` version: 1.2.0
 - `RecyclableMemoryStream` version: 3.0.1
-- `MemoryStream` version: .NET 8.0.10
+- `MemoryStream` version: .NET 8.0.11

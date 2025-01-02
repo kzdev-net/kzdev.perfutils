@@ -27,7 +27,7 @@ namespace KZDev.PerfUtils.Tests
         private static byte[] GetSourceBuffer (int length)
         {
             byte[] buffer = new byte[length];
-            GetRandomBytes(buffer, length);
+            GetRandomBytes(SecureRandomSource, buffer, length);
             return buffer;
         }
         //--------------------------------------------------------------------------------
@@ -97,6 +97,34 @@ namespace KZDev.PerfUtils.Tests
         }
         //--------------------------------------------------------------------------------    
         /// <summary>
+        /// Tests creating a MemoryStreamSlim instance with default settings and verifying
+        /// the capacity (long version) and zero buffer behavior are as expected.
+        /// </summary>
+        [Fact]
+        public void UsingMemoryStreamSlim_CreateDefault_HasExpectedSettingsAndCapacityLong ()
+        {
+            byte[] sourceBuffer = GetSourceBuffer(20);
+            using MemoryStreamSlim stream = MemoryStreamSlim.Create(sourceBuffer);
+
+            stream.CapacityLong.Should().Be(sourceBuffer.Length);
+            stream.Settings.ZeroBufferBehavior.Should().Be(MemoryStreamSlimZeroBufferOption.OnRelease);
+        }
+        //--------------------------------------------------------------------------------    
+        /// <summary>
+        /// Tests creating a MemoryStreamSlim instance with a specific capacity and verifying
+        /// the capacity (long version) and zero buffer behavior are as expected.
+        /// </summary>
+        [Fact]
+        public void UsingMemoryStreamSlim_CreateWithCapacity_HasExpectedSettingsAndCapacityLong ()
+        {
+            byte[] sourceBuffer = GetSourceBuffer(100, 1000);
+            using MemoryStreamSlim stream = MemoryStreamSlim.Create(sourceBuffer);
+
+            stream.CapacityLong.Should().Be(sourceBuffer.Length);
+            stream.Settings.ZeroBufferBehavior.Should().Be(MemoryStreamSlimZeroBufferOption.OnRelease);
+        }
+        //--------------------------------------------------------------------------------    
+        /// <summary>
         /// Tests creating an instance MemoryStreamSlim and verifying the initial property values.
         /// </summary>
         [Fact]
@@ -129,6 +157,51 @@ namespace KZDev.PerfUtils.Tests
             testService.Invoking(s => s.Capacity = sourceBuffer.Length + 1).Should()
                 .Throw<NotSupportedException>()
                 .WithMessage("Memory stream is not expandable.");
+        }
+        //--------------------------------------------------------------------------------    
+        /// <summary>
+        /// Tests creating a fixed mode MemoryStreamSlim instance and verifying that attempting
+        /// to set the Capacity property to a negative value throws an exception.
+        /// </summary>
+        [Fact]
+        public void UsingMemoryStreamSlim_SetNegativeCapacity_ThrowsException ()
+        {
+            byte[] sourceBuffer = GetSourceBuffer(100, 1000);
+            using MemoryStreamSlim testService = MemoryStreamSlim.Create(sourceBuffer);
+
+            testService.Invoking(s => s.Capacity = -1).Should()
+                .Throw<ArgumentOutOfRangeException>()
+                .WithMessage("Capacity must be greater than or equal to zero. (Parameter 'Capacity')");
+        }
+        //--------------------------------------------------------------------------------    
+        /// <summary>
+        /// Tests creating a fixed mode MemoryStreamSlim instance and verifying that attempting
+        /// to set the Capacity (Long version) property throws an exception.
+        /// </summary>
+        [Fact]
+        public void UsingMemoryStreamSlim_SetCapacityLong_ThrowsException ()
+        {
+            byte[] sourceBuffer = GetSourceBuffer(100, 1000);
+            using MemoryStreamSlim testService = MemoryStreamSlim.Create(sourceBuffer);
+
+            testService.Invoking(s => s.CapacityLong = sourceBuffer.Length + 1).Should()
+                .Throw<NotSupportedException>()
+                .WithMessage("Memory stream is not expandable.");
+        }
+        //--------------------------------------------------------------------------------    
+        /// <summary>
+        /// Tests creating a fixed mode MemoryStreamSlim instance and verifying that attempting
+        /// to set the Capacity (Long version) property to a negative value throws an exception.
+        /// </summary>
+        [Fact]
+        public void UsingMemoryStreamSlim_SetNegativeCapacityLong_ThrowsException ()
+        {
+            byte[] sourceBuffer = GetSourceBuffer(100, 1000);
+            using MemoryStreamSlim testService = MemoryStreamSlim.Create(sourceBuffer);
+
+            testService.Invoking(s => s.CapacityLong = -1).Should()
+                .Throw<ArgumentOutOfRangeException>()
+                .WithMessage("Capacity must be greater than or equal to zero. (Parameter 'Capacity')");
         }
         //--------------------------------------------------------------------------------    
         /// <summary>

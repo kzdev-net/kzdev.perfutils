@@ -173,17 +173,11 @@ namespace KZDev.PerfUtils.Internals
         //--------------------------------------------------------------------------------
         /// <inheritdoc />
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override int Read (byte[] buffer, int offset, int count)
-        {
-            return _wrappedStream.Read(buffer, offset, count);
-        }
+        public override int Read (byte[] buffer, int offset, int count) => _wrappedStream.Read(buffer, offset, count);
         //--------------------------------------------------------------------------------
         /// <inheritdoc />
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override int Read (Span<byte> destinationBuffer)
-        {
-            return _wrappedStream.Read(destinationBuffer);
-        }
+        public override int Read (Span<byte> destinationBuffer) => _wrappedStream.Read(destinationBuffer);
         //--------------------------------------------------------------------------------
         /// <inheritdoc />
         public override Task<int> ReadAsync (byte[] buffer, int offset, int count,

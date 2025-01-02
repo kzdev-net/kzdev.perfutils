@@ -2,7 +2,7 @@
 <html lang='en'>
 <head>
 <meta charset='utf-8' />
-<title>MemoryStreamBenchmarks.ContinuousGrowFillAndReadThroughputBenchmarks-20241024-194941</title>
+<title>MemoryStreamBenchmarks.ContinuousGrowFillAndReadThroughputBenchmarks-20241230-212506</title>
 
 <style type="text/css">
 	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
@@ -13,29 +13,29 @@
 </head>
 <body>
 <pre><code>
-BenchmarkDotNet v0.14.0, Windows 11 (10.0.22631.4317/23H2/2023Update/SunValley3)
+BenchmarkDotNet v0.14.0, Windows 11 (10.0.22631.4602/23H2/2023Update/SunValley3)
 Intel Core i9-14900K, 1 CPU, 32 logical and 24 physical cores
-.NET SDK 8.0.403
-  [Host]     : .NET 8.0.10 (8.0.1024.46610), X64 RyuJIT AVX2
-  DefaultJob : .NET 8.0.10 (8.0.1024.46610), X64 RyuJIT AVX2
+.NET SDK 9.0.101
+  [Host]     : .NET 8.0.11 (8.0.1124.51707), X64 RyuJIT AVX2
+  DefaultJob : .NET 8.0.11 (8.0.1124.51707), X64 RyuJIT AVX2
 </code></pre>
 <pre><code></code></pre>
 
 <table>
 <thead><tr><th>Method                                 </th><th>ZeroBuffers</th><th>ExponentialBufferGrowth</th><th>Mean </th><th>Error</th><th>StdDev</th><th>Ratio</th><th>RatioSD</th><th>Gen0</th><th>Gen1</th><th>Gen2</th><th>Allocated</th><th>Alloc Ratio</th>
 </tr>
-</thead><tbody><tr><td>&#39;MemoryStream growth fill and read&#39;</td><td>False</td><td>False</td><td>517.23 ms</td><td>10.047 ms</td><td>10.318 ms</td><td>1.00</td><td>0.03</td><td>17000.0000</td><td>17000.0000</td><td>17000.0000</td><td>3496975.86 KB</td><td>1.000</td>
-</tr><tr><td>&#39;RecyclableMemoryStream growth fill and read&#39;</td><td>False</td><td>False</td><td>2,054.24 ms</td><td>17.069 ms</td><td>15.966 ms</td><td>3.97</td><td>0.08</td><td>-</td><td>-</td><td>-</td><td>73.64 KB</td><td>0.000</td>
-</tr><tr><td>&#39;MemoryStreamSlim growth fill and read&#39;</td><td>False</td><td>False</td><td>98.48 ms</td><td>1.957 ms</td><td>2.254 ms</td><td>0.19</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>6247.38 KB</td><td>0.002</td>
-</tr><tr><td>&#39;MemoryStream growth fill and read&#39;</td><td>False</td><td>True</td><td>526.32 ms</td><td>8.146 ms</td><td>7.620 ms</td><td>1.00</td><td>0.02</td><td>17000.0000</td><td>17000.0000</td><td>17000.0000</td><td>3496975.81 KB</td><td>1.000</td>
-</tr><tr><td>&#39;RecyclableMemoryStream growth fill and read&#39;</td><td>False</td><td>True</td><td>193.30 ms</td><td>3.844 ms</td><td>4.427 ms</td><td>0.37</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>19.6 KB</td><td>0.000</td>
-</tr><tr><td>&#39;MemoryStreamSlim growth fill and read&#39;</td><td>False</td><td>True</td><td>93.86 ms</td><td>1.586 ms</td><td>1.484 ms</td><td>0.18</td><td>0.00</td><td>-</td><td>-</td><td>-</td><td>6247.33 KB</td><td>0.002</td>
-</tr><tr><td>&#39;MemoryStream growth fill and read&#39;</td><td>True</td><td>False</td><td>522.99 ms</td><td>7.341 ms</td><td>6.866 ms</td><td>1.00</td><td>0.02</td><td>17000.0000</td><td>17000.0000</td><td>17000.0000</td><td>3496975.84 KB</td><td>1.000</td>
-</tr><tr><td>&#39;RecyclableMemoryStream growth fill and read&#39;</td><td>True</td><td>False</td><td>3,994.58 ms</td><td>23.239 ms</td><td>21.738 ms</td><td>7.64</td><td>0.11</td><td>-</td><td>-</td><td>-</td><td>73.31 KB</td><td>0.000</td>
-</tr><tr><td>&#39;MemoryStreamSlim growth fill and read&#39;</td><td>True</td><td>False</td><td>144.28 ms</td><td>2.770 ms</td><td>3.298 ms</td><td>0.28</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>6247.41 KB</td><td>0.002</td>
-</tr><tr><td>&#39;MemoryStream growth fill and read&#39;</td><td>True</td><td>True</td><td>527.70 ms</td><td>10.026 ms</td><td>9.378 ms</td><td>1.00</td><td>0.02</td><td>17000.0000</td><td>17000.0000</td><td>17000.0000</td><td>3496975.81 KB</td><td>1.000</td>
-</tr><tr><td>&#39;RecyclableMemoryStream growth fill and read&#39;</td><td>True</td><td>True</td><td>370.41 ms</td><td>3.702 ms</td><td>3.282 ms</td><td>0.70</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>19.86 KB</td><td>0.000</td>
-</tr><tr><td>&#39;MemoryStreamSlim growth fill and read&#39;</td><td>True</td><td>True</td><td>141.66 ms</td><td>1.979 ms</td><td>1.852 ms</td><td>0.27</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>6247.41 KB</td><td>0.002</td>
+</thead><tbody><tr><td>&#39;MemoryStream growth fill and read&#39;</td><td>False</td><td>False</td><td>524.65 ms</td><td>10.262 ms</td><td>9.599 ms</td><td>1.00</td><td>0.03</td><td>17000.0000</td><td>17000.0000</td><td>17000.0000</td><td>3496975.79 KB</td><td>1.000</td>
+</tr><tr><td>&#39;RecyclableMemoryStream growth fill and read&#39;</td><td>False</td><td>False</td><td>2,025.67 ms</td><td>8.172 ms</td><td>7.644 ms</td><td>3.86</td><td>0.07</td><td>-</td><td>-</td><td>-</td><td>73.64 KB</td><td>0.000</td>
+</tr><tr><td>&#39;MemoryStreamSlim growth fill and read&#39;</td><td>False</td><td>False</td><td>98.26 ms</td><td>1.911 ms</td><td>2.417 ms</td><td>0.19</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>6247.38 KB</td><td>0.002</td>
+</tr><tr><td>&#39;MemoryStream growth fill and read&#39;</td><td>False</td><td>True</td><td>518.24 ms</td><td>9.831 ms</td><td>9.656 ms</td><td>1.00</td><td>0.03</td><td>17000.0000</td><td>17000.0000</td><td>17000.0000</td><td>3496975.84 KB</td><td>1.000</td>
+</tr><tr><td>&#39;RecyclableMemoryStream growth fill and read&#39;</td><td>False</td><td>True</td><td>194.18 ms</td><td>3.718 ms</td><td>3.978 ms</td><td>0.37</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>19.6 KB</td><td>0.000</td>
+</tr><tr><td>&#39;MemoryStreamSlim growth fill and read&#39;</td><td>False</td><td>True</td><td>97.41 ms</td><td>1.935 ms</td><td>2.304 ms</td><td>0.19</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>6247.38 KB</td><td>0.002</td>
+</tr><tr><td>&#39;MemoryStream growth fill and read&#39;</td><td>True</td><td>False</td><td>525.31 ms</td><td>8.007 ms</td><td>7.490 ms</td><td>1.00</td><td>0.02</td><td>17000.0000</td><td>17000.0000</td><td>17000.0000</td><td>3496975.86 KB</td><td>1.000</td>
+</tr><tr><td>&#39;RecyclableMemoryStream growth fill and read&#39;</td><td>True</td><td>False</td><td>3,984.86 ms</td><td>16.415 ms</td><td>13.707 ms</td><td>7.59</td><td>0.11</td><td>-</td><td>-</td><td>-</td><td>73.64 KB</td><td>0.000</td>
+</tr><tr><td>&#39;MemoryStreamSlim growth fill and read&#39;</td><td>True</td><td>False</td><td>140.64 ms</td><td>2.369 ms</td><td>2.327 ms</td><td>0.27</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>6247.41 KB</td><td>0.002</td>
+</tr><tr><td>&#39;MemoryStream growth fill and read&#39;</td><td>True</td><td>True</td><td>524.13 ms</td><td>9.965 ms</td><td>9.321 ms</td><td>1.00</td><td>0.02</td><td>17000.0000</td><td>17000.0000</td><td>17000.0000</td><td>3496975.86 KB</td><td>1.000</td>
+</tr><tr><td>&#39;RecyclableMemoryStream growth fill and read&#39;</td><td>True</td><td>True</td><td>364.83 ms</td><td>6.461 ms</td><td>6.044 ms</td><td>0.70</td><td>0.02</td><td>-</td><td>-</td><td>-</td><td>19.86 KB</td><td>0.000</td>
+</tr><tr><td>&#39;MemoryStreamSlim growth fill and read&#39;</td><td>True</td><td>True</td><td>140.76 ms</td><td>2.788 ms</td><td>3.424 ms</td><td>0.27</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>6247.41 KB</td><td>0.002</td>
 </tr></tbody></table>
 </body>
 </html>

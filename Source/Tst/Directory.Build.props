@@ -17,13 +17,13 @@
    -->
     <PropertyGroup Label="PackageVersions">
         <PerfUtils-Pkg-Bogus>35.6.1</PerfUtils-Pkg-Bogus>
-        <PerfUtils-Pkg-coverlet_collector>6.0.2</PerfUtils-Pkg-coverlet_collector>
-        <PerfUtils-Pkg-FluentAssertions>6.12.1</PerfUtils-Pkg-FluentAssertions>
-        <PerfUtils-Pkg-Microsoft_NET_Test_Sdk>17.11.1</PerfUtils-Pkg-Microsoft_NET_Test_Sdk>
+        <PerfUtils-Pkg-coverlet_collector>6.0.3</PerfUtils-Pkg-coverlet_collector>
+        <PerfUtils-Pkg-FluentAssertions>7.0.0</PerfUtils-Pkg-FluentAssertions>
+        <PerfUtils-Pkg-Microsoft_NET_Test_Sdk>17.12.0</PerfUtils-Pkg-Microsoft_NET_Test_Sdk>
         <PerfUtils-Pkg-Moq>4.20.72</PerfUtils-Pkg-Moq>
         <PerfUtils-Pkg-xunit>2.9.2</PerfUtils-Pkg-xunit>
-        <PerfUtils-Pkg-xunit_runner_visualstudio>2.8.2</PerfUtils-Pkg-xunit_runner_visualstudio>
-        <PerfUtils-Pkg-XunitXml_TestLogger>4.1.0</PerfUtils-Pkg-XunitXml_TestLogger>
+        <PerfUtils-Pkg-xunit_runner_visualstudio>3.0.0</PerfUtils-Pkg-xunit_runner_visualstudio>
+        <PerfUtils-Pkg-XunitXml_TestLogger>5.0.0</PerfUtils-Pkg-XunitXml_TestLogger>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(TargetFramework)'=='net6.0'">

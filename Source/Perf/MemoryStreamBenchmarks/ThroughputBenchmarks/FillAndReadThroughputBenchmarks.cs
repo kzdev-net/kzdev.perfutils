@@ -66,7 +66,7 @@ namespace MemoryStreamBenchmarks
         /// The different bulk data sizes that will be used for the benchmarks
         /// </summary>
         [Params(0x2_0000, 0xF_0000, 0x100_0000, 0x5FF_0000, 0xC80_0000)]
-        public int DataSize { get; set; } = 0x100_0000;
+        public int DataSize { get; set; } = 0xC80_0000;
 
         /// <summary>
         /// The different ways to create the stream instances, by specifying capacity or not

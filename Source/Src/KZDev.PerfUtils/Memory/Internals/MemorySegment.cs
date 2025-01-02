@@ -281,14 +281,20 @@ namespace KZDev.PerfUtils.Internals
         /// </param>
         public void CopyTo (byte[] destination, int destinationIndex)
         {
-            if (IsNative)
-            {
-                fixed (byte* pWriteBuffer = destination)
-                {
-                    Buffer.MemoryCopy(_nativePointer + _offset, pWriteBuffer + destinationIndex, destination.Length - destinationIndex, _count);
-                }
-                return;
-            }
+            // This CopyTo method is only called for small buffers, and therefore never used for native memory.
+            Debug.Assert(!IsNative, "This method should not be called for native memory");
+            /*
+             * However, if we ever need to copy from native memory to managed memory, we can use the following code:
+             * 
+             * if (IsNative)
+             * {
+             *     fixed (byte* pWriteBuffer = destination)
+             *     {
+             *         Buffer.MemoryCopy(_nativePointer + _offset, pWriteBuffer + destinationIndex, destination.Length - destinationIndex, _count);
+             *     }
+             *     return;
+             * }
+             */
             System.Array.Copy(_managedArray!, _offset, destination, destinationIndex, _count);
         }
         //--------------------------------------------------------------------------------
@@ -305,19 +311,25 @@ namespace KZDev.PerfUtils.Internals
                 ThrowHelper.ThrowArgumentException_DestinationTooShort(nameof(destination));
             }
 
-            if (IsNative)
-            {
-                if (destination.IsNative)
-                {
-                    Buffer.MemoryCopy(_nativePointer + _offset, destination._nativePointer + destination._offset, destination._count, _count);
-                    return;
-                }
-                fixed (byte* pWriteBuffer = destination._managedArray)
-                {
-                    Buffer.MemoryCopy(_nativePointer + _offset, pWriteBuffer, destination._count, _count);
-                }
-                return;
-            }
+            // This CopyTo method is only called for small buffers, and therefore never used for native memory.
+            Debug.Assert(!IsNative, "This method should not be called for native memory");
+            /*
+             * However, if we ever need to copy from native memory to a MemorySegment, we can use the following code:
+             * 
+             * if (IsNative)
+             * {
+             *     if (destination.IsNative)
+             *     {
+             *         Buffer.MemoryCopy(_nativePointer + _offset, destination._nativePointer + destination._offset, destination._count, _count);
+             *         return;
+             *     }
+             *     fixed (byte* pWriteBuffer = destination._managedArray)
+             *     {
+             *         Buffer.MemoryCopy(_nativePointer + _offset, pWriteBuffer, destination._count, _count);
+             *     }
+             *     return;
+             * }
+             */
             if (destination.IsNative)
             {
                 fixed (byte* pWriteBuffer = _managedArray)

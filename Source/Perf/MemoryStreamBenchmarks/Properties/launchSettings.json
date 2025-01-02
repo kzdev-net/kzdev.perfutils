@@ -2,7 +2,7 @@
   "profiles": {
     "MemoryStreamBenchmarks": {
       "commandName": "Project",
-      "commandLineArgs": "--filter *SegmentedFill*"
+      "commandLineArgs": "--filter *CopyToAsyncThroughput*"
     }
   }
 }

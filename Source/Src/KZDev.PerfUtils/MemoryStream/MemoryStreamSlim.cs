@@ -50,6 +50,13 @@ namespace KZDev.PerfUtils
         protected const int StandardBufferSegmentSize = MemorySegmentedBufferGroup.StandardBufferSegmentSize;
 
         /// <summary>
+        /// The size of the buffer used for asynchronous copying. This is just actually the size we will 
+        /// use for each partial async write operation as we move through the list of internal buffers.
+        /// </summary>
+        protected const int StandardAsyncCopyBufferSize = 
+            (MemorySegmentedBufferGroup.StandardBufferSegmentSize * MemorySegmentedGroupGenerationArray.MaxAllowedGroupSegmentCount) >> 4;
+
+        /// <summary>
         /// The absolute maximum capacity we will allow a stream instance to get to.
         /// </summary>
         /// <exclude />

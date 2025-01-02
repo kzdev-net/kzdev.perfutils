@@ -14,8 +14,18 @@ namespace KZDev.PerfUtils.Internals
     /// standard sized buffers in the <see cref="SegmentMemoryStreamSlim"/> class.
     /// </summary>
     [DebuggerDisplay($"{{{nameof(DebugDisplayValue)}}}")]
-    internal class MemorySegmentedBufferPool
+    internal class MemorySegmentedBufferPool : IDisposable
     {
+        /// <summary>
+        /// The timer frequency to trim the buffer groups.
+        /// </summary>
+        private const int TrimTimerIntervalMs =
+#if DEBUG
+            20_000;
+#else
+            600_000;
+#endif
+
         /// <summary>
         /// The maximum number of milliseconds that we will spend zeroing out buffers because we 
         /// process in a thread pool thread. This is a balance between zeroing out buffers quickly
@@ -31,6 +41,16 @@ namespace KZDev.PerfUtils.Internals
         private const int PreferMaximumZeroOperationsPerCycle = 100;
 
         /// <summary>
+        /// A flag indicating if the zero processing operation is currently active.
+        /// </summary>
+        /// <remarks>
+        /// The /* volatile */ comment is here to remind us that all accesses to this field
+        /// should be done using the Volatile class, but we want to be explicit about it in the
+        /// code, so we don't actually use the volatile keyword here.
+        /// </remarks>
+        private /* volatile */ int _zeroProcessingActive;
+
+        /// <summary>
         /// Debug helper to display the state of the pool.
         /// </summary>
         [ExcludeFromCodeCoverage]
@@ -44,19 +64,20 @@ namespace KZDev.PerfUtils.Internals
         private readonly bool _useNativeMemory;
 
         /// <summary>
-        /// A flag indicating if the zero processing operation is currently active.
-        /// </summary>
-        /// <remarks>
-        /// The /* volatile */ comment is here to remind us that all accesses to this field
-        /// should be done using the Volatile class, but we want to be explicit about it in the
-        /// code, so we don't actually use the volatile keyword here.
-        /// </remarks>
-        private /* volatile */ int _zeroProcessingActive;
-
-        /// <summary>
         /// A list of returned buffers that are awaiting zeroing.
         /// </summary>
         private readonly ConcurrentBag<SegmentBuffer> _pendingZeroList = [];
+
+        /// <summary>
+        /// A timer that is used to trim the buffer pool groups in the generation array.
+        /// </summary>
+        private readonly Timer _trimTimer;
+
+        /// <summary>
+        /// When this value is non-zero, it indicates that the callback for the 
+        /// trimming timer is active.
+        /// </summary>
+        private int _trimmingActive;
 
         /// <summary>
         /// The current array of buffer groups that are available.
@@ -110,7 +131,7 @@ namespace KZDev.PerfUtils.Internals
                             // than the one we grabbed a reference to. So, the buffer group was not found.
                             // We could try to get the most recent generation and just loop again,
                             // but we might just as well break out and let the next round just pick
-                            // up from the beginning, since could possibly indicate things are pretty busy.
+                            // up from the beginning, since this could possibly indicate things are pretty busy.
                             // We are going to take a bit of a performance hit here because we will zero the buffer more
                             // than once, but we need to make sure this segment gets properly released, and we need to
                             // put it back into the pending zero list to be zeroed out again on the next pass.
@@ -155,13 +176,79 @@ namespace KZDev.PerfUtils.Internals
         }
         //--------------------------------------------------------------------------------
         /// <summary>
+        /// Timer callback to trim the buffer groups from the specified generation array.
+        /// </summary>
+        /// <param name="state">
+        /// The timer state object - passes the buffer pool instance
+        /// </param>
+        private static void TrimBufferGroups (object? state)
+        {
+            // Get the pool being trimmed.
+            MemorySegmentedBufferPool trimPool = (MemorySegmentedBufferPool)state!;
+
+            // Avoid running this if it is already running.
+            if (Interlocked.CompareExchange(ref trimPool._trimmingActive, 1, 0) != 0)
+                return;
+            try
+            {
+                // Get the generation array to trim.
+                MemorySegmentedGroupGenerationArray generationArray = trimPool._arrayGroup;
+                if (!generationArray.TrimGroups())
+                    return;
+                // If we trimmed groups, we should contract the array group.
+                trimPool.ContractArrayGroup(generationArray);
+            }
+            finally
+            {
+                // Indicate that we are done processing.
+                trimPool._trimmingActive = 0;
+            }
+        }
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// When there is at least one buffer group that has been released, then we should
+        /// actually contract the array group to remove the empty groups. This helper method
+        /// creates a new generation with the released groups removed and then tries to set
+        /// that as the current generation.
+        /// </summary>
+        /// <param name="currentGeneration">
+        /// The generation instance that was processed to trim groups from, and should have
+        /// those groups removed by creating a contracted copy.
+        /// </param>
+        private void ContractArrayGroup (MemorySegmentedGroupGenerationArray currentGeneration)
+        {
+            // We will try to contract the array group if the current generation is the 
+            // generation passed in. If it is not, then we will just return.
+            MemorySegmentedGroupGenerationArray activeGeneration = _arrayGroup;
+            if (activeGeneration.GenerationId != currentGeneration.GenerationId)
+                return;
+            // We don't want to affect the current generation array directly, 
+            // so we will create a new one with the contract helper method.
+            MemorySegmentedGroupGenerationArray newGeneration = currentGeneration.ContractArray();
+            // Now, try to set the new generation as the current generation, and just to minimize the
+            // chance of missing a new generation, we will confirm that the current generation is still
+            // what we expect it to be, and otherwise assume that the current generation has been updated,
+            // and we should return that instead.
+            Interlocked.CompareExchange(ref _arrayGroup, newGeneration, activeGeneration);
+            // We either assigned our newly created generation as the current generation, or we let it
+            // get GC collected
+        }
+        //--------------------------------------------------------------------------------
+        /// <summary>
         /// Expands the array group by creating a new array group generation and assigning it
         /// as the current group.
         /// </summary>
         /// <param name="currentGeneration">
         /// The current generation of the array group that we want to expand from.
         /// </param>
-        private MemorySegmentedGroupGenerationArray ExpandArrayGroup (MemorySegmentedGroupGenerationArray currentGeneration)
+        /// <param name="neededBufferSize">
+        /// The size that is needed for the buffer that we are trying to rent. We use this
+        /// to minimize the number of array generations that we create if we know that the
+        /// size of the generation array we would otherwise be creating is going to be too
+        /// small for our immediate needs.
+        /// </param>
+        private MemorySegmentedGroupGenerationArray ExpandArrayGroup (MemorySegmentedGroupGenerationArray currentGeneration,
+            int neededBufferSize)
         {
             /*
              * Imagine the race condition here and why it doesn't matter.
@@ -194,7 +281,8 @@ namespace KZDev.PerfUtils.Internals
              * the more likely use case of this race condition not happening.
              * 
              */
-            MemorySegmentedGroupGenerationArray newGeneration = new MemorySegmentedGroupGenerationArray(currentGeneration, _useNativeMemory);
+            MemorySegmentedGroupGenerationArray newGeneration =
+                new MemorySegmentedGroupGenerationArray(currentGeneration, neededBufferSize, _useNativeMemory);
             // Now, try to set the new generation as the current generation, and just to minimize the
             // chance of missing a new generation, we will confirm that the current generation is still
             // what we expect it to be, and otherwise assume that the current generation has been updated,
@@ -236,9 +324,6 @@ namespace KZDev.PerfUtils.Internals
         /// <param name="clearNewAllocations">
         /// Indicates whether we need new allocations to be cleared.
         /// </param>
-        /// <param name="requestedSegmentCount">
-        /// The number of segments that are being requested.
-        /// </param>
         /// <param name="generationArray">
         /// The generation array that we are renting from.
         /// </param>
@@ -250,10 +335,9 @@ namespace KZDev.PerfUtils.Internals
         /// A buffer that is the size of the buffer size for this pool and a flag indicating 
         /// if the returned buffer is the next segment from the preferred block.
         /// </returns>
-        private (SegmentBuffer Buffer, bool IsNextBlockSegment) 
-            RentFromGeneration (int requestedBufferSize, int requestedSegmentCount,
-            MemorySegmentedGroupGenerationArray generationArray, bool clearNewAllocations, 
-            in SegmentBufferInfo preferredBlockInfo)
+        private (SegmentBuffer Buffer, bool IsNextBlockSegment)
+            RentFromGeneration (int requestedBufferSize, MemorySegmentedGroupGenerationArray generationArray,
+            bool clearNewAllocations, in SegmentBufferInfo preferredBlockInfo)
         {
             // Try to rent from the preferred group first.
             MemorySegmentedBufferGroup[] segmentGroupArray = generationArray.Groups;
@@ -268,15 +352,15 @@ namespace KZDev.PerfUtils.Internals
             }
             // If we can't find that group for some reason, then just rent without the preferred block info.
             if (preferredGroup is null)
-                return (RentFromGeneration(requestedBufferSize, requestedSegmentCount, generationArray, clearNewAllocations), false);
+                return (RentFromGeneration(requestedBufferSize, generationArray, clearNewAllocations), false);
 
             // Try to get the buffer from the preferred group.
             (SegmentBuffer buffer, GetBufferResult getResult, bool segmentIsPreferredInBlock) =
                 preferredGroup.GetBuffer(requestedBufferSize, clearNewAllocations, this, preferredBlockInfo.SegmentId + preferredBlockInfo.SegmentCount);
             return (getResult == GetBufferResult.Available) ? (buffer, segmentIsPreferredInBlock) :
-                // The group is either locked or the preferred segment was not available, so we will fall
-                // back to the normal rent operation.
-                (RentFromGeneration(requestedBufferSize, requestedSegmentCount, generationArray, clearNewAllocations), false);
+                // The group is either locked, released, full, or the preferred segment was not available,
+                // so we will fall back to the normal rent operation.
+                (RentFromGeneration(requestedBufferSize, generationArray, clearNewAllocations), false);
         }
         //--------------------------------------------------------------------------------
         /// <summary>
@@ -288,64 +372,36 @@ namespace KZDev.PerfUtils.Internals
         /// <param name="clearNewAllocations">
         /// Indicates whether we need new allocations to be cleared.
         /// </param>
-        /// <param name="requestedSegmentCount">
-        /// The number of segments that are being requested.
-        /// </param>
         /// <param name="generationArray">
         /// The generation array that we are renting from.
         /// </param>
         /// <returns>
         /// A buffer that is the size of the buffer size for this pool.
         /// </returns>
-        private SegmentBuffer RentFromGeneration (int requestedBufferSize, int requestedSegmentCount,
+        private SegmentBuffer RentFromGeneration (int requestedBufferSize,
             MemorySegmentedGroupGenerationArray generationArray, bool clearNewAllocations)
         {
             int lockedLoops = 0;
-            // For larger segment counts, we will look backwards in the group array since the latter groups are likely larger.
-            bool lookBackwards = requestedSegmentCount >= (generationArray.MaxGroupSegmentCount / 2);
 
             int groupCount = generationArray.Groups.Length;
             while (true)
             {
                 bool anyGroupsLocked = false;
-                // ** NOTE: The code in the loops below are duplicated to avoid the overhead of a method call and/or checking
-                // the lookBackwards flag on each iteration. Not ideal, but it is a performance optimization.
-                // Any change to one loop should be reflected in the other loop.
-                if (lookBackwards)
+                // The larger blocks are later in the array, so we will start at the end.
+                for (int groupIndex = groupCount - 1; groupIndex >= 0; groupIndex--)
                 {
-                    for (int groupIndex = groupCount - 1; groupIndex >= 0; groupIndex--)
+                    (SegmentBuffer buffer, GetBufferResult getResult) =
+                        generationArray.Groups[groupIndex].GetBuffer(requestedBufferSize, clearNewAllocations, this);
+                    switch (getResult)
                     {
-                        (SegmentBuffer buffer, GetBufferResult getResult) =
-                            generationArray.Groups[groupIndex].GetBuffer(requestedBufferSize, clearNewAllocations, this);
-                        switch (getResult)
-                        {
-                            case GetBufferResult.Available:
-                                return buffer;
+                        case GetBufferResult.Available:
+                            return buffer;
 
-                            case GetBufferResult.GroupLocked:
-                                anyGroupsLocked = true;
-                                break;
-                        }
-                        // Try the next group.
+                        case GetBufferResult.GroupLocked:
+                            anyGroupsLocked = true;
+                            break;
                     }
-                }
-                else
-                {
-                    for (int groupIndex = 0; groupIndex < groupCount; groupIndex++)
-                    {
-                        (SegmentBuffer buffer, GetBufferResult getResult) =
-                            generationArray.Groups[groupIndex].GetBuffer(requestedBufferSize, clearNewAllocations, this);
-                        switch (getResult)
-                        {
-                            case GetBufferResult.Available:
-                                return buffer;
-
-                            case GetBufferResult.GroupLocked:
-                                anyGroupsLocked = true;
-                                break;
-                        }
-                        // Try the next group.
-                    }
+                    // Try the next group.
                 }
 
                 // If any groups are locked, we will try a few times before expanding the array group.
@@ -365,7 +421,7 @@ namespace KZDev.PerfUtils.Internals
                 {
                     // We don't want to affect the current generation array directly, 
                     // so we will create a new one.
-                    generationArray = ExpandArrayGroup(generationArray);
+                    generationArray = ExpandArrayGroup(generationArray, requestedBufferSize);
                     groupCount = generationArray.Groups.Length;
                     continue;
                 }
@@ -390,8 +446,7 @@ namespace KZDev.PerfUtils.Internals
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private SegmentBuffer RentInternal (int requestedBufferSize, bool clearNewAllocations) =>
-            RentFromGeneration(requestedBufferSize, requestedBufferSize / MemorySegmentedBufferGroup.StandardBufferSegmentSize,
-                Volatile.Read(ref _arrayGroup), clearNewAllocations);
+            RentFromGeneration(requestedBufferSize, Volatile.Read(ref _arrayGroup), clearNewAllocations);
         //--------------------------------------------------------------------------------
         /// <summary>
         /// Helper to do the actual rent operation.
@@ -411,10 +466,9 @@ namespace KZDev.PerfUtils.Internals
         /// if the returned buffer is the next segment from the preferred block.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private (SegmentBuffer Buffer, bool IsNextBlockSegment) RentInternal (int requestedBufferSize, 
+        private (SegmentBuffer Buffer, bool IsNextBlockSegment) RentInternal (int requestedBufferSize,
             bool clearNewAllocations, in SegmentBufferInfo preferredBlockInfo) =>
-            RentFromGeneration(requestedBufferSize, requestedBufferSize / MemorySegmentedBufferGroup.StandardBufferSegmentSize,
-                Volatile.Read(ref _arrayGroup), clearNewAllocations, preferredBlockInfo);
+            RentFromGeneration(requestedBufferSize, Volatile.Read(ref _arrayGroup), clearNewAllocations, preferredBlockInfo);
         //--------------------------------------------------------------------------------
         /// <summary>
         /// Initializes a new instance of the <see cref="MemorySegmentedBufferPool"/> class.
@@ -426,6 +480,7 @@ namespace KZDev.PerfUtils.Internals
         {
             _useNativeMemory = useNativeMemory;
             _arrayGroup = MemorySegmentedGroupGenerationArray.GetInitialArray(useNativeMemory);
+            _trimTimer = new Timer(TrimBufferGroups, this, TrimTimerIntervalMs, TrimTimerIntervalMs);
         }
         //--------------------------------------------------------------------------------
         /// <summary>
@@ -445,7 +500,7 @@ namespace KZDev.PerfUtils.Internals
         {
             Debug.Assert(requestedBufferSize > 0, "requestedBufferSize <= 0");
             Debug.Assert(0 == (requestedBufferSize % MemorySegmentedBufferGroup.StandardBufferSegmentSize), "requestedBufferSize is not a multiple of the segment size");
-            return RentInternal (requestedBufferSize, clearNewAllocations);
+            return RentInternal(requestedBufferSize, clearNewAllocations);
         }
         //--------------------------------------------------------------------------------
         /// <summary>
@@ -466,12 +521,12 @@ namespace KZDev.PerfUtils.Internals
         /// if the returned buffer is the next segment from the preferred block.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public (SegmentBuffer Buffer, bool IsNextBlockSegment) RentFromPreferredBlock 
+        public (SegmentBuffer Buffer, bool IsNextBlockSegment) RentFromPreferredBlock
             (int requestedBufferSize, bool clearNewAllocations, in SegmentBufferInfo preferredBlockInfo)
         {
             Debug.Assert(requestedBufferSize > 0, "requestedBufferSize <= 0");
             Debug.Assert(0 == (requestedBufferSize % MemorySegmentedBufferGroup.StandardBufferSegmentSize), "requestedBufferSize is not a multiple of the segment size");
-            return RentInternal (requestedBufferSize, clearNewAllocations, preferredBlockInfo);
+            return RentInternal(requestedBufferSize, clearNewAllocations, preferredBlockInfo);
         }
         //--------------------------------------------------------------------------------
         /// <summary>
@@ -541,6 +596,18 @@ namespace KZDev.PerfUtils.Internals
             return firstSegment;
         }
         //--------------------------------------------------------------------------------
+
+        #region Implementation of IDisposable
+
+        //--------------------------------------------------------------------------------
+        /// <inheritdoc />
+        public void Dispose ()
+        {
+            _trimTimer.Dispose();
+        }
+        //--------------------------------------------------------------------------------
+
+        #endregion
     }
     //################################################################################
 }

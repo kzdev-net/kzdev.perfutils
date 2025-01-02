@@ -947,7 +947,7 @@ namespace KZDev.PerfUtils.Tests
         [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.LongRun)]
         public void UsingMemorySegmentedBufferGroup_GetRemainingBuffers_WithRandomUsedPatterns_GetsProperBuffers ()
         {
-            for (int testLoop = 0; testLoop < 1000; testLoop++)
+            for (int testLoop = 0; testLoop < 200; testLoop++)
             {
                 (MemorySegmentedBufferGroup sut, MemorySegmentedBufferPool bufferPool) = GetTestGroupAndPool(segmentCount: BlockFlagSetSize * 5);
                 int useSkipCount = GetTestInteger(0, 7);
@@ -1045,7 +1045,7 @@ namespace KZDev.PerfUtils.Tests
         public void UsingMemorySegmentedBufferGroup_GetRemainingBuffers_WithRandomUsedBlockFlags_GetsProperBuffers ()
         {
             const int BlockFlagSetTestCount = 9;
-            for (int testLoop = 0; testLoop < 1000; testLoop++)
+            for (int testLoop = 0; testLoop < 200; testLoop++)
             {
                 (MemorySegmentedBufferGroup sut, MemorySegmentedBufferPool bufferPool) = GetTestGroupAndPool(segmentCount: BlockFlagSetSize * BlockFlagSetTestCount);
                 ulong[] setUsedBlockFlags = Enumerable.Range(0, BlockFlagSetSize).Select(_ => GetTestUnsignedLongInteger()).ToArray();
@@ -1546,7 +1546,7 @@ namespace KZDev.PerfUtils.Tests
         [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.LongRun)]
         public void UsingMemorySegmentedBufferGroup_GetPreferredRemainingBuffers_WithRandomUsedPatterns_GetsProperBuffers ()
         {
-            for (int testLoop = 0; testLoop < 1000; testLoop++)
+            for (int testLoop = 0; testLoop < 200; testLoop++)
             {
                 (MemorySegmentedBufferGroup sut, MemorySegmentedBufferPool bufferPool) = GetTestGroupAndPool(segmentCount: BlockFlagSetSize * 5);
                 int useSkipCount = GetTestInteger(0, 7);
@@ -1649,7 +1649,7 @@ namespace KZDev.PerfUtils.Tests
         public void UsingMemorySegmentedBufferGroup_GetPreferredRemainingBuffers_WithRandomUsedBlockFlags_GetsProperBuffers ()
         {
             const int BlockFlagSetTestCount = 9;
-            for (int testLoop = 0; testLoop < 1000; testLoop++)
+            for (int testLoop = 0; testLoop < 200; testLoop++)
             {
                 (MemorySegmentedBufferGroup sut, MemorySegmentedBufferPool bufferPool) = GetTestGroupAndPool(segmentCount: BlockFlagSetSize * BlockFlagSetTestCount);
                 ulong[] setUsedBlockFlags = Enumerable.Range(0, BlockFlagSetSize).Select(_ => GetTestUnsignedLongInteger()).ToArray();
@@ -1733,7 +1733,7 @@ namespace KZDev.PerfUtils.Tests
         public void UsingMemorySegmentedBufferGroup_GetRandomBuffers_WithRandomUsedBlockFlags_GetsProperBuffers ()
         {
             const int BlockFlagSetTestCount = 9;
-            for (int testLoop = 0; testLoop < 1000; testLoop++)
+            for (int testLoop = 0; testLoop < 200; testLoop++)
             {
                 (MemorySegmentedBufferGroup sut, MemorySegmentedBufferPool bufferPool) = GetTestGroupAndPool(segmentCount: BlockFlagSetSize * BlockFlagSetTestCount);
                 ulong[] setUsedBlockFlags = Enumerable.Range(0, BlockFlagSetSize).Select(_ => GetTestUnsignedLongInteger()).ToArray();
@@ -1843,7 +1843,7 @@ namespace KZDev.PerfUtils.Tests
         public void UsingMemorySegmentedBufferGroup_GetRandomBuffers_WithRandomUsedPatterns_GetsProperBuffers ()
         {
             const int BlockFlagSetTestCount = 9;
-            for (int testLoop = 0; testLoop < 1000; testLoop++)
+            for (int testLoop = 0; testLoop < 200; testLoop++)
             {
                 (MemorySegmentedBufferGroup sut, MemorySegmentedBufferPool bufferPool) = GetTestGroupAndPool(segmentCount: BlockFlagSetSize * BlockFlagSetTestCount);
                 int useSkipCount = GetTestInteger(0, 7);

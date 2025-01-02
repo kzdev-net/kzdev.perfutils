@@ -61,7 +61,9 @@ By default, `MemoryStreamSlim` will zero out the memory buffers that are used wh
 
 ### Releasing Memory
 
-`MemoryStreamSlim` provides a [`ReleaseMemoryBuffers`](xref:KZDev.PerfUtils.MemoryStreamSlim.ReleaseMemoryBuffers) method that that allows you to release the memory buffers cached for use by new stream instances. Releasing this memory can be useful when you want to free up cached memory that is no longer needed. [Read More](./memory-management.md#releasing-memory)
+`MemoryStreamSlim` will occasionally release memory buffers that are no longer needed. This is done internally on a regular timed basis, and will release buffers that have not been used for a certain period of time. 
+
+While it is generally best to let this automatic mechanism take care of releasing unused memory, `MemoryStreamSlim` also provides a [`ReleaseMemoryBuffers`](xref:KZDev.PerfUtils.MemoryStreamSlim.ReleaseMemoryBuffers) method that that allows you to release the memory buffers cached for use by new stream instances. Releasing this memory can be useful when you want to free up cached memory that is no longer needed. [Read More](./memory-management.md#releasing-memory)
 
 ### Native Memory
 

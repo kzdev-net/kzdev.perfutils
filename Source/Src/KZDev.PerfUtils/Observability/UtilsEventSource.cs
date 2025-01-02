@@ -25,9 +25,19 @@ namespace KZDev.PerfUtils.Observability
         /// </summary>
         private const string NativeHeapMemoryTypeName = "Native";
 
+        /// <summary>
+        /// The name to use for the global cache type.
+        /// </summary>
+        private const string GlobalCacheTypeName = "Global";
+
+        /// <summary>
+        /// The name to use for the thread local cache type.
+        /// </summary>
+        private const string LocalCacheTypeName = "Thread Local";
+
         //--------------------------------------------------------------------------------
         /// <summary>
-        /// Optimized WriteEvent signature for event ID, long, and <see cref="MemoryStreamSlimSettings"/>
+        /// Optimized WriteEvent signature for event ID, string, long, string, string
         /// </summary>
         /// <param name="eventId">
         /// The event ID to write
@@ -51,20 +61,54 @@ namespace KZDev.PerfUtils.Observability
                 return;
 
             fixed (char* arg1Bytes = arg1)
-                fixed (char* arg3Bytes = arg3)
-                    fixed (char* arg4Bytes = arg4)
-                    {
-                        EventData* descriptors = stackalloc EventData[4];
-                        descriptors[0].DataPointer = (IntPtr)arg1Bytes;
-                        descriptors[0].Size = (arg1.Length + 1) * sizeof(char);
-                        descriptors[1].DataPointer = (IntPtr)(&arg2);
-                        descriptors[1].Size = sizeof(long);
-                        descriptors[2].DataPointer = (IntPtr)arg3Bytes;
-                        descriptors[2].Size = (arg3.Length + 1) * sizeof(char);
-                        descriptors[3].DataPointer = (IntPtr)arg4Bytes;
-                        descriptors[3].Size = (arg4.Length + 1) * sizeof(char);
-                        WriteEventCore(eventId, 3, descriptors);
-                    }
+            fixed (char* arg3Bytes = arg3)
+            fixed (char* arg4Bytes = arg4)
+            {
+                EventData* descriptors = stackalloc EventData[4];
+                descriptors[0].DataPointer = (IntPtr)arg1Bytes;
+                descriptors[0].Size = (arg1.Length + 1) * sizeof(char);
+                descriptors[1].DataPointer = (IntPtr)(&arg2);
+                descriptors[1].Size = sizeof(long);
+                descriptors[2].DataPointer = (IntPtr)arg3Bytes;
+                descriptors[2].Size = (arg3.Length + 1) * sizeof(char);
+                descriptors[3].DataPointer = (IntPtr)arg4Bytes;
+                descriptors[3].Size = (arg4.Length + 1) * sizeof(char);
+                WriteEventCore(eventId, 4, descriptors);
+            }
+        }
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Optimized WriteEvent signature for event ID, int, int, string
+        /// </summary>
+        /// <param name="eventId">
+        /// The event ID to write
+        /// </param>
+        /// <param name="arg1">
+        /// The first int argument
+        /// </param>
+        /// <param name="arg2">
+        /// The second int argument
+        /// </param>
+        /// <param name="arg3">
+        /// The string argument
+        /// </param>
+        [NonEvent]
+        private unsafe void WriteEvent (int eventId, int arg1, int arg2, string arg3)
+        {
+            if (!IsEnabled())
+                return;
+
+            fixed (char* stringArgBytes = arg3)
+            {
+                EventData* descriptors = stackalloc EventData[3];
+                descriptors[0].DataPointer = (IntPtr)(&arg1);
+                descriptors[0].Size = sizeof(int);
+                descriptors[1].DataPointer = (IntPtr)(&arg2);
+                descriptors[1].Size = sizeof(int);
+                descriptors[2].DataPointer = (IntPtr)stringArgBytes;
+                descriptors[2].Size = (arg3.Length + 1) * sizeof(char);
+                WriteEventCore(eventId, 3, descriptors);
+            }
         }
         //--------------------------------------------------------------------------------
 
@@ -98,6 +142,11 @@ namespace KZDev.PerfUtils.Observability
             /// A category of events for capacity management.
             /// </summary>
             public const EventKeywords Capacity = (EventKeywords)0x0010;
+
+            /// <summary>
+            /// A category of events for cache management.
+            /// </summary>
+            public const EventKeywords Cache = (EventKeywords)0x0020;
         }
         //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         /// <summary>
@@ -114,6 +163,11 @@ namespace KZDev.PerfUtils.Observability
             /// Buffer Memory task
             /// </summary>
             public const EventTask BufferMemory = (EventTask)0x0002;
+
+            /// <summary>
+            /// StringBuilderCache task
+            /// </summary>
+            public const EventTask StringBuilderCache = (EventTask)0x0003;
         }
         //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         /// <summary>
@@ -160,6 +214,22 @@ namespace KZDev.PerfUtils.Observability
             /// OpCode for array heap memory allocation events
             /// </summary>
             public const EventOpcode ArrayAllocate = (EventOpcode)18;
+
+            /// <summary>
+            /// OpCode for a request for a StringBuilder that could not be 
+            /// satisfied by the cache.
+            /// </summary>
+            public const EventOpcode StringBuilderCacheMiss = (EventOpcode)20;
+
+            /// <summary>
+            /// OpCode for a request for a StringBuilder that was satisfied by the cache.
+            /// </summary>
+            public const EventOpcode StringBuilderCacheHit = (EventOpcode)21;
+
+            /// <summary>
+            /// OpCode for when a StringBuilder is stored in the cache.
+            /// </summary>
+            public const EventOpcode StringBuilderCacheStore = (EventOpcode)22;
         }
         //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         /// <summary>
@@ -179,7 +249,7 @@ namespace KZDev.PerfUtils.Observability
             Level = EventLevel.Informational)]
         private void MemoryStreamSlimCreatedInternal (string streamId, long maximumCapacity, string mode, string zeroBehavior)
         {
-            // Event monitoring enabled is checked in the caller
+            // We expect that the IsEnabled check is done in the caller
             WriteEvent(EventId_MemoryStreamSlimCreated, streamId, maximumCapacity, mode, zeroBehavior);
         }
         //--------------------------------------------------------------------------------
@@ -254,7 +324,7 @@ namespace KZDev.PerfUtils.Observability
             Level = EventLevel.Informational)]
         private void BufferMemoryAllocateInternal (int allocationSize, string bufferType)
         {
-            // Event monitoring enabled is checked in the caller
+            // We expect that the IsEnabled check is done in the caller
             WriteEvent(EventId_MemoryBufferAllocate, allocationSize, bufferType);
         }
         //--------------------------------------------------------------------------------
@@ -269,8 +339,8 @@ namespace KZDev.PerfUtils.Observability
             Level = EventLevel.Informational)]
         private void BufferMemoryRelease (int releaseSize, string bufferType)
         {
-            if (IsEnabled(EventLevel.Informational, Keywords.Memory))
-                WriteEvent(EventId_BufferMemoryRelease, releaseSize, bufferType);
+            // We expect that the IsEnabled check is done in the caller
+            WriteEvent(EventId_BufferMemoryRelease, releaseSize, bufferType);
         }
         //--------------------------------------------------------------------------------
         private const int EventId_MemoryStreamSlimToArray = 8;
@@ -288,13 +358,76 @@ namespace KZDev.PerfUtils.Observability
                 WriteEvent(EventId_MemoryStreamSlimToArray, streamId, arraySize);
         }
         //--------------------------------------------------------------------------------
+        private const int EventId_StringBuilderCreate = 21;
+        /// <summary>
+        /// Event to report a StringBuilder instance being created to satisfy a 
+        /// StringBuilderCache.Acquire call.
+        /// </summary>
+        [Event(EventId_StringBuilderCreate,
+            Keywords = Keywords.Create,
+            Task = Tasks.StringBuilderCache,
+            Opcode = Opcodes.Create,
+            Level = EventLevel.Informational)]
+        public void StringBuilderCreate (int requestedCapacity, int builderCapacity)
+        {
+            if (IsEnabled(EventLevel.Informational, Keywords.Create))
+                WriteEvent(EventId_StringBuilderCreate, requestedCapacity, builderCapacity);
+        }
+        //--------------------------------------------------------------------------------
+        private const int EventId_StringBuilderCacheMiss = 22;
+        /// <summary>
+        /// Event to report a StringBuilder instance not being found in the cache to satisfy a
+        /// StringBuilderCache.Acquire call.
+        /// </summary>
+        [Event(EventId_StringBuilderCacheMiss,
+            Keywords = Keywords.Cache,
+            Task = Tasks.StringBuilderCache,
+            Opcode = Opcodes.StringBuilderCacheMiss,
+            Level = EventLevel.Informational)]
+        public void StringBuilderCacheMiss (int requestedCapacity)
+        {
+            if (IsEnabled(EventLevel.Informational, Keywords.Cache))
+                WriteEvent(EventId_StringBuilderCacheMiss, requestedCapacity);
+        }
+        //--------------------------------------------------------------------------------
+        private const int EventId_StringBuilderCacheHit = 23;
+        /// <summary>
+        /// Event to report a StringBuilder instance being found in the cache to satisfy a
+        /// StringBuilderCache.Acquire call.
+        /// </summary>
+        [Event(EventId_StringBuilderCacheHit,
+            Keywords = Keywords.Cache,
+            Task = Tasks.StringBuilderCache,
+            Opcode = Opcodes.StringBuilderCacheHit,
+            Level = EventLevel.Informational)]
+        private void StringBuilderCacheHit (int requestedCapacity, int builderCapacity, string cacheType)
+        {
+            // We expect that the IsEnabled check is done in the caller
+            WriteEvent(EventId_StringBuilderCacheHit, requestedCapacity, builderCapacity, cacheType);
+        }
+        //--------------------------------------------------------------------------------
+        private const int EventId_StringBuilderCacheStore = 24;
+        /// <summary>
+        /// Event to report a StringBuilder instance being stored back into a cache.
+        /// </summary>
+        [Event(EventId_StringBuilderCacheStore,
+            Keywords = Keywords.Cache,
+            Task = Tasks.StringBuilderCache,
+            Opcode = Opcodes.StringBuilderCacheStore,
+            Level = EventLevel.Informational)]
+        private void StringBuilderCacheStore (int builderCapacity, string cacheType)
+        {
+            // We expect that the IsEnabled check is done in the caller
+            WriteEvent(EventId_StringBuilderCacheStore, builderCapacity, cacheType);
+        }
+        //--------------------------------------------------------------------------------
 
         //--------------------------------------------------------------------------------
         /// <summary>
         /// Event to report the creation of a memory stream slim instance.
         /// </summary>
         [NonEvent]
-        public void MemoryStreamSlimCreated (string streamId, long maximumCapacity, 
+        public void MemoryStreamSlimCreated (string streamId, long maximumCapacity,
             MemoryStreamSlimMode mode, MemoryStreamSlimSettings settings)
         {
             if (IsEnabled(EventLevel.Informational, Keywords.Create))
@@ -339,6 +472,27 @@ namespace KZDev.PerfUtils.Observability
         {
             if (IsEnabled(EventLevel.Informational, Keywords.Memory))
                 BufferMemoryRelease(allocationSize, NativeHeapMemoryTypeName);
+        }
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Event to report a StringBuilder instance being found in the cache to satisfy a
+        /// StringBuilderCache.Acquire call.
+        /// </summary>
+        [NonEvent]
+        public void StringBuilderCacheHit (int requestedCapacity, int builderCapacity, bool globalCache)
+        {
+            if (IsEnabled(EventLevel.Informational, Keywords.Cache))
+                StringBuilderCacheHit(requestedCapacity, builderCapacity, globalCache ? GlobalCacheTypeName : LocalCacheTypeName);
+        }
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Event to report a StringBuilder instance being stored back into a cache.
+        /// </summary>
+        [NonEvent]
+        public void StringBuilderCacheStore (int builderCapacity, bool globalCache)
+        {
+            if (IsEnabled(EventLevel.Informational, Keywords.Cache))
+                StringBuilderCacheStore(builderCapacity, globalCache ? GlobalCacheTypeName : LocalCacheTypeName);
         }
         //--------------------------------------------------------------------------------
     }
