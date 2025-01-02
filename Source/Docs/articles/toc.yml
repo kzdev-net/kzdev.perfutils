@@ -2,6 +2,13 @@
   href: getting-started.md
 - name: Interlocked Operations
   href: interlockedops.md
+- name: StringBuilder Cache
+  href: stringbuildercache.md
+  items:
+    - name: Monitoring
+      href: stringbuildercache-monitoring.md
+    - name: Benchmarks
+      href: stringbuildercache-benchmarks.md
 - name: Memory Stream
   href: memorystreamslim.md
   items:
@@ -10,7 +17,7 @@
     - name: Monitoring
       href: memory-monitoring.md
     - name: Benchmarks
-      href: benchmarks.md
+      href: memorystream-benchmarks.md
       items:
         - name: Dynamic Throughput Benchmarks
           href: dynamic-throughput-benchmarks.md

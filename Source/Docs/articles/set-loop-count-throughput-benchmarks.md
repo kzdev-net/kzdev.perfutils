@@ -27,7 +27,7 @@ Other than a set loop count and the parameters listed below, the operation is id
 
 ### Benchmark Parameters
 
-The following parameters were used in the benchmarks. These will appear as columns in the benchmark results along with the [standard BenchmarkDotNet columns](./benchmarks.md#legend).
+The following parameters were used in the benchmarks. These will appear as columns in the benchmark results along with the [standard BenchmarkDotNet columns](./memorystream-benchmarks.md#legend).
 
 #### DataSize
 

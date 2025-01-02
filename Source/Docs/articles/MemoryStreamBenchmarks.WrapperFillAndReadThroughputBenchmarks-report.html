@@ -2,7 +2,7 @@
 <html lang='en'>
 <head>
 <meta charset='utf-8' />
-<title>MemoryStreamBenchmarks.WrapperFillAndReadThroughputBenchmarks-20241024-214705</title>
+<title>MemoryStreamBenchmarks.WrapperFillAndReadThroughputBenchmarks-20241230-233206</title>
 
 <style type="text/css">
 	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
@@ -13,47 +13,47 @@
 </head>
 <body>
 <pre><code>
-BenchmarkDotNet v0.14.0, Windows 11 (10.0.22631.4317/23H2/2023Update/SunValley3)
+BenchmarkDotNet v0.14.0, Windows 11 (10.0.22631.4602/23H2/2023Update/SunValley3)
 Intel Core i9-14900K, 1 CPU, 32 logical and 24 physical cores
-.NET SDK 8.0.403
-  [Host]     : .NET 8.0.10 (8.0.1024.46610), X64 RyuJIT AVX2
-  DefaultJob : .NET 8.0.10 (8.0.1024.46610), X64 RyuJIT AVX2
+.NET SDK 9.0.101
+  [Host]     : .NET 8.0.11 (8.0.1124.51707), X64 RyuJIT AVX2
+  DefaultJob : .NET 8.0.11 (8.0.1124.51707), X64 RyuJIT AVX2
 </code></pre>
 <pre><code></code></pre>
 
 <table>
 <thead><tr><th>Method                                        </th><th>DataSize</th><th>ZeroBuffers</th><th>Mean</th><th>Error</th><th>StdDev</th><th>Ratio</th><th>RatioSD</th><th>Gen0</th><th>Allocated</th><th>Alloc Ratio</th>
 </tr>
-</thead><tbody><tr><td>&#39;MemoryStream array wrapper fill and read&#39;</td><td>131072</td><td>False</td><td>59.03 ms</td><td>0.312 ms</td><td>0.292 ms</td><td>1.00</td><td>0.01</td><td>-</td><td>1443.67 KB</td><td>1.00</td>
-</tr><tr><td>&#39;RecyclableMemoryStream array wrapper fill and read&#39;</td><td>131072</td><td>False</td><td>106.68 ms</td><td>0.708 ms</td><td>0.628 ms</td><td>1.81</td><td>0.01</td><td>200.0000</td><td>6315.94 KB</td><td>4.37</td>
-</tr><tr><td>&#39;MemoryStreamSlim array wrapper fill and read&#39;</td><td>131072</td><td>False</td><td>62.58 ms</td><td>1.171 ms</td><td>1.253 ms</td><td>1.06</td><td>0.02</td><td>333.3333</td><td>6676.81 KB</td><td>4.62</td>
-</tr><tr><td>&#39;MemoryStream array wrapper fill and read&#39;</td><td>131072</td><td>True</td><td>60.89 ms</td><td>0.370 ms</td><td>0.346 ms</td><td>1.00</td><td>0.01</td><td>-</td><td>1445.01 KB</td><td>1.00</td>
-</tr><tr><td>&#39;RecyclableMemoryStream array wrapper fill and read&#39;</td><td>131072</td><td>True</td><td>139.14 ms</td><td>1.287 ms</td><td>1.204 ms</td><td>2.29</td><td>0.02</td><td>250.0000</td><td>6315.96 KB</td><td>4.37</td>
-</tr><tr><td>&#39;MemoryStreamSlim array wrapper fill and read&#39;</td><td>131072</td><td>True</td><td>58.87 ms</td><td>0.332 ms</td><td>0.294 ms</td><td>0.97</td><td>0.01</td><td>333.3333</td><td>6676.81 KB</td><td>4.62</td>
-</tr><tr><td>&#39;MemoryStream array wrapper fill and read&#39;</td><td>983040</td><td>False</td><td>64.01 ms</td><td>0.610 ms</td><td>0.571 ms</td><td>1.00</td><td>0.01</td><td>-</td><td>204.17 KB</td><td>1.00</td>
-</tr><tr><td>&#39;RecyclableMemoryStream array wrapper fill and read&#39;</td><td>983040</td><td>False</td><td>110.11 ms</td><td>0.740 ms</td><td>0.692 ms</td><td>1.72</td><td>0.02</td><td>-</td><td>1760.66 KB</td><td>8.62</td>
-</tr><tr><td>&#39;MemoryStreamSlim array wrapper fill and read&#39;</td><td>983040</td><td>False</td><td>58.26 ms</td><td>0.381 ms</td><td>0.338 ms</td><td>0.91</td><td>0.01</td><td>-</td><td>944.12 KB</td><td>4.62</td>
-</tr><tr><td>&#39;MemoryStream array wrapper fill and read&#39;</td><td>983040</td><td>True</td><td>63.28 ms</td><td>0.441 ms</td><td>0.413 ms</td><td>1.00</td><td>0.01</td><td>-</td><td>204.17 KB</td><td>1.00</td>
-</tr><tr><td>&#39;RecyclableMemoryStream array wrapper fill and read&#39;</td><td>983040</td><td>True</td><td>147.09 ms</td><td>0.931 ms</td><td>0.870 ms</td><td>2.32</td><td>0.02</td><td>-</td><td>1760.68 KB</td><td>8.62</td>
-</tr><tr><td>&#39;MemoryStreamSlim array wrapper fill and read&#39;</td><td>983040</td><td>True</td><td>64.17 ms</td><td>1.229 ms</td><td>1.641 ms</td><td>1.01</td><td>0.03</td><td>-</td><td>944.12 KB</td><td>4.62</td>
-</tr><tr><td>&#39;MemoryStream array wrapper fill and read&#39;</td><td>16777216</td><td>False</td><td>111.95 ms</td><td>2.186 ms</td><td>3.272 ms</td><td>1.00</td><td>0.04</td><td>-</td><td>13.02 KB</td><td>1.00</td>
-</tr><tr><td>&#39;RecyclableMemoryStream array wrapper fill and read&#39;</td><td>16777216</td><td>False</td><td>251.04 ms</td><td>3.175 ms</td><td>2.652 ms</td><td>2.24</td><td>0.07</td><td>-</td><td>1083.71 KB</td><td>83.26</td>
-</tr><tr><td>&#39;MemoryStreamSlim array wrapper fill and read&#39;</td><td>16777216</td><td>False</td><td>109.84 ms</td><td>2.150 ms</td><td>3.014 ms</td><td>0.98</td><td>0.04</td><td>-</td><td>59.91 KB</td><td>4.60</td>
-</tr><tr><td>&#39;MemoryStream array wrapper fill and read&#39;</td><td>16777216</td><td>True</td><td>110.51 ms</td><td>2.202 ms</td><td>3.619 ms</td><td>1.00</td><td>0.05</td><td>-</td><td>13.02 KB</td><td>1.00</td>
-</tr><tr><td>&#39;RecyclableMemoryStream array wrapper fill and read&#39;</td><td>16777216</td><td>True</td><td>305.49 ms</td><td>3.454 ms</td><td>3.231 ms</td><td>2.77</td><td>0.09</td><td>-</td><td>1083.71 KB</td><td>83.26</td>
-</tr><tr><td>&#39;MemoryStreamSlim array wrapper fill and read&#39;</td><td>16777216</td><td>True</td><td>108.99 ms</td><td>2.112 ms</td><td>2.891 ms</td><td>0.99</td><td>0.04</td><td>-</td><td>59.91 KB</td><td>4.60</td>
-</tr><tr><td>&#39;MemoryStream array wrapper fill and read&#39;</td><td>100597760</td><td>False</td><td>356.41 ms</td><td>6.619 ms</td><td>6.192 ms</td><td>1.00</td><td>0.02</td><td>-</td><td>2.64 KB</td><td>1.00</td>
-</tr><tr><td>&#39;RecyclableMemoryStream array wrapper fill and read&#39;</td><td>100597760</td><td>False</td><td>622.39 ms</td><td>4.881 ms</td><td>4.566 ms</td><td>1.75</td><td>0.03</td><td>-</td><td>1088.55 KB</td><td>412.23</td>
-</tr><tr><td>&#39;MemoryStreamSlim array wrapper fill and read&#39;</td><td>100597760</td><td>False</td><td>344.51 ms</td><td>6.665 ms</td><td>9.769 ms</td><td>0.97</td><td>0.03</td><td>-</td><td>10.8 KB</td><td>4.09</td>
-</tr><tr><td>&#39;MemoryStream array wrapper fill and read&#39;</td><td>100597760</td><td>True</td><td>354.11 ms</td><td>5.549 ms</td><td>4.919 ms</td><td>1.00</td><td>0.02</td><td>-</td><td>2.45 KB</td><td>1.00</td>
-</tr><tr><td>&#39;RecyclableMemoryStream array wrapper fill and read&#39;</td><td>100597760</td><td>True</td><td>778.38 ms</td><td>9.719 ms</td><td>9.091 ms</td><td>2.20</td><td>0.04</td><td>-</td><td>1088.55 KB</td><td>445.16</td>
-</tr><tr><td>&#39;MemoryStreamSlim array wrapper fill and read&#39;</td><td>100597760</td><td>True</td><td>340.54 ms</td><td>4.440 ms</td><td>3.936 ms</td><td>0.96</td><td>0.02</td><td>-</td><td>10.8 KB</td><td>4.42</td>
-</tr><tr><td>&#39;MemoryStream array wrapper fill and read&#39;</td><td>209715200</td><td>False</td><td>363.19 ms</td><td>6.176 ms</td><td>6.865 ms</td><td>1.00</td><td>0.03</td><td>-</td><td>1.45 KB</td><td>1.00</td>
-</tr><tr><td>&#39;RecyclableMemoryStream array wrapper fill and read&#39;</td><td>209715200</td><td>False</td><td>636.63 ms</td><td>8.349 ms</td><td>7.810 ms</td><td>1.75</td><td>0.04</td><td>-</td><td>1066.88 KB</td><td>734.19</td>
-</tr><tr><td>&#39;MemoryStreamSlim array wrapper fill and read&#39;</td><td>209715200</td><td>False</td><td>385.97 ms</td><td>7.204 ms</td><td>6.739 ms</td><td>1.06</td><td>0.03</td><td>-</td><td>5.3 KB</td><td>3.65</td>
-</tr><tr><td>&#39;MemoryStream array wrapper fill and read&#39;</td><td>209715200</td><td>True</td><td>366.39 ms</td><td>7.148 ms</td><td>11.745 ms</td><td>1.00</td><td>0.04</td><td>-</td><td>1.45 KB</td><td>1.00</td>
-</tr><tr><td>&#39;RecyclableMemoryStream array wrapper fill and read&#39;</td><td>209715200</td><td>True</td><td>800.63 ms</td><td>6.437 ms</td><td>6.022 ms</td><td>2.19</td><td>0.07</td><td>-</td><td>1066.88 KB</td><td>734.19</td>
-</tr><tr><td>&#39;MemoryStreamSlim array wrapper fill and read&#39;</td><td>209715200</td><td>True</td><td>378.82 ms</td><td>7.430 ms</td><td>8.845 ms</td><td>1.03</td><td>0.04</td><td>-</td><td>5.3 KB</td><td>3.65</td>
+</thead><tbody><tr><td>&#39;MemoryStream array wrapper fill and read&#39;</td><td>131072</td><td>False</td><td>60.18 ms</td><td>0.494 ms</td><td>0.462 ms</td><td>1.00</td><td>0.01</td><td>-</td><td>1443.67 KB</td><td>1.00</td>
+</tr><tr><td>&#39;RecyclableMemoryStream array wrapper fill and read&#39;</td><td>131072</td><td>False</td><td>106.64 ms</td><td>2.035 ms</td><td>2.646 ms</td><td>1.77</td><td>0.05</td><td>200.0000</td><td>6315.94 KB</td><td>4.37</td>
+</tr><tr><td>&#39;MemoryStreamSlim array wrapper fill and read&#39;</td><td>131072</td><td>False</td><td>59.62 ms</td><td>0.445 ms</td><td>0.416 ms</td><td>0.99</td><td>0.01</td><td>250.0000</td><td>6676.81 KB</td><td>4.62</td>
+</tr><tr><td>&#39;MemoryStream array wrapper fill and read&#39;</td><td>131072</td><td>True</td><td>61.56 ms</td><td>0.560 ms</td><td>0.524 ms</td><td>1.00</td><td>0.01</td><td>-</td><td>1443.67 KB</td><td>1.00</td>
+</tr><tr><td>&#39;RecyclableMemoryStream array wrapper fill and read&#39;</td><td>131072</td><td>True</td><td>138.19 ms</td><td>2.747 ms</td><td>2.570 ms</td><td>2.25</td><td>0.04</td><td>250.0000</td><td>6315.96 KB</td><td>4.37</td>
+</tr><tr><td>&#39;MemoryStreamSlim array wrapper fill and read&#39;</td><td>131072</td><td>True</td><td>59.30 ms</td><td>0.471 ms</td><td>0.417 ms</td><td>0.96</td><td>0.01</td><td>250.0000</td><td>6676.81 KB</td><td>4.62</td>
+</tr><tr><td>&#39;MemoryStream array wrapper fill and read&#39;</td><td>983040</td><td>False</td><td>64.83 ms</td><td>0.587 ms</td><td>0.549 ms</td><td>1.00</td><td>0.01</td><td>-</td><td>204.17 KB</td><td>1.00</td>
+</tr><tr><td>&#39;RecyclableMemoryStream array wrapper fill and read&#39;</td><td>983040</td><td>False</td><td>111.34 ms</td><td>1.044 ms</td><td>0.976 ms</td><td>1.72</td><td>0.02</td><td>-</td><td>1760.66 KB</td><td>8.62</td>
+</tr><tr><td>&#39;MemoryStreamSlim array wrapper fill and read&#39;</td><td>983040</td><td>False</td><td>59.05 ms</td><td>0.387 ms</td><td>0.362 ms</td><td>0.91</td><td>0.01</td><td>-</td><td>944.12 KB</td><td>4.62</td>
+</tr><tr><td>&#39;MemoryStream array wrapper fill and read&#39;</td><td>983040</td><td>True</td><td>64.20 ms</td><td>0.349 ms</td><td>0.326 ms</td><td>1.00</td><td>0.01</td><td>-</td><td>204.17 KB</td><td>1.00</td>
+</tr><tr><td>&#39;RecyclableMemoryStream array wrapper fill and read&#39;</td><td>983040</td><td>True</td><td>148.16 ms</td><td>1.083 ms</td><td>1.013 ms</td><td>2.31</td><td>0.02</td><td>-</td><td>1760.68 KB</td><td>8.62</td>
+</tr><tr><td>&#39;MemoryStreamSlim array wrapper fill and read&#39;</td><td>983040</td><td>True</td><td>65.49 ms</td><td>0.452 ms</td><td>0.423 ms</td><td>1.02</td><td>0.01</td><td>-</td><td>944.13 KB</td><td>4.62</td>
+</tr><tr><td>&#39;MemoryStream array wrapper fill and read&#39;</td><td>16777216</td><td>False</td><td>113.46 ms</td><td>2.198 ms</td><td>2.443 ms</td><td>1.00</td><td>0.03</td><td>-</td><td>13.02 KB</td><td>1.00</td>
+</tr><tr><td>&#39;RecyclableMemoryStream array wrapper fill and read&#39;</td><td>16777216</td><td>False</td><td>255.43 ms</td><td>3.012 ms</td><td>2.818 ms</td><td>2.25</td><td>0.05</td><td>-</td><td>1083.71 KB</td><td>83.26</td>
+</tr><tr><td>&#39;MemoryStreamSlim array wrapper fill and read&#39;</td><td>16777216</td><td>False</td><td>112.59 ms</td><td>2.206 ms</td><td>2.540 ms</td><td>0.99</td><td>0.03</td><td>-</td><td>59.91 KB</td><td>4.60</td>
+</tr><tr><td>&#39;MemoryStream array wrapper fill and read&#39;</td><td>16777216</td><td>True</td><td>114.89 ms</td><td>2.268 ms</td><td>2.520 ms</td><td>1.00</td><td>0.03</td><td>-</td><td>13.02 KB</td><td>1.00</td>
+</tr><tr><td>&#39;RecyclableMemoryStream array wrapper fill and read&#39;</td><td>16777216</td><td>True</td><td>320.89 ms</td><td>3.866 ms</td><td>3.427 ms</td><td>2.79</td><td>0.07</td><td>-</td><td>1083.71 KB</td><td>83.26</td>
+</tr><tr><td>&#39;MemoryStreamSlim array wrapper fill and read&#39;</td><td>16777216</td><td>True</td><td>112.98 ms</td><td>2.180 ms</td><td>2.677 ms</td><td>0.98</td><td>0.03</td><td>-</td><td>59.91 KB</td><td>4.60</td>
+</tr><tr><td>&#39;MemoryStream array wrapper fill and read&#39;</td><td>100597760</td><td>False</td><td>346.65 ms</td><td>6.831 ms</td><td>12.142 ms</td><td>1.00</td><td>0.05</td><td>-</td><td>2.64 KB</td><td>1.00</td>
+</tr><tr><td>&#39;RecyclableMemoryStream array wrapper fill and read&#39;</td><td>100597760</td><td>False</td><td>614.07 ms</td><td>6.183 ms</td><td>5.481 ms</td><td>1.77</td><td>0.06</td><td>-</td><td>1088.55 KB</td><td>412.23</td>
+</tr><tr><td>&#39;MemoryStreamSlim array wrapper fill and read&#39;</td><td>100597760</td><td>False</td><td>341.06 ms</td><td>6.745 ms</td><td>11.814 ms</td><td>0.99</td><td>0.05</td><td>-</td><td>10.8 KB</td><td>4.09</td>
+</tr><tr><td>&#39;MemoryStream array wrapper fill and read&#39;</td><td>100597760</td><td>True</td><td>349.20 ms</td><td>6.955 ms</td><td>6.830 ms</td><td>1.00</td><td>0.03</td><td>-</td><td>2.64 KB</td><td>1.00</td>
+</tr><tr><td>&#39;RecyclableMemoryStream array wrapper fill and read&#39;</td><td>100597760</td><td>True</td><td>773.85 ms</td><td>6.443 ms</td><td>5.030 ms</td><td>2.22</td><td>0.04</td><td>-</td><td>1088.55 KB</td><td>412.23</td>
+</tr><tr><td>&#39;MemoryStreamSlim array wrapper fill and read&#39;</td><td>100597760</td><td>True</td><td>345.87 ms</td><td>6.915 ms</td><td>11.743 ms</td><td>0.99</td><td>0.04</td><td>-</td><td>10.8 KB</td><td>4.09</td>
+</tr><tr><td>&#39;MemoryStream array wrapper fill and read&#39;</td><td>209715200</td><td>False</td><td>376.22 ms</td><td>7.421 ms</td><td>9.649 ms</td><td>1.00</td><td>0.04</td><td>-</td><td>1.45 KB</td><td>1.00</td>
+</tr><tr><td>&#39;RecyclableMemoryStream array wrapper fill and read&#39;</td><td>209715200</td><td>False</td><td>628.51 ms</td><td>9.902 ms</td><td>9.262 ms</td><td>1.67</td><td>0.05</td><td>-</td><td>1066.88 KB</td><td>734.19</td>
+</tr><tr><td>&#39;MemoryStreamSlim array wrapper fill and read&#39;</td><td>209715200</td><td>False</td><td>362.26 ms</td><td>7.177 ms</td><td>11.791 ms</td><td>0.96</td><td>0.04</td><td>-</td><td>5.3 KB</td><td>3.65</td>
+</tr><tr><td>&#39;MemoryStream array wrapper fill and read&#39;</td><td>209715200</td><td>True</td><td>372.87 ms</td><td>7.327 ms</td><td>12.639 ms</td><td>1.00</td><td>0.05</td><td>-</td><td>1.45 KB</td><td>1.00</td>
+</tr><tr><td>&#39;RecyclableMemoryStream array wrapper fill and read&#39;</td><td>209715200</td><td>True</td><td>807.44 ms</td><td>9.640 ms</td><td>9.017 ms</td><td>2.17</td><td>0.08</td><td>-</td><td>1066.88 KB</td><td>734.19</td>
+</tr><tr><td>&#39;MemoryStreamSlim array wrapper fill and read&#39;</td><td>209715200</td><td>True</td><td>366.57 ms</td><td>7.307 ms</td><td>15.412 ms</td><td>0.98</td><td>0.05</td><td>-</td><td>5.3 KB</td><td>3.65</td>
 </tr></tbody></table>
 </body>
 </html>

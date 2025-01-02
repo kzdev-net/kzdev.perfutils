@@ -114,7 +114,7 @@ namespace MemoryStreamBenchmarks
 
             fillData = new byte[SegmentSize];
             readBuffer = new byte[SegmentSize];
-            TestData.GetRandomBytes(fillData, SegmentSize);
+            TestData.GetRandomBytes(TestData.SecureRandomSource, fillData, SegmentSize);
             MemoryStreamSlimOptions = new MemoryStreamSlimOptions() { ZeroBufferBehavior = ZeroBuffers ? MemoryStreamSlimZeroBufferOption.OnRelease : MemoryStreamSlimZeroBufferOption.None };
         }
         //--------------------------------------------------------------------------------

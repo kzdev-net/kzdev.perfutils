@@ -48,7 +48,7 @@ namespace MemoryStreamBenchmarks
                 allocateDataSize += (LoopCount * LoopGrowAmount);
             fillData = new byte[allocateDataSize];
             readBuffer = new byte[allocateDataSize];
-            TestData.GetRandomBytes(fillData, allocateDataSize);
+            TestData.GetRandomBytes(TestData.SecureRandomSource, fillData, allocateDataSize);
             MemoryStreamSlimOptions = new MemoryStreamSlimOptions() { ZeroBufferBehavior = ZeroBuffers ? MemoryStreamSlimZeroBufferOption.OnRelease : MemoryStreamSlimZeroBufferOption.None };
         }
         //--------------------------------------------------------------------------------

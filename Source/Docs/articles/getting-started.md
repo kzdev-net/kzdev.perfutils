@@ -1,6 +1,6 @@
 # PerfUtils Documentation
 
-This documentation is for the `KZDev.PerfUtils` package, which contains the `MemoryStreamSlim` class. The following sections provide insight and information on usage, how the class operates, and information on performance benchmarks. For a full API reference, see the [API Reference](xref:KZDev.PerfUtils).
+This documentation is for the `KZDev.PerfUtils` package, which contains the `MemoryStreamSlim`, `StringBuilderCache` and `InterlockedOps` classes. The following sections provide insight and information on usage, how the classes operate, and information on performance benchmarks. For a full API reference, see the [API Reference](xref:KZDev.PerfUtils).
 
 ## MemoryStreamSlim
 
@@ -16,9 +16,21 @@ The [`Memory Management`](./memory-management.md) topic provides some insight in
 
 The [`Memory Monitoring`](./memory-monitoring.md) topic discusses how you can monitor memory usage and allocations with `MemoryStreamSlim` using the `Metrics` and `Events` features of the .NET runtime.
 
-The [`Benchmarks`](./benchmarks.md) topic covers the benchmarks used to examine the performance benefits provided by the `MemoryStreamSlim` class.
+The [`Benchmarks`](./memorystream-benchmarks.md) topic covers the benchmarks used to examine the performance benefits provided by the `MemoryStreamSlim` class.
+
+## StringBuilderCache
+
+`StringBuilder` is a mutable string class that can be used to build strings more memory efficiently than repeated concatenation. However, the `StringBuilder` class itself is frequently allocated and deallocated when used as well as the internal buffers used, which can cause memory pressure in high-throughput scenarios.
+
+The [`StringBuilderCache`](xref:KZDev.PerfUtils.StringBuilderCache) class is a static class that provides a thread-safe cache of `StringBuilder` instances to reduce the number of allocations and deallocations of `StringBuilder` objects.
+
+The [`StringBuilderCache`](./stringbuildercache.md) document topic discusses how to use the `StringBuilderCache` class and how it can help improve performance in your applications.
+
+The [`Benchmarks`](./stringbuildercache-benchmarks.md) topic covers the benchmarks used to examine the performance benefits provided by the `StringBuilderCache` class.
 
 ## Interlocked Operations
+
+The `Interlocked` class in the .NET Class Library provides a set of atomic operations that can be used to perform thread-safe operations on integer types. These operations are very useful for scenarios where multiple threads need to update a shared variable without interfering with each other.
 
 The [`InterlockedOps`](xref:KZDev.PerfUtils.InterlockedOps) class provides a set of static helper methods that provide additional functionality that is not currently available in the `Interlocked` class.
 

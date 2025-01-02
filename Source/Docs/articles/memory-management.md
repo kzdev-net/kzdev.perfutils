@@ -29,7 +29,21 @@ using (Stream stream = MemoryStreamSlim.Create(options => options.ZeroBufferBeha
 
 ## Releasing Memory
 
+One of the primary benefits of using `MemoryStreamSlim` is that it caches memory buffers for reuse by new stream instances. This can help reduce the number of allocations and deallocations performed and help prevent Large Object Heap (LOH) fragmentation. However, there are likely to be cases where you may have used a large `MemoryStreamSlim` instance that is not often used or is a one-off use. Also, there may be cases where a large amount of memory was used for many `MemoryStreamSlim` instances, but now that memory is no longer needed.
+
+To keep from letting the reserved memory buffers sit around indefinitely, excess memory buffers can be released for garbage collection. This is handled two different ways in `MemoryStreamSlim`; one is automatic and the other is manual.
+
+### Automatic Memory Release
+
+On a regularly scheduled basis, `MemoryStreamSlim` will check the memory buffers that are being held for reuse by new stream instances. If there are memory buffers that have not been used for a long period of time, they will be released for garbage collection. This is done to help prevent holding on to reserved, but unused memory buffers indefinitely. Letting the system manage this process is the best way to ensure that memory is released when it is no longer needed.
+
+Alternatively, you can manually release the memory buffers that are being held for reuse by new stream instances using the [`ReleaseMemoryBuffers`](xref:KZDev.PerfUtils.MemoryStreamSlim.ReleaseMemoryBuffers) method
+
+### Manual Memory Release - ReleaseMemoryBuffers
+
 `MemoryStreamSlim` provides a static [`ReleaseMemoryBuffers`](xref:KZDev.PerfUtils.MemoryStreamSlim.ReleaseMemoryBuffers) method that allows you to release the memory buffers being cached for use by the stream instances. This hints to the system that the memory buffers are no longer needed and can be released for garbage collection. After calling this method, the memory buffers will be released as soon as possible based on current usage and other factors. Still, the release of memory may not be immediate.
+
+> It is important to note that calling `ReleaseMemoryBuffers` will mark all the currently allocated memory buffers as eligible for release, and new memory segments needed for new instances of `MemoryStreamSlim` will be allocated as needed. This can cause a performance hit if the memory buffers are needed again soon after being released. This is also different than the automatic memory release process, which will only release memory buffers that have not been used for a long period of time.
 
 ```csharp
 using KZDev.PerfUtils;
