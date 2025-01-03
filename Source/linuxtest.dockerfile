@@ -2,11 +2,18 @@
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS dotnet6
 
 # Use the official .NET 8 SDK image as the base image for .NET 8
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS final
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS dotnet8
+
+# Use the official .NET 9 SDK image as the base image for .NET 8
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS final
 
 # Install .NET 6 SDK
 COPY --from=dotnet6 /usr/share/dotnet /usr/share/dotnet
 COPY --from=dotnet6 /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+
+# Install .NET 6 SDK
+COPY --from=dotnet8 /usr/share/dotnet /usr/share/dotnet
+COPY --from=dotnet8 /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 
 # Set the working directory inside the container
 WORKDIR /app
