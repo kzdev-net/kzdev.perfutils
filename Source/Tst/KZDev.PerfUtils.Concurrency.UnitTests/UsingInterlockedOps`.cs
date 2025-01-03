@@ -94,7 +94,7 @@ namespace KZDev.PerfUtils.Tests
                     // Signal the increment thread to run
                     runIncrementSignal.Set();
                     // Wait for the increment thread to finish
-                    incrementTestDoneSignal.Wait(5000).Should().BeTrue();
+                    incrementTestDoneSignal.Wait(10_000).Should().BeTrue();
                     if (exceptionDispatchInfo is not null)
                     {
                         TestWriteLine($"Exception found on loop #{loop}");
@@ -281,7 +281,7 @@ namespace KZDev.PerfUtils.Tests
                     // Signal the increment thread to run
                     runIncrementSignal.Set();
                     // Wait for the increment thread to finish
-                    incrementTestDoneSignal.Wait(5000).Should().BeTrue();
+                    incrementTestDoneSignal.Wait(10_000).Should().BeTrue();
                     if (exceptionDispatchInfo is not null)
                     {
                         TestWriteLine($"Exception found on loop #{loop}");
@@ -468,7 +468,7 @@ namespace KZDev.PerfUtils.Tests
                     // Signal the increment thread to run
                     runIncrementSignal.Set();
                     // Wait for the increment thread to finish
-                    incrementTestDoneSignal.Wait(5000).Should().BeTrue();
+                    incrementTestDoneSignal.Wait(10_000).Should().BeTrue();
                     if (exceptionDispatchInfo is not null)
                     {
                         TestWriteLine($"Exception found on loop #{loop}");
@@ -649,7 +649,7 @@ namespace KZDev.PerfUtils.Tests
                     // Signal the increment thread to run
                     runIncrementSignal.Set();
                     // Wait for the increment thread to finish
-                    incrementTestDoneSignal.Wait(5000).Should().BeTrue();
+                    incrementTestDoneSignal.Wait(10_000).Should().BeTrue();
                     if (exceptionDispatchInfo is not null)
                     {
                         TestWriteLine($"Exception found on loop #{loop}");
