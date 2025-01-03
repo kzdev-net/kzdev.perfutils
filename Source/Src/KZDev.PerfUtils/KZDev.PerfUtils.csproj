@@ -7,7 +7,7 @@
 	<PropertyGroup Label="Package">
 		<Title>KZDev Performance Utilities</Title>
 		<PackageId>KZDev.PerfUtils</PackageId>
-		<PackageTags>KZDev,Utilities,Performance,Concurrency,Interlocked,Interlocked-Xor,InterlockedOps,GC,Garbage-Collection,MemoryStream,MemoryStreamSlim,Stream</PackageTags>
+		<PackageTags>KZDev,Utilities,Performance,Concurrency,Interlocked,Interlocked-Xor,InterlockedOps,GC,Garbage-Collection,MemoryStream,MemoryStreamSlim,Stream,StringBuilder,StringBuilderCache</PackageTags>
 		<PackageReadmeFile>docs\README.md</PackageReadmeFile>
 		<PackageIcon>images\icon.png</PackageIcon>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
