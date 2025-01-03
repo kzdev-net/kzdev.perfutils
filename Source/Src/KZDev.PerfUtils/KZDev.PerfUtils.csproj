@@ -11,8 +11,8 @@
 		<PackageReadmeFile>docs\README.md</PackageReadmeFile>
 		<PackageIcon>images\icon.png</PackageIcon>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<PackageDescription>Performance utilities for .NET projects, including the 'MemoryStreamSlim' class; a high-performance, memory-efficient, and easy-to-use replacement for 'MemoryStream', and the 'InterlockedOps' class which has additional thread-safe atomic operations beyond those provided by the 'Interlocked' class.</PackageDescription>
-		<PackageReleaseNotes>Further MemoryStreamSlim performance enhancements and added InterlockedOps class (version 1.1.0).</PackageReleaseNotes>
+		<PackageDescription>Performance utilities for .NET projects, including the 'MemoryStreamSlim', 'StringBuilderCache', and 'InterlockedOps' classes.</PackageDescription>
+		<PackageReleaseNotes>MemoryStreamSlim idle memory trimming and added StringBuilder class (version 1.2.0).</PackageReleaseNotes>
 		<EmbedUntrackedSources>true</EmbedUntrackedSources>
 		<RepositoryUrl>https://github.com/kzdev-net/kzdev.perfutils</RepositoryUrl>
 	</PropertyGroup>

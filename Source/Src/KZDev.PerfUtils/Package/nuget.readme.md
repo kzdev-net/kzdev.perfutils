@@ -1,6 +1,10 @@
 # KZDev.PerfUtils
 
-This package contains the `MemoryStreamSlim` class; a high-performance, memory-efficient, and easy-to-use replacement for the `MemoryStream` class that provides particular performance benefits for large or frequently used streams. The package also contains the `InterlockedOps` class, which provides additional atomic thread-safe operations to extend the functionality of the `Interlocked` class in the .NET Class Library.
+The `KZDev.PerfUtils` package contains the following performance utility classes:
+
+- `MemoryStreamSlim` - a high-performance, memory-efficient, easy-to-use replacement for the `MemoryStream` class that provides particular performance benefits for large or frequently used streams. 
+- `StringBuilderCache` - a thread-safe cache of `StringBuilder` instances to improve speed and reduce the overhead of memory allocations associated with using the `StringBuilder` class. 
+- `InterlockedOps` - which provides additional atomic thread-safe operations to extend the functionality of the `Interlocked` class in the .NET Class Library.
 
 ## Features
 
@@ -11,6 +15,14 @@ This package contains the `MemoryStreamSlim` class; a high-performance, memory-e
 * Eliminates Large Object Heap (LOH) fragmentation caused by frequent use and release of single-byte arrays used by the standard `MemoryStream`.
 * Simple replacement for `MemoryStream` with the same API, other than the constructor.
 * Optionally allows using native memory for storage, which allows even more flexibility to minimize GC pressure.
+
+`StringBuilderCache` is a static class that provides a thread-safe cache of `StringBuilder` instances to reduce the number of allocations and deallocations of `StringBuilder` objects in high-throughput scenarios with simple operations:
+
+* Acquire : Get a `StringBuilder` instance from the cache.
+* Release : Return a `StringBuilder` instance to the cache.
+* GetStringAndRelease : Get the string from a `StringBuilder` instance and return it to the cache.
+* GetScope : Get a `using` scoped `StringBuilder` instance from the cache and return it to the cache when the scope is exited.
+* Monitoring with `Events` feature of the .NET runtime for detailed cache management.
 
 `InterlockedOps` is a static class providing the following thread-safe atomic operations:
 

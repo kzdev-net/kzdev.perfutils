@@ -99,6 +99,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Articles", "Articles", "{B9
 		Docs\articles\stringbuildercache-multithread-throughput-benchmarks.md = Docs\articles\stringbuildercache-multithread-throughput-benchmarks.md
 		Docs\articles\stringbuildercache-throughput-benchmarks.md = Docs\articles\stringbuildercache-throughput-benchmarks.md
 		Docs\articles\stringbuildercache.md = Docs\articles\stringbuildercache.md
+		Docs\articles\StringsBenchmarks.StringBuilderMultipleThreadThroughputBenchmarks-report-github.md = Docs\articles\StringsBenchmarks.StringBuilderMultipleThreadThroughputBenchmarks-report-github.md
+		Docs\articles\StringsBenchmarks.StringBuilderMultipleThreadThroughputBenchmarks-report.html = Docs\articles\StringsBenchmarks.StringBuilderMultipleThreadThroughputBenchmarks-report.html
+		Docs\articles\StringsBenchmarks.StringBuilderThroughputBenchmarks-report-github.md = Docs\articles\StringsBenchmarks.StringBuilderThroughputBenchmarks-report-github.md
+		Docs\articles\StringsBenchmarks.StringBuilderThroughputBenchmarks-report.html = Docs\articles\StringsBenchmarks.StringBuilderThroughputBenchmarks-report.html
 		Docs\articles\toc.yml = Docs\articles\toc.yml
 		Docs\articles\wrapper-throughput-benchmarks.md = Docs\articles\wrapper-throughput-benchmarks.md
 	EndProjectSection

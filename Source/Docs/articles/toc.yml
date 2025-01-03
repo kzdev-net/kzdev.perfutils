@@ -9,6 +9,21 @@
       href: stringbuildercache-monitoring.md
     - name: Benchmarks
       href: stringbuildercache-benchmarks.md
+      items:
+        - name: Single Thread Benchmarks
+          href: wrapper-throughput-benchmarks.md
+          items:
+            - name: Benchmark Results
+              href: StringsBenchmarks.StringBuilderThroughputBenchmarks-report-github.md
+            - name: Benchmark Results (Full HTML Table)
+              href: StringsBenchmarks.StringBuilderThroughputBenchmarks-report.html
+        - name: Multiple Thread Benchmarks
+          href: continuous-growth-throughput-benchmarks.md
+          items:
+            - name: Benchmark Results
+              href: StringsBenchmarks.StringBuilderMultipleThreadThroughputBenchmarks-report-github.md
+            - name: Benchmark Results (Full HTML Table)
+              href: StringsBenchmarks.StringBuilderMultipleThreadThroughputBenchmarks-report.html
 - name: Memory Stream
   href: memorystreamslim.md
   items:
