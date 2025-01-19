@@ -247,7 +247,7 @@ namespace KZDev.PerfUtils.Observability
             Task = Tasks.MemoryStreamSlim,
             Opcode = Opcodes.Create,
             Level = EventLevel.Informational)]
-        private void MemoryStreamSlimCreatedInternal (string streamId, long maximumCapacity, string mode, string zeroBehavior)
+        private void MemoryStreamSlimCreated (string streamId, long maximumCapacity, string mode, string zeroBehavior)
         {
             // We expect that the IsEnabled check is done in the caller
             WriteEvent(EventId_MemoryStreamSlimCreated, streamId, maximumCapacity, mode, zeroBehavior);
@@ -322,7 +322,7 @@ namespace KZDev.PerfUtils.Observability
             Task = Tasks.BufferMemory,
             Opcode = Opcodes.BufferAllocate,
             Level = EventLevel.Informational)]
-        private void BufferMemoryAllocateInternal (int allocationSize, string bufferType)
+        private void BufferMemoryAllocated (int allocationSize, string bufferType)
         {
             // We expect that the IsEnabled check is done in the caller
             WriteEvent(EventId_MemoryBufferAllocate, allocationSize, bufferType);
@@ -431,7 +431,7 @@ namespace KZDev.PerfUtils.Observability
             MemoryStreamSlimMode mode, MemoryStreamSlimSettings settings)
         {
             if (IsEnabled(EventLevel.Informational, Keywords.Create))
-                MemoryStreamSlimCreatedInternal(streamId, maximumCapacity, mode.GetString(), settings.ZeroBufferBehavior.GetString());
+                MemoryStreamSlimCreated(streamId, maximumCapacity, mode.GetString(), settings.ZeroBufferBehavior.GetString());
         }
         //--------------------------------------------------------------------------------
         /// <summary>
@@ -441,7 +441,7 @@ namespace KZDev.PerfUtils.Observability
         public void BufferGcMemoryAllocated (int allocationSize)
         {
             if (IsEnabled(EventLevel.Informational, Keywords.Memory))
-                BufferMemoryAllocateInternal(allocationSize, GcHeapMemoryTypeName);
+                BufferMemoryAllocated(allocationSize, GcHeapMemoryTypeName);
         }
         //--------------------------------------------------------------------------------
         /// <summary>
@@ -451,7 +451,7 @@ namespace KZDev.PerfUtils.Observability
         public void BufferNativeMemoryAllocated (int allocationSize)
         {
             if (IsEnabled(EventLevel.Informational, Keywords.Memory))
-                BufferMemoryAllocateInternal(allocationSize, NativeHeapMemoryTypeName);
+                BufferMemoryAllocated(allocationSize, NativeHeapMemoryTypeName);
         }
         //--------------------------------------------------------------------------------
         /// <summary>

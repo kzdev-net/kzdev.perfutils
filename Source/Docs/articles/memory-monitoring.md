@@ -60,7 +60,7 @@ This counter provides the number of buffer segments currently allocated from the
 
 For detailed monitoring of `MemoryStreamSlim` instances and memory management, you can use the `EventSource` events that are provided by the `PerfUtils` library with tools such as [`PerfView`](#perfview-example). The event source name is `KZDev.PerfUtils`. The following events are available.
 
-### MemoryStreamSlimCreate event
+### MemoryStreamSlimCreated event
 
 This event is raised when a new `MemoryStreamSlim` instance is created.
 
@@ -74,7 +74,7 @@ The following table shows the event information.
 
 | Event | Event ID | Raised when |
 | --- | --- | --- |
-MemoryStreamSlimCreate | 1 | A new MemoryStreamSlim instance is created. |
+MemoryStreamSlimCreated | 1 | A new MemoryStreamSlim instance is created. |
 
 The following table shows the event data.
 
@@ -86,7 +86,7 @@ The following table shows the event data.
 
 ---
 
-### MemoryStreamSlimDispose event
+### MemoryStreamSlimDisposed event
 
 This event is raised when a `MemoryStreamSlim` instance is disposed.
 
@@ -100,7 +100,7 @@ The following table shows the event information.
 
 | Event | Event ID | Raised when |
 | --- | --- | --- |
-MemoryStreamSlimDispose | 2 | A MemoryStreamSlim instance is diposed. |
+MemoryStreamSlimDisposed | 2 | A MemoryStreamSlim instance is diposed. |
 
 The following table shows the event data.
 
@@ -110,7 +110,7 @@ The following table shows the event data.
 
 ---
 
-### MemoryStreamSlimFinalize event
+### MemoryStreamSlimFinalized event
 
 This event is raised when a `MemoryStreamSlim` instance finalizer is executed. This event will not be raised if the `MemoryStreamSlim` instance is disposed properly.
 
@@ -124,7 +124,7 @@ The following table shows the event information.
 
 | Event | Event ID | Raised when |
 | --- | --- | --- |
-MemoryStreamSlimFinalize | 3 | A MemoryStreamSlim instance finalizer is executed. |
+MemoryStreamSlimFinalized | 3 | A MemoryStreamSlim instance finalizer is executed. |
 
 The following table shows the event data.
 
@@ -186,7 +186,7 @@ The following table shows the event data.
 
 ---
 
-### MemoryBufferAllocate event
+### BufferMemoryAllocated event
 
 This event is raised when a memory allocation is made for needed memory buffers.
 
@@ -200,7 +200,7 @@ The following table shows the event information.
 
 | Event | Event ID | Raised when |
 | --- | --- | --- |
-MemoryBufferAllocate | 6 | A memory allocation was made for needed memory buffers. |
+BufferMemoryAllocated | 6 | A memory allocation was made for needed memory buffers. |
 
 The following table shows the event data.
 
@@ -211,7 +211,7 @@ The following table shows the event data.
 
 ---
 
-### MemoryBufferRelease event
+### BufferMemoryRelease event
 
 This event is raised when a previous memory allocation for memory buffers is released.
 
@@ -225,7 +225,7 @@ The following table shows the event information.
 
 | Event | Event ID | Raised when |
 | --- | --- | --- |
-MemoryBufferRelease | 7 | A previous memory allocation for memory buffers is released. |
+BufferMemoryRelease | 7 | A previous memory allocation for memory buffers is released. |
 
 The following table shows the event data.
 
