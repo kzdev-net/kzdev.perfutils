@@ -18,9 +18,9 @@
     <!-- 
     Define source code project package version properties
    -->
-    <PropertyGroup Condition="'$(TargetFramework)' != 'net8.0'">
-		<PerfUtils-Pkg-System_Diagnostics_DiagnosticSource>8.0.1</PerfUtils-Pkg-System_Diagnostics_DiagnosticSource>
-    </PropertyGroup>
+    <ItemGroup Label="SourcePackageVersions" Condition="'$(TargetFramework)' == 'net6.0'">
+		<PackageVersion Include="System.Diagnostics.DiagnosticSource" Version="8.0.1" />
+    </ItemGroup>
 	<PropertyGroup Condition=" '$(Configuration)'=='Package' ">
         <IsPacking>true</IsPacking>
     </PropertyGroup>

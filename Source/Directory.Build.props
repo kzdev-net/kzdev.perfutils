@@ -7,13 +7,14 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <LangVersion>latest</LangVersion>
+        <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     </PropertyGroup>
     <!-- 
-    Define solution level package version properties
+    Define repository level package version properties
    -->
-    <PropertyGroup Label="PackageVersions">
-	    <PerfUtils-Pkg-Microsoft_Extensions_Configuration>8.0.0</PerfUtils-Pkg-Microsoft_Extensions_Configuration>
-	    <PerfUtils-Pkg-Microsoft_Extensions_DependencyInjection>8.0.1</PerfUtils-Pkg-Microsoft_Extensions_DependencyInjection>
-	    <PerfUtils-Pkg-Microsoft_Extensions_Hosting>8.0.1</PerfUtils-Pkg-Microsoft_Extensions_Hosting>
-    </PropertyGroup>
+    <ItemGroup Label="PackageVersions">
+        <PackageVersion Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
+        <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="8.0.1" />
+        <PackageVersion Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
+    </ItemGroup>
 </Project>

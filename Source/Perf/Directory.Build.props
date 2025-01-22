@@ -14,9 +14,9 @@
     <!-- 
     Define performance project package version properties
    -->
-    <PropertyGroup Label="PackageVersions">
-		<PerfUtils-Pkg-BenchmarkDotNet>0.14.0</PerfUtils-Pkg-BenchmarkDotNet>
-		<PerfUtils-Pkg-JetBrains_Profiler_Api>1.4.8</PerfUtils-Pkg-JetBrains_Profiler_Api>
-		<PerfUtils-Pkg-Microsoft_IO_RecyclableMemoryStream>3.0.1</PerfUtils-Pkg-Microsoft_IO_RecyclableMemoryStream>
-    </PropertyGroup>
+    <ItemGroup Label="PerfPackageVersions">
+	    <PackageVersion Include="BenchmarkDotNet" Version="0.14.0" />
+	    <PackageVersion Include="JetBrains.Profiler.Api" Version="1.4.8" />
+	    <PackageVersion Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.1" />
+    </ItemGroup>	
 </Project>

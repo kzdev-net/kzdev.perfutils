@@ -4,7 +4,7 @@
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)'=='net6.0'">
-		<PackageReference Include="System.Collections.Immutable" Version="$(PerfUtils-Pkg-System_Collections_Immutable)" />
+		<PackageReference Include="System.Collections.Immutable" />
 	</ItemGroup>
 
 	<ItemGroup>

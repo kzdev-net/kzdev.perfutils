@@ -9,12 +9,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="coverlet.collector" Version="$(PerfUtils-Pkg-coverlet_collector)">
+		<PackageReference Include="coverlet.collector" >
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(PerfUtils-Pkg-Microsoft_NET_Test_Sdk)" />
-		<PackageReference Include="xunit.runner.visualstudio" Version="$(PerfUtils-Pkg-xunit_runner_visualstudio)" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" />
+		<PackageReference Include="xunit.runner.visualstudio" />
 	</ItemGroup>
 
 	<ItemGroup>
