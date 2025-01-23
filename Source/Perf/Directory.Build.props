@@ -11,12 +11,4 @@
     Import the next higher level Directory.Build.props file. 
    -->
     <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)..\'))" />
-    <!-- 
-    Define performance project package version properties
-   -->
-    <ItemGroup Label="PerfPackageVersions">
-	    <PackageVersion Include="BenchmarkDotNet" Version="0.14.0" />
-	    <PackageVersion Include="JetBrains.Profiler.Api" Version="1.4.8" />
-	    <PackageVersion Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.1" />
-    </ItemGroup>	
 </Project>

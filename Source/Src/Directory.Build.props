@@ -15,12 +15,6 @@
         <Product>KZDev Performance Utilities</Product>
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     </PropertyGroup>
-    <!-- 
-    Define source code project package version properties
-   -->
-    <ItemGroup Label="SourcePackageVersions" Condition="'$(TargetFramework)' == 'net6.0'">
-		<PackageVersion Include="System.Diagnostics.DiagnosticSource" Version="8.0.1" />
-    </ItemGroup>
 	<PropertyGroup Condition=" '$(Configuration)'=='Package' ">
         <IsPacking>true</IsPacking>
     </PropertyGroup>

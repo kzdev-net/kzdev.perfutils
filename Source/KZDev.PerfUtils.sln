@@ -8,6 +8,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Source", "Source", "{8C579DDD-A752-46C3-9BBD-08FAC5EA0F2F}"
 	ProjectSection(SolutionItems) = preProject
 		Src\Directory.Build.props = Src\Directory.Build.props
+		Src\Directory.Packages.props = Src\Directory.Packages.props
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BD923567-7F19-4909-9ED9-FBC5A82A5252}"
@@ -16,6 +17,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		..\.gitignore = ..\.gitignore
 		Directory.Build.props = Directory.Build.props
 		global.json = global.json
+		Directory.Packages.props = Directory.Packages.props
 		..\LICENSE = ..\LICENSE
 		..\README.md = ..\README.md
 	EndProjectSection
@@ -23,6 +25,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{F8C76B35-0758-433E-953B-0D7E9D63DE13}"
 	ProjectSection(SolutionItems) = preProject
 		Tst\Directory.Build.props = Tst\Directory.Build.props
+		Tst\Directory.Packages.props = Tst\Directory.Packages.props
 		linuxtest.dockerfile = linuxtest.dockerfile
 		Tst\README.md = Tst\README.md
 	EndProjectSection
@@ -44,6 +47,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Performance", "Performance", "{FC849880-867F-4404-B3A7-A9E0D32B323B}"
 	ProjectSection(SolutionItems) = preProject
 		Perf\Directory.Build.props = Perf\Directory.Build.props
+		Perf\Directory.Packages.props = Perf\Directory.Packages.props
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MemoryStreamBenchmarks", "Perf\MemoryStreamBenchmarks\MemoryStreamBenchmarks.csproj", "{7D44A27D-9391-45F4-851E-79880E1B83DD}"
