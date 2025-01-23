@@ -4,7 +4,7 @@ _layout: landing
 
 # PerfUtils
 
-The `KZDev.PerfUtils` package contains the following performance utility classes:
+The [`KZDev.PerfUtils`](https://www.nuget.org/packages/KZDev.PerfUtils) package contains the following performance utility classes:
 
 - [`MemoryStreamSlim`](./articles/memorystreamslim.md) - a high-performance, memory-efficient, easy-to-use replacement for the `MemoryStream` class that provides particular performance benefits for large or frequently used streams. 
 - [`StringBuilderCache`](./articles/stringbuildercache.md) - a thread-safe cache of `StringBuilder` instances to improve speed and reduce the overhead of memory allocations associated with using the `StringBuilder` class. 
