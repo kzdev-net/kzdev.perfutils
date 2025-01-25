@@ -4,6 +4,7 @@
 using KZDev.PerfUtils.Internals;
 
 using Xunit.Abstractions;
+#pragma warning disable HAA0601
 
 /*
  * We minimize use of Fluent Assertions in this file because a number of these methods 

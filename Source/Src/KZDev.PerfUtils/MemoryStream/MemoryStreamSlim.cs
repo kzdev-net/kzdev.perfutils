@@ -91,7 +91,7 @@ namespace KZDev.PerfUtils
 
         /// <summary>
         /// Internal helper to get the value of the global setting for whether to use native 
-        /// memory buffers for large memory, this also shortcuts the check for the global settings
+        /// memory buffers for large memory, this also shortcuts/overrides the check for the global settings
         /// by checking if this is running in a browser environment.
         /// </summary>
         protected static bool InternalUseNativeLargeMemoryBuffers => !OperatingSystem.IsBrowser() && _useNativeMemoryBuffers;

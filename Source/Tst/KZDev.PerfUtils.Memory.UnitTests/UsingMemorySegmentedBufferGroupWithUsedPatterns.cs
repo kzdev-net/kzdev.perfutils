@@ -29,7 +29,7 @@ namespace KZDev.PerfUtils.Tests
         private static readonly FieldInfo BufferGroupSegmentCountField =
             typeof(MemorySegmentedBufferGroup)
                 .GetField("_segmentCount",
-                BindingFlags.NonPublic | BindingFlags.Instance);
+                BindingFlags.NonPublic | BindingFlags.Instance)!;
 
         /// <summary>
         /// The field information for the _segmentsInUse field in the buffer group.
@@ -37,7 +37,7 @@ namespace KZDev.PerfUtils.Tests
         private static readonly FieldInfo BufferGroupSegmentsInUseField =
             typeof(MemorySegmentedBufferGroup)
                 .GetField("_segmentsInUse",
-                BindingFlags.NonPublic | BindingFlags.Instance);
+                BindingFlags.NonPublic | BindingFlags.Instance)!;
 
         /// <summary>
         /// The field information for the _blockUsedFlags field in the buffer group.
@@ -45,7 +45,7 @@ namespace KZDev.PerfUtils.Tests
         private static readonly FieldInfo BlockUsedFlagsField =
             typeof(MemorySegmentedBufferGroup)
                 .GetField("_blockUsedFlags",
-                BindingFlags.NonPublic | BindingFlags.Instance);
+                BindingFlags.NonPublic | BindingFlags.Instance)!;
 
         /// <summary>
         /// The field information for the _blockZeroFlags field in the buffer group.
@@ -53,7 +53,7 @@ namespace KZDev.PerfUtils.Tests
         private static readonly FieldInfo BlockZeroFlagsField =
             typeof(MemorySegmentedBufferGroup)
                 .GetField("_blockZeroFlags",
-                BindingFlags.NonPublic | BindingFlags.Instance);
+                BindingFlags.NonPublic | BindingFlags.Instance)!;
         //--------------------------------------------------------------------------------
         /// <summary>
         /// For a given segment index, returns the index of the ulong in the block flag
@@ -81,7 +81,7 @@ namespace KZDev.PerfUtils.Tests
         /// The value of the _segmentCount field in the buffer group.
         /// </returns>
         private static int GetSegmentCount (MemorySegmentedBufferGroup bufferGroup) =>
-            (int)BufferGroupSegmentCountField.GetValue(bufferGroup);
+            (int)BufferGroupSegmentCountField.GetValue(bufferGroup)!;
         //--------------------------------------------------------------------------------
         /// <summary>
         /// Sets the count of segments in the buffer group using reflection.
@@ -94,7 +94,9 @@ namespace KZDev.PerfUtils.Tests
         /// </param>
         private static void SetSegmentCount (MemorySegmentedBufferGroup bufferGroup, int segmentCount)
         {
+#pragma warning disable HAA0601
             BufferGroupSegmentCountField.SetValue(bufferGroup, segmentCount);
+#pragma warning restore HAA0601
         }
         //--------------------------------------------------------------------------------
         /// <summary>

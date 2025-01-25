@@ -48,7 +48,9 @@ namespace KZDev.PerfUtils.Tests
         internal MemorySegmentedBufferPool GetTestBufferPool (bool useNativeMemory = false) => new(useNativeMemory);
         //--------------------------------------------------------------------------------
         /// <summary>
-        /// Gets a test group and pool for testing.
+        /// Gets a test <see cref="MemorySegmentedBufferGroup"/> as the subject under test
+        /// and a <see cref="MemorySegmentedBufferPool"/> for testing. The pool is used 
+        /// to represent the instance that would use the buffer group in a real application.
         /// </summary>
         /// <param name="useNativeMemory">
         /// Indicates if native memory should be used for the large memory buffer segments.

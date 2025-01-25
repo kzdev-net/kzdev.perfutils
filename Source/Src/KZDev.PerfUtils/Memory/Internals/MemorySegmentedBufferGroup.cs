@@ -902,9 +902,9 @@ namespace KZDev.PerfUtils.Internals
         {
             // Create the observable gauges for the total allocated memory.
 #pragma warning disable HAA0601
-            MemoryMeter.Meter.CreateObservableGauge("segment_memory.gc_allocated", static () => Volatile.Read(ref _totalGcSegmentsAllocated),
+            MemoryMeter.Meter.CreateObservableGauge("segment_memory.gc_allocated", static () => _totalGcSegmentsAllocated,
                 unit: "{segments}", description: $"The total number of GC heap segments (of {StandardBufferSegmentSize:N0} bytes) allocated for the segmented memory buffers");
-            MemoryMeter.Meter.CreateObservableGauge("segment_memory.native_allocated", static () => Volatile.Read(ref _totalNativeSegmentsAllocated),
+            MemoryMeter.Meter.CreateObservableGauge("segment_memory.native_allocated", static () => _totalNativeSegmentsAllocated,
                 unit: "{segments}", description: $"The total number of native heap segments (of {StandardBufferSegmentSize:N0} bytes) allocated for the segmented memory buffers");
 #pragma warning restore HAA0601
         }

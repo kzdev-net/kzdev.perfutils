@@ -171,7 +171,8 @@ namespace KZDev.PerfUtils.Internals
             }
             catch
             {
-                // Ignored - there really isn't anything we can do here.
+                // Ignored - there really isn't anything we can do here, but we want to 
+                // keep the exception from propagating.
             }
         }
         //--------------------------------------------------------------------------------

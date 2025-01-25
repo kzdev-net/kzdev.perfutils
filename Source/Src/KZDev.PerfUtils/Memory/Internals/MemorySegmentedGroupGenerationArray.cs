@@ -10,7 +10,7 @@ namespace KZDev.PerfUtils.Internals
     //################################################################################
     /// <summary>
     /// Holds an array of buffer groups with a generation number that are accessed as
-    /// a unit.
+    /// an atomic unit.
     /// </summary>
     [DebuggerDisplay($"{{{nameof(DebugDisplayValue)}}}")]
     internal class MemorySegmentedGroupGenerationArray
