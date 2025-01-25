@@ -388,7 +388,7 @@ namespace KZDev.PerfUtils.Tests
         /// Tests writing data to the stream and getting it back as an array using the ToArray 
         /// method and verifying that the array is the same as the data written.
         /// </summary>
-        [Fact]
+        [Fact(Explicit = true)]
         [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.LongRun)]
         public async Task UsingMemoryStreamSlim_GetArray_ReturnsCorrectData ()
         {
@@ -715,7 +715,7 @@ namespace KZDev.PerfUtils.Tests
         /// Tests writing data to a larger stream and verifying that the contents of the other 
         /// stream is correct.
         /// </summary>
-        [Fact]
+        [Fact(Explicit = true)]
         [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.LongRun)]
         public async Task UsingMemoryStreamSlim_CopyToLargerStream_OnManyThreads_CopiesCorrectDataAsync ()
         {
@@ -834,7 +834,7 @@ namespace KZDev.PerfUtils.Tests
         /// Tests writing data to a larger asynchronous stream and verifying that the contents of the other 
         /// stream is correct.
         /// </summary>
-        [Fact]
+        [Fact(Explicit = true)]
         [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.LongRun)]
         public async Task UsingMemoryStreamSlim_CopyToLargerAsyncStream_OnManyThreads_CopiesCorrectDataAsync ()
         {
@@ -1219,7 +1219,7 @@ namespace KZDev.PerfUtils.Tests
         /// Tests jumping around the stream space and randomly writing data to the stream and 
         /// verifying that the contents of the stream are consistent.
         /// </summary>
-        [Fact]
+        [Fact(Explicit = true)]
         [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.LongRun)]
         public void UsingMemoryStreamSlim_WriteWithChaos_WritesCorrectData ()
         {
@@ -1373,7 +1373,7 @@ namespace KZDev.PerfUtils.Tests
         /// Tests jumping around the stream space and randomly writing data to the stream and 
         /// verifying that the contents of the stream are consistent.
         /// </summary>
-        [Fact]
+        [Fact(Explicit = true)]
         [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.LongRun)]
         public async Task UsingMemoryStreamSlim_WriteWithChaos_OnManyThreads_WritesCorrectData ()
         {

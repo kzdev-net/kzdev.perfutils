@@ -3,8 +3,6 @@
 
 using KZDev.PerfUtils.Tests;
 
-using Xunit.Abstractions;
-
 using ThrowHelper = KZDev.PerfUtils.Helpers.ThrowHelper;
 
 namespace KZDev.PerfUtils.Common.UnitTests

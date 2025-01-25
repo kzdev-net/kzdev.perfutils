@@ -3,7 +3,6 @@
 
 using KZDev.PerfUtils.Internals;
 
-using Xunit.Abstractions;
 #pragma warning disable HAA0601
 
 /*

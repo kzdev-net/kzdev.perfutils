@@ -5,8 +5,6 @@ using FluentAssertions;
 
 using KZDev.PerfUtils.Tests;
 
-using Xunit.Abstractions;
-
 namespace KZDev.PerfUtils.Strings.UnitTests
 {
     //################################################################################

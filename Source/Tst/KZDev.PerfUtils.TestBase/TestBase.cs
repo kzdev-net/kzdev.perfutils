@@ -2,8 +2,7 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 using System.Diagnostics;
-
-using Xunit.Abstractions;
+using Xunit;
 
 namespace KZDev.PerfUtils.Tests
 {
@@ -13,6 +12,11 @@ namespace KZDev.PerfUtils.Tests
     /// </summary>
     public abstract class TestBase : TestData
     {
+        /// <summary>
+        /// The default time box for explicit tests.
+        /// </summary>
+        protected static readonly TimeSpan DefaultExplicitTestTimeBox = TimeSpan.FromMinutes(5);
+
         //--------------------------------------------------------------------------------
         /// <summary>
         /// The test output helper that can be used to output test messages

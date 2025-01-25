@@ -3,8 +3,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-using Xunit.Abstractions;
-
 namespace KZDev.PerfUtils.Tests
 {
     //################################################################################

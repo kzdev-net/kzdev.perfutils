@@ -3,8 +3,6 @@
 
 using FluentAssertions;
 
-using Xunit.Abstractions;
-
 namespace KZDev.PerfUtils.Tests
 {
     //################################################################################

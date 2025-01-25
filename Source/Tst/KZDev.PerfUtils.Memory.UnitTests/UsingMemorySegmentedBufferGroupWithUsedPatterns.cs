@@ -7,8 +7,6 @@ using FluentAssertions;
 
 using KZDev.PerfUtils.Internals;
 
-using Xunit.Abstractions;
-
 namespace KZDev.PerfUtils.Tests
 {
     //################################################################################
@@ -945,7 +943,7 @@ namespace KZDev.PerfUtils.Tests
         /// method to get the available buffers when the current used pattern is randomly generated.
         /// This should return a series of repeating segment buffers based on the pattern that are zeroed.
         /// </summary>
-        [Fact]
+        [Fact(Explicit = true)]
         [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.LongRun)]
         public void UsingMemorySegmentedBufferGroup_GetRemainingBuffers_WithRandomUsedPatterns_GetsProperBuffers ()
         {
@@ -1042,7 +1040,7 @@ namespace KZDev.PerfUtils.Tests
         /// method to get the available buffers when the current used pattern is randomly generated.
         /// This should return a series of repeating segment buffers based on the pattern that are zeroed.
         /// </summary>
-        [Fact]
+        [Fact(Explicit = true)]
         [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.LongRun)]
         public void UsingMemorySegmentedBufferGroup_GetRemainingBuffers_WithRandomUsedBlockFlags_GetsProperBuffers ()
         {
@@ -1544,7 +1542,7 @@ namespace KZDev.PerfUtils.Tests
         /// method to get the available buffers when the current used pattern is randomly generated.
         /// This should return a series of repeating segment buffers based on the pattern that are zeroed.
         /// </summary>
-        [Fact]
+        [Fact(Explicit = true)]
         [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.LongRun)]
         public void UsingMemorySegmentedBufferGroup_GetPreferredRemainingBuffers_WithRandomUsedPatterns_GetsProperBuffers ()
         {
@@ -1646,7 +1644,7 @@ namespace KZDev.PerfUtils.Tests
         /// method to get the available buffers when the current used pattern is randomly generated.
         /// This should return a series of repeating segment buffers based on the pattern that are zeroed.
         /// </summary>
-        [Fact]
+        [Fact(Explicit = true)]
         [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.LongRun)]
         public void UsingMemorySegmentedBufferGroup_GetPreferredRemainingBuffers_WithRandomUsedBlockFlags_GetsProperBuffers ()
         {
@@ -1730,7 +1728,7 @@ namespace KZDev.PerfUtils.Tests
         /// Tests the <see cref="MemorySegmentedBufferGroup.GetBuffer(int, bool, MemorySegmentedBufferPool)"/> 
         /// method to get random buffers when the current used pattern is randomly generated.
         /// </summary>
-        [Fact]
+        [Fact(Explicit = true)]
         [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.LongRun)]
         public void UsingMemorySegmentedBufferGroup_GetRandomBuffers_WithRandomUsedBlockFlags_GetsProperBuffers ()
         {
@@ -1840,7 +1838,7 @@ namespace KZDev.PerfUtils.Tests
         /// Tests the <see cref="MemorySegmentedBufferGroup.GetBuffer(int, bool, MemorySegmentedBufferPool)"/> 
         /// method to get random buffers when the current used pattern is randomly generated.
         /// </summary>
-        [Fact]
+        [Fact(Explicit = true)]
         [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.LongRun)]
         public void UsingMemorySegmentedBufferGroup_GetRandomBuffers_WithRandomUsedPatterns_GetsProperBuffers ()
         {
