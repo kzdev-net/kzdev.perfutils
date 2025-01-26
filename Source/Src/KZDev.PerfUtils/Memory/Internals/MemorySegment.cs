@@ -5,7 +5,6 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
-using KZDev.PerfUtils.Helpers;
 using KZDev.PerfUtils.Resources;
 
 namespace KZDev.PerfUtils.Internals
@@ -65,6 +64,9 @@ namespace KZDev.PerfUtils.Internals
             {
                 Debug.Assert(_nativePointer is not null, "The memory segment is not a native memory segment");
                 // We can get a new instance when requested here because the memory manager 
+                // is only used by the ReadOnlyMemory{byte} instance that is created by the
+                // AsReadOnlyMemory() method. That instance will be disposed of when it goes
+                // out of scope.
                 return NativeMemoryManager.GetManager(_nativePointer + _offset, _count);
             }
         }
@@ -77,7 +79,7 @@ namespace KZDev.PerfUtils.Internals
         /// </param>
         public MemorySegment (byte[] array)
         {
-            ArgumentNullException.ThrowIfNull(array);
+            Debug.Assert(array is not null, "The array is null");
 
             _managedArray = array;
             _offset = 0;
@@ -98,13 +100,10 @@ namespace KZDev.PerfUtils.Internals
         /// </param>
         public MemorySegment (byte[] array, int offset, int count)
         {
-            ArgumentNullException.ThrowIfNull(array);
-            if (offset < 0)
-                ThrowHelper.ThrowArgumentOutOfRangeException_NeedNonNegNum(nameof(offset));
-            if (count < 0)
-                ThrowHelper.ThrowArgumentOutOfRangeException_NeedNonNegNum(nameof(count));
-            if (((uint)offset > (uint)array.Length) || ((uint)count > (uint)(array.Length - offset)))
-                ThrowHelper.ThrowArgumentException_InvalidOffsetLength();
+            Debug.Assert(array is not null, "The array is null");
+            Debug.Assert(offset >= 0, "The offset is negative");
+            Debug.Assert(count >= 0, "The count is negative");
+            Debug.Assert(offset + count <= array.Length, "The offset and count exceed the array length");
 
             _managedArray = array;
             _offset = offset;
@@ -125,10 +124,9 @@ namespace KZDev.PerfUtils.Internals
         /// </param>
         public MemorySegment (byte* bufferBlock, int offset, int count)
         {
-            if (offset < 0)
-                ThrowHelper.ThrowArgumentOutOfRangeException_NeedNonNegNum(nameof(offset));
-            if (count < 0)
-                ThrowHelper.ThrowArgumentOutOfRangeException_NeedNonNegNum(nameof(count));
+            Debug.Assert(bufferBlock is not null, "The buffer block is null");
+            Debug.Assert(offset >= 0, "The offset is negative");
+            Debug.Assert(count >= 0, "The count is negative");
 
             _nativePointer = bufferBlock;
             _offset = offset;
@@ -173,10 +171,10 @@ namespace KZDev.PerfUtils.Internals
                 // Native memory...
                 // We create a new memory segment that is the combination of the previous buffer
                 // and the new buffer.
-                new MemorySegment (NativePointer, Offset, Count + nextSegment.Count) :
+                new MemorySegment(NativePointer, Offset, Count + nextSegment.Count) :
                 // We create a new memory segment that is the combination of the previous buffer
                 // and the new buffer.
-                new MemorySegment (Array, Offset, Count + nextSegment.Count);
+                new MemorySegment(Array, Offset, Count + nextSegment.Count);
         }
         //--------------------------------------------------------------------------------
         /// <summary>
@@ -189,20 +187,12 @@ namespace KZDev.PerfUtils.Internals
         {
             get
             {
-                if ((uint)index >= (uint)_count)
-                {
-                    ThrowHelper.ThrowArgumentOutOfRange_IndexMustBeLessException(nameof(index));
-                }
-
+                Debug.Assert((uint)index < (uint)_count, "The index is out of range");
                 return IsNative ? _nativePointer[_offset + index] : _managedArray![_offset + index];
             }
             set
             {
-                if ((uint)index >= (uint)_count)
-                {
-                    ThrowHelper.ThrowArgumentOutOfRange_IndexMustBeLessException(nameof(index));
-                }
-
+                Debug.Assert((uint)index < (uint)_count, "The index is out of range");
                 if (IsNative)
                     _nativePointer[_offset + index] = value;
                 else
@@ -306,10 +296,8 @@ namespace KZDev.PerfUtils.Internals
         /// </param>
         public void CopyTo (MemorySegment destination)
         {
-            if (_count > destination._count)
-            {
-                ThrowHelper.ThrowArgumentException_DestinationTooShort(nameof(destination));
-            }
+            Debug.Assert(destination._managedArray is not null, "The destination segment is not initialized");
+            Debug.Assert(destination._count >= _count, "The destination segment is too short");
 
             // This CopyTo method is only called for small buffers, and therefore never used for native memory.
             Debug.Assert(!IsNative, "This method should not be called for native memory");
@@ -353,11 +341,7 @@ namespace KZDev.PerfUtils.Internals
         /// </returns>
         public MemorySegment Slice (int index)
         {
-            if ((uint)index > (uint)_count)
-            {
-                ThrowHelper.ThrowArgumentOutOfRange_IndexMustBeLessOrEqualException(nameof(index));
-            }
-
+            Debug.Assert((uint)index <= (uint)_count, "The index is out of range");
             return new MemorySegment(_managedArray!, _offset + index, _count - index);
         }
         //--------------------------------------------------------------------------------
@@ -376,12 +360,11 @@ namespace KZDev.PerfUtils.Internals
         /// </returns>
         public MemorySegment Slice (int index, int count)
         {
-            if ((uint)index > (uint)_count || (uint)count > (uint)(_count - index))
-            {
-                ThrowHelper.ThrowArgumentOutOfRange_IndexMustBeLessOrEqualException(nameof(index));
-            }
+            Debug.Assert((uint)index <= (uint)_count, "The index is out of range");
+            Debug.Assert((uint)count <= (uint)(_count - index), "The count is out of range");
 
-            return IsNative ? new MemorySegment(_nativePointer, _offset + index, count) : new MemorySegment(_managedArray!, _offset + index, count);
+            return IsNative ? new MemorySegment(_nativePointer, _offset + index, count) :
+                new MemorySegment(_managedArray!, _offset + index, count);
         }
         //--------------------------------------------------------------------------------
         /// <summary>
