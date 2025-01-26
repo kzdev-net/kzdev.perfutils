@@ -1050,6 +1050,8 @@ namespace KZDev.PerfUtils.Internals
                     // Try to get the preferred segment first.
                     if (preferredFirstSegmentIndex >=0)
                     {
+                        // Since we are asking for a preferred segment, we can assign the returned value
+                        // of "SegmentReserved" to the "segmentIsPreferred" variable.
                         (segmentIsPreferred, segmentsZeroed) = TryReserveSegment(preferredFirstSegmentIndex);
                         if (segmentIsPreferred)
                             reservedSegmentIndex = preferredFirstSegmentIndex;

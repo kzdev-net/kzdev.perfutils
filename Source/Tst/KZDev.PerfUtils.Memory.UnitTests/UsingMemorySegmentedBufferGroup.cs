@@ -35,8 +35,9 @@ namespace KZDev.PerfUtils.Tests
         /// Tests getting instances of the <see cref="MemorySegmentedBufferGroup"/> class with 
         /// various segment counts and verifies that the segment count is correct.
         /// </summary>
-        [Fact]
-        public void UsingMemorySegmentedBufferGroup_GettingInstanceWithVariousSegmentCounts_SegmentCountIsCorrect ()
+        [Theory]
+        [ClassData(typeof(BoolValuesData))]
+        public void UsingMemorySegmentedBufferGroup_GettingInstanceWithVariousSegmentCounts_SegmentCountIsCorrect (bool useNativeMemory)
         {
             for (int testLoop = 0; testLoop < 100; testLoop++)
             {
@@ -50,10 +51,11 @@ namespace KZDev.PerfUtils.Tests
         /// Tests getting a buffer from the <see cref="MemorySegmentedBufferGroup"/> class
         /// requesting all the segments and verifies that the buffer is the correct size.
         /// </summary>
-        [Fact]
-        public void UsingMemorySegmentedBufferGroup_GetFullGroupBuffer_ReturnsProperBuffer ()
+        [Theory]
+        [ClassData(typeof(BoolValuesData))]
+        public void UsingMemorySegmentedBufferGroup_GetFullGroupBuffer_ReturnsProperBuffer (bool useNativeMemory)
         {
-            (MemorySegmentedBufferGroup sut, MemorySegmentedBufferPool bufferPool) = GetTestGroupAndPool();
+            (MemorySegmentedBufferGroup sut, MemorySegmentedBufferPool bufferPool) = GetTestGroupAndPool(useNativeMemory: useNativeMemory);
             int requestBufferSize = MemorySegmentedBufferGroup.StandardBufferSegmentSize * sut.SegmentCount;
 
             (SegmentBuffer buffer, GetBufferResult result) = sut.GetBuffer(requestBufferSize, false, bufferPool);
@@ -70,10 +72,11 @@ namespace KZDev.PerfUtils.Tests
         /// requesting more segments than are available and verifies that we get a buffer
         /// with as many segments as are available.
         /// </summary>
-        [Fact]
-        public void UsingMemorySegmentedBufferGroup_TryTooLargeGetBuffer_ReturnsSegmentWithPartOfRequest ()
+        [Theory]
+        [ClassData(typeof(BoolValuesData))]
+        public void UsingMemorySegmentedBufferGroup_TryTooLargeGetBuffer_ReturnsSegmentWithPartOfRequest (bool useNativeMemory)
         {
-            (MemorySegmentedBufferGroup sut, MemorySegmentedBufferPool bufferPool) = GetTestGroupAndPool();
+            (MemorySegmentedBufferGroup sut, MemorySegmentedBufferPool bufferPool) = GetTestGroupAndPool(useNativeMemory: useNativeMemory);
             int expectedBufferSize = MemorySegmentedBufferGroup.StandardBufferSegmentSize * sut.SegmentCount;
             int requestBufferSize = expectedBufferSize + MemorySegmentedBufferGroup.StandardBufferSegmentSize;
 
@@ -91,10 +94,11 @@ namespace KZDev.PerfUtils.Tests
         /// requesting various segments and verifying that we get the full number of segments
         /// in the different buffers, and they are all the correct size.
         /// </summary>
-        [Fact]
-        public void UsingMemorySegmentedBufferGroup_GetThreeBuffers_BuffersReturnedAreCorrectSizeAndValues ()
+        [Theory]
+        [ClassData(typeof(BoolValuesData))]
+        public void UsingMemorySegmentedBufferGroup_GetThreeBuffers_BuffersReturnedAreCorrectSizeAndValues (bool useNativeMemory)
         {
-            (MemorySegmentedBufferGroup sut, MemorySegmentedBufferPool bufferPool) = GetTestGroupAndPool();
+            (MemorySegmentedBufferGroup sut, MemorySegmentedBufferPool bufferPool) = GetTestGroupAndPool(useNativeMemory: useNativeMemory);
             int availableSegments = sut.SegmentCount;
             int[] getSegments = new int[3];
             // We don't want single segment buffers
@@ -125,10 +129,11 @@ namespace KZDev.PerfUtils.Tests
         /// Tests getting a single segment buffer from the <see cref="MemorySegmentedBufferGroup"/> class
         /// which should be allocated at the start of the buffer group.
         /// </summary>
-        [Fact]
-        public void UsingMemorySegmentedBufferGroup_GetSingleNonZeroedSegmentBuffer_ShouldAllocateFromTheStart ()
+        [Theory]
+        [ClassData(typeof(BoolValuesData))]
+        public void UsingMemorySegmentedBufferGroup_GetSingleNonZeroedSegmentBuffer_ShouldAllocateFromTheStart (bool useNativeMemory)
         {
-            (MemorySegmentedBufferGroup sut, MemorySegmentedBufferPool bufferPool) = GetTestGroupAndPool();
+            (MemorySegmentedBufferGroup sut, MemorySegmentedBufferPool bufferPool) = GetTestGroupAndPool(useNativeMemory: useNativeMemory);
             int bufferSize = MemorySegmentedBufferGroup.StandardBufferSegmentSize;
 
             (SegmentBuffer buffer, GetBufferResult result) = sut.GetBuffer(bufferSize, false, bufferPool);
@@ -144,10 +149,11 @@ namespace KZDev.PerfUtils.Tests
         /// Tests getting a single segment buffer from the <see cref="MemorySegmentedBufferGroup"/> class
         /// which should be allocated at the start of the free segments in the buffer group.
         /// </summary>
-        [Fact]
-        public void UsingMemorySegmentedBufferGroup_GetSingleNonZeroedSegmentBuffer_ShouldAllocateFromTheStartOfAvailable ()
+        [Theory]
+        [ClassData(typeof(BoolValuesData))]
+        public void UsingMemorySegmentedBufferGroup_GetSingleNonZeroedSegmentBuffer_ShouldAllocateFromTheStartOfAvailable (bool useNativeMemory)
         {
-            (MemorySegmentedBufferGroup sut, MemorySegmentedBufferPool bufferPool) = GetTestGroupAndPool();
+            (MemorySegmentedBufferGroup sut, MemorySegmentedBufferPool bufferPool) = GetTestGroupAndPool(useNativeMemory: useNativeMemory);
             int bufferSize = MemorySegmentedBufferGroup.StandardBufferSegmentSize;
             int markSegmentCount = sut.SegmentCount / 2;
 
@@ -166,10 +172,11 @@ namespace KZDev.PerfUtils.Tests
         /// Tests getting a single segment buffer from the <see cref="MemorySegmentedBufferGroup"/> class
         /// which should be allocated at the end of the free segments in the buffer group.
         /// </summary>
-        [Fact]
-        public void UsingMemorySegmentedBufferGroup_GetSingleNonZeroedSegmentBuffer_FromSingleAvailableSegments_ShouldAllocateFromAvailableSegment ()
+        [Theory]
+        [ClassData(typeof(BoolValuesData))]
+        public void UsingMemorySegmentedBufferGroup_GetSingleNonZeroedSegmentBuffer_FromSingleAvailableSegments_ShouldAllocateFromAvailableSegment (bool useNativeMemory)
         {
-            (MemorySegmentedBufferGroup sut, MemorySegmentedBufferPool bufferPool) = GetTestGroupAndPool();
+            (MemorySegmentedBufferGroup sut, MemorySegmentedBufferPool bufferPool) = GetTestGroupAndPool(useNativeMemory: useNativeMemory);
             int bufferSize = MemorySegmentedBufferGroup.StandardBufferSegmentSize;
             int markSegmentIndex = sut.SegmentCount - 1;
 
@@ -193,10 +200,11 @@ namespace KZDev.PerfUtils.Tests
         /// Tests getting a single segment buffer from the <see cref="MemorySegmentedBufferGroup"/> class
         /// which should be allocated at the start of the buffer group.
         /// </summary>
-        [Fact]
-        public void UsingMemorySegmentedBufferGroup_GetSingleZeroedSegmentBuffer_ShouldAllocateFromTheStart ()
+        [Theory]
+        [ClassData(typeof(BoolValuesData))]
+        public void UsingMemorySegmentedBufferGroup_GetSingleZeroedSegmentBuffer_ShouldAllocateFromTheStart (bool useNativeMemory)
         {
-            (MemorySegmentedBufferGroup sut, MemorySegmentedBufferPool bufferPool) = GetTestGroupAndPool();
+            (MemorySegmentedBufferGroup sut, MemorySegmentedBufferPool bufferPool) = GetTestGroupAndPool(useNativeMemory: useNativeMemory);
             int bufferSize = MemorySegmentedBufferGroup.StandardBufferSegmentSize;
 
             (SegmentBuffer buffer, GetBufferResult result) = sut.GetBuffer(bufferSize, true, bufferPool);
@@ -213,10 +221,11 @@ namespace KZDev.PerfUtils.Tests
         /// Tests getting a single segment buffer from the <see cref="MemorySegmentedBufferGroup"/> class
         /// which should be allocated at the start of the free segments in the buffer group.
         /// </summary>
-        [Fact]
-        public void UsingMemorySegmentedBufferGroup_GetSingleZeroedSegmentBuffer_ShouldAllocateFromTheStartOfAvailable ()
+        [Theory]
+        [ClassData(typeof(BoolValuesData))]
+        public void UsingMemorySegmentedBufferGroup_GetSingleZeroedSegmentBuffer_ShouldAllocateFromTheStartOfAvailable (bool useNativeMemory)
         {
-            (MemorySegmentedBufferGroup sut, MemorySegmentedBufferPool bufferPool) = GetTestGroupAndPool();
+            (MemorySegmentedBufferGroup sut, MemorySegmentedBufferPool bufferPool) = GetTestGroupAndPool(useNativeMemory: useNativeMemory);
             int bufferSize = MemorySegmentedBufferGroup.StandardBufferSegmentSize;
             int markSegmentCount = sut.SegmentCount / 2;
 
@@ -236,10 +245,11 @@ namespace KZDev.PerfUtils.Tests
         /// Tests getting a single segment buffer from the <see cref="MemorySegmentedBufferGroup"/> class
         /// which should be allocated at the end of the free segments in the buffer group.
         /// </summary>
-        [Fact]
-        public void UsingMemorySegmentedBufferGroup_GetSingleZeroedSegmentBuffer_FromSingleAvailableSegments_ShouldAllocateFromAvailableSegment ()
+        [Theory]
+        [ClassData(typeof(BoolValuesData))]
+        public void UsingMemorySegmentedBufferGroup_GetSingleZeroedSegmentBuffer_FromSingleAvailableSegments_ShouldAllocateFromAvailableSegment (bool useNativeMemory)
         {
-            (MemorySegmentedBufferGroup sut, MemorySegmentedBufferPool bufferPool) = GetTestGroupAndPool();
+            (MemorySegmentedBufferGroup sut, MemorySegmentedBufferPool bufferPool) = GetTestGroupAndPool(useNativeMemory: useNativeMemory);
             int bufferSize = MemorySegmentedBufferGroup.StandardBufferSegmentSize;
             int markSegmentIndex = sut.SegmentCount - 1;
 
@@ -264,10 +274,11 @@ namespace KZDev.PerfUtils.Tests
         /// Tests getting a single segment buffer from the <see cref="MemorySegmentedBufferGroup"/> class
         /// one more time than there are segments and verifies that we get the proper result.
         /// </summary>
-        [Fact]
-        public void UsingMemorySegmentedBufferGroup_GetSingleSegmentAfterFull_ShouldReturnFullResult ()
+        [Theory]
+        [ClassData(typeof(BoolValuesData))]
+        public void UsingMemorySegmentedBufferGroup_GetSingleSegmentAfterFull_ShouldReturnFullResult (bool useNativeMemory)
         {
-            (MemorySegmentedBufferGroup sut, MemorySegmentedBufferPool bufferPool) = GetTestGroupAndPool();
+            (MemorySegmentedBufferGroup sut, MemorySegmentedBufferPool bufferPool) = GetTestGroupAndPool(useNativeMemory: useNativeMemory);
             int bufferSize = MemorySegmentedBufferGroup.StandardBufferSegmentSize;
 
             for (int segmentNumber = 0; segmentNumber < sut.SegmentCount; segmentNumber++)
@@ -298,10 +309,11 @@ namespace KZDev.PerfUtils.Tests
         /// Tests getting a single preferred segment buffer from the <see cref="MemorySegmentedBufferGroup"/> class
         /// which should be allocated at the preferred segment index.
         /// </summary>
-        [Fact]
-        public void UsingMemorySegmentedBufferGroup_GetSinglePreferredSegmentBuffer_ShouldAllocateStartingAtPreferredIndex ()
+        [Theory]
+        [ClassData(typeof(BoolValuesData))]
+        public void UsingMemorySegmentedBufferGroup_GetSinglePreferredSegmentBuffer_ShouldAllocateStartingAtPreferredIndex (bool useNativeMemory)
         {
-            (MemorySegmentedBufferGroup sut, MemorySegmentedBufferPool bufferPool) = GetTestGroupAndPool();
+            (MemorySegmentedBufferGroup sut, MemorySegmentedBufferPool bufferPool) = GetTestGroupAndPool(useNativeMemory: useNativeMemory);
             int requestFirstBufferSize = MemorySegmentedBufferGroup.StandardBufferSegmentSize * GetTestInteger(1, sut.SegmentCount);
 
             (SegmentBuffer buffer, GetBufferResult result) = sut.GetBuffer(requestFirstBufferSize, false, bufferPool);
@@ -324,10 +336,11 @@ namespace KZDev.PerfUtils.Tests
         /// Tests getting a single preferred segment buffer from the <see cref="MemorySegmentedBufferGroup"/> class
         /// which should be allocated at the preferred segment index.
         /// </summary>
-        [Fact]
-        public void UsingMemorySegmentedBufferGroup_GetSinglePreferredSegmentBuffer_FromSingleAvailableSegment_ShouldAllocateStartingAtPreferredIndex ()
+        [Theory]
+        [ClassData(typeof(BoolValuesData))]
+        public void UsingMemorySegmentedBufferGroup_GetSinglePreferredSegmentBuffer_FromSingleAvailableSegment_ShouldAllocateStartingAtPreferredIndex (bool useNativeMemory)
         {
-            (MemorySegmentedBufferGroup sut, MemorySegmentedBufferPool bufferPool) = GetTestGroupAndPool();
+            (MemorySegmentedBufferGroup sut, MemorySegmentedBufferPool bufferPool) = GetTestGroupAndPool(useNativeMemory: useNativeMemory);
             int requestFirstBufferSize = MemorySegmentedBufferGroup.StandardBufferSegmentSize * (sut.SegmentCount - 1);
 
             (SegmentBuffer buffer, GetBufferResult result) = sut.GetBuffer(requestFirstBufferSize, false, bufferPool);
@@ -356,10 +369,11 @@ namespace KZDev.PerfUtils.Tests
         /// Tests getting a multiple segment buffer from the <see cref="MemorySegmentedBufferGroup"/> class
         /// which should be allocated at the end of the buffer group.
         /// </summary>
-        [Fact]
-        public void UsingMemorySegmentedBufferGroup_GetMultipleNonZeroedSegmentBuffer_ShouldAllocateFromTheStart ()
+        [Theory]
+        [ClassData(typeof(BoolValuesData))]
+        public void UsingMemorySegmentedBufferGroup_GetMultipleNonZeroedSegmentBuffer_ShouldAllocateFromTheStart (bool useNativeMemory)
         {
-            (MemorySegmentedBufferGroup sut, MemorySegmentedBufferPool bufferPool) = GetTestGroupAndPool();
+            (MemorySegmentedBufferGroup sut, MemorySegmentedBufferPool bufferPool) = GetTestGroupAndPool(useNativeMemory: useNativeMemory);
             int segmentCount = GetTestInteger(2, sut.SegmentCount);
             int bufferSize = segmentCount * MemorySegmentedBufferGroup.StandardBufferSegmentSize;
 
@@ -376,10 +390,11 @@ namespace KZDev.PerfUtils.Tests
         /// Tests getting a multiple segment buffer from the <see cref="MemorySegmentedBufferGroup"/> class
         /// which should be allocated at the end of the free segments in the buffer group.
         /// </summary>
-        [Fact]
-        public void UsingMemorySegmentedBufferGroup_GetMultipleNonZeroedSegmentBuffer_ShouldAllocateFromTheStartOfAvailable ()
+        [Theory]
+        [ClassData(typeof(BoolValuesData))]
+        public void UsingMemorySegmentedBufferGroup_GetMultipleNonZeroedSegmentBuffer_ShouldAllocateFromTheStartOfAvailable (bool useNativeMemory)
         {
-            (MemorySegmentedBufferGroup sut, MemorySegmentedBufferPool bufferPool) = GetTestGroupAndPool();
+            (MemorySegmentedBufferGroup sut, MemorySegmentedBufferPool bufferPool) = GetTestGroupAndPool(useNativeMemory: useNativeMemory);
             int segmentCount = GetTestInteger(2, sut.SegmentCount - 4);
             int bufferSize = segmentCount * MemorySegmentedBufferGroup.StandardBufferSegmentSize;
             int markSegmentCount = GetTestInteger(1, sut.SegmentCount - segmentCount + 1);
@@ -399,10 +414,11 @@ namespace KZDev.PerfUtils.Tests
         /// Tests getting a multiple segment buffer from the <see cref="MemorySegmentedBufferGroup"/> class
         /// which should be allocated at the end of the free segments in the buffer group.
         /// </summary>
-        [Fact]
-        public void UsingMemorySegmentedBufferGroup_GetMultipleNonZeroedSegmentBuffer_FromSingleAvailableSegments_ShouldAllocateFromAvailableSegment ()
+        [Theory]
+        [ClassData(typeof(BoolValuesData))]
+        public void UsingMemorySegmentedBufferGroup_GetMultipleNonZeroedSegmentBuffer_FromSingleAvailableSegments_ShouldAllocateFromAvailableSegment (bool useNativeMemory)
         {
-            (MemorySegmentedBufferGroup sut, MemorySegmentedBufferPool bufferPool) = GetTestGroupAndPool();
+            (MemorySegmentedBufferGroup sut, MemorySegmentedBufferPool bufferPool) = GetTestGroupAndPool(useNativeMemory: useNativeMemory);
 
             for (int fillSegmentCount = 1; fillSegmentCount < sut.SegmentCount - 2; fillSegmentCount++)
             {
@@ -426,10 +442,11 @@ namespace KZDev.PerfUtils.Tests
         /// Tests getting a multiple segment buffer from the <see cref="MemorySegmentedBufferGroup"/> class
         /// which should be allocated at the end of the buffer group.
         /// </summary>
-        [Fact]
-        public void UsingMemorySegmentedBufferGroup_GetMultipleZeroedSegmentBuffer_ShouldAllocateFromTheStart ()
+        [Theory]
+        [ClassData(typeof(BoolValuesData))]
+        public void UsingMemorySegmentedBufferGroup_GetMultipleZeroedSegmentBuffer_ShouldAllocateFromTheStart (bool useNativeMemory)
         {
-            (MemorySegmentedBufferGroup sut, MemorySegmentedBufferPool bufferPool) = GetTestGroupAndPool();
+            (MemorySegmentedBufferGroup sut, MemorySegmentedBufferPool bufferPool) = GetTestGroupAndPool(useNativeMemory: useNativeMemory);
             int segmentCount = GetTestInteger(2, sut.SegmentCount);
             int bufferSize = segmentCount * MemorySegmentedBufferGroup.StandardBufferSegmentSize;
 
@@ -447,10 +464,11 @@ namespace KZDev.PerfUtils.Tests
         /// Tests getting a multiple segment buffer from the <see cref="MemorySegmentedBufferGroup"/> class
         /// which should be allocated at the end of the free segments in the buffer group.
         /// </summary>
-        [Fact]
-        public void UsingMemorySegmentedBufferGroup_GetMultipleZeroedSegmentBuffer_ShouldAllocateFromTheStartOfAvailable ()
+        [Theory]
+        [ClassData(typeof(BoolValuesData))]
+        public void UsingMemorySegmentedBufferGroup_GetMultipleZeroedSegmentBuffer_ShouldAllocateFromTheStartOfAvailable (bool useNativeMemory)
         {
-            (MemorySegmentedBufferGroup sut, MemorySegmentedBufferPool bufferPool) = GetTestGroupAndPool();
+            (MemorySegmentedBufferGroup sut, MemorySegmentedBufferPool bufferPool) = GetTestGroupAndPool(useNativeMemory: useNativeMemory);
             int segmentCount = GetTestInteger(2, sut.SegmentCount - 4);
             int bufferSize = segmentCount * MemorySegmentedBufferGroup.StandardBufferSegmentSize;
             int markSegmentCount = GetTestInteger(1, sut.SegmentCount - segmentCount + 1);
@@ -471,10 +489,11 @@ namespace KZDev.PerfUtils.Tests
         /// Tests getting a multiple segment buffer from the <see cref="MemorySegmentedBufferGroup"/> class
         /// which should be allocated at the end of the free segments in the buffer group.
         /// </summary>
-        [Fact]
-        public void UsingMemorySegmentedBufferGroup_GetMultipleZeroedSegmentBuffer_FromSingleAvailableSegments_ShouldAllocateFromAvailableSegment ()
+        [Theory]
+        [ClassData(typeof(BoolValuesData))]
+        public void UsingMemorySegmentedBufferGroup_GetMultipleZeroedSegmentBuffer_FromSingleAvailableSegments_ShouldAllocateFromAvailableSegment (bool useNativeMemory)
         {
-            (MemorySegmentedBufferGroup sut, MemorySegmentedBufferPool bufferPool) = GetTestGroupAndPool();
+            (MemorySegmentedBufferGroup sut, MemorySegmentedBufferPool bufferPool) = GetTestGroupAndPool(useNativeMemory: useNativeMemory);
 
             for (int fillSegmentCount = 1; fillSegmentCount < sut.SegmentCount - 2; fillSegmentCount++)
             {
@@ -500,10 +519,11 @@ namespace KZDev.PerfUtils.Tests
         /// from a group that has a series of free holes that are progressively larger but none are large enough
         /// to fulfill the request, and this should return the largest available.
         /// </summary>
-        [Fact]
-        public void UsingMemorySegmentedBufferGroup_GetMultipleSegmentBuffer_LargerThanAvailable_WithProgressivelyLargerHoles_ShouldReturnLargestAvailable ()
+        [Theory]
+        [ClassData(typeof(BoolValuesData))]
+        public void UsingMemorySegmentedBufferGroup_GetMultipleSegmentBuffer_LargerThanAvailable_WithProgressivelyLargerHoles_ShouldReturnLargestAvailable (bool useNativeMemory)
         {
-            (MemorySegmentedBufferGroup sut, MemorySegmentedBufferPool bufferPool) = GetTestGroupAndPool();
+            (MemorySegmentedBufferGroup sut, MemorySegmentedBufferPool bufferPool) = GetTestGroupAndPool(useNativeMemory: useNativeMemory);
 
             sut.SetAllSegmentsUsed();
             int currentOpenSegmentCount = 1;
@@ -535,10 +555,11 @@ namespace KZDev.PerfUtils.Tests
         /// from a group that has a series of free holes that are progressively smaller but none are large enough
         /// to fulfill the request, and this should return the largest available.
         /// </summary>
-        [Fact]
-        public void UsingMemorySegmentedBufferGroup_GetMultipleSegmentBuffer_LargerThanAvailable_WithProgressivelySmallerHoles_ShouldReturnLargestAvailable ()
+        [Theory]
+        [ClassData(typeof(BoolValuesData))]
+        public void UsingMemorySegmentedBufferGroup_GetMultipleSegmentBuffer_LargerThanAvailable_WithProgressivelySmallerHoles_ShouldReturnLargestAvailable (bool useNativeMemory)
         {
-            (MemorySegmentedBufferGroup sut, MemorySegmentedBufferPool bufferPool) = GetTestGroupAndPool();
+            (MemorySegmentedBufferGroup sut, MemorySegmentedBufferPool bufferPool) = GetTestGroupAndPool(useNativeMemory: useNativeMemory);
 
             sut.SetAllSegmentsUsed();
             int currentOpenSegmentCount = 1;
@@ -575,10 +596,11 @@ namespace KZDev.PerfUtils.Tests
         /// Tests getting a multiple preferred segment buffer from the <see cref="MemorySegmentedBufferGroup"/> class
         /// which should be allocated at the preferred segment index.
         /// </summary>
-        [Fact]
-        public void UsingMemorySegmentedBufferGroup_GetMultiplePreferredSegmentBuffer_ShouldAllocateStartingAtPreferredIndex ()
+        [Theory]
+        [ClassData(typeof(BoolValuesData))]
+        public void UsingMemorySegmentedBufferGroup_GetMultiplePreferredSegmentBuffer_ShouldAllocateStartingAtPreferredIndex (bool useNativeMemory)
         {
-            (MemorySegmentedBufferGroup sut, MemorySegmentedBufferPool bufferPool) = GetTestGroupAndPool();
+            (MemorySegmentedBufferGroup sut, MemorySegmentedBufferPool bufferPool) = GetTestGroupAndPool(useNativeMemory: useNativeMemory);
             int firstRequestSegmentCount = GetTestInteger(1, sut.SegmentCount - 1);
             int requestFirstBufferSize = MemorySegmentedBufferGroup.StandardBufferSegmentSize * firstRequestSegmentCount;
 
@@ -603,10 +625,11 @@ namespace KZDev.PerfUtils.Tests
         /// Tests getting a multiple preferred segment buffer from the <see cref="MemorySegmentedBufferGroup"/> class
         /// which should be allocated at the preferred segment index.
         /// </summary>
-        [Fact]
-        public void UsingMemorySegmentedBufferGroup_GetMultiplePreferredSegmentBuffer_FromSingleAvailableSegment_ShouldAllocateStartingAtPreferredIndex ()
+        [Theory]
+        [ClassData(typeof(BoolValuesData))]
+        public void UsingMemorySegmentedBufferGroup_GetMultiplePreferredSegmentBuffer_FromSingleAvailableSegment_ShouldAllocateStartingAtPreferredIndex (bool useNativeMemory)
         {
-            (MemorySegmentedBufferGroup sut, MemorySegmentedBufferPool bufferPool) = GetTestGroupAndPool();
+            (MemorySegmentedBufferGroup sut, MemorySegmentedBufferPool bufferPool) = GetTestGroupAndPool(useNativeMemory: useNativeMemory);
             int requestFirstBufferSize = MemorySegmentedBufferGroup.StandardBufferSegmentSize * (sut.SegmentCount - 1);
 
             (SegmentBuffer buffer, GetBufferResult result) = sut.GetBuffer(requestFirstBufferSize, false, bufferPool);

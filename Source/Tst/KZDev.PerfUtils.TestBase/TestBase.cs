@@ -12,6 +12,20 @@ namespace KZDev.PerfUtils.Tests
     /// </summary>
     public abstract class TestBase : TestData
     {
+        //================================================================================
+        /// <summary>
+        /// The data for theory testing with boolean values.
+        /// </summary>
+        public class BoolValuesData : TheoryData<bool>
+        {
+            public BoolValuesData ()
+            {
+                Add(true);
+                Add(false);
+            }
+        }
+        //================================================================================
+
         /// <summary>
         /// The default time box for explicit tests.
         /// </summary>
