@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Kevin Zehrer
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using System.Reflection;
 
 using FluentAssertions;
@@ -266,7 +267,8 @@ namespace KZDev.PerfUtils.Tests
         /// Helper to update the available segment map with the current run of available segments.
         /// </summary>
         /// <param name="availableSegmentMap">
-        /// The map of available segment runs to update.
+        /// The map of available segment runs to update. This is keyed by the count of segments in 
+        /// a consecutive segment run, and the value is a list of the starting indexes of the runs.
         /// </param>
         /// <param name="availableSegmentRunStart">
         /// The start index of the current run of available segments (if any).
@@ -284,7 +286,7 @@ namespace KZDev.PerfUtils.Tests
                 return;
             }
 
-            if (availableSegmentMap.TryGetValue(availableSegmentRunCount, out List<int> segmentList))
+            if (availableSegmentMap.TryGetValue(availableSegmentRunCount, out List<int>? segmentList))
             {
                 segmentList.Add(availableSegmentRunStart!.Value);
             }
@@ -1732,20 +1734,34 @@ namespace KZDev.PerfUtils.Tests
         [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.LongRun)]
         public void UsingMemorySegmentedBufferGroup_GetRandomBuffers_WithRandomUsedBlockFlags_GetsProperBuffers ()
         {
-            const int BlockFlagSetTestCount = 9;
-            for (int testLoop = 0; testLoop < 200; testLoop++)
+            const int blockFlagSetTestCount = 9;
+            TimeSpan timeBoxRunTime = DefaultExplicitTestTimeBox;
+            Stopwatch runTimer = Stopwatch.StartNew();
+            int testLoopCount = 0;
+
+            while (runTimer.Elapsed < timeBoxRunTime)
             {
-                (MemorySegmentedBufferGroup sut, MemorySegmentedBufferPool bufferPool) = GetTestGroupAndPool(segmentCount: BlockFlagSetSize * BlockFlagSetTestCount);
+                testLoopCount++;
+                // Get the buffer group being tested, and a simple buffer pool for attaching to the buffers
+                (MemorySegmentedBufferGroup sut, MemorySegmentedBufferPool bufferPool) = GetTestGroupAndPool(segmentCount: BlockFlagSetSize * blockFlagSetTestCount);
+                // Get a set of used block flags for the test
                 ulong[] setUsedBlockFlags = Enumerable.Range(0, BlockFlagSetSize).Select(_ => GetTestUnsignedLongInteger()).ToArray();
+                // Get a set of zeroed block flags for the test - in this case, none of the blocks are marked as zeroed
                 ulong[] setZeroBlockFlags = Enumerable.Repeat(0, BlockFlagSetSize).Select(_ => 0UL).ToArray();
 
+                // Setup the internal current state of used and zeroed block flags in the buffer group, and get the number of available segments
+                // as well as a map of available segments by size
                 (int availableSegments, Dictionary<int, List<int>> availableSegmentMap) = SetBlockUsedFlags(sut, setUsedBlockFlags, setZeroBlockFlags);
 
-                TestWriteLine($"Test Loop: {testLoop} - Used Block Flags: {string.Join(", ", setUsedBlockFlags.Select(flag => flag.ToString("X16")))} - Zero Block Flags: {{all cleared}}");
+#pragma warning disable HAA0601
+                TestWriteLine($"Test Loop: {testLoopCount} - Used Block Flags: {string.Join(", ", setUsedBlockFlags.Select(flag => flag.ToString("X16")))} - Zero Block Flags: {{all cleared}}");
+#pragma warning restore HAA0601
 
+                // Track what we expect to be the number of used segments in the group
                 int expectedUsedSegments = sut.SegmentCount - availableSegments;
                 GetSegmentsInUse(sut).Should().Be(expectedUsedSegments);
 
+                // Start out NOT having a preferred segment ID
                 int preferredSegmentId = -1;
 
                 // Randomly get buffers until we can't get any more segments
@@ -1753,21 +1769,27 @@ namespace KZDev.PerfUtils.Tests
                 {
                     try
                     {
+                        // Get a random number of segments to request for the buffer
                         int requestSegmentCount = GetTestInteger(1, Math.Min(9, availableSegments) + 1);
+                        // Calculate the buffer size based on the number of segments requested
                         int requestBufferSize = MemorySegmentedBufferGroup.StandardBufferSegmentSize * requestSegmentCount;
 
                         // We'll always request a zeroed buffer for these tests
                         (SegmentBuffer buffer, GetBufferResult result, bool bufferSegmentIsPreferred) =
-                            sut.GetBuffer(requestBufferSize, true, bufferPool, preferredSegmentId);
+                            sut.GetBuffer(bufferSize: requestBufferSize, requireZeroed: true,
+                                bufferPool: bufferPool, preferredFirstSegmentIndex: preferredSegmentId);
                         // Be sure we got the buffer
                         result.Should().Be(GetBufferResult.Available);
 
+                        // Update the expected used segments count and the number of available segments
                         expectedUsedSegments += buffer.SegmentCount;
                         availableSegments -= buffer.SegmentCount;
+
                         // Check the number of segments returned
                         buffer.SegmentCount.Should().BeLessThanOrEqualTo(requestSegmentCount);
                         buffer.Length.Should().Be(MemorySegmentedBufferGroup.StandardBufferSegmentSize * buffer.SegmentCount);
                         GetSegmentsInUse(sut).Should().Be(expectedUsedSegments);
+                        // While the buffer blocks are marked as not-zeroed, we are always asking for zeroed buffers
                         buffer.IsAllZeroes().Should().BeTrue();
                         buffer.BufferInfo.BlockId.Should().Be(sut.Id);
 
@@ -1794,7 +1816,7 @@ namespace KZDev.PerfUtils.Tests
                         buffer.SegmentCount.Should().BeLessThanOrEqualTo(segmentSizeEntry.Key);
                         // Reset preferred segment for the next test but we may set it later
                         // THIS MUST STAY HERE - we need to reset the preferred segment ID
-                        // after we check the buffer segment is preferred above
+                        // AFTER we check the buffer segment is preferred above
                         preferredSegmentId = -1;
 
                         segmentSizeEntry.Value.RemoveAt(segmentSizeListIndex);
