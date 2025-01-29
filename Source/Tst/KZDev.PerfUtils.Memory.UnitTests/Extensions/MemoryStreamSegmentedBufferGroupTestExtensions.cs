@@ -77,10 +77,13 @@ namespace KZDev.PerfUtils.Tests
         /// </returns>
         private static int SetBitFlags (ulong[] flags, int flagIndex, int flagCount, bool setFlag)
         {
+            // For the flag index, get the flag group index and the mask to use for that flag index in the group
             (int flagGroupIndex, ulong flagMask) = GetFlagIndexAndMask(flagIndex);
             int updatedCount = 0;
+            // Get the flag group we are working with
             ulong flagGroup = flags[flagGroupIndex];
 
+            // Loop through the flags to update
             while (flagCount-- > 0)
             {
                 bool isSet = (flagGroup & flagMask) != 0;
@@ -92,11 +95,14 @@ namespace KZDev.PerfUtils.Tests
 
                 if (flagMask == HighBitMask)
                 {
+                    // We are moving to the next flag group, so update the flag group we
+                    // are working with and reset the mask
                     flags[flagGroupIndex] = flagGroup;
                     if (flagCount == 0)
                     {
                         break;
                     }
+                    // Move to the next flag group
                     flagGroupIndex++;
                     flagGroup = flags[flagGroupIndex];
                     flagMask = 1;
@@ -179,13 +185,14 @@ namespace KZDev.PerfUtils.Tests
         /// <param name="segmentCount">
         /// The number of segments to update.
         /// </param>
-        public static void SetSegmentsUsed (this MemorySegmentedBufferGroup group,
+        public static int SetSegmentsUsed (this MemorySegmentedBufferGroup group,
             int firstSegmentIndex, int segmentCount)
         {
             int startSegmentsInUse = GetSegmentsInUse(group);
             int updatedCount =
                 SetBitFlags(GetBlockUsedFlagsArray(group), firstSegmentIndex, segmentCount, true);
             SetSegmentsInUse(group, startSegmentsInUse + updatedCount);
+            return updatedCount;
         }
         //================================================================================
         /// <summary>

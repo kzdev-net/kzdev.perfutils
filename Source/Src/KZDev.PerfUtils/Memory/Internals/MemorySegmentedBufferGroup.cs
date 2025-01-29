@@ -168,7 +168,7 @@ namespace KZDev.PerfUtils.Internals
         /// </summary>
         /// <remarks>
         /// The /* volatile */ comment is here to remind us that all accesses to this field
-        /// should be done using the Volatile class, but we want to be explicit about it in the
+        /// should be treated as Volatile, but we want to be explicit about it in the
         /// code, so we don't actually use the volatile keyword here.
         /// </remarks>
         private /* volatile */ int _locked;
@@ -178,7 +178,7 @@ namespace KZDev.PerfUtils.Internals
         /// </summary>
         /// <remarks>
         /// The /* volatile */ comment is here to remind us that all accesses to this field
-        /// should be done using the Volatile class, but we want to be explicit about it in the
+        /// should be treated as Volatile, but we want to be explicit about it in the
         /// code, so we don't actually use the volatile keyword here.
         /// </remarks>
         private /* volatile */ int _segmentsInUse;
@@ -187,12 +187,22 @@ namespace KZDev.PerfUtils.Internals
         /// Tracks a count of every time the group has been emptied. This is used as a 
         /// sort of 'version' for determining when the group can be trimmed/released
         /// </summary>
+        /// <remarks>
+        /// The /* volatile */ comment is here to remind us that all accesses to this field
+        /// should be treated as Volatile, but we want to be explicit about it in the
+        /// code, so we don't actually use the volatile keyword here.
+        /// </remarks>
         private /* volatile */ uint _emptiedCount;
 
         /// <summary>
         /// The value of _emptiedCount the last time the trim operation was executed to
         /// check for whether this group can be released or not.
         /// </summary>
+        /// <remarks>
+        /// The /* volatile */ comment is here to remind us that all accesses to this field
+        /// should be treated as Volatile, but we want to be explicit about it in the
+        /// code, so we don't actually use the volatile keyword here.
+        /// </remarks>
         private /* volatile */ uint _lastTrimCheckEmptiedCount = uint.MaxValue;
 
         /// <summary>
@@ -893,6 +903,28 @@ namespace KZDev.PerfUtils.Internals
             {
                 Volatile.Write(ref _locked, 0);
             }
+        }
+
+        /// <summary>
+        /// Creates and initializes a new instance of the <see cref="MemorySegmentedBufferGroup"/> class
+        /// that has the internal memory buffer allocated and ready for use.
+        /// </summary>
+        /// <param name="bufferSegmentCount">
+        /// The number of standard size buffer blocks that will be stored in this group.
+        /// </param>
+        /// <param name="useNativeMemory">
+        /// Indicates if we should use native memory for the buffers instead of GC memory.
+        /// </param>
+        /// <returns>
+        /// A new instance of the <see cref="MemorySegmentedBufferGroup"/> class that has 
+        /// the internal memory buffer allocated.
+        /// </returns>
+        internal static MemorySegmentedBufferGroup 
+            GetMemorySegmentedBufferGroupWithAllocatedBuffer (int bufferSegmentCount, bool useNativeMemory)
+        {
+            MemorySegmentedBufferGroup returnBufferGroup = new MemorySegmentedBufferGroup(bufferSegmentCount, useNativeMemory);
+            returnBufferGroup.AllocateBufferIfNeeded();
+            return returnBufferGroup;
         }
 
         /// <summary>

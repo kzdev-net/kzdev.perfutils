@@ -47,6 +47,23 @@ namespace KZDev.PerfUtils.Tests
             typeof(MemorySegmentedBufferGroup)
                 .GetField("_blockZeroFlags",
                 BindingFlags.NonPublic | BindingFlags.Instance)!;
+
+        /// <summary>
+        /// The field information for the _bufferBlock field in the buffer group.
+        /// </summary>
+        private static readonly FieldInfo BufferBlockField =
+            typeof(MemorySegmentedBufferGroup)
+                .GetField("_bufferBlock",
+                    BindingFlags.NonPublic | BindingFlags.Instance)!;
+
+        /// <summary>
+        /// The field information for the _bufferBlockPtr field in the buffer group.
+        /// </summary>
+        private static readonly FieldInfo BufferBlockPtrField =
+            typeof(MemorySegmentedBufferGroup)
+                .GetField("_bufferBlockPtr",
+                    BindingFlags.NonPublic | BindingFlags.Instance)!;
+
         //--------------------------------------------------------------------------------
         /// <summary>
         /// For a given segment index, returns the index of the ulong in the block flag
@@ -134,6 +151,30 @@ namespace KZDev.PerfUtils.Tests
         {
             BufferGroupSegmentsInUseField.SetValue(bufferGroup, segmentsInUse);
         }
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Gets the internal buffer block array from the buffer group using reflection.
+        /// </summary>
+        /// <param name="bufferGroup">
+        /// The buffer group to get the buffer block array for.
+        /// </param>
+        /// <returns>
+        /// The internal buffer block array from the buffer group (which may be null).
+        /// </returns>
+        internal static byte[]? GetBufferBlock (MemorySegmentedBufferGroup bufferGroup) =>
+            (byte[]?)BufferBlockField.GetValue(bufferGroup)!;
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Gets the internal buffer block pointer from the buffer group using reflection.
+        /// </summary>
+        /// <param name="bufferGroup">
+        /// The buffer group to get the buffer block pointer for.
+        /// </param>
+        /// <returns>
+        /// The internal buffer block pointer from the buffer group (which may be IntPtr.Zero).
+        /// </returns>
+        internal static unsafe byte* GetBufferBlockPtr (MemorySegmentedBufferGroup bufferGroup) =>
+            (byte*)Pointer.Unbox(BufferBlockPtrField.GetValue(bufferGroup)!);
         //--------------------------------------------------------------------------------
         /// <summary>
         /// Sets the block used flags for the buffer group to the specified ulong array.
@@ -303,7 +344,67 @@ namespace KZDev.PerfUtils.Tests
         }
         //--------------------------------------------------------------------------------
         /// <summary>
-        /// Returns an instance of the system under test using the specified segment count.
+        /// Fills the internal native memory buffer block of the buffer group with non-zero values.
+        /// </summary>
+        /// <param name="bufferGroup">
+        /// The buffer group to fill with non-zero values.
+        /// </param>
+        /// <returns>
+        /// The buffer group with the internal native memory buffer block filled with non-zero values.
+        /// </returns>
+        internal MemorySegmentedBufferGroup FillNativeBufferWithNonZeros (MemorySegmentedBufferGroup bufferGroup)
+        {
+            unsafe
+            {
+                byte* bufferBlock = GetBufferBlockPtr(bufferGroup);
+                int bufferBlockSize = bufferGroup.SegmentCount * MemorySegmentedBufferGroup.StandardBufferSegmentSize;
+                for (int fillIndex = 0; fillIndex < bufferBlockSize; fillIndex++)
+                {
+                    bufferBlock[fillIndex] = (byte)(1 + (fillIndex % 255));
+                }
+            }
+            return bufferGroup;
+        }
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Fills the internal GC Heap buffer block of the buffer group with non-zero values.
+        /// </summary>
+        /// <param name="bufferGroup">
+        /// The buffer group to fill with non-zero values.
+        /// </param>
+        /// <returns>
+        /// The buffer group with the internal buffer block filled with non-zero values.
+        /// </returns>
+        internal MemorySegmentedBufferGroup FillGcHeapBufferWithNonZeros (MemorySegmentedBufferGroup bufferGroup)
+        {
+            byte[] bufferBlock = GetBufferBlock(bufferGroup)!;
+            for (int fillIndex = 0; fillIndex < bufferBlock.Length; fillIndex++)
+            {
+                bufferBlock[fillIndex] = (byte)(1 + (fillIndex % 255));
+            }
+            return bufferGroup;
+        }
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Fills the internal buffer block of the buffer group with non-zero values.
+        /// </summary>
+        /// <param name="bufferGroup">
+        /// The buffer group to fill with non-zero values.
+        /// </param>
+        /// <param name="isNativeMemory">
+        /// Indicates if the buffer group is using native memory for the large memory segments.
+        /// </param>
+        /// <returns>
+        /// The buffer group with the internal buffer block filled with non-zero values.
+        /// </returns>
+        internal MemorySegmentedBufferGroup FillWithNonZeros (MemorySegmentedBufferGroup bufferGroup,
+            bool isNativeMemory) => isNativeMemory ?
+            FillNativeBufferWithNonZeros(bufferGroup) :
+            FillGcHeapBufferWithNonZeros(bufferGroup);
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Returns an instance of the test <see cref="MemorySegmentedBufferGroup"/> using 
+        /// the specified segment count where the internal buffer is filled with non-zero values.
         /// </summary>
         /// <param name="segmentCount">
         /// The number of segments to use in the buffer group.
@@ -314,7 +415,29 @@ namespace KZDev.PerfUtils.Tests
         /// <returns>
         /// An instance of the <see cref="MemorySegmentedBufferGroup"/> system under test.
         /// </returns>
-        internal MemorySegmentedBufferGroup GetSut (bool useNativeMemory = false, int segmentCount = 16) => new(segmentCount, useNativeMemory);
+        internal MemorySegmentedBufferGroup GetNonZeroTestBufferGroup (bool useNativeMemory = false, int segmentCount = 16)
+        {
+            // Force the group to allocate the buffer block on construction
+            MemorySegmentedBufferGroup returnGroup =
+                MemorySegmentedBufferGroup.GetMemorySegmentedBufferGroupWithAllocatedBuffer(segmentCount, useNativeMemory);
+            return FillWithNonZeros(returnGroup, useNativeMemory);
+        }
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Returns an instance of the test <see cref="MemorySegmentedBufferGroup"/> using 
+        /// the specified segment count.
+        /// </summary>
+        /// <param name="segmentCount">
+        /// The number of segments to use in the buffer group.
+        /// </param>
+        /// <param name="useNativeMemory">
+        /// Indicates if native memory should be used for the large memory buffer segments.
+        /// </param>
+        /// <returns>
+        /// An instance of the <see cref="MemorySegmentedBufferGroup"/> system under test.
+        /// </returns>
+        internal MemorySegmentedBufferGroup GetTestBufferGroup (bool useNativeMemory = false, int segmentCount = 16) =>
+            new(segmentCount, useNativeMemory);
         //--------------------------------------------------------------------------------
         /// <summary>
         /// Returns an instance of the memory segmented buffer pool.
@@ -338,13 +461,19 @@ namespace KZDev.PerfUtils.Tests
         /// <param name="segmentCount">
         /// The number of segments to use in the buffer group.
         /// </param>
+        /// <param name="nonZeroFilled">
+        /// Indicates if the buffer group should be filled with non-zero values.
+        /// </param>
         /// <returns>
         /// Both the buffer group and buffer pool for testing.
         /// </returns>
         internal (MemorySegmentedBufferGroup BufferGroup, MemorySegmentedBufferPool BufferPool)
-            GetTestGroupAndPool (bool useNativeMemory = false, int segmentCount = 16)
+            GetTestGroupAndPool (bool useNativeMemory = false, int segmentCount = 16,
+                bool nonZeroFilled = false)
         {
-            MemorySegmentedBufferGroup bufferGroup = GetSut(useNativeMemory, segmentCount);
+            MemorySegmentedBufferGroup bufferGroup = nonZeroFilled ?
+                GetNonZeroTestBufferGroup(useNativeMemory, segmentCount) :
+                GetTestBufferGroup(useNativeMemory, segmentCount);
             MemorySegmentedBufferPool bufferPool = GetTestBufferPool(useNativeMemory);
 
             return (bufferGroup, bufferPool);
