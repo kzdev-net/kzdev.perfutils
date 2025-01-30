@@ -2,8 +2,5 @@
 	<ItemGroup>
 		<ProjectReference Include="..\KZDev.PerfUtils.TestBase\KZDev.PerfUtils.TestBase.csproj" />
 	</ItemGroup>
-	<ItemGroup>
-		<AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage" />
-	</ItemGroup>
 
 </Project>

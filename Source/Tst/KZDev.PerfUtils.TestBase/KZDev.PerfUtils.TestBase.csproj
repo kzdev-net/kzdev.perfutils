@@ -11,10 +11,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<ProjectReference Include="..\KZDev.PerfUtils.TestPrep\KZDev.PerfUtils.TestPrep.csproj" />
 	</ItemGroup>
 
