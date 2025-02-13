@@ -155,8 +155,8 @@ The following table shows the event data.
 | Name | Type | Description |
 | --- | --- | --- |
 | StreamId | Guid | The unique identifier for the MemoryStreamSlim instance. |
-| OldCapacity | Int32 | The capacity of the MemoryStreamSlim instance before the capacity expansion. |
-| NewCapacity | Int32 | The new expanded capacity of the MemoryStreamSlim instance. |
+| OldCapacity | Int64 | The capacity of the MemoryStreamSlim instance before the capacity expansion. |
+| NewCapacity | Int64 | The new expanded capacity of the MemoryStreamSlim instance. |
 
 ---
 
@@ -181,8 +181,8 @@ The following table shows the event data.
 | Name | Type | Description |
 | --- | --- | --- |
 | StreamId | Guid | The unique identifier for the MemoryStreamSlim instance. |
-| OldCapacity | Int32 | The capacity of the MemoryStreamSlim instance before the capacity reduction. |
-| NewCapacity | Int32 | The new reduced capacity of the MemoryStreamSlim instance. |
+| OldCapacity | Int64 | The capacity of the MemoryStreamSlim instance before the capacity reduction. |
+| NewCapacity | Int64 | The new reduced capacity of the MemoryStreamSlim instance. |
 
 ---
 

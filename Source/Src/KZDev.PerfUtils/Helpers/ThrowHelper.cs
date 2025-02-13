@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
 
 using KZDev.PerfUtils.Internals;
 using KZDev.PerfUtils.Resources;
@@ -26,8 +25,7 @@ namespace KZDev.PerfUtils.Helpers
         /// <exception cref="ArgumentOutOfRangeException">
         /// </exception>
         [DoesNotReturn]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void ThrowArgumentOutOfRangeException_NeedNonNegNum (string argumentName) => 
+        internal static void ThrowArgumentOutOfRangeException_NeedNonNegNum (string argumentName) =>
             throw new ArgumentOutOfRangeException(argumentName, string.Format(Strings.Arg_OutOfRangeNonNegNum, argumentName));
         //--------------------------------------------------------------------------------
         /// <summary>
@@ -46,7 +44,6 @@ namespace KZDev.PerfUtils.Helpers
         /// <exception cref="ArgumentOutOfRangeException">
         /// </exception>
         [DoesNotReturn]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void ThrowArgumentOutOfRangeException_NeedBetween (string argumentName,
             long minimumValue, long maximumValue) =>
             throw new ArgumentOutOfRangeException(argumentName, string.Format(Strings.Arg_OutOfRangeNeedBetween, argumentName, minimumValue, maximumValue));
@@ -64,7 +61,6 @@ namespace KZDev.PerfUtils.Helpers
         /// <exception cref="ArgumentOutOfRangeException">
         /// </exception>
         [DoesNotReturn]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void ThrowArgumentOutOfRangeException_NeedMinValue (string argumentName,
             long minimumValue) =>
             throw new ArgumentOutOfRangeException(argumentName, string.Format(Strings.Arg_OutOfRangeMinValue, argumentName, minimumValue));
@@ -78,7 +74,6 @@ namespace KZDev.PerfUtils.Helpers
         /// </param>
         /// <exception cref="ArgumentOutOfRangeException"></exception>
         [DoesNotReturn]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void ThrowArgumentOutOfRange_IndexMustBeLessException (string argumentName) =>
             throw new ArgumentOutOfRangeException(argumentName, Strings.Arg_IndexMustBeLessException);
         //--------------------------------------------------------------------------------
@@ -92,7 +87,6 @@ namespace KZDev.PerfUtils.Helpers
         /// <exception cref="ArgumentOutOfRangeException">
         /// </exception>
         [DoesNotReturn]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void ThrowArgumentOutOfRange_IndexMustBeLessOrEqualException (string argumentName) =>
             throw new ArgumentOutOfRangeException(argumentName, Strings.Arg_IndexMustBeLessOrEqualException);
         //--------------------------------------------------------------------------------
@@ -106,7 +100,6 @@ namespace KZDev.PerfUtils.Helpers
         /// <exception cref="ArgumentException">
         /// </exception>
         [DoesNotReturn]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void ThrowArgumentException_InvalidSeekOrigin (string argumentName) =>
             throw new ArgumentException(Strings.Arg_InvalidSeekOrigin, argumentName);
         //--------------------------------------------------------------------------------
@@ -117,7 +110,6 @@ namespace KZDev.PerfUtils.Helpers
         /// <exception cref="ArgumentException">
         /// </exception>
         [DoesNotReturn]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void ThrowArgumentException_InvalidOffsetLength () =>
             throw new ArgumentException(Strings.Arg_InvalidOffsetLength);
         //--------------------------------------------------------------------------------
@@ -131,7 +123,6 @@ namespace KZDev.PerfUtils.Helpers
         /// <exception cref="ArgumentException">
         /// </exception>
         [DoesNotReturn]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void ThrowArgumentException_DestinationTooShort (string argumentName) =>
             throw new ArgumentException(Strings.Arg_DestinationTooShort, argumentName);
         //--------------------------------------------------------------------------------
@@ -147,8 +138,7 @@ namespace KZDev.PerfUtils.Helpers
         /// <exception cref="InvalidOperationException">
         /// </exception>
         [DoesNotReturn]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void ThrowInvalidOperationException_StreamClosed () => 
+        internal static void ThrowInvalidOperationException_StreamClosed () =>
             throw new InvalidOperationException(Strings.InvalidOperation_StreamClosed);
         //--------------------------------------------------------------------------------
         /// <summary>
@@ -157,8 +147,7 @@ namespace KZDev.PerfUtils.Helpers
         /// <exception cref="ObjectDisposedException">
         /// </exception>
         [DoesNotReturn]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void ThrowObjectDisposedException_StreamClosed () => 
+        internal static void ThrowObjectDisposedException_StreamClosed () =>
             throw new ObjectDisposedException(Strings.InvalidOperation_StreamClosed);
         //--------------------------------------------------------------------------------
         /// <summary>
@@ -167,8 +156,7 @@ namespace KZDev.PerfUtils.Helpers
         /// <exception cref="NotSupportedException">
         /// </exception>
         [DoesNotReturn]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void ThrowNotSupportedException_UnwritableStream () => 
+        internal static void ThrowNotSupportedException_UnwritableStream () =>
             throw new NotSupportedException(Strings.NotSupported_UnwritableStream);
         //--------------------------------------------------------------------------------
         /// <summary>
@@ -181,7 +169,6 @@ namespace KZDev.PerfUtils.Helpers
         /// <exception cref="NotSupportedException">
         /// </exception>
         [DoesNotReturn]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void ThrowNotSupportedException_InvalidModeStreamStream (MemoryStreamSlimMode streamMode) =>
             throw new NotSupportedException(string.Format(Strings.NotSupported_InvalidModeStreamStream, streamMode.GetString()));
         //--------------------------------------------------------------------------------
@@ -191,7 +178,6 @@ namespace KZDev.PerfUtils.Helpers
         /// <exception cref="NotSupportedException">
         /// </exception>
         [DoesNotReturn]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void ThrowNotSupportedException_FeatureNotSupported () =>
             throw new NotSupportedException(Strings.NotSupported_FeatureNotAvailable);
         //--------------------------------------------------------------------------------
@@ -204,8 +190,7 @@ namespace KZDev.PerfUtils.Helpers
         /// <exception cref="ArgumentOutOfRangeException">
         /// </exception>
         [DoesNotReturn]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void ThrowArgumentOutOfRangeException_CapacitySmall (string argumentName) => 
+        internal static void ThrowArgumentOutOfRangeException_CapacitySmall (string argumentName) =>
             throw new ArgumentOutOfRangeException(argumentName, Strings.Arg_OutOfRangeSmallCapacity);
         //--------------------------------------------------------------------------------
         /// <summary>
@@ -215,9 +200,8 @@ namespace KZDev.PerfUtils.Helpers
         /// <exception cref="IOException">
         /// </exception>
         [DoesNotReturn]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void ThrowArgumentOutOfRangeException_StreamLength (string argumentName) =>
-            throw new ArgumentOutOfRangeException(Strings.Arg_OutOfRangeStreamLength);
+            throw new ArgumentOutOfRangeException(argumentName, Strings.Arg_OutOfRangeStreamLength);
         //--------------------------------------------------------------------------------
         /// <summary>
         /// Throws an IO exception with the message for the stream being too long.
@@ -225,7 +209,6 @@ namespace KZDev.PerfUtils.Helpers
         /// <exception cref="IOException">
         /// </exception>
         [DoesNotReturn]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void ThrowIOException_StreamTooLong () =>
             throw new IOException(Strings.IO_StreamTooLong);
         //--------------------------------------------------------------------------------
@@ -236,9 +219,26 @@ namespace KZDev.PerfUtils.Helpers
         /// <exception cref="IOException">
         /// </exception>
         [DoesNotReturn]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void ThrowIOException_SeekBeforeBegin () =>
             throw new IOException(Strings.IO_SeekBeforeBegin);
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Throws an invalid operation exception with the message for an integer overflow
+        /// when calculating the new capacity or accessing the Int32 Capacity property of a stream.
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        [DoesNotReturn]
+        internal static void ThrowInvalidOperationException_IntOverflowCapacity () =>
+            throw new InvalidOperationException(Strings.InvalidOperation_IntOverflowCapacity);
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Throws an invalid operation exception with the message for an attempt to copy
+        /// the stream into an array but the length of the stream is too large to fit in an array.
+        /// </summary>
+        /// <exception cref="NotImplementedException"></exception>
+        [DoesNotReturn]
+        internal static void ThrowInvalidOperationException_TooLargeToCopyToArray () =>
+            throw new InvalidOperationException (Strings.InvalidOperation_TooLargeToCopyToArray);
         //--------------------------------------------------------------------------------
 
         #endregion Stream Errors
@@ -251,7 +251,6 @@ namespace KZDev.PerfUtils.Helpers
         /// <exception cref="InvalidOperationException">
         /// </exception>
         [DoesNotReturn]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void ThrowInvalidOperation_GlobalSettingsCantBeUpdated (string classTypeName) =>
             throw new InvalidOperationException(Strings.InvalidOperation_GlobalSettingsCantBeUpdated);
 

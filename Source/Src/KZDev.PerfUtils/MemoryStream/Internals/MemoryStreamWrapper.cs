@@ -144,9 +144,11 @@ namespace KZDev.PerfUtils.Internals
         //--------------------------------------------------------------------------------
         /// <inheritdoc />
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected override void SetCapacity (int capacityValue)
+        protected override void SetCapacity (long capacityValue)
         {
-            _wrappedStream.Capacity = capacityValue;
+            if (capacityValue > int.MaxValue)
+                ThrowHelper.ThrowInvalidOperationException_IntOverflowCapacity();
+            _wrappedStream.Capacity = (int)capacityValue;
         }
         //--------------------------------------------------------------------------------
 

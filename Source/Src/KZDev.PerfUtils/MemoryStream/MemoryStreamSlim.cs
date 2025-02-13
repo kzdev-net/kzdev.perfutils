@@ -38,12 +38,6 @@ namespace KZDev.PerfUtils
     public abstract class MemoryStreamSlim : MemoryStream
     {
         /// <summary>
-        /// The maximum length allowed for a <see cref="MemoryStreamSlim"/> instance.
-        /// </summary>
-        /// <exclude />
-        protected const int MaxMemoryStreamLength = int.MaxValue;
-
-        /// <summary>
         /// The maximum size of an individual standard buffer we will use.
         /// </summary>
         /// <exclude />
@@ -53,14 +47,21 @@ namespace KZDev.PerfUtils
         /// The size of the buffer used for asynchronous copying. This is just actually the size we will 
         /// use for each partial async write operation as we move through the list of internal buffers.
         /// </summary>
-        protected const int StandardAsyncCopyBufferSize = 
+        protected const int StandardAsyncCopyBufferSize =
             (MemorySegmentedBufferGroup.StandardBufferSegmentSize * MemorySegmentedGroupGenerationArray.MaxAllowedGroupSegmentCount) >> 4;
+
+        /// <summary>
+        /// The maximum length allowed for a <see cref="MemoryStreamSlim"/> instance.
+        /// </summary>
+        /// <exclude />
+        protected internal static readonly long MaxMemoryStreamLength = 
+            Environment.Is64BitProcess ? Math.Max(Math.Min(0x8_0000_0000, GC.GetGCMemoryInfo().TotalAvailableMemoryBytes), int.MaxValue) : int.MaxValue;
 
         /// <summary>
         /// The absolute maximum capacity we will allow a stream instance to get to.
         /// </summary>
         /// <exclude />
-        protected internal static readonly int AbsoluteMaxCapacity = MaxMemoryStreamLength;
+        protected internal static readonly long AbsoluteMaxCapacity = MaxMemoryStreamLength;
 
         /// <summary>
         /// The maximum capacity that can be set for any instance of MemoryStreamSlim.
@@ -182,7 +183,7 @@ namespace KZDev.PerfUtils
         /// allocated capacity, which can be larger. This is also the capacity that can be
         /// explicitly set by the user. So, we will always have at least this much space.
         /// </summary>
-        private int _internalCapacity;
+        private long _internalCapacity;
 
         /// <summary>
         /// The settings for this stream instance.
@@ -235,13 +236,13 @@ namespace KZDev.PerfUtils
         /// The current length of this stream.
         /// </summary>
         /// <exclude />
-        protected int LengthInternal { [DebuggerStepThrough] get; [DebuggerStepThrough] set; } = 0;
+        protected long LengthInternal { [DebuggerStepThrough] get; [DebuggerStepThrough] set; } = 0;
 
         /// <summary>
         /// The current file position in this stream.
         /// </summary>
         /// <exclude />
-        protected int PositionInternal { [DebuggerStepThrough] get; [DebuggerStepThrough] set; } = 0;
+        protected long PositionInternal { [DebuggerStepThrough] get; [DebuggerStepThrough] set; } = 0;
 
         /// <summary>
         /// The current capacity of this stream. This is the reported capacity, not the actual
@@ -249,7 +250,7 @@ namespace KZDev.PerfUtils
         /// explicitly set by the user. So, we will always have at least this much space.
         /// </summary>
         /// <exclude />
-        protected int CapacityInternal
+        protected long CapacityInternal
         {
             [DebuggerStepThrough]
             get => _internalCapacity;
@@ -359,7 +360,7 @@ namespace KZDev.PerfUtils
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected static void ValidateLength (long length)
         {
-            if (length is >= 0 and <= MaxMemoryStreamLength)
+            if ((length >= 0) && (length <= MaxMemoryStreamLength))
                 return;
             ThrowHelper.ThrowIOException_StreamTooLong();
         }
@@ -456,7 +457,7 @@ namespace KZDev.PerfUtils
         /// The new capacity value to set.
         /// </param>
         /// <exclude />
-        protected abstract void SetCapacity (int capacityValue);
+        protected abstract void SetCapacity (long capacityValue);
         //--------------------------------------------------------------------------------
         /// <summary>
         /// Verifies that the stream is not closed and throws an exception if it is.
@@ -519,7 +520,7 @@ namespace KZDev.PerfUtils
         /// An instance of the <see cref="MemoryStreamSlim"/> class with an expandable
         /// capacity initialized as specified.
         /// </returns>
-        public static MemoryStreamSlim Create (int capacity)
+        public static MemoryStreamSlim Create (long capacity)
         {
             LockGlobalSettings();
 
@@ -568,7 +569,7 @@ namespace KZDev.PerfUtils
         /// An instance of the <see cref="MemoryStreamSlim"/> class with an expandable
         /// capacity initialized as specified.
         /// </returns>
-        public static MemoryStreamSlim Create (int capacity, MemoryStreamSlimOptions options)
+        public static MemoryStreamSlim Create (long capacity, MemoryStreamSlimOptions options)
         {
             ArgumentNullException.ThrowIfNull(options, nameof(options));
 
@@ -620,7 +621,7 @@ namespace KZDev.PerfUtils
         /// An instance of the <see cref="MemoryStreamSlim"/> class with an expandable
         /// capacity initialized as specified.
         /// </returns>
-        public static MemoryStreamSlim Create (int capacity, Action<MemoryStreamSlimOptions> optionsSetup)
+        public static MemoryStreamSlim Create (long capacity, Action<MemoryStreamSlimOptions> optionsSetup)
         {
             ArgumentNullException.ThrowIfNull(optionsSetup, nameof(optionsSetup));
 
@@ -692,7 +693,7 @@ namespace KZDev.PerfUtils
         /// An instance of the <see cref="MemoryStreamSlim"/> class with an expandable
         /// capacity initialized as specified.
         /// </returns>
-        public static MemoryStreamSlim Create<TState> (int capacity, Action<MemoryStreamSlimOptions, TState> optionsSetup,
+        public static MemoryStreamSlim Create<TState> (long capacity, Action<MemoryStreamSlimOptions, TState> optionsSetup,
             TState state)
         {
             ArgumentNullException.ThrowIfNull(optionsSetup, nameof(optionsSetup));
@@ -1100,7 +1101,13 @@ namespace KZDev.PerfUtils
         /// </exception>
         public override int Capacity
         {
-            get => CapacityInternal;
+            get
+            {
+                long returnValue = CapacityInternal;
+                if (returnValue > int.MaxValue)
+                    ThrowHelper.ThrowInvalidOperationException_IntOverflowCapacity();
+                return (int)returnValue;
+            }
             set
             {
                 if (CapacityInternal == value)
@@ -1203,7 +1210,7 @@ namespace KZDev.PerfUtils
                     ThrowHelper.ThrowArgumentOutOfRangeException_CapacitySmall(nameof(Capacity));
                 if (value > MaximumCapacity)
                     ThrowHelper.ThrowArgumentOutOfRangeException_NeedBetween(nameof(Capacity), 0, MaximumCapacity);
-                SetCapacity((int)value);
+                SetCapacity(value);
             }
         }
         //--------------------------------------------------------------------------------

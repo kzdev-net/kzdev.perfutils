@@ -1048,10 +1048,10 @@ namespace KZDev.PerfUtils.Internals
         /// The buffer to use from this group if available, and a result value for the operation.
         /// </returns>
         public (SegmentBuffer Buffer, GetBufferResult Result, bool SegmentIsPreferred)
-            GetBuffer (int bufferSize, bool requireZeroed, MemorySegmentedBufferPool bufferPool, int preferredFirstSegmentIndex)
+            GetBuffer (long bufferSize, bool requireZeroed, MemorySegmentedBufferPool bufferPool, int preferredFirstSegmentIndex)
         {
             Debug.Assert(0 == (bufferSize % StandardBufferSegmentSize), "bufferSize is not an even multiple of StandardBufferSegmentSize");
-            int segmentsNeeded = bufferSize / StandardBufferSegmentSize;
+            int segmentsNeeded = (int)(bufferSize / StandardBufferSegmentSize);
             // The index of the first segment we have reserved. This will be
             // -1 if we don't have a segment reserved yet.
             int reservedSegmentIndex = -1;
@@ -1161,7 +1161,7 @@ namespace KZDev.PerfUtils.Internals
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public (SegmentBuffer Buffer, GetBufferResult Result)
-            GetBuffer (int bufferSize, bool requireZeroed, MemorySegmentedBufferPool bufferPool)
+            GetBuffer (long bufferSize, bool requireZeroed, MemorySegmentedBufferPool bufferPool)
         {
             (SegmentBuffer buffer, GetBufferResult result, bool _) = GetBuffer(bufferSize, requireZeroed, bufferPool, -1);
             return (buffer, result);

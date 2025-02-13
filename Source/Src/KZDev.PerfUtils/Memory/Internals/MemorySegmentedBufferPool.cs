@@ -249,7 +249,7 @@ namespace KZDev.PerfUtils.Internals
         /// small for our immediate needs.
         /// </param>
         private MemorySegmentedGroupGenerationArray ExpandArrayGroup (MemorySegmentedGroupGenerationArray currentGeneration,
-            int neededBufferSize)
+            long neededBufferSize)
         {
             /*
              * Imagine the race condition here and why it doesn't matter.
@@ -337,7 +337,7 @@ namespace KZDev.PerfUtils.Internals
         /// if the returned buffer is the next segment from the preferred block.
         /// </returns>
         private (SegmentBuffer Buffer, bool IsNextBlockSegment)
-            RentFromGeneration (int requestedBufferSize, MemorySegmentedGroupGenerationArray generationArray,
+            RentFromGeneration (long requestedBufferSize, MemorySegmentedGroupGenerationArray generationArray,
             bool clearNewAllocations, in SegmentBufferInfo preferredBlockInfo)
         {
             // Try to rent from the preferred group first.
@@ -379,7 +379,7 @@ namespace KZDev.PerfUtils.Internals
         /// <returns>
         /// A buffer that is the size of the buffer size for this pool.
         /// </returns>
-        private SegmentBuffer RentFromGeneration (int requestedBufferSize,
+        private SegmentBuffer RentFromGeneration (long requestedBufferSize,
             MemorySegmentedGroupGenerationArray generationArray, bool clearNewAllocations)
         {
             int lockedLoops = 0;
@@ -446,7 +446,7 @@ namespace KZDev.PerfUtils.Internals
         /// A buffer that is the size of the buffer size for this pool.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private SegmentBuffer RentInternal (int requestedBufferSize, bool clearNewAllocations) =>
+        private SegmentBuffer RentInternal (long requestedBufferSize, bool clearNewAllocations) =>
             RentFromGeneration(requestedBufferSize, Volatile.Read(ref _arrayGroup), clearNewAllocations);
         //--------------------------------------------------------------------------------
         /// <summary>
@@ -467,7 +467,7 @@ namespace KZDev.PerfUtils.Internals
         /// if the returned buffer is the next segment from the preferred block.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private (SegmentBuffer Buffer, bool IsNextBlockSegment) RentInternal (int requestedBufferSize,
+        private (SegmentBuffer Buffer, bool IsNextBlockSegment) RentInternal (long requestedBufferSize,
             bool clearNewAllocations, in SegmentBufferInfo preferredBlockInfo) =>
             RentFromGeneration(requestedBufferSize, Volatile.Read(ref _arrayGroup), clearNewAllocations, preferredBlockInfo);
         //--------------------------------------------------------------------------------
@@ -497,7 +497,7 @@ namespace KZDev.PerfUtils.Internals
         /// A buffer that is the size of the buffer size for this pool.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public SegmentBuffer Rent (int requestedBufferSize, bool clearNewAllocations)
+        public SegmentBuffer Rent (long requestedBufferSize, bool clearNewAllocations)
         {
             Debug.Assert(requestedBufferSize > 0, "requestedBufferSize <= 0");
             Debug.Assert(0 == (requestedBufferSize % MemorySegmentedBufferGroup.StandardBufferSegmentSize), "requestedBufferSize is not a multiple of the segment size");
@@ -523,7 +523,7 @@ namespace KZDev.PerfUtils.Internals
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public (SegmentBuffer Buffer, bool IsNextBlockSegment) RentFromPreferredBlock
-            (int requestedBufferSize, bool clearNewAllocations, in SegmentBufferInfo preferredBlockInfo)
+            (long requestedBufferSize, bool clearNewAllocations, in SegmentBufferInfo preferredBlockInfo)
         {
             Debug.Assert(requestedBufferSize > 0, "requestedBufferSize <= 0");
             Debug.Assert(0 == (requestedBufferSize % MemorySegmentedBufferGroup.StandardBufferSegmentSize), "requestedBufferSize is not a multiple of the segment size");

@@ -160,6 +160,15 @@ namespace KZDev.PerfUtils.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The capacity is larger than int.MaxValue; please use the long int properties and operations to manage capacity..
+        /// </summary>
+        internal static string InvalidOperation_IntOverflowCapacity {
+            get {
+                return ResourceManager.GetString("InvalidOperation_IntOverflowCapacity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The memory segment is native memory; a reference byte array is not available..
         /// </summary>
         internal static string InvalidOperation_MemorySegmentIsNative {
@@ -174,6 +183,15 @@ namespace KZDev.PerfUtils.Resources {
         internal static string InvalidOperation_StreamClosed {
             get {
                 return ResourceManager.GetString("InvalidOperation_StreamClosed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The length of the stream is too long to copy into an array..
+        /// </summary>
+        internal static string InvalidOperation_TooLargeToCopyToArray {
+            get {
+                return ResourceManager.GetString("InvalidOperation_TooLargeToCopyToArray", resourceCulture);
             }
         }
         

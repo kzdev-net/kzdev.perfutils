@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Kevin Zehrer
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+using System.Collections;
 using System.Runtime.ExceptionServices;
 
 using FluentAssertions;
@@ -16,6 +17,23 @@ namespace KZDev.PerfUtils.Tests
     [Trait(TestConstants.TestTrait.Category, "Memory")]
     public partial class UsingMemoryStreamSlim : UsingMemoryStreamSlimUnitTestBase
     {
+        /// <summary>
+        /// Produces test data that 
+        /// </summary>
+        private class CapacityTestData : IEnumerable<object[]>
+        {
+            /// <inheritdoc />
+            public IEnumerator<object[]> GetEnumerator ()
+            {
+                yield return [1];
+                yield return [int.MaxValue >> 1];
+                yield return [Math.Min(MemoryStreamSlim.MaxMemoryStreamLength, ((long)int.MaxValue) << 1)];
+            }
+
+            /// <inheritdoc />
+            IEnumerator IEnumerable.GetEnumerator () => GetEnumerator();
+        }
+
         /// <summary>
         /// The size of the test read/write segments.
         /// </summary>
@@ -55,13 +73,16 @@ namespace KZDev.PerfUtils.Tests
         /// Tests creating a MemoryStreamSlim instance with a specific capacity and verifying
         /// the capacity and zero buffer behavior are as expected.
         /// </summary>
-        [Fact]
-        public void UsingMemoryStreamSlim_CreateWithCapacity_HasExpectedSettingsAndCapacity ()
+        /// <param name="testCapacity">
+        /// The capacity to use for the test.
+        /// </param>
+        [Theory]
+        [ClassData(typeof(CapacityTestData))]
+        public void UsingMemoryStreamSlim_CreateWithCapacity_HasExpectedSettingsAndCapacity (long testCapacity)
         {
-            int testCapacity = GetTestInteger(1, 1000);
             using MemoryStreamSlim stream = MemoryStreamSlim.Create(testCapacity);
 
-            stream.Capacity.Should().Be(testCapacity);
+            stream.CapacityLong.Should().Be(testCapacity);
             stream.Settings.ZeroBufferBehavior.Should().Be(MemoryStreamSlimOptions.DefaultZeroBufferBehavior);
         }
         //--------------------------------------------------------------------------------    
@@ -83,14 +104,17 @@ namespace KZDev.PerfUtils.Tests
         /// Tests creating a MemoryStreamSlim instance with specific capacity options and verifying
         /// the capacity and zero buffer behavior are as expected.
         /// </summary>
-        [Fact]
-        public void UsingMemoryStreamSlim_CreateWithCapacityAndOptions_HasExpectedSettingsAndCapacity ()
+        /// <param name="testCapacity">
+        /// The capacity to use for the test.
+        /// </param>
+        [Theory]
+        [ClassData(typeof(CapacityTestData))]
+        public void UsingMemoryStreamSlim_CreateWithCapacityAndOptions_HasExpectedSettingsAndCapacity (long testCapacity)
         {
-            int testCapacity = GetTestInteger(1, 1000);
             MemoryStreamSlimOptions options = new MemoryStreamSlimOptions { ZeroBufferBehavior = MemoryStreamSlimZeroBufferOption.None };
             using MemoryStreamSlim stream = MemoryStreamSlim.Create(testCapacity, options);
 
-            stream.Capacity.Should().Be(testCapacity);
+            stream.CapacityLong.Should().Be(testCapacity);
             stream.Settings.ZeroBufferBehavior.Should().Be(options.ZeroBufferBehavior);
         }
         //--------------------------------------------------------------------------------    
@@ -111,13 +135,16 @@ namespace KZDev.PerfUtils.Tests
         /// Tests creating a MemoryStreamSlim instance with specific capacity options and verifying
         /// the capacity and zero buffer behavior are as expected.
         /// </summary>
-        [Fact]
-        public void UsingMemoryStreamSlim_CreateWithCapacityAndOptionsDelegate_HasExpectedSettingsAndCapacity ()
+        /// <param name="testCapacity">
+        /// The capacity to use for the test.
+        /// </param>
+        [Theory]
+        [ClassData(typeof(CapacityTestData))]
+        public void UsingMemoryStreamSlim_CreateWithCapacityAndOptionsDelegate_HasExpectedSettingsAndCapacity (long testCapacity)
         {
-            int testCapacity = GetTestInteger(1, 1000);
             using MemoryStreamSlim stream = MemoryStreamSlim.Create(testCapacity, options => options.ZeroBufferBehavior = MemoryStreamSlimZeroBufferOption.None);
 
-            stream.Capacity.Should().Be(testCapacity);
+            stream.CapacityLong.Should().Be(testCapacity);
             stream.Settings.ZeroBufferBehavior.Should().Be(MemoryStreamSlimZeroBufferOption.None);
         }
         //--------------------------------------------------------------------------------    
@@ -139,14 +166,17 @@ namespace KZDev.PerfUtils.Tests
         /// Tests creating a MemoryStreamSlim instance with specific capacity options and verifying
         /// the capacity and zero buffer behavior are as expected.
         /// </summary>
-        [Fact]
-        public void UsingMemoryStreamSlim_CreateWithCapacityAndOptionsStateDelegate_HasExpectedSettingsAndCapacity ()
+        /// <param name="testCapacity">
+        /// The capacity to use for the test.
+        /// </param>
+        [Theory]
+        [ClassData(typeof(CapacityTestData))]
+        public void UsingMemoryStreamSlim_CreateWithCapacityAndOptionsStateDelegate_HasExpectedSettingsAndCapacity (long testCapacity)
         {
-            int testCapacity = GetTestInteger(1, 1000);
             using MemoryStreamSlim stream = MemoryStreamSlim.Create(testCapacity,
                 (options, bufferBehavior) => options.ZeroBufferBehavior = bufferBehavior, MemoryStreamSlimZeroBufferOption.None);
 
-            stream.Capacity.Should().Be(testCapacity);
+            stream.CapacityLong.Should().Be(testCapacity);
             stream.Settings.ZeroBufferBehavior.Should().Be(MemoryStreamSlimZeroBufferOption.None);
         }
         //--------------------------------------------------------------------------------    
@@ -176,21 +206,20 @@ namespace KZDev.PerfUtils.Tests
         [Fact]
         public void UsingMemoryStreamSlim_SetRandomCapacity_CapacityPropertyIsCorrect ()
         {
-            const int maxTestCapacity = MemorySegmentedBufferGroup.StandardBufferSegmentSize * 64;
             for (int instanceLoop = 0; instanceLoop < 50; instanceLoop++)
             {
                 using MemoryStreamSlim testService = MemoryStreamSlim.Create();
                 for (int testLoop = 0; testLoop < 1000; testLoop++)
                 {
-                    int setCapacity = GetTestInteger(maxTestCapacity + 1);
+                    long setCapacity = GetTestLongInteger(MemoryStreamSlim.AbsoluteMaxCapacity + 1);
                     try
                     {
-                        testService.Capacity = setCapacity;
-                        testService.Capacity.Should().Be(setCapacity);
+                        testService.CapacityLong = setCapacity;
+                        testService.CapacityLong.Should().Be(setCapacity);
                     }
                     catch (Exception)
                     {
-                        TestWriteLine($@"** Failed on loop {testLoop} with capacity {setCapacity}");
+                        TestWriteLine($@"** Failed on first loop {testLoop} in instance loop {instanceLoop} with capacity {setCapacity}");
                         throw;
                     }
                 }
@@ -200,15 +229,15 @@ namespace KZDev.PerfUtils.Tests
                 // Test another new set of capacities
                 for (int testLoop = 0; testLoop < 1000; testLoop++)
                 {
-                    int setCapacity = GetTestInteger(maxTestCapacity + 1);
+                    long setCapacity = GetTestLongInteger(MemoryStreamSlim.AbsoluteMaxCapacity + 1);
                     try
                     {
-                        testService.Capacity = setCapacity;
-                        testService.Capacity.Should().Be(setCapacity);
+                        testService.CapacityLong = setCapacity;
+                        testService.CapacityLong.Should().Be(setCapacity);
                     }
                     catch (Exception)
                     {
-                        TestWriteLine($@"** Failed on loop {testLoop} with capacity {setCapacity}");
+                        TestWriteLine($@"** Failed on second loop {testLoop} in instance loop {instanceLoop} with capacity {setCapacity}");
                         throw;
                     }
                 }
@@ -222,39 +251,39 @@ namespace KZDev.PerfUtils.Tests
         [Fact]
         public void UsingMemoryStreamSlim_SetCapacity_CapacityPropertyIsCorrect ()
         {
-            foreach (int[] testCapacitySizes in GetTestCapacitySizes())
+            foreach (long[] testCapacitySizes in GetTestCapacitySizes())
             {
                 using MemoryStreamSlim testService = MemoryStreamSlim.Create(options => options.ZeroBufferBehavior = MemoryStreamSlimZeroBufferOption.OnRelease);
                 for (int testLoop = 0; testLoop < testCapacitySizes.Length; testLoop++)
                 {
-                    int setCapacity = testCapacitySizes[testLoop];
+                    long setCapacity = testCapacitySizes[testLoop];
                     try
                     {
-                        testService.Capacity = setCapacity;
-                        testService.Capacity.Should().Be(setCapacity);
+                        testService.CapacityLong = setCapacity;
+                        testService.CapacityLong.Should().Be(setCapacity);
                     }
                     catch (Exception)
                     {
-                        TestWriteLine($"** Failed on loop {testLoop} with capacity {setCapacity} from capacity set [{string.Join(",", testCapacitySizes.Select(cap => cap.ToString()))}]");
+                        TestWriteLine($"** Failed on first loop {testLoop} with capacity {setCapacity} from capacity set [{string.Join(",", testCapacitySizes.Select(cap => cap.ToString()))}]");
                         throw;
                     }
                 }
                 // Try zero
                 testService.SetLength(0);
-                testService.Capacity = 0;
-                testService.Capacity.Should().Be(0);
+                testService.CapacityLong = 0;
+                testService.CapacityLong.Should().Be(0);
                 // Test another new set of capacities
                 for (int testLoop = 0; testLoop < testCapacitySizes.Length; testLoop++)
                 {
-                    int setCapacity = testCapacitySizes[testLoop];
+                    long setCapacity = testCapacitySizes[testLoop];
                     try
                     {
-                        testService.Capacity = setCapacity;
-                        testService.Capacity.Should().Be(setCapacity);
+                        testService.CapacityLong = setCapacity;
+                        testService.CapacityLong.Should().Be(setCapacity);
                     }
                     catch (Exception)
                     {
-                        TestWriteLine($"** Failed on loop {testLoop} with capacity {setCapacity} from capacity set [{string.Join(",", testCapacitySizes.Select(cap => cap.ToString()))}]");
+                        TestWriteLine($"** Failed on second loop {testLoop} with capacity {setCapacity} from capacity set [{string.Join(",", testCapacitySizes.Select(cap => cap.ToString()))}]");
                         throw;
                     }
                 }
@@ -283,7 +312,7 @@ namespace KZDev.PerfUtils.Tests
                     }
                     catch (Exception)
                     {
-                        TestWriteLine($"** Failed on loop {instanceLoop} with length {setLength}");
+                        TestWriteLine($"** Failed on first loop {testLoop} in instance loop {instanceLoop} with length {setLength}");
                         throw;
                     }
                 }
@@ -303,7 +332,7 @@ namespace KZDev.PerfUtils.Tests
                     }
                     catch (Exception)
                     {
-                        TestWriteLine($"** Failed on loop {instanceLoop} with length {setLength}");
+                        TestWriteLine($"** Failed on second loop {testLoop} in instance loop {instanceLoop} with length {setLength}");
                         throw;
                     }
                 }
@@ -358,12 +387,12 @@ namespace KZDev.PerfUtils.Tests
         [Fact]
         public void UsingMemoryStreamSlim_SetLength_LengthPropertyIsCorrect ()
         {
-            foreach (int[] testLengthValues in GetTestLengthValues())
+            foreach (long[] testLengthValues in GetTestLengthValues())
             {
                 using MemoryStreamSlim testService = MemoryStreamSlim.Create();
                 for (int testLoop = 0; testLoop < testLengthValues.Length; testLoop++)
                 {
-                    int setLength = testLengthValues[testLoop];
+                    long setLength = testLengthValues[testLoop];
                     try
                     {
                         testService.SetLength(setLength);
@@ -371,7 +400,7 @@ namespace KZDev.PerfUtils.Tests
                     }
                     catch (Exception)
                     {
-                        TestWriteLine($"** Failed on loop {testLoop} with length {setLength} from length set [{string.Join(",", testLengthValues.Select(cap => cap.ToString()))}]");
+                        TestWriteLine($"** Failed on first loop {testLoop} with length {setLength} from length set [{string.Join(",", testLengthValues.Select(cap => cap.ToString()))}]");
                         throw;
                     }
                 }
@@ -381,7 +410,7 @@ namespace KZDev.PerfUtils.Tests
                 // Now, loop through all the test lengths again
                 for (int testLoop = 0; testLoop < testLengthValues.Length; testLoop++)
                 {
-                    int setLength = testLengthValues[testLoop];
+                    long setLength = testLengthValues[testLoop];
                     try
                     {
                         testService.SetLength(setLength);
@@ -389,7 +418,7 @@ namespace KZDev.PerfUtils.Tests
                     }
                     catch (Exception)
                     {
-                        TestWriteLine($"** Failed on loop {testLoop} with length {setLength} from length set [{string.Join(",", testLengthValues.Select(cap => cap.ToString()))}]");
+                        TestWriteLine($"** Failed on second loop {testLoop} with length {setLength} from length set [{string.Join(",", testLengthValues.Select(cap => cap.ToString()))}]");
                         throw;
                     }
                 }

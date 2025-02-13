@@ -78,6 +78,40 @@ namespace KZDev.PerfUtils.Observability
         }
         //--------------------------------------------------------------------------------
         /// <summary>
+        /// Optimized WriteEvent signature for event ID, string, long, string, string
+        /// </summary>
+        /// <param name="eventId">
+        /// The event ID to write
+        /// </param>
+        /// <param name="arg1">
+        /// The string argument
+        /// </param>
+        /// <param name="arg2">
+        /// The first long argument
+        /// </param>
+        /// <param name="arg3">
+        /// The second long argument
+        /// </param>
+        [NonEvent]
+        private unsafe void WriteEvent (int eventId, string arg1, long arg2, long arg3)
+        {
+            if (!IsEnabled())
+                return;
+
+            fixed (char* arg1Bytes = arg1)
+            {
+                EventData* descriptors = stackalloc EventData[3];
+                descriptors[0].DataPointer = (IntPtr)arg1Bytes;
+                descriptors[0].Size = (arg1.Length + 1) * sizeof(char);
+                descriptors[1].DataPointer = (IntPtr)(&arg2);
+                descriptors[1].Size = sizeof(long);
+                descriptors[2].DataPointer = (IntPtr)(&arg3);
+                descriptors[2].Size = sizeof(long);
+                WriteEventCore(eventId, 3, descriptors);
+            }
+        }
+        //--------------------------------------------------------------------------------
+        /// <summary>
         /// Optimized WriteEvent signature for event ID, int, int, string
         /// </summary>
         /// <param name="eventId">
@@ -292,7 +326,7 @@ namespace KZDev.PerfUtils.Observability
             Task = Tasks.MemoryStreamSlim,
             Opcode = Opcodes.CapacityExpand,
             Level = EventLevel.Informational)]
-        public void MemoryStreamSlimCapacityExpanded (string streamId, int oldCapacity, int newCapacity)
+        public void MemoryStreamSlimCapacityExpanded (string streamId, long oldCapacity, long newCapacity)
         {
             if (IsEnabled(EventLevel.Informational, Keywords.Capacity))
                 WriteEvent(EventId_MemoryStreamSlimCapacityExpanded, streamId, oldCapacity, newCapacity);
@@ -307,7 +341,7 @@ namespace KZDev.PerfUtils.Observability
             Task = Tasks.MemoryStreamSlim,
             Opcode = Opcodes.CapacityReduced,
             Level = EventLevel.Informational)]
-        public void MemoryStreamSlimCapacityReduced (string streamId, int oldCapacity, int newCapacity)
+        public void MemoryStreamSlimCapacityReduced (string streamId, long oldCapacity, long newCapacity)
         {
             if (IsEnabled(EventLevel.Informational, Keywords.Capacity))
                 WriteEvent(EventId_MemoryStreamSlimCapacityReduced, streamId, oldCapacity, newCapacity);

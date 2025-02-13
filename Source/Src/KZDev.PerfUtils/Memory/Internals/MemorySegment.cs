@@ -296,7 +296,7 @@ namespace KZDev.PerfUtils.Internals
         /// </param>
         public void CopyTo (MemorySegment destination)
         {
-            Debug.Assert(destination._managedArray is not null, "The destination segment is not initialized");
+            Debug.Assert(destination.IsNative ? (destination._nativePointer is not null) : (destination._managedArray is not null), "The destination segment is not initialized");
             Debug.Assert(destination._count >= _count, "The destination segment is too short");
 
             // This CopyTo method is only called for small buffers, and therefore never used for native memory.

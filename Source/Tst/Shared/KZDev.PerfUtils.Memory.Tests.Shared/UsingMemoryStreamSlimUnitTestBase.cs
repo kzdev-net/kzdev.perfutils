@@ -114,11 +114,11 @@ namespace KZDev.PerfUtils.Tests
         /// <returns>
         /// An enumerable collection of all the possible permutations of the values in the <paramref name="testSizes"/> array.
         /// </returns>
-        private static IEnumerable<int[]> GetAllPermutations (int[] testSizes)
+        private static IEnumerable<long[]> GetAllPermutations (long[] testSizes)
         {
             foreach (int[] indexPermutation in GetAllRangePermutations(testSizes.Length - 1))
             {
-                int[] returnSizes = new int[indexPermutation.Length];
+                long[] returnSizes = new long[indexPermutation.Length];
                 for (int i = 0; i < indexPermutation.Length; i++)
                     returnSizes[i] = testSizes[indexPermutation[i]];
                 yield return returnSizes;
@@ -133,13 +133,13 @@ namespace KZDev.PerfUtils.Tests
         /// <returns>
         /// An enumerable collection of all permutations of test values.
         /// </returns>
-        public IEnumerable<int[]> GetAllBufferSizePermutationValues ()
+        public IEnumerable<long[]> GetAllBufferSizePermutationValues ()
         {
             // We want to return every possible size from within the small buffer sizes, and 
-            // 2 standard buffer sizes. For each set buffer size, we will a random size in that size group.
+            // 2 standard buffer sizes. For each set buffer size, we will use a random size in that size group.
             int testSizeCount = 2 /* For 2 multiples of standard buffer sizes */
                                 + SegmentMemoryStreamSlim.SmallBufferSizes.Length; /* For each small buffer size */
-            int[] testSizes = new int[testSizeCount];
+            long[] testSizes = new long[testSizeCount];
             int index = 0;
             for (int bufferSizeIndex = 0; bufferSizeIndex < SegmentMemoryStreamSlim.SmallBufferSizes.Length; bufferSizeIndex++)
             {
@@ -161,11 +161,11 @@ namespace KZDev.PerfUtils.Tests
         /// <returns>
         /// An enumerable collection of all permutations of test values.
         /// </returns>
-        public IEnumerable<int[]> GetAllNeighborBufferSizePermutationValues ()
+        public IEnumerable<long[]> GetAllNeighborBufferSizePermutationValues ()
         {
             // We want to return every possible size from within the small buffer sizes, and 
             // 2 standard buffer sizes. For each set buffer size, we will a random size in that size group.
-            HashSet<int> useSizes = [];
+            HashSet<long> useSizes = [];
             // Add all the small buffer sizes
             foreach (int smallBufferSize in SegmentMemoryStreamSlim.SmallBufferSizes)
             {
@@ -176,20 +176,20 @@ namespace KZDev.PerfUtils.Tests
             useSizes.Add(MemorySegmentedBufferGroup.StandardBufferSegmentSize * 2);
             useSizes.Add(MemorySegmentedBufferGroup.StandardBufferSegmentSize * 3);
             // Now, get all the values in the set
-            int[] testSizes = useSizes.ToArray();
-            int previousBufferLowValue = 0;
-            int[] returnSizes = new int[3];
+            long[] testSizes = useSizes.ToArray();
+            long previousBufferLowValue = 0;
+            long[] returnSizes = new long[3];
             for (int bufferSizeIndex = 1; bufferSizeIndex < testSizes.Length; bufferSizeIndex++)
             {
-                int previousBufferSize = testSizes[bufferSizeIndex - 1];
-                int currentBufferSize = testSizes[bufferSizeIndex];
-                int previousBufferMidSize = (previousBufferSize + previousBufferLowValue) / 2;
+                long previousBufferSize = testSizes[bufferSizeIndex - 1];
+                long currentBufferSize = testSizes[bufferSizeIndex];
+                long previousBufferMidSize = (previousBufferSize + previousBufferLowValue) / 2;
                 // We will get three values, two from the previous buffer size range and one from the current buffer size
-                returnSizes[0] = GetTestInteger(previousBufferLowValue, previousBufferMidSize + 1);
-                returnSizes[1] = GetTestInteger(previousBufferMidSize + 1, previousBufferSize + 1);
-                returnSizes[2] = GetTestInteger(previousBufferSize + 1, currentBufferSize + 1);
+                returnSizes[0] = GetTestLongInteger(previousBufferLowValue, previousBufferMidSize + 1);
+                returnSizes[1] = GetTestLongInteger(previousBufferMidSize + 1, previousBufferSize + 1);
+                returnSizes[2] = GetTestLongInteger(previousBufferSize + 1, currentBufferSize + 1);
                 // Now, get all permutations of these values
-                foreach (int[] permutation in GetAllPermutations(returnSizes))
+                foreach (long[] permutation in GetAllPermutations(returnSizes))
                 {
                     yield return permutation;
                 }
@@ -206,16 +206,16 @@ namespace KZDev.PerfUtils.Tests
         /// <returns>
         /// An enumerable collection of all permutations of test values.
         /// </returns>
-        public IEnumerable<int[]> GetTestStreamSizeValues ()
+        public IEnumerable<long[]> GetTestStreamSizeValues ()
         {
             yield return [0];
             // Get all the permutations of the buffer sizes.
-            foreach (int[] bufferSizePermutationValue in GetAllBufferSizePermutationValues())
+            foreach (long[] bufferSizePermutationValue in GetAllBufferSizePermutationValues())
             {
                 yield return bufferSizePermutationValue;
             }
             // Also, get all the permutations of values from neighboring buffer sizes.
-            foreach (int[] bufferSizePermutationValue in GetAllNeighborBufferSizePermutationValues())
+            foreach (long[] bufferSizePermutationValue in GetAllNeighborBufferSizePermutationValues())
             {
                 yield return bufferSizePermutationValue;
             }
@@ -226,13 +226,20 @@ namespace KZDev.PerfUtils.Tests
         /// Gets the test capacity sizes to use for testing the <see cref="MemoryStreamSlim.Capacity"/> property.
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<int[]> GetTestCapacitySizes () => GetTestStreamSizeValues();
+        public IEnumerable<long[]> GetTestCapacitySizes ()
+        {
+            foreach (long[] returnSet in GetTestStreamSizeValues())
+            {
+                yield return returnSet;
+            }
+            yield return [1, int.MaxValue >> 1, ((long)int.MaxValue) << 1];
+        }
         //--------------------------------------------------------------------------------   
         /// <summary>
         /// Gets the test length values to use for testing the <see cref="MemoryStreamSlim.Length"/> property.
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<int[]> GetTestLengthValues () => GetTestStreamSizeValues();
+        public IEnumerable<long[]> GetTestLengthValues () => GetTestStreamSizeValues();
         //--------------------------------------------------------------------------------   
         /// <summary>
         /// Gets the test data sizes to use for theory tests, including some random sizes 

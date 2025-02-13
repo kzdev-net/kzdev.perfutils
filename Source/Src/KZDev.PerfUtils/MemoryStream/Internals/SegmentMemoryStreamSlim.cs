@@ -333,7 +333,7 @@ namespace KZDev.PerfUtils.Internals
         /// <summary>
         /// Gets or sets the offset in the current buffer where our position is currently set
         /// </summary>
-        private int VirtualPosition
+        private long VirtualPosition
         {
             get => PositionInternal;
             set => SetCurrentVirtualPosition(value);
@@ -487,7 +487,7 @@ namespace KZDev.PerfUtils.Internals
         /// from the preferred block.
         /// </returns>
         private (SegmentBuffer Buffer, bool IsNextBlockSegment) RentStandardBufferFromPreferredBlock
-            (int requestedBufferSize, bool forceZeroBytes, in SegmentBufferInfo preferredBlockInfo)
+            (long requestedBufferSize, bool forceZeroBytes, in SegmentBufferInfo preferredBlockInfo)
         {
             // If the preferred block info is the default, then just rent a standard buffer.
             if (preferredBlockInfo.BufferPool is null)
@@ -520,7 +520,7 @@ namespace KZDev.PerfUtils.Internals
         /// <returns>
         /// The rented buffer.
         /// </returns>
-        private SegmentBuffer RentStandardBuffer (int requestedBufferSize, bool forceZeroBytes)
+        private SegmentBuffer RentStandardBuffer (long requestedBufferSize, bool forceZeroBytes)
         {
             // Note - our buffer pool is a custom pool that only we will be using, so we don't 
             // have to worry about non-cleared data from other users; but, it is static and 
@@ -732,7 +732,7 @@ namespace KZDev.PerfUtils.Internals
         /// <c>true</c> if a new standard buffer was allocated, copied existing data from the 
         /// small buffer, and added to the buffer list; otherwise, <c>false</c>.
         /// </returns>
-        private bool RentStandardBufferAndCopySmallBuffer (int requestedBufferSize, bool forceZeroBytes)
+        private bool RentStandardBufferAndCopySmallBuffer (long requestedBufferSize, bool forceZeroBytes)
         {
             Debug.Assert(_bufferList is not null, "_bufferList is null");
             Debug.Assert(_bufferList.Count == 0, "_bufferList.Count != 0");
@@ -745,7 +745,7 @@ namespace KZDev.PerfUtils.Internals
             // Allocate a standard buffer and copy the data from the current small buffer
             SegmentBuffer newBuffer = RentStandardBuffer(requestedBufferSize, forceZeroBytes);
             // Our current length can be safely cast to an int because we are currently using small buffers
-            _currentBufferInfo.Buffer[..LengthInternal].CopyTo(newBuffer);
+            _currentBufferInfo.Buffer[..(int)LengthInternal].CopyTo(newBuffer);
             AddSegmentBufferToList(newBuffer);
             ReleaseSmallBufferAndResetCurrentBuffer();
             return true;
@@ -782,7 +782,7 @@ namespace KZDev.PerfUtils.Internals
             // Allocate a small buffer and copy the data from the current small buffer
             SegmentBuffer newBuffer = RentSmallBuffer(bufferSize);
             // Our current length can be safely cast to an int because we are currently using small buffers
-            _currentBufferInfo.Buffer[..LengthInternal].CopyTo(newBuffer);
+            _currentBufferInfo.Buffer[..(int)LengthInternal].CopyTo(newBuffer);
             // Set the new buffer as the current buffer
             SetCurrentBufferInfo(new CurrentBufferInfo(smallBufferIndex, true, newBuffer));
             _allocatedCapacity = newBuffer.Length;
@@ -810,7 +810,7 @@ namespace KZDev.PerfUtils.Internals
             Debug.Assert(requestedCapacity <= MaximumCapacity, "capacity > MaximumCapacity");
 
             // Determine the number of standard size buffers needed
-            int standardBuffersCount = Math.DivRem((int)requestedCapacity, StandardBufferSegmentSize, out int remainder);
+            int standardBuffersCount = (int)Math.DivRem(requestedCapacity, StandardBufferSegmentSize, out long remainder);
             if (standardBuffersCount == 0)
             {
                 // If we need more than the largest small buffer size, then we actually do
@@ -865,7 +865,7 @@ namespace KZDev.PerfUtils.Internals
             {
                 // The last buffer we have is currently a small buffer, so we need to copy
                 // the contents into a new buffer.
-                if (RentStandardBufferAndCopySmallBuffer((int)capacityNeeded, forceZeroBytes))
+                if (RentStandardBufferAndCopySmallBuffer(capacityNeeded, forceZeroBytes))
                 {
                     // The only way we should get here is during a transition from using a small buffer
                     // to using the standard size buffers
@@ -881,7 +881,7 @@ namespace KZDev.PerfUtils.Internals
             {
                 if (0 == _bufferList.Count)
                 {
-                    SegmentBuffer newBuffer = RentStandardBuffer((int)capacityNeeded, forceZeroBytes);
+                    SegmentBuffer newBuffer = RentStandardBuffer(capacityNeeded, forceZeroBytes);
                     AddSegmentBufferToList(newBuffer);
                     capacityNeeded -= newBuffer.Length;
                     continue;
@@ -893,7 +893,7 @@ namespace KZDev.PerfUtils.Internals
                 SegmentBuffer lastBuffer = _bufferList[^1].SegmentBuffer;
                 SegmentBufferInfo lastBufferInfo = lastBuffer.BufferInfo;
                 (SegmentBuffer nextBuffer, bool isNextBlockSegment) =
-                    RentStandardBufferFromPreferredBlock((int)capacityNeeded, forceZeroBytes, lastBufferInfo);
+                    RentStandardBufferFromPreferredBlock(capacityNeeded, forceZeroBytes, lastBufferInfo);
 
                 if (!isNextBlockSegment)
                 {
@@ -960,7 +960,7 @@ namespace KZDev.PerfUtils.Internals
             if (neededCapacity <= _allocatedCapacity)
             {
                 // Just simply update the reported capacity
-                CapacityInternal = (int)neededCapacity;
+                CapacityInternal = neededCapacity;
                 return;
             }
             // Get the allocation information for the needed capacity
@@ -970,9 +970,9 @@ namespace KZDev.PerfUtils.Internals
             {
                 // We can cast capacityNeeded to an int because we have an absolute maximum
                 // capacity that is less than (or equal to) the maximum value of an int.
-                EnsureStandardBuffersCapacity((int)allocationInfoForCapacity.AllocatedCapacity, forceZeroBytes);
+                EnsureStandardBuffersCapacity(allocationInfoForCapacity.AllocatedCapacity, forceZeroBytes);
                 _allocatedCapacity = allocationInfoForCapacity.AllocatedCapacity;
-                CapacityInternal = (int)neededCapacity;
+                CapacityInternal = neededCapacity;
                 // Be sure that the 'current' buffer gets properly selected.
                 _currentBufferInvalid = true;
                 return;
@@ -981,7 +981,7 @@ namespace KZDev.PerfUtils.Internals
             // not the right size and copy the data if needed.
             RentSmallBufferAndCopySmallBuffer((int)neededCapacity, allocationInfoForCapacity.SmallBufferIndex);
             // Set the capacity to the requested needed capacity
-            CapacityInternal = (int)neededCapacity;
+            CapacityInternal = neededCapacity;
         }
         //--------------------------------------------------------------------------------
         /// <summary>
@@ -993,7 +993,7 @@ namespace KZDev.PerfUtils.Internals
         /// <returns>
         /// <c>true</c> if any allocation changes were made; otherwise, <c>false</c>.
         /// </returns>
-        private void ReduceCapacity (int requestedCapacity)
+        private void ReduceCapacity (long requestedCapacity)
         {
             Debug.Assert(requestedCapacity >= 0, "requestedCapacity < 0");
             Debug.Assert(requestedCapacity <= CapacityInternal, "requestedCapacity > _capacity");
@@ -1088,7 +1088,7 @@ namespace KZDev.PerfUtils.Internals
         /// <c>true</c> if the position was set to the new value; otherwise, <c>false</c>.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool SetCurrentVirtualPosition (int newPosition)
+        private bool SetCurrentVirtualPosition (long newPosition)
         {
             Debug.Assert(newPosition >= 0, "newPosition < 0");
             if (PositionInternal == newPosition)
@@ -1102,7 +1102,7 @@ namespace KZDev.PerfUtils.Internals
         /// Adjusts the virtual position and sets the current buffer.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void OffsetPositionAndSetCurrentBuffer (int offsetPosition)
+        private void OffsetPositionAndSetCurrentBuffer (long offsetPosition)
         {
             if (offsetPosition == 0)
                 return;
@@ -1111,7 +1111,7 @@ namespace KZDev.PerfUtils.Internals
                 // Check if we just moved within the same current buffer
                 if ((_currentBufferOffset + offsetPosition) < _currentBufferInfo.Buffer.Length)
                 {
-                    _currentBufferOffset += offsetPosition;
+                    _currentBufferOffset += (int)offsetPosition;
                     PositionInternal += offsetPosition;
                     return;
                 }
@@ -1119,7 +1119,7 @@ namespace KZDev.PerfUtils.Internals
             // offsetPosition is negative - Check if we just moved within the same current buffer
             else if ((_currentBufferOffset + offsetPosition) >= 0)
             {
-                _currentBufferOffset += offsetPosition;
+                _currentBufferOffset = (int)(_currentBufferOffset + offsetPosition);
                 PositionInternal += offsetPosition;
                 return;
             }
@@ -1130,7 +1130,7 @@ namespace KZDev.PerfUtils.Internals
         /// Sets the virtual position to the specified value, and sets the current buffer
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void SetPositionAndCurrentBuffer (int newPosition)
+        private void SetPositionAndCurrentBuffer (long newPosition)
         {
             if (!SetCurrentVirtualPosition(newPosition))
                 return;
@@ -1159,15 +1159,13 @@ namespace KZDev.PerfUtils.Internals
         private long SeekInternal (long offset, long fromLocation)
         {
             long tempPosition = fromLocation + offset;
-            switch (tempPosition)
+            if (tempPosition > MaxMemoryStreamLength)
             {
-                case > MaxMemoryStreamLength:
-                    ThrowHelper.ThrowArgumentOutOfRangeException_StreamLength(nameof(offset));
-                    break;
-
-                case < 0:
-                    ThrowHelper.ThrowIOException_SeekBeforeBegin();
-                    break;
+                ThrowHelper.ThrowArgumentOutOfRangeException_StreamLength(nameof(offset));
+            }
+            if (tempPosition < 0)
+            {
+                ThrowHelper.ThrowIOException_SeekBeforeBegin();
             }
 
             Position = tempPosition;
@@ -1242,7 +1240,7 @@ namespace KZDev.PerfUtils.Internals
             // _currentBufferInfo instance.
             if (_bufferList is null)
             {
-                _currentBufferOffset = PositionInternal;
+                _currentBufferOffset = (int)PositionInternal;
                 return;
             }
 
@@ -1283,16 +1281,16 @@ namespace KZDev.PerfUtils.Internals
         /// It is assumed that the current buffer is already selected before this method is called,
         /// and that any capacity changes have already been made.
         /// </remarks>
-        private void ClearLengthPositionGap (int clearToPosition)
+        private void ClearLengthPositionGap (long clearToPosition)
         {
             // How many bytes do we need to clear?
-            int gapSize = clearToPosition - LengthInternal;
+            long gapSize = clearToPosition - LengthInternal;
             Debug.Assert(gapSize > 0, "gapSize <= 0");
             if (_currentBufferInfo.IsSmallBuffer)
             {
                 // If the current buffer for the current position is a small buffer, then the
                 // gap size is less than the buffer size, so we can just clear the gap in the buffer.
-                Array.Clear(_currentBufferInfo.Buffer.RawBuffer!, LengthInternal, gapSize);
+                Array.Clear(_currentBufferInfo.Buffer.RawBuffer!, (int)LengthInternal, (int)gapSize);
                 LengthInternal = VirtualPosition;
                 return;
             }
@@ -1308,7 +1306,7 @@ namespace KZDev.PerfUtils.Internals
             // in the current buffer.
             if (startBufferListIndex == targetBufferListIndex)
             {
-                _bufferList![startBufferListIndex].SegmentBuffer.Slice(startBufferOffset, gapSize).Clear();
+                _bufferList![startBufferListIndex].SegmentBuffer.Slice(startBufferOffset, (int)gapSize).Clear();
                 LengthInternal = VirtualPosition;
                 return;
             }
@@ -1328,7 +1326,7 @@ namespace KZDev.PerfUtils.Internals
                 if (gapSize <= currentBuffer.Length)
                 {
                     Debug.Assert(((0 == targetBufferOffset) || (gapSize == targetBufferOffset)), "gapSize != targetBufferOffset");
-                    currentBuffer.Slice(0, gapSize).Clear();
+                    currentBuffer.Slice(0, (int)gapSize).Clear();
                     LengthInternal = VirtualPosition;
                     return;
                 }
@@ -1354,7 +1352,7 @@ namespace KZDev.PerfUtils.Internals
         private unsafe void WriteMultiBuffer (byte[] buffer, int offset, int count)
         {
             // Copy the data to the stream via multiple buffers
-            int newPosition = VirtualPosition;
+            long newPosition = VirtualPosition;
             int sourceBufferOffset = offset;
             // Start with the current buffer and the current buffer offset
             int currentBufferBytesLeft = CurrentBufferBytesLeft;
@@ -1441,7 +1439,7 @@ namespace KZDev.PerfUtils.Internals
         private void WriteMultiBuffer (ReadOnlySpan<byte> buffer, int copyCount)
         {
             // Copy the data to the stream via multiple buffers
-            int newPosition = VirtualPosition;
+            long newPosition = VirtualPosition;
             int sourceBufferOffset = 0;
             // Start with the current buffer and the current buffer offset
             int currentBufferBytesLeft = CurrentBufferBytesLeft;
@@ -1500,7 +1498,7 @@ namespace KZDev.PerfUtils.Internals
             if (currentBufferBytesLeft == 0)
                 return 0;
 
-            int newPosition = VirtualPosition;
+            long newPosition = VirtualPosition;
             int returnCount = 0;
             int destinationBufferOffset = offset;
             // Start with the current buffer and the current buffer offset
@@ -1585,7 +1583,7 @@ namespace KZDev.PerfUtils.Internals
             if (currentBufferBytesLeft == 0)
                 return 0;
 
-            int newPosition = VirtualPosition;
+            long newPosition = VirtualPosition;
             int returnCount = 0;
             int destinationBufferOffset = 0;
             // Start with the current buffer and the current buffer offset
@@ -1711,7 +1709,7 @@ namespace KZDev.PerfUtils.Internals
         /// <param name="options">
         /// The options for configuring the <see cref="MemoryStreamSlim"/> settings.
         /// </param>
-        public SegmentMemoryStreamSlim (long maximumCapacity, int capacity, MemoryStreamSlimOptions? options) :
+        public SegmentMemoryStreamSlim (long maximumCapacity, long capacity, MemoryStreamSlimOptions? options) :
             this(maximumCapacity, options)
         {
             if (capacity < 0)
@@ -1734,7 +1732,7 @@ namespace KZDev.PerfUtils.Internals
         /// <param name="settings">
         /// The stream instance settings.
         /// </param>
-        public SegmentMemoryStreamSlim (long maximumCapacity, int capacity, in MemoryStreamSlimSettings settings) :
+        public SegmentMemoryStreamSlim (long maximumCapacity, long capacity, in MemoryStreamSlimSettings settings) :
             this(maximumCapacity, settings)
         {
             if (capacity < 0)
@@ -1763,7 +1761,7 @@ namespace KZDev.PerfUtils.Internals
             bufferSize = Math.Max(StandardAsyncCopyBufferSize, bufferSize);
 
             // If we have no data, then we have nothing to copy
-            int bytesToCopy = LengthInternal - PositionInternal;
+            long bytesToCopy = LengthInternal - PositionInternal;
             if (bytesToCopy <= 0)
                 return;
 
@@ -1778,7 +1776,7 @@ namespace KZDev.PerfUtils.Internals
             // If we have a small buffer, then we can just copy the remaining data from the small buffer
             if (_currentBufferInfo.IsSmallBuffer)
             {
-                await destination.WriteAsync(_currentBufferInfo.Buffer.RawBuffer!, _currentBufferOffset, bytesToCopy, cancellationToken).ConfigureAwait(false);
+                await destination.WriteAsync(_currentBufferInfo.Buffer.RawBuffer!, _currentBufferOffset, (int)bytesToCopy, cancellationToken).ConfigureAwait(false);
                 // Update the position and the current buffer information
                 OffsetPositionAndSetCurrentBuffer(bytesToCopy);
                 return;
@@ -1787,14 +1785,14 @@ namespace KZDev.PerfUtils.Internals
             // If we have a buffer list, then we need to copy the data from the standard buffers
             int bufferOffset = _currentBufferOffset;   // Offset into the buffer being copied from
             int bufferIndex = _currentBufferInfo.Index;
-            int newPosition = VirtualPosition;
+            long newPosition = VirtualPosition;
 
             // Set up the first write task
             // We are not using a small buffer and length is not zero, so we must have a buffer list
             SegmentBuffer currentBuffer = _bufferList![bufferIndex++].SegmentBuffer;
             int bufferRemainingCount = currentBuffer.Length - bufferOffset;
             // Limit the copy length to the buffer size, the remaining data in the buffer, and the remaining data to copy
-            int copyLength = Math.Min(bufferSize, Math.Min(bufferRemainingCount, bytesToCopy));
+            int copyLength = (int)Math.Min(bufferSize, Math.Min(bufferRemainingCount, bytesToCopy));
 
             MemorySegment memorySegment = currentBuffer.MemorySegment;
             ReadOnlyMemory<byte> writeMemory = memorySegment.AsReadOnlyMemory().Slice(bufferOffset, copyLength);
@@ -1822,7 +1820,7 @@ namespace KZDev.PerfUtils.Internals
                     currentBuffer = _bufferList![bufferIndex++].SegmentBuffer;
                     bufferRemainingCount = currentBuffer.Length;
                 }
-                copyLength = Math.Min(bufferSize, Math.Min(bufferRemainingCount, bytesToCopy));
+                copyLength = (int)Math.Min(bufferSize, Math.Min(bufferRemainingCount, bytesToCopy));
 
                 memorySegment = currentBuffer.MemorySegment;
                 writeMemory = memorySegment.AsReadOnlyMemory().Slice(bufferOffset, copyLength);
@@ -1840,7 +1838,7 @@ namespace KZDev.PerfUtils.Internals
         }
         //--------------------------------------------------------------------------------
         /// <inheritdoc />
-        protected override void SetCapacity (int capacityValue)
+        protected override void SetCapacity (long capacityValue)
         {
             if (CapacityInternal == capacityValue)
                 return;
@@ -1885,7 +1883,7 @@ namespace KZDev.PerfUtils.Internals
                     ThrowHelper.ThrowArgumentOutOfRangeException_NeedNonNegNum(nameof(value));
                 if (value > MaximumCapacity)
                     ThrowHelper.ThrowArgumentOutOfRangeException_NeedBetween(nameof(value), 0, MaximumCapacity);
-                VirtualPosition = (int)value;
+                VirtualPosition = value;
             }
         }
         //--------------------------------------------------------------------------------
@@ -1901,9 +1899,9 @@ namespace KZDev.PerfUtils.Internals
             if (LengthInternal <= PositionInternal)
                 return 0;
             VerifyCurrentBuffer();
-            int bytesLeft = LengthInternal - VirtualPosition;
+            long bytesLeft = LengthInternal - VirtualPosition;
             if (count > bytesLeft)
-                count = bytesLeft;
+                count = (int)bytesLeft;
             // If we are going to traverse multiple buffers, then we take a quicker approach
             int bufferBytesLeft = CurrentBufferBytesLeft;
 
@@ -1939,16 +1937,16 @@ namespace KZDev.PerfUtils.Internals
         {
             EnsureNotClosed();
 
-            int copyCount = Math.Min(LengthInternal - VirtualPosition, destinationBuffer.Length);
+            int copyCount = (int)Math.Min(LengthInternal - VirtualPosition, destinationBuffer.Length);
             if (copyCount <= 0)
                 return 0;
 
             if (LengthInternal <= PositionInternal)
                 return 0;
             VerifyCurrentBuffer();
-            int bytesLeft = LengthInternal - VirtualPosition;
+            long bytesLeft = LengthInternal - VirtualPosition;
             if (copyCount > bytesLeft)
-                copyCount = bytesLeft;
+                copyCount = (int)bytesLeft;
             // If we are going to traverse multiple buffers, then we take a quicker approach
             int bufferBytesLeft = CurrentBufferBytesLeft;
 
@@ -1989,7 +1987,7 @@ namespace KZDev.PerfUtils.Internals
             ValidateCopyToArguments(destination, bufferSize);
             EnsureNotClosed();
             // If we have no data, then we have nothing to copy
-            int bytesToCopy = LengthInternal - PositionInternal;
+            long bytesToCopy = LengthInternal - PositionInternal;
             if (bytesToCopy <= 0)
                 return;
 
@@ -1997,7 +1995,7 @@ namespace KZDev.PerfUtils.Internals
             // If we have a small buffer, then we can just copy the remaining data from the small buffer
             if (_currentBufferInfo.IsSmallBuffer)
             {
-                destination.Write(_currentBufferInfo.Buffer.RawBuffer!, _currentBufferOffset, bytesToCopy);
+                destination.Write(_currentBufferInfo.Buffer.RawBuffer!, _currentBufferOffset, (int)bytesToCopy);
                 // Update the position and the current buffer information
                 OffsetPositionAndSetCurrentBuffer(bytesToCopy);
                 return;
@@ -2005,12 +2003,12 @@ namespace KZDev.PerfUtils.Internals
             // If we have a buffer list, then we need to copy the data from the standard buffers
             int bufferOffset = _currentBufferOffset;   // Offset into the buffer being copied from
             int bufferIndex = _currentBufferInfo.Index;
-            int newPosition = VirtualPosition;
+            long newPosition = VirtualPosition;
             while (bytesToCopy > 0)
             {
                 // We are not using a small buffer and length is not zero, so we must have a buffer list
                 SegmentBuffer currentBuffer = _bufferList![bufferIndex++].SegmentBuffer;
-                int copyLength = Math.Min(currentBuffer.Length - bufferOffset, bytesToCopy);
+                int copyLength = (int)Math.Min(currentBuffer.Length - bufferOffset, bytesToCopy);
 
                 MemorySegment memorySegment = currentBuffer.MemorySegment;
                 if (memorySegment.IsNative)
@@ -2063,7 +2061,7 @@ namespace KZDev.PerfUtils.Internals
                 ThrowHelper.ThrowArgumentOutOfRangeException_NeedNonNegNum(nameof(value));
             if (value > MaximumCapacity)
                 ThrowHelper.ThrowArgumentOutOfRangeException_NeedBetween(nameof(value), 0, MaximumCapacity);
-            int newLength = (int)value;
+            long newLength = value;
 
             if (newLength > CapacityInternal)
             {
@@ -2084,7 +2082,7 @@ namespace KZDev.PerfUtils.Internals
             {
                 if (_currentBufferInfo.IsSmallBuffer)
                 {
-                    Array.Clear(_currentBufferInfo.Buffer.RawBuffer!, LengthInternal, newLength - LengthInternal);
+                    Array.Clear(_currentBufferInfo.Buffer.RawBuffer!, (int)LengthInternal, (int)(newLength - LengthInternal));
                 }
                 else if (_bufferList is not null)
                 {
@@ -2111,10 +2109,18 @@ namespace KZDev.PerfUtils.Internals
         public override byte[] ToArray ()
         {
             EnsureNotClosed();
-            // If we have no data, then return an empty array
-            int bytesToCopy = LengthInternal;
-            if (bytesToCopy == 0)
-                return [];
+            switch (LengthInternal)
+            {
+                // If we have no data, then return an empty array
+                case 0:
+                    return [];
+
+                // If the length of the stream is greater than int.MaxValue, then we cannot copy it to an array
+                case > int.MaxValue:
+                    ThrowHelper.ThrowInvalidOperationException_TooLargeToCopyToArray();
+                    break;
+            }
+            int bytesToCopy = (int)LengthInternal;
 
             // If we have a small buffer, then we can just copy the data from the small buffer
             byte[] returnArray = GC.AllocateUninitializedArray<byte>(bytesToCopy);
@@ -2191,7 +2197,7 @@ namespace KZDev.PerfUtils.Internals
                 }
             }
             // Update the position and count values
-            int newPosition = VirtualPosition + count;
+            long newPosition = VirtualPosition + count;
 
             if (newPosition > LengthInternal)
                 LengthInternal = newPosition;
@@ -2232,7 +2238,7 @@ namespace KZDev.PerfUtils.Internals
             // Write the data to the current buffer
             buffer.CopyTo(_currentBufferInfo.Buffer.AsSpan(_currentBufferOffset, copyCount));
             // Update the position and count values
-            int newPosition = VirtualPosition + copyCount;
+            long newPosition = VirtualPosition + copyCount;
 
             if (newPosition > LengthInternal)
                 LengthInternal = newPosition;
@@ -2245,13 +2251,13 @@ namespace KZDev.PerfUtils.Internals
         {
             EnsureNotClosed();
             // If we have no data, then simply return
-            int bytesToCopy = LengthInternal;
+            long bytesToCopy = LengthInternal;
             if (bytesToCopy == 0)
                 return;
             // If we have a small buffer, then we can just copy the data from the small buffer
             if (_currentBufferInfo.IsSmallBuffer)
             {
-                stream.Write(_currentBufferInfo.Buffer.RawBuffer!, 0, bytesToCopy);
+                stream.Write(_currentBufferInfo.Buffer.RawBuffer!, 0, (int)bytesToCopy);
                 return;
             }
             // If we have a buffer list, then we need to copy the data from the buffers. We are 
@@ -2261,7 +2267,7 @@ namespace KZDev.PerfUtils.Internals
             {
                 // We are not using a small buffer and length is not zero, so we must have a buffer list
                 SegmentBuffer currentBuffer = _bufferList![bufferIndex++].SegmentBuffer;
-                int copyLength = Math.Min(currentBuffer.Length, bytesToCopy);
+                int copyLength = (int)Math.Min(currentBuffer.Length, bytesToCopy);
                 MemorySegment bufferSegment = currentBuffer.MemorySegment;
                 if (bufferSegment.IsNative)
                 {
@@ -2295,7 +2301,7 @@ namespace KZDev.PerfUtils.Internals
             // Write the byte to the stream buffer
             _currentBufferInfo.Buffer.Span[_currentBufferOffset] = value;
             if (endPosition > LengthInternal)
-                LengthInternal = (int)endPosition;
+                LengthInternal = endPosition;
             OffsetPositionAndSetCurrentBuffer(1);
         }
         //--------------------------------------------------------------------------------

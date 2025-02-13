@@ -197,7 +197,7 @@ namespace KZDev.PerfUtils.Internals
         /// Indicates if native memory should be used for the buffers.
         /// </param>
         public MemorySegmentedGroupGenerationArray (MemorySegmentedGroupGenerationArray sourceArray,
-            int neededBufferSize, bool useNativeMemory)
+            long neededBufferSize, bool useNativeMemory)
         {
             Debug.Assert(sourceArray is not null, $"Passed {nameof(sourceArray)} is null!");
 #if CONCURRENCY_TESTING  // For the concurrency testing builds, we use GUID IDs - because using Interlocked operations in static construction makes Concura deadlock
@@ -263,7 +263,7 @@ namespace KZDev.PerfUtils.Internals
             // Create a new group for the last group. We will double the segment count of the last group
             // to a point, then we will simply add 32 segments to the last group size.
             int lastGroupSegmentCount = Groups[^2].SegmentCount;
-            int nextGroupShiftSegmentCount = Math.Max(lastGroupSegmentCount << 1, (neededBufferSize / MemorySegmentedBufferGroup.StandardBufferSegmentSize));
+            int nextGroupShiftSegmentCount = Math.Max(lastGroupSegmentCount << 1, (int)(neededBufferSize / MemorySegmentedBufferGroup.StandardBufferSegmentSize));
             int nextGroupLinearSegmentCount = lastGroupSegmentCount + 32;
             int nextGroupSegmentCount = Math.Min(MaxAllowedGroupSegmentCount, Math.Min(nextGroupLinearSegmentCount, nextGroupShiftSegmentCount));
             Groups[^1] = new MemorySegmentedBufferGroup(MaxGroupSegmentCount = nextGroupSegmentCount, useNativeMemory);
