@@ -27,20 +27,6 @@ namespace KZDev.PerfUtils.Internals
 #endif
 
         /// <summary>
-        /// The maximum number of milliseconds that we will spend zeroing out buffers because we 
-        /// process in a thread pool thread. This is a balance between zeroing out buffers quickly
-        /// and not taking too much time in the thread pool.
-        /// </summary>
-        private const int MaxZeroProcessingMs = 400;
-
-        /// <summary>
-        /// We would prefer to process no more than this number of zero operations per thread-pool
-        /// delegate cycle. But, if the pending list is getting too large, we will process at least
-        /// half of the pending list.
-        /// </summary>
-        private const int PreferMaximumZeroOperationsPerCycle = 100;
-
-        /// <summary>
         /// A flag indicating if the zero processing operation is currently active.
         /// </summary>
         /// <remarks>
@@ -66,7 +52,7 @@ namespace KZDev.PerfUtils.Internals
         /// <summary>
         /// A list of returned buffers that are awaiting zeroing.
         /// </summary>
-        private readonly ConcurrentBag<SegmentBuffer> _pendingZeroList = [];
+        private readonly BlockingCollection<SegmentBuffer> _pendingZeroList = new(100);
 
         /// <summary>
         /// A timer that is used to trim the buffer pool groups in the generation array.
@@ -98,74 +84,56 @@ namespace KZDev.PerfUtils.Internals
         /// </param>
         private static void DoZeroProcessing (MemorySegmentedBufferPool poolInstance)
         {
-            // Track if there is more work to do - assume there is
-            bool moreWork = true;
             try
             {
+                // Get the local reference to the list.
+                BlockingCollection<SegmentBuffer> pendingZeroList = poolInstance._pendingZeroList;
                 try
                 {
-                    // We are running on a thread pool thread, so be mindful of the time we are taking.
-                    Stopwatch runningTime = Stopwatch.StartNew();
-                    // Get the reference to the lists.
-                    ConcurrentBag<SegmentBuffer> pendingZeroList = poolInstance._pendingZeroList;
-#if FALSE
-                    // Track the number of zero operations we have done and how many were pending when we started.
-                    int startPendingCount = pendingZeroList.Count;
-#endif
-                    int completedCount = 0;
-                    // Determine how many loops we will run.
-                    int runLoops = Math.Max(pendingZeroList.Count / 2, PreferMaximumZeroOperationsPerCycle);
+                    // Since this is a blocking collection, there will be a limit to the number of items
+                    // in the list, so we can just use a local variable to track the count. We utilize
+                    // this limit to not only keep the producer from getting too far ahead of this consumer,
+                    // but also to limit the number of zeroing operations we do in a single thread-pool delegate execution.
+                    // Therefore, we grab the current count once and use it to limit the number of zeroing
+                    // operations we do here, but when we're done, check if there is more work to do
+                    // and trigger another zeroing operation if needed.
+                    int runLoops = pendingZeroList.Count;
                     // Volatile read of the array group generation to get our local reference.
                     MemorySegmentedGroupGenerationArray generationArray = Volatile.Read(ref poolInstance._arrayGroup);
 
                     // Now, loop through the pending list and zero out the buffers.
                     for (int loopIndex = 0; loopIndex < runLoops; loopIndex++)
                     {
+                        // Since we got the count before we started processing, this call should never return
+                        // false, but we need to be safe.
                         if (!pendingZeroList.TryTake(out SegmentBuffer releaseBuffer))
                             break;
                         releaseBuffer.Clear();
                         // Store the buffer back in the group.
-                        if (!generationArray.ReleaseBuffer(releaseBuffer, true))
+                        if (generationArray.ReleaseBuffer(releaseBuffer, true))
                         {
-                            // If we get here, this means that the buffer actually came from a generation that is newer
-                            // than the one we grabbed a reference to. So, the buffer group was not found.
-                            // We could try to get the most recent generation and just loop again,
-                            // but we might just as well break out and let the next round just pick
-                            // up from the beginning, since this could possibly indicate things are pretty busy.
-                            // We are going to take a bit of a performance hit here because we will zero the buffer more
-                            // than once, but we need to make sure this segment gets properly released, and we need to
-                            // put it back into the pending zero list to be zeroed out again on the next pass.
-                            // This is the safest this to do, and this condition will be extremely rare.
-                            pendingZeroList.Add(releaseBuffer);
-                            break;
-                        }
-
-                        // Occasionally check the time we have been running.
-                        if (0 != (++completedCount % 20) || (runningTime.ElapsedMilliseconds <= MaxZeroProcessingMs))
                             continue;
-
-                        // We have been running for too long, so we should stop and return the thread to the pool.
-
-#if FALSE
-                        // Check if we should dedicate a thread to this operation.
-                        if (pendingZeroList.Count > startPendingCount)
-                        {
-                            // We are falling behind, so we should consider dedicating a thread to this operation.
-                            // TODO: Consider dedicating a thread to this operation.
                         }
-#endif
+
+                        // If we get here, this means that the buffer actually came from a generation that is newer
+                        // than the one we grabbed a reference to. So, the buffer group was not found.
+                        // We could try to get the most recent generation and just loop again,
+                        // but we might just as well break out and let the next round just pick
+                        // up from the beginning, since this could possibly indicate things are pretty busy.
+                        // We are going to take a bit of a performance hit here because we will zero the buffer more
+                        // than once, but we need to make sure this segment gets properly released, and we need to
+                        // put it back into the pending zero list to be zeroed out again on the next pass.
+                        // This is the safest this to do, and this condition will be extremely rare.
+                        pendingZeroList.Add(releaseBuffer);
                         break;
                     }
-                    // Now, determine the actual state of if there is more work to do.
-                    // If there are still items in the pending list, trigger another zeroing operation.
-                    moreWork = pendingZeroList.Count > 0;
                 }
                 finally
                 {
                     // Indicate that we are done processing.
                     Volatile.Write(ref poolInstance._zeroProcessingActive, 0);
-                    // If there is more work to do, trigger another zeroing operation.
-                    if (moreWork)
+                    // If there is new work to do, trigger another zeroing operation.
+                    if (pendingZeroList.Count > 0)
                         poolInstance.TriggerZeroProcessing();
                 }
             }

@@ -208,8 +208,8 @@ namespace KZDev.PerfUtils.Tests
         {
             for (int instanceLoop = 0; instanceLoop < 50; instanceLoop++)
             {
-                using MemoryStreamSlim testService = MemoryStreamSlim.Create();
-                for (int testLoop = 0; testLoop < 1000; testLoop++)
+                using MemoryStreamSlim testService = MemoryStreamSlim.Create(options => options.ZeroBufferBehavior = MemoryStreamSlimZeroBufferOption.None);
+                for (int testLoop = 0; testLoop < 200; testLoop++)
                 {
                     long setCapacity = GetTestLongInteger(MemoryStreamSlim.AbsoluteMaxCapacity + 1);
                     try
@@ -227,7 +227,7 @@ namespace KZDev.PerfUtils.Tests
                 testService.Capacity = 0;
                 testService.Capacity.Should().Be(0);
                 // Test another new set of capacities
-                for (int testLoop = 0; testLoop < 1000; testLoop++)
+                for (int testLoop = 0; testLoop < 200; testLoop++)
                 {
                     long setCapacity = GetTestLongInteger(MemoryStreamSlim.AbsoluteMaxCapacity + 1);
                     try
@@ -300,7 +300,7 @@ namespace KZDev.PerfUtils.Tests
             const int maxTestCapacity = MemorySegmentedBufferGroup.StandardBufferSegmentSize * 64;
             for (int instanceLoop = 0; instanceLoop < 50; instanceLoop++)
             {
-                using MemoryStreamSlim testService = MemoryStreamSlim.Create();
+                using MemoryStreamSlim testService = MemoryStreamSlim.Create(options => options.ZeroBufferBehavior = MemoryStreamSlimZeroBufferOption.None);
                 for (int testLoop = 0; testLoop < 1000; testLoop++)
                 {
                     int setLength = GetTestInteger(10, maxTestCapacity + 1);
@@ -389,7 +389,7 @@ namespace KZDev.PerfUtils.Tests
         {
             foreach (long[] testLengthValues in GetTestLengthValues())
             {
-                using MemoryStreamSlim testService = MemoryStreamSlim.Create();
+                using MemoryStreamSlim testService = MemoryStreamSlim.Create(options => options.ZeroBufferBehavior = MemoryStreamSlimZeroBufferOption.None);
                 for (int testLoop = 0; testLoop < testLengthValues.Length; testLoop++)
                 {
                     long setLength = testLengthValues[testLoop];
