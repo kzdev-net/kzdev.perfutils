@@ -67,8 +67,8 @@ namespace MemoryStreamBenchmarks
         /// <summary>
         /// Benchmark using RecyclableMemoryStream
         /// </summary>
-        [Benchmark(Baseline = true, Description = "RecyclableMemoryStream segmented fill and read")]
-        public void UseRecyclableMemoryStream ()
+        [Benchmark(Baseline = true, Description = "Large RecyclableMemoryStream fill and read")]
+        public void UseLargeRecyclableMemoryStream ()
         {
             long processDataLength = DataSize;
             for (int loopIndex = 0; loopIndex < LoopCount; loopIndex++)
@@ -85,8 +85,8 @@ namespace MemoryStreamBenchmarks
         /// <summary>
         /// Benchmark using MemoryStreamSlim
         /// </summary>
-        [Benchmark(Description = "MemoryStreamSlim segmented fill and read")]
-        public void UseMemoryStreamSlim ()
+        [Benchmark(Description = "Large MemoryStreamSlim fill and read")]
+        public void UseLargeMemoryStreamSlim ()
         {
             long processDataLength = DataSize;
             for (int loopIndex = 0; loopIndex < LoopCount; loopIndex++)

@@ -1,8 +1,8 @@
 {
-  "profiles": {
-    "MemoryStreamBenchmarks": {
-      "commandName": "Project",
-      "commandLineArgs": "--filter *CopyToAsyncThroughput*"
+    "profiles": {
+        "MemoryStreamBenchmarks": {
+            "commandName": "Project",
+            "commandLineArgs": "--filter *SegmentedFill*"
+        }
     }
-  }
 }

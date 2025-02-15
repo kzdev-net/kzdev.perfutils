@@ -9,26 +9,27 @@ using MemoryStreamBenchmarks;
 
 namespace MemoryStreamProfile
 {
-    internal static class FillProfile
+    internal static class LargeFillProfile
     {
         public static void RunProfile (string[] args)
         {
-            SegmentedFillAndReadThroughputBenchmarks fillTest = new()
+            LargeSegmentedFillAndReadThroughputBenchmarks fillTest = new()
             {
-                DataSize = 0xC80_0000,
-                LoopCount = 200, //1_000_000,
+                DataSize = 0xC000_0000,
+                LoopCount = 2,
                 CapacityOnCreate = true,
-                GrowEachLoop = false,
+                GrowEachLoop = true,
+                ExponentialBufferGrowth = true,
                 ZeroBuffers = false
             };
             fillTest.GlobalSetup();
 
             // Determine which stream class type to use.
-            if (args.Any(arg => arg.Equals("std", StringComparison.InvariantCultureIgnoreCase)))
+            if (args.Any(arg => arg.Equals("recycle", StringComparison.InvariantCultureIgnoreCase)))
             {
-                Console.WriteLine($@"Running {fillTest.GetType().Name}.{nameof(SegmentedFillAndReadThroughputBenchmarks.UseMemoryStream)}");
+                Console.WriteLine($@"Running {fillTest.GetType().Name}.{nameof(LargeSegmentedFillAndReadThroughputBenchmarks.UseLargeRecyclableMemoryStream)}");
                 // Run through once to warm things up.
-                fillTest.UseMemoryStream();
+                fillTest.UseLargeRecyclableMemoryStream();
 
                 // Start profiling if the collector is running.
                 MemoryProfiler.CollectAllocations(true);
@@ -36,37 +37,18 @@ namespace MemoryStreamProfile
 
                 TimeSpan startProcessorTime = Process.GetCurrentProcess().TotalProcessorTime;
                 Stopwatch stopwatch = Stopwatch.StartNew();
-                fillTest.UseMemoryStream();
-                fillTest.UseMemoryStream();
-                fillTest.UseMemoryStream();
-                TimeSpan elapsed = stopwatch.Elapsed;
-                TimeSpan processorTime = Process.GetCurrentProcess().TotalProcessorTime - startProcessorTime;
-                Console.WriteLine($@"Elapsed time: {elapsed}, Processor time: {processorTime}");
-            }
-            else if (args.Any(arg => arg.Equals("recycle", StringComparison.InvariantCultureIgnoreCase)))
-            {
-                Console.WriteLine($@"Running {fillTest.GetType().Name}.{nameof(SegmentedFillAndReadThroughputBenchmarks.UseRecyclableMemoryStream)}");
-                // Run through once to warm things up.
-                fillTest.UseRecyclableMemoryStream();
-
-                // Start profiling if the collector is running.
-                MemoryProfiler.CollectAllocations(true);
-                MeasureProfiler.StartCollectingData();
-
-                TimeSpan startProcessorTime = Process.GetCurrentProcess().TotalProcessorTime;
-                Stopwatch stopwatch = Stopwatch.StartNew();
-                fillTest.UseRecyclableMemoryStream();
-                fillTest.UseRecyclableMemoryStream();
-                fillTest.UseRecyclableMemoryStream();
+                fillTest.UseLargeRecyclableMemoryStream();
+                fillTest.UseLargeRecyclableMemoryStream();
+                fillTest.UseLargeRecyclableMemoryStream();
                 TimeSpan elapsed = stopwatch.Elapsed;
                 TimeSpan processorTime = Process.GetCurrentProcess().TotalProcessorTime - startProcessorTime;
                 Console.WriteLine($@"Elapsed time: {elapsed}, Processor time: {processorTime}");
             }
             else
             {
-                Console.WriteLine($@"Running {fillTest.GetType().Name}.{nameof(SegmentedFillAndReadThroughputBenchmarks.UseMemoryStreamSlim)}");
+                Console.WriteLine($@"Running {fillTest.GetType().Name}.{nameof(LargeSegmentedFillAndReadThroughputBenchmarks.UseLargeMemoryStreamSlim)}");
                 // Run through once to warm things up.
-                fillTest.UseMemoryStreamSlim();
+                fillTest.UseLargeMemoryStreamSlim();
 
                 // Start profiling if the collector is running.
                 MemoryProfiler.CollectAllocations(true);
@@ -74,9 +56,9 @@ namespace MemoryStreamProfile
 
                 TimeSpan startProcessorTime = Process.GetCurrentProcess().TotalProcessorTime;
                 Stopwatch stopwatch = Stopwatch.StartNew();
-                fillTest.UseMemoryStreamSlim();
-                fillTest.UseMemoryStreamSlim();
-                fillTest.UseMemoryStreamSlim();
+                fillTest.UseLargeMemoryStreamSlim();
+                fillTest.UseLargeMemoryStreamSlim();
+                fillTest.UseLargeMemoryStreamSlim();
                 TimeSpan elapsed = stopwatch.Elapsed;
                 TimeSpan processorTime = Process.GetCurrentProcess().TotalProcessorTime - startProcessorTime;
                 Console.WriteLine($@"Elapsed time: {elapsed}, Processor time: {processorTime}");

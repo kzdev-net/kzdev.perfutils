@@ -18,7 +18,7 @@ namespace MemoryStreamBenchmarks
         /// </summary>
         /// <param name="dataSize"></param>
         /// <returns></returns>
-        private static int ComputeLoopCount (long dataSize) => 
+        private static int ComputeLoopCount (long dataSize) =>
             (dataSize >= 0x1000_0000) ? 3 : (int)Math.Max(5, Math.Min(1000, 500_000 / Math.Pow(1.5, Math.Log(dataSize, 2))));
 
         /// <summary>
@@ -63,34 +63,31 @@ namespace MemoryStreamBenchmarks
         /// <summary>
         /// The different bulk data sizes that will be used for the benchmarks
         /// </summary>
-        //[Params(0xC80_0000, 0xC000_0000, 0x2_8000_0000)]
+        [Params(0xC80_0000, 0xC000_0000, 0x2_8000_0000)]
         public long DataSize { get; set; } = 0xC000_0000;
 
         /// <summary>
         /// The different ways to create the stream instances, by specifying capacity or not
         /// </summary>
-        //[ParamsAllValues]
+        [ParamsAllValues]
         public bool CapacityOnCreate { get; set; } = true;
 
         /// <summary>
         /// Indicates if the stream should be configured to zero out buffers when released
         /// </summary>
-        //[ParamsAllValues]
+        [ParamsAllValues]
         public bool ZeroBuffers { get; set; } = false;
 
         /// <summary>
         /// Indicates if each loop iteration should grow the stream capacity
         /// </summary>
-        //[ParamsAllValues]
+        [ParamsAllValues]
         public bool GrowEachLoop { get; set; } = true;
 
         /// <summary>
         /// The different ways to create the stream instances, by specifying capacity or not
         /// </summary>
-        // We are leaving this as a parameter to allow for testing with linear and exponential buffer growth in the
-        // future if needed, but currently the tests are showing no notable difference in performance
-        // with either approach, so we are leaving it linear by default.
-        //[ParamsAllValues]
+        [ParamsAllValues]
         public bool ExponentialBufferGrowth { get; set; } = true;
 
         /// <summary>
@@ -99,7 +96,7 @@ namespace MemoryStreamBenchmarks
         // We are leaving this as a parameter to allow for testing with and without native memory in the
         // future if needed, but currently the tests are showing no notable difference in performance
         // with or without native memory, so we are leaving it off by default.
-        [ParamsAllValues]
+        //[ParamsAllValues]
         public bool UseNativeMemory { get; set; } = false;
     }
     //################################################################################

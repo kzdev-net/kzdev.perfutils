@@ -6,6 +6,11 @@ using MemoryStreamProfile;
 // Check if we should run a continuous grow test
 if (args.Length > 0)
 {
+    if (string.Compare(args[0], "large", StringComparison.InvariantCultureIgnoreCase) == 0)
+    {
+        LargeFillProfile.RunProfile(args[1..]);
+        return;
+    }
     if (string.Compare(args[0], "grow", StringComparison.InvariantCultureIgnoreCase) == 0)
     {
         GrowProfile.RunProfile(args[1..]);
