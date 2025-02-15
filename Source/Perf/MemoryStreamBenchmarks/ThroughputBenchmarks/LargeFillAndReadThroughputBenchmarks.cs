@@ -11,7 +11,7 @@ namespace MemoryStreamBenchmarks
     /// <summary>
     /// Base class for the memory stream benchmarks that fill and read the stream.
     /// </summary>
-    public abstract class FillAndReadThroughputBenchmarks
+    public abstract class LargeFillAndReadThroughputBenchmarks
     {
         /// <summary>
         /// Helper method to compute the loop count based on the data size
@@ -19,7 +19,7 @@ namespace MemoryStreamBenchmarks
         /// <param name="dataSize"></param>
         /// <returns></returns>
         private static int ComputeLoopCount (long dataSize) => 
-            (dataSize >= 0x1000_0000) ? 2 : (int)Math.Max(5, Math.Min(1000, 500_000 / Math.Pow(1.5, Math.Log(dataSize, 2))));
+            (dataSize >= 0x1000_0000) ? 3 : (int)Math.Max(5, Math.Min(1000, 500_000 / Math.Pow(1.5, Math.Log(dataSize, 2))));
 
         /// <summary>
         /// The specifically set loop iteration count for the benchmarks
@@ -29,7 +29,7 @@ namespace MemoryStreamBenchmarks
         /// <summary>
         /// The amount that each loop iteration will grow the processing data set by
         /// </summary>
-        protected const int LoopGrowAmount = 0x100;
+        protected const int LoopGrowAmount = 0x1000;
 
         /// <summary>
         /// The common helper utility for processing stream benchmarks
@@ -63,8 +63,8 @@ namespace MemoryStreamBenchmarks
         /// <summary>
         /// The different bulk data sizes that will be used for the benchmarks
         /// </summary>
-        [Params(0x2_0000, 0xF_0000, 0x100_0000, 0x5FF_0000, 0xC80_0000)]
-        public long DataSize { get; set; } = 0xC80_0000;
+        [Params(0xC80_0000, 0xC000_0000, 0x2_8000_0000)]
+        public long DataSize { get; set; } = 0xC000_0000;
 
         /// <summary>
         /// The different ways to create the stream instances, by specifying capacity or not
@@ -76,7 +76,7 @@ namespace MemoryStreamBenchmarks
         /// Indicates if the stream should be configured to zero out buffers when released
         /// </summary>
         [ParamsAllValues]
-        public bool ZeroBuffers { get; set; } = true;
+        public bool ZeroBuffers { get; set; } = false;
 
         /// <summary>
         /// Indicates if each loop iteration should grow the stream capacity
@@ -91,7 +91,7 @@ namespace MemoryStreamBenchmarks
         // future if needed, but currently the tests are showing no notable difference in performance
         // with either approach, so we are leaving it linear by default.
         //[ParamsAllValues]
-        public bool ExponentialBufferGrowth { get; set; } = false;
+        public bool ExponentialBufferGrowth { get; set; } = true;
 
         /// <summary>
         /// Indicates if the memory stream slim should use native memory

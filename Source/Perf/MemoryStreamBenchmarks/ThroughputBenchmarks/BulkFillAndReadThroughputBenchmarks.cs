@@ -43,7 +43,9 @@ namespace MemoryStreamBenchmarks
             if (fillData is not null)
                 return;
 
-            int allocateDataSize = DataSize;
+            if (DataSize > int.MaxValue)
+                throw new ArgumentOutOfRangeException(nameof(DataSize), "DataSize must be less than or equal to int.MaxValue");
+            int allocateDataSize = (int)DataSize;
             if (GrowEachLoop)
                 allocateDataSize += (LoopCount * LoopGrowAmount);
             fillData = new byte[allocateDataSize];
@@ -67,7 +69,7 @@ namespace MemoryStreamBenchmarks
         [Benchmark(Baseline = true, Description = "MemoryStream bulk fill and read")]
         public void UseMemoryStream ()
         {
-            int processDataLength = DataSize;
+            int processDataLength = (int)DataSize;
             for (int loopIndex = 0; loopIndex < LoopCount; loopIndex++)
             {
                 using MemoryStream stream = CapacityOnCreate ? new MemoryStream(processDataLength) : new MemoryStream();
@@ -83,7 +85,7 @@ namespace MemoryStreamBenchmarks
         [Benchmark(Description = "RecyclableMemoryStream bulk fill and read")]
         public void UseRecyclableMemoryStream ()
         {
-            int processDataLength = DataSize;
+            int processDataLength = (int)DataSize;
             for (int loopIndex = 0; loopIndex < LoopCount; loopIndex++)
             {
                 using RecyclableMemoryStream stream = CapacityOnCreate ?
@@ -101,7 +103,7 @@ namespace MemoryStreamBenchmarks
         [Benchmark(Description = "MemoryStreamSlim bulk fill and read")]
         public void UseMemoryStreamSlim ()
         {
-            int processDataLength = DataSize;
+            int processDataLength = (int)DataSize;
             for (int loopIndex = 0; loopIndex < LoopCount; loopIndex++)
             {
                 using MemoryStreamSlim stream = CapacityOnCreate ? MemoryStreamSlim.Create(processDataLength, MemoryStreamSlimOptions) : MemoryStreamSlim.Create(MemoryStreamSlimOptions);

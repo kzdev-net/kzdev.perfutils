@@ -12,7 +12,7 @@ namespace MemoryStreamBenchmarks
 {
     /// <summary>
     /// Benchmarks for the <see cref="MemoryStreamSlim"/> utility class where the stream 
-    /// is filled and read in segments.
+    /// wraps a buffer that is passed to the stream instance.
     /// </summary>
     [MemoryDiagnoser]
     public class WrapperFillAndReadThroughputBenchmarks

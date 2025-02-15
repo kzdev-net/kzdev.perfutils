@@ -95,7 +95,7 @@ namespace MemoryStreamBenchmarks
         /// <param name="dataLength">
         /// The length of the data to fill and read back
         /// </param>
-        private void ProcessStream (Stream stream, int dataLength)
+        private void ProcessStream (Stream stream, long dataLength)
         {
             stream.Position = 0;
             streamUtility.SegmentFillAndRead(stream, fillData!, readBuffer!, dataLength, SegmentSize);

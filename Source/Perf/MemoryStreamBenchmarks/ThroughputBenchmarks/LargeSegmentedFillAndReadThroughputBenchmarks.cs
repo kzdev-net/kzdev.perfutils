@@ -15,12 +15,12 @@ namespace MemoryStreamBenchmarks
     /// is filled and read in segments.
     /// </summary>
     [MemoryDiagnoser]
-    public class SegmentedFillAndReadThroughputBenchmarks : FillAndReadThroughputBenchmarks
+    public class LargeSegmentedFillAndReadThroughputBenchmarks : LargeFillAndReadThroughputBenchmarks
     {
         /// <summary>
         /// The size of the segments to fill and read in.
         /// </summary>
-        private const int SegmentSize = 0x1000;  // 4KB
+        private const int SegmentSize = 0x8000;  // 32KB
 
         //--------------------------------------------------------------------------------
         /// <summary>
@@ -65,27 +65,9 @@ namespace MemoryStreamBenchmarks
         }
         //--------------------------------------------------------------------------------
         /// <summary>
-        /// Benchmark using MemoryStream
-        /// </summary>
-        [Benchmark(Baseline = true, Description = "MemoryStream segmented fill and read")]
-        public void UseMemoryStream ()
-        {
-            long processDataLength = DataSize;
-            for (int loopIndex = 0; loopIndex < LoopCount; loopIndex++)
-            {
-                using MemoryStream stream = CapacityOnCreate ? 
-                    (processDataLength > int.MaxValue ? throw new InvalidOperationException($"({nameof(processDataLength)}) must be less than or equal to int.MaxValue") : new MemoryStream((int)processDataLength)) : 
-                    new MemoryStream();
-                ProcessStream(stream, processDataLength);
-                if (GrowEachLoop)
-                    processDataLength += LoopGrowAmount;
-            }
-        }
-        //--------------------------------------------------------------------------------
-        /// <summary>
         /// Benchmark using RecyclableMemoryStream
         /// </summary>
-        [Benchmark(Description = "RecyclableMemoryStream segmented fill and read")]
+        [Benchmark(Baseline = true, Description = "RecyclableMemoryStream segmented fill and read")]
         public void UseRecyclableMemoryStream ()
         {
             long processDataLength = DataSize;

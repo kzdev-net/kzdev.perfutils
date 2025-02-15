@@ -125,24 +125,24 @@ namespace MemoryStreamBenchmarks
         /// <param name="segmentLength">
         /// The length of the segment to fill with each call and to read back with each call
         /// </param>
-        public void SegmentFillAndRead (Stream stream, byte[] fillData, byte[] readBuffer, 
-            int dataLength, int segmentLength)
+        public void SegmentFillAndRead (Stream stream, byte[] fillData, byte[] readBuffer,
+            long dataLength, int segmentLength)
         {
             stream.Position = 0;
-            int writeSizeLeft = dataLength;
+            long writeSizeLeft = dataLength;
             while (writeSizeLeft > 0)
             {
-                int writeSize = Math.Min(writeSizeLeft, segmentLength);
+                int writeSize = (int)Math.Min(writeSizeLeft, segmentLength);
                 stream.Write(fillData, 0, writeSize);
                 writeSizeLeft -= writeSize;
             }
 
             // Reset the position to the start of the stream for reading
             stream.Position = 0;
-            int readSizeLeft = dataLength;
+            long readSizeLeft = dataLength;
             while (readSizeLeft > 0)
             {
-                int readSize = Math.Min(readSizeLeft, segmentLength);
+                int readSize = (int)Math.Min(readSizeLeft, segmentLength);
                 int readInSize = stream.Read(readBuffer, 0, readSize);
                 if (readInSize < readSize)
                     throw new Exception("Failed to read all data back");
