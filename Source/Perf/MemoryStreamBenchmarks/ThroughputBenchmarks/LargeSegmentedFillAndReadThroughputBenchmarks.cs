@@ -74,8 +74,8 @@ namespace MemoryStreamBenchmarks
             for (int loopIndex = 0; loopIndex < LoopCount; loopIndex++)
             {
                 using RecyclableMemoryStream stream = CapacityOnCreate ?
-                    BenchMarkHelpers.GetMemoryStreamManager(ZeroBuffers, ExponentialBufferGrowth).GetStream("benchmark", processDataLength) :
-                    BenchMarkHelpers.GetMemoryStreamManager(ZeroBuffers, ExponentialBufferGrowth).GetStream("benchmark");
+                    BenchMarkHelpers.GetLargeMemoryStreamManager(ZeroBuffers, ExponentialBufferGrowth).GetStream("benchmark", processDataLength) :
+                    BenchMarkHelpers.GetLargeMemoryStreamManager(ZeroBuffers, ExponentialBufferGrowth).GetStream("benchmark");
                 ProcessStream(stream, processDataLength);
                 if (GrowEachLoop)
                     processDataLength += LoopGrowAmount;
