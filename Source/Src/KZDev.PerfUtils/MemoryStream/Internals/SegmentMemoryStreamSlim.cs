@@ -3,6 +3,7 @@
 
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 
 using KZDev.PerfUtils.Helpers;
@@ -20,20 +21,32 @@ namespace KZDev.PerfUtils.Internals
     internal sealed class SegmentMemoryStreamSlim : MemoryStreamSlim
     {
         /// <summary>
-        /// The maximum size of a list of standard buffers that we will cache in the buffer list cache.
-        /// This list is the actual List&lt;SegmentBufferVirtualInfo&gt; that holds the standard buffers, and we 
-        /// will cache lists that can be reused for different streams.
-        /// </summary>
-        private const int LargestCachedBufferListCapacity = 4096;
-
-        /// <summary>
         /// The size of the buffer list cache growth. This is based on each slot being exponentially (base 2)
         /// larger than the previous slot, where the largest slot is the largest cached buffer list 
         /// capacity (LargestCachedBufferListCapacity).
         /// So, slot 0 is 1, slot 1 is 2, slot 2 is 4, slot 3 is 8, ... slot 12 is 4096.
         /// </summary>
-        private const int BufferListCacheSize = 13;
+        private static readonly int BufferListCacheSize = ComputeBufferListCacheSize();
 
+        /// <summary>
+        /// The maximum size of a list of standard buffers that we will cache in the buffer list cache.
+        /// This list is the actual List&lt;SegmentBufferVirtualInfo&gt; that holds the standard buffers, and we 
+        /// will cache lists that can be reused for different streams.
+        /// </summary>
+        private static readonly int LargestCachedBufferListCapacity = Convert.ToInt32(Math.Floor(Math.Pow(2, BufferListCacheSize)));
+
+        /// <summary>
+        /// Helper to compute the buffer list cache size based on the maximum capacity of the stream.
+        /// </summary>
+        /// <returns>
+        /// The buffer list cache size.
+        /// </returns>
+        private static int ComputeBufferListCacheSize()
+        {
+            long maximumSegmentCount = AbsoluteMaxCapacity / StandardBufferSegmentSize;
+            int floorLog = BitOperations.Log2((ulong)maximumSegmentCount);
+            return (Math.Floor(Math.Pow(2, floorLog)) < maximumSegmentCount) ? floorLog + 2 : floorLog + 1;
+        }
         //================================================================================
         /// <summary>
         /// Information about the needs for allocation based on the requested capacity.
