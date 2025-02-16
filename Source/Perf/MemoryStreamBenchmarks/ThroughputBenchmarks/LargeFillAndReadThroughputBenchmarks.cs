@@ -19,7 +19,7 @@ namespace MemoryStreamBenchmarks
         /// <param name="dataSize"></param>
         /// <returns></returns>
         private static int ComputeLoopCount (long dataSize) =>
-            (dataSize >= 0x1000_0000) ? 3 : (int)Math.Max(5, Math.Min(1000, 500_000 / Math.Pow(1.5, Math.Log(dataSize, 2))));
+            (dataSize >= 0x1_0000_0000) ? 1 : ((dataSize >= 0x4000_0000) ? 2 : 3);
 
         /// <summary>
         /// The specifically set loop iteration count for the benchmarks
@@ -61,9 +61,9 @@ namespace MemoryStreamBenchmarks
         }
 
         /// <summary>
-        /// The different bulk data sizes that will be used for the benchmarks
+        /// The different data sizes that will be used for the benchmarks
         /// </summary>
-        [Params(0xC80_0000, 0xC000_0000, 0x2_8000_0000)]
+        [Params(0x2000_0000, 0xC000_0000, 0x2_8000_0000)]
         public long DataSize { get; set; } = 0xC000_0000;
 
         /// <summary>

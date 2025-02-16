@@ -24,7 +24,7 @@ namespace MemoryStreamBenchmarks
         /// <summary>
         /// The large buffer multiple value to use for large streams.
         /// </summary>
-        private const int UseLargeStreamLargeBufferMultiple = 16 * 1024 * 1024;
+        private const int UseLargeStreamLargeBufferMultiple = 4 * 1024 * 1024;
 
         /// <summary>
         /// The maximum buffer size to use for the recyclable memory stream manager for large streams
