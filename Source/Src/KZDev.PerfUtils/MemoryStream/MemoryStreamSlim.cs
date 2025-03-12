@@ -278,7 +278,11 @@ namespace KZDev.PerfUtils
         /// The object used to lock the global settings for all instances of MemoryStreamSlim. We also
         /// use this to protect access to the MaximumCapacity value.
         /// </summary>
+#if NET9_0_OR_GREATER
+        private static readonly Lock SettingsLock = new();
+#else
         private static readonly object SettingsLock = new();
+#endif
         //--------------------------------------------------------------------------------
         /// <summary>
         /// Helper to track the number of active MemoryStreamSlim instances.

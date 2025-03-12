@@ -4,7 +4,7 @@
    -->
     <PropertyGroup Label="SourceGlobals">
         <Configurations>Debug;Release</Configurations>
-        <TargetFrameworks>net8.0;net6.0</TargetFrameworks>
+        <TargetFrameworks>net9.0;net8.0;net6.0</TargetFrameworks>
         <IsPackable>false</IsPackable>
         <RootNamespace>KZDev.PerfUtils.Tests</RootNamespace>
     </PropertyGroup>

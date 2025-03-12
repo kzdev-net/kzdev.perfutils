@@ -43,7 +43,11 @@ namespace KZDev.PerfUtils.Internals
 #if CONCURRENCY_TESTING  // For the concurrency testing builds, we use GUID IDs - because using Interlocked operations in static construction makes Concura deadlock
         // For testing builds, we will have to JIT the initial groups.
         private MemorySegmentedBufferGroup[]? _bufferGroups = null;
+#if NET9_0_OR_GREATER
+        private readonly Lock _groupLock;
+#else
         private readonly object _groupLock;
+#endif
         private readonly bool _useNativeMemory;
         public MemorySegmentedBufferGroup[] Groups
         {
@@ -104,7 +108,11 @@ namespace KZDev.PerfUtils.Internals
         {
 #if CONCURRENCY_TESTING  // For the concurrency testing builds, we use GUID IDs - because using Interlocked operations in static construction makes Concura deadlock
             _useNativeMemory = useNativeMemory;
+#if NET9_0_OR_GREATER
+            _groupLock = new Lock();
+#else
             _groupLock = new object();
+#endif
             GenerationId = Guid.NewGuid();
             // For testing builds, we will have to JIT get the initial groups.
 #else
@@ -124,7 +132,11 @@ namespace KZDev.PerfUtils.Internals
             Debug.Assert(sourceArray is not null, $"Passed {nameof(sourceArray)} is null!");
 #if CONCURRENCY_TESTING  // For the concurrency testing builds, we use GUID IDs - because using Interlocked operations in static construction makes Concura deadlock
             _useNativeMemory = sourceArray._useNativeMemory;
+#if NET9_0_OR_GREATER
+            _groupLock = new Lock();
+#else
             _groupLock = new object();
+#endif
             GenerationId = Guid.NewGuid();
 #else
             GenerationId = Interlocked.Increment(ref _lastGeneration);
@@ -202,7 +214,11 @@ namespace KZDev.PerfUtils.Internals
             Debug.Assert(sourceArray is not null, $"Passed {nameof(sourceArray)} is null!");
 #if CONCURRENCY_TESTING  // For the concurrency testing builds, we use GUID IDs - because using Interlocked operations in static construction makes Concura deadlock
             _useNativeMemory = sourceArray._useNativeMemory;
+#if NET9_0_OR_GREATER
+            _groupLock = new Lock();
+#else
             _groupLock = new object();
+#endif
             GenerationId = Guid.NewGuid();
 #else
             GenerationId = Interlocked.Increment(ref _lastGeneration);
