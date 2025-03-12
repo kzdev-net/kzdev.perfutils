@@ -34,6 +34,9 @@ namespace KZDev.PerfUtils
     /// <remarks>
     /// Since this operates on in-memory buffers, the asynchronous methods are not truly
     /// asynchronous, but they are provided for compatibility with the <see cref="Stream"/> class.
+    /// The exception to this is the <see cref="MemoryStream.CopyToAsync(Stream)"/> method,
+    /// which does in fact copy the contents of the stream asynchronously assuming the 
+    /// destination stream is a true asynchronous stream.
     /// </remarks>
     public abstract class MemoryStreamSlim : MemoryStream
     {
