@@ -33,12 +33,24 @@ namespace KZDev.PerfUtils
         }
         //--------------------------------------------------------------------------------
         /// <summary>
-        /// Returns the string value of the <see cref="Builder"/> instance
+        /// Returns the string value of the <see cref="Builder"/> instance.
         /// </summary>
         /// <returns>
         /// The string value of the <see cref="Builder"/> instance.
         /// </returns>
         public override string ToString () => Builder.ToString();
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Converts the value of a substring of the <see cref="Builder"/> instance to
+        /// a string by using the specified starting position and length of the substring.
+        /// </summary>
+        /// <param name="startIndex">
+        /// The starting position of the substring in this instance.
+        /// </param>
+        /// <param name="length">
+        /// The length of the substring.
+        /// </param>
+        public string ToString (int startIndex, int length) => Builder.ToString(startIndex, length);
         //--------------------------------------------------------------------------------
         /// <summary>
         /// Operator to implicitly convert the <see cref="StringBuilderScope"/> instance to a

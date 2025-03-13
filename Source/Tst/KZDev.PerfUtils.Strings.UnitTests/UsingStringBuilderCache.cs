@@ -4,6 +4,7 @@ using System.Text;
 using FluentAssertions;
 
 using KZDev.PerfUtils.Tests;
+#pragma warning disable HAA0601
 
 namespace KZDev.PerfUtils.Strings.UnitTests
 {
@@ -90,6 +91,23 @@ namespace KZDev.PerfUtils.Strings.UnitTests
             builder.Append(expected);
             string builtString = StringBuilderCache.GetStringAndRelease(builder);
             builtString.Should().Be(expected);
+        }
+        //--------------------------------------------------------------------------------    
+        /// <summary>
+        /// Tests getting a <see cref="StringBuilder"/> instance from the cache, building a
+        /// substring and returning the instance.
+        /// </summary>
+        [Fact]
+        public void UsingStringBuilderCache_BuildSubStringAndRelease_ReturnsProperString ()
+        {
+            string expected = GetRandomString(20, 30);
+            int startIndex = GetTestInteger(1, expected.Length >> 1);
+            int length = GetTestInteger(1, expected.Length - startIndex - 1);
+
+            StringBuilder builder = StringBuilderCache.Acquire();
+            builder.Append(expected);
+            string builtSubString = StringBuilderCache.GetStringAndRelease(builder, startIndex, length);
+            builtSubString.Should().Be(expected.Substring(startIndex, length));
         }
         //--------------------------------------------------------------------------------    
         /// <summary>
@@ -223,7 +241,7 @@ namespace KZDev.PerfUtils.Strings.UnitTests
             StringBuilder?[]? checkCacheList = StringBuilderCache._threadCache;
 
             // Display the value of each entry in the check cache list
-            for (int checkIndex = 0; checkIndex < checkCacheList.Length; checkIndex++)
+            for (int checkIndex = 0; checkIndex < checkCacheList!.Length; checkIndex++)
             {
                 TestWriteLine($"Cache list entry {checkIndex} is {(checkCacheList[checkIndex] is StringBuilder builder ? builder.ToString() : "<<null>>")}");
             }
@@ -300,13 +318,13 @@ namespace KZDev.PerfUtils.Strings.UnitTests
             threadCacheList.Should().NotBeNull();
             ConcurrentBag<StringBuilder>?[]? globalCacheList = StringBuilderCache._globalCache;
             globalCacheList.Should().NotBeNull();
-            StringBuilder[] checkCacheList = threadCacheList!.Where(builder => builder is not null)
+            StringBuilder?[] checkCacheList = threadCacheList!.Where(builder => builder is not null)
                 .Concat(globalCacheList!.SelectMany(list => list ?? [])).ToArray();
 
             // Display the value of each entry in the check cache list
             for (int checkIndex = 0; checkIndex < checkCacheList.Length; checkIndex++)
             {
-                TestWriteLine($"Cache list entry {checkIndex} is {(checkCacheList[checkIndex] is StringBuilder builder ? builder.ToString() : "<<null>>")}");
+                TestWriteLine($"Cache list entry {checkIndex} is {(checkCacheList[checkIndex] is { } builder ? builder.ToString() : "<<null>>")}");
             }
             checkCacheList.Should().BeEquivalentTo(usedBuilders);
         }

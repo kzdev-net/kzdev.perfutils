@@ -399,6 +399,30 @@ namespace KZDev.PerfUtils
         }
         //--------------------------------------------------------------------------------
         /// <summary>
+        /// Returns the <paramref name="stringBuilder"/> instance to the cache and returns 
+        /// the value of a substring of this instance as a string by using the specified 
+        /// starting position and length of the substring.
+        /// </summary>
+        /// <param name="stringBuilder">
+        /// The <see cref="StringBuilder"/> instance to release and get the substring value of.
+        /// </param>
+        /// <param name="startIndex">
+        /// The starting position of the substring in this instance.
+        /// </param>
+        /// <param name="length">
+        /// The length of the substring.
+        /// </param>
+        public static string GetStringAndRelease (StringBuilder stringBuilder,
+            int startIndex, int length)
+        {
+            if (stringBuilder is null)
+                throw new ArgumentNullException(nameof(stringBuilder));
+            string result = stringBuilder.ToString(startIndex, length);
+            Release(stringBuilder);
+            return result;
+        }
+        //--------------------------------------------------------------------------------
+        /// <summary>
         /// Gets a <see cref="StringBuilderScope"/> instance that provides a cached
         /// <see cref="StringBuilder"/> instance and releases it back to the cache when
         /// the scope is disposed.
