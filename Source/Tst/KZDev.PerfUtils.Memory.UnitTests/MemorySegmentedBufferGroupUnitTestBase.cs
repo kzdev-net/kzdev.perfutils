@@ -136,7 +136,7 @@ namespace KZDev.PerfUtils.Tests
         /// The number of segments in the buffer group that are in use.
         /// </returns>
         internal static int GetSegmentsInUse (MemorySegmentedBufferGroup bufferGroup) =>
-            (int)BufferGroupSegmentsInUseField.GetValue(bufferGroup);
+            (int)BufferGroupSegmentsInUseField.GetValue(bufferGroup)!;
         //--------------------------------------------------------------------------------
         /// <summary>
         /// Sets the number of segments in the buffer group that are in use.
@@ -149,7 +149,9 @@ namespace KZDev.PerfUtils.Tests
         /// </param>
         internal static void SetSegmentsInUse (MemorySegmentedBufferGroup bufferGroup, int segmentsInUse)
         {
+#pragma warning disable HAA0601
             BufferGroupSegmentsInUseField.SetValue(bufferGroup, segmentsInUse);
+#pragma warning restore HAA0601
         }
         //--------------------------------------------------------------------------------
         /// <summary>

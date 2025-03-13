@@ -6,6 +6,10 @@ using System.Diagnostics;
 using FluentAssertions;
 
 using KZDev.PerfUtils.Internals;
+#pragma warning disable HAA0301
+#pragma warning disable HAA0401
+#pragma warning disable HAA0101
+#pragma warning disable HAA0601
 
 namespace KZDev.PerfUtils.Tests
 {
@@ -156,7 +160,6 @@ namespace KZDev.PerfUtils.Tests
 
             // Set the flags in the buffer group
             return SetBlockUsedFlags(bufferGroup, segmentInUseFlags, segmentZeroFlags);
-            return (segmentsAvailable, availableSegmentMap);
         }
         //--------------------------------------------------------------------------------
         /// <summary>

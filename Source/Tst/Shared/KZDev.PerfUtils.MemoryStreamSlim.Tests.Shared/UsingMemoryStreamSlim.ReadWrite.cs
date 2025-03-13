@@ -8,6 +8,10 @@ using FluentAssertions;
 using KZDev.PerfUtils.Internals;
 
 using static KZDev.PerfUtils.Tests.FileStreamMock;
+// ReSharper disable CognitiveComplexity
+#pragma warning disable HAA0302
+#pragma warning disable HAA0301
+#pragma warning disable HAA0601
 
 namespace KZDev.PerfUtils.Tests
 {
@@ -467,7 +471,7 @@ namespace KZDev.PerfUtils.Tests
                     using MemoryStream memoryStream = new MemoryStream();
                     // Copy to the memory stream
                     testService.Seek(0, SeekOrigin.Begin);
-                    await testService.CopyToAsync(memoryStream);
+                    await testService.CopyToAsync(memoryStream, TestContext.Current.CancellationToken);
                     testService.Position.Should().Be(testService.Length);
                     testService.Length.Should().Be(byteCount);
                     memoryStream.Position.Should().Be(memoryStream.Length);
@@ -553,7 +557,7 @@ namespace KZDev.PerfUtils.Tests
                     await using FileStreamMock fileStream = new FileStreamMock();
                     // Copy to the memory stream
                     testService.Seek(0, SeekOrigin.Begin);
-                    await testService.CopyToAsync(fileStream);
+                    await testService.CopyToAsync(fileStream, TestContext.Current.CancellationToken);
                     testService.Position.Should().Be(testService.Length);
                     testService.Length.Should().Be(byteCount);
                     fileStream.Position.Should().Be(fileStream.Length);
@@ -700,7 +704,7 @@ namespace KZDev.PerfUtils.Tests
                     memoryStream.Seek(copyDestFrom, SeekOrigin.Begin);
 
                     // Copy to the memory stream
-                    await testService.CopyToAsync(memoryStream);
+                    await testService.CopyToAsync(memoryStream, TestContext.Current.CancellationToken);
                     testService.Position.Should().Be(testService.Length);
                     memoryStream.Position.Should().Be(copyDestFrom + copyCount);
                     memoryStream.Length.Should().Be(otherDataCopy.Length);
@@ -818,7 +822,7 @@ namespace KZDev.PerfUtils.Tests
                     fileStream.Seek(copyDestFrom, SeekOrigin.Begin);
 
                     // Copy to the memory stream
-                    await testService.CopyToAsync(fileStream);
+                    await testService.CopyToAsync(fileStream, TestContext.Current.CancellationToken);
                     testService.Position.Should().Be(testService.Length);
                     fileStream.Position.Should().Be(copyDestFrom + copyCount);
                     fileStream.Length.Should().Be(otherDataCopy.Length);
@@ -982,7 +986,7 @@ namespace KZDev.PerfUtils.Tests
                     memoryStream.Seek(copyDestFrom, SeekOrigin.Begin);
 
                     // Copy to the memory stream
-                    await testService.CopyToAsync(memoryStream);
+                    await testService.CopyToAsync(memoryStream, TestContext.Current.CancellationToken);
                     testService.Position.Should().Be(copySourceFrom + copyCount);
                     memoryStream.Position.Should().Be(memoryStream.Length);
                     memoryStream.Length.Should().Be(otherDataCopy.Length);
@@ -1098,7 +1102,7 @@ namespace KZDev.PerfUtils.Tests
                     fileStream.Seek(copyDestFrom, SeekOrigin.Begin);
 
                     // Copy to the memory stream
-                    await testService.CopyToAsync(fileStream);
+                    await testService.CopyToAsync(fileStream, TestContext.Current.CancellationToken);
                     testService.Position.Should().Be(copySourceFrom + copyCount);
                     fileStream.Position.Should().Be(fileStream.Length);
                     fileStream.Length.Should().Be(otherDataCopy.Length);
@@ -1237,7 +1241,7 @@ namespace KZDev.PerfUtils.Tests
                     byte[] dataCopy = new byte[byteCount];
                     // For fixed mode streams, we should start with the expected data array to be the same data as the initial stream contents
                     if (testService.Mode == MemoryStreamSlimMode.Fixed)
-                        testService.Read(dataCopy, 0, byteCount);
+                        testService.Read(dataCopy, 0, byteCount).Should().Be(byteCount);
                     int dataCopyIndexPosition = 0;
 
                     for (int chaosIndex = 0; chaosIndex < 1000; chaosIndex++)
@@ -1397,7 +1401,7 @@ namespace KZDev.PerfUtils.Tests
                             byte[] dataCopy = new byte[byteCount];
                             // For fixed mode streams, we should start with the expected data array to be the same data as the initial stream contents
                             if (testService.Mode == MemoryStreamSlimMode.Fixed)
-                                testService.Read(dataCopy, 0, byteCount);
+                                testService.Read(dataCopy, 0, byteCount).Should().Be(byteCount);
                             int dataCopyIndexPosition = 0;
 
                             for (int chaosIndex = 0; chaosIndex < 1000; chaosIndex++)
