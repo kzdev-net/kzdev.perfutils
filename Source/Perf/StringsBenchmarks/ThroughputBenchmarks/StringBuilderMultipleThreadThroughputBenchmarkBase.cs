@@ -4,6 +4,9 @@
 using BenchmarkDotNet.Attributes;
 
 using KZDev.PerfUtils;
+// ReSharper disable InconsistentNaming
+#pragma warning disable CA2211
+#pragma warning disable IDE1006 // Naming Styles
 
 namespace StringsBenchmarks
 {
@@ -122,7 +125,7 @@ namespace StringsBenchmarks
             // Tell the threads they can run
             ThreadsCanRunSignal.Set();
             // Wait for all the threads to finish their loop
-            ThreadRunCountDown.Wait();
+            ThreadRunCountDown!.Wait();
             // Make sure the threads don't loop again until we're ready
             ThreadsCanRunSignal.Reset();
         }
@@ -150,7 +153,7 @@ namespace StringsBenchmarks
         [GlobalCleanup]
         public void GlobalCleanup ()
         {
-            ThreadReadyCountDown.Wait();
+            ThreadReadyCountDown!.Wait();
             ShutdownThreads();
             BaseGlobalCleanup();
         }
@@ -161,7 +164,7 @@ namespace StringsBenchmarks
         [IterationSetup]
         public void IterationSetup ()
         {
-            ThreadReadyCountDown.Wait();
+            ThreadReadyCountDown!.Wait();
 
             // Make sure the threads don't loop until we're ready for that
             ThreadsCanResetSignal.Reset();
@@ -173,11 +176,12 @@ namespace StringsBenchmarks
         [IterationCleanup]
         public void IterationCleanup ()
         {
-            ThreadReadyCountDown.Reset();
-            ThreadRunCountDown.Reset();
+            ThreadReadyCountDown!.Reset();
+            ThreadRunCountDown!.Reset();
             // Let the threads set up to wait for the next loop
             ThreadsCanResetSignal.Set();
         }
         //--------------------------------------------------------------------------------
     }
 }
+#pragma warning restore IDE1006 // Naming Styles
