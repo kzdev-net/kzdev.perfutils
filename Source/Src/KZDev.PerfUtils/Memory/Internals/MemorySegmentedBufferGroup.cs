@@ -41,7 +41,7 @@ namespace KZDev.PerfUtils.Internals
     /// different buffer sizes that are needed by capturing 1..n segments in a single 
     /// virtual buffer.
     /// </summary>
-    [DebuggerDisplay($"{{{nameof(DebugDisplayValue)}}}")]
+    [DebuggerDisplay($"{{{nameof(DebugDisplayValue)},nq}}")]
     internal unsafe class MemorySegmentedBufferGroup
     {
         /// <summary>

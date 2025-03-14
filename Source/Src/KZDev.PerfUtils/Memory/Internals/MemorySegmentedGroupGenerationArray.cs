@@ -12,7 +12,7 @@ namespace KZDev.PerfUtils.Internals
     /// Holds an array of buffer groups with a generation number that are accessed as
     /// an atomic unit.
     /// </summary>
-    [DebuggerDisplay($"{{{nameof(DebugDisplayValue)}}}")]
+    [DebuggerDisplay($"{{{nameof(DebugDisplayValue)},nq}}")]
     internal class MemorySegmentedGroupGenerationArray
     {
         /// <summary>
@@ -88,7 +88,9 @@ namespace KZDev.PerfUtils.Internals
         /// Debug helper to display the state of the group.
         /// </summary>
         [ExcludeFromCodeCoverage]
+#pragma warning disable HAA0601
         internal string DebugDisplayValue => $@"ID {GenerationId}, Groups = {Groups.Length}";
+#pragma warning restore HAA0601
 
         /// <summary>
         /// Gets the initial array for the segmented memory.

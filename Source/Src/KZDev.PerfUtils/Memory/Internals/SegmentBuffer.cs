@@ -12,7 +12,7 @@ namespace KZDev.PerfUtils.Internals
     /// A buffer of bytes that references either a segment of a larger buffer or a 
     /// standalone buffer.
     /// </summary>
-    [DebuggerDisplay($"{{{nameof(DebugDisplayValue)}}}")]
+    [DebuggerDisplay($"{{{nameof(DebugDisplayValue)},nq}}")]
     internal readonly struct SegmentBuffer
     {
         /// <summary>

@@ -13,7 +13,7 @@ namespace KZDev.PerfUtils.Internals
     /// An implementation of a buffer pool that is used for the fixed,
     /// standard sized buffers in the <see cref="SegmentMemoryStreamSlim"/> class.
     /// </summary>
-    [DebuggerDisplay($"{{{nameof(DebugDisplayValue)}}}")]
+    [DebuggerDisplay($"{{{nameof(DebugDisplayValue)},nq}}")]
     internal class MemorySegmentedBufferPool : IDisposable
     {
         /// <summary>

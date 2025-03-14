@@ -14,7 +14,7 @@ namespace KZDev.PerfUtils.Internals
     /// Represents a segment of memory that is either a managed or unmanaged byte 
     /// array buffer.
     /// </summary>
-    [DebuggerDisplay($"{{{nameof(DebugDisplayValue)}}}")]
+    [DebuggerDisplay($"{{{nameof(DebugDisplayValue)},nq}}")]
     internal readonly unsafe struct MemorySegment
     {
         /// <summary>

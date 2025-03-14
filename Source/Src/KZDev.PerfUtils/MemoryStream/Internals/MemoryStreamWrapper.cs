@@ -15,7 +15,7 @@ namespace KZDev.PerfUtils.Internals
     /// A memory stream slim implementation that simply wraps a <see cref="MemoryStream"/>
     /// for cases where the stream is created with a buffer that is already allocated.
     /// </summary>
-    [DebuggerDisplay($"{{{nameof(DebugDisplayValue)}}}")]
+    [DebuggerDisplay($"{{{nameof(DebugDisplayValue)},nq}}")]
     internal sealed class MemoryStreamWrapper : MemoryStreamSlim
     {
         /// <summary>

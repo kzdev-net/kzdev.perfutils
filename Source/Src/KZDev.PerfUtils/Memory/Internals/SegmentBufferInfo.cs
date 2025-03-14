@@ -22,13 +22,15 @@ namespace KZDev.PerfUtils.Internals
     /// <param name="bufferPool">
     /// The buffer array pool that this segment was rented from, if any.
     /// </param>
-    [DebuggerDisplay($"{{{nameof(DebugDisplayValue)}}}")]
+    [DebuggerDisplay($"{{{nameof(DebugDisplayValue)},nq}}")]
     internal readonly struct SegmentBufferInfo(int blockId, int segmentId, int segmentCount, MemorySegmentedBufferPool? bufferPool)
     {
         /// <summary>
         /// Debug helper to display the state of the group.
         /// </summary>
+#pragma warning disable HAA0601
         internal string DebugDisplayValue => (BlockId < 0) ? "NoBlock" : $"Block {BlockId}, Segment {SegmentId}, Count {SegmentCount}";
+#pragma warning restore HAA0601
 
         /// <summary>
         /// A special value that indicates that this segment does not reference a block. 

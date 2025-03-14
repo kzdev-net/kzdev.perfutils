@@ -20,7 +20,7 @@ namespace KZDev.PerfUtils.Internals
     /// <param name="segmentEndOffset">
     /// The number of total standard segments through this segment in the segment list.
     /// </param>
-    [DebuggerDisplay($"{{{nameof(DebugDisplayValue)}}}")]
+    [DebuggerDisplay($"{{{nameof(DebugDisplayValue)},nq}}")]
     internal readonly struct SegmentBufferVirtualInfo (in SegmentBuffer segmentBuffer, long segmentEndOffset, int segmentEndCount)
     {
         /// <summary>
@@ -42,7 +42,9 @@ namespace KZDev.PerfUtils.Internals
         /// <summary>
         /// Debug helper to display the state of the group.
         /// </summary>
+#pragma warning disable HAA0601
         private string DebugDisplayValue => $"{SegmentBuffer.DebugDisplayValue}, EndOffset = {SegmentEndOffset}, EndCount = {SegmentEndCount}";
+#pragma warning restore HAA0601
 
         /// <summary>
         /// The segment buffer information that describes this segment.

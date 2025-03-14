@@ -17,7 +17,7 @@ namespace KZDev.PerfUtils.Internals
     /// and uses a combination of small buffers and 'standard sizes' heap allocated 
     /// buffer segments to manage the data.
     /// </summary>
-    [DebuggerDisplay($"{{{nameof(DebugDisplayValue)}}}")]
+    [DebuggerDisplay($"{{{nameof(DebugDisplayValue)},nq}}")]
     internal sealed class SegmentMemoryStreamSlim : MemoryStreamSlim
     {
         /// <summary>
@@ -66,7 +66,7 @@ namespace KZDev.PerfUtils.Internals
         /// zero, then the SmallBufferIndex will be -1. If the SmallBufferIndex is greater than or
         /// zero, then the StandardBufferCount will be zero.
         /// </remarks>
-        [DebuggerDisplay($"{{{nameof(DebugDisplayValue)}}}")]
+        [DebuggerDisplay($"{{{nameof(DebugDisplayValue)},nq}}")]
         private readonly struct AllocationNeedInfo (long allocatedCapacity, int standardBufferSegmentCount, int smallBufferIndex)
         {
             /// <summary>
@@ -109,7 +109,7 @@ namespace KZDev.PerfUtils.Internals
         /// buffer allocated on first access. Otherwise, this references either a buffer
         /// in the list or one of the static small buffers.
         /// </param>
-        [DebuggerDisplay($"{{{nameof(DebugDisplayValue)}}}")]
+        [DebuggerDisplay($"{{{nameof(DebugDisplayValue)},nq}}")]
         private readonly struct CurrentBufferInfo (int index, bool isSmallBuffer, in SegmentBuffer buffer)
         {
             /// <summary>
