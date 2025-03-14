@@ -1,8 +1,8 @@
 ﻿// Copyright (c) Kevin Zehrer
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-namespace KZDev.PerfUtils.Tests
-{
+namespace KZDev.PerfUtils.Tests;
+
     //################################################################################
     /// <summary>
     /// Unit tests for the <see cref="MemoryStreamSlim"/> class that never run in 
@@ -84,4 +84,3 @@ namespace KZDev.PerfUtils.Tests
         #endregion Test Methods
     }
     //################################################################################
-}
