@@ -340,7 +340,7 @@ internal sealed class SegmentMemoryStreamSlim : MemoryStreamSlim
     /// </value>
     [ExcludeFromCodeCoverage]
 #pragma warning disable HAA0601
-    private string DebugDisplayValue => $@"Length = {Length}, Position = {Position}, Mode = {nameof(MemoryStreamSlimMode.Dynamic)}";
+    private string DebugDisplayValue => $@"{nameof(MemoryStreamSlim)}: Length = {Length}, Position = {Position}, Mode = {nameof(MemoryStreamSlimMode.Dynamic)}";
 #pragma warning restore HAA0601
     //--------------------------------------------------------------------------------
     /// <summary>

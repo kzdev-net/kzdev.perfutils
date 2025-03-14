@@ -32,7 +32,7 @@ internal sealed class MemoryStreamWrapper : MemoryStreamSlim
     /// </value>
     [ExcludeFromCodeCoverage]
 #pragma warning disable HAA0601
-    private string DebugDisplayValue => $@"Length = {Length}, Position = {Position}, Mode = {nameof(MemoryStreamSlimMode.Fixed)}";
+    private string DebugDisplayValue => $@"{nameof(MemoryStreamSlim)}: Length = {Length}, Position = {Position}, Mode = {nameof(MemoryStreamSlimMode.Fixed)}";
 #pragma warning restore HAA0601
     //--------------------------------------------------------------------------------
 
