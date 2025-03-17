@@ -32,7 +32,7 @@ Besides creation, the `MemoryStreamSlim` class can be used exactly like the stan
 using KZDev.PerfUtils;
 
 // Create a new MemoryStreamSlim instance with an initial capacity of 1024 bytes, and setting the option to not clear memory buffers
-using (Stream stream = MemoryStreamSlim.Create(1024, options => options.ZeroBufferBehavior = MemoryStreamSlimZeroBufferOption.None))
+using (Stream stream = MemoryStreamSlim.Create(1024, options => options.WithZeroBufferBehavior(MemoryStreamSlimZeroBufferOption.None))
 {
     // Read and Write stream operations...
 }

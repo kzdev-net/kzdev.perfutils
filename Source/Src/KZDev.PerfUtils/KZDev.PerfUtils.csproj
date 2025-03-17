@@ -12,7 +12,7 @@
 		<PackageIcon>images\icon.png</PackageIcon>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageDescription>Performance utilities for .NET projects, including the 'MemoryStreamSlim', 'StringBuilderCache', and 'InterlockedOps' classes.</PackageDescription>
-		<PackageReleaseNotes>MemoryStreamSlim idle memory trimming and added StringBuilder class (version 1.2.0).</PackageReleaseNotes>
+		<PackageReleaseNotes>.NET 9 Support, MemoryStreamSlim Int64 Capacity Support, Added compression stream selper classes (version 2.0.0).</PackageReleaseNotes>
 		<EmbedUntrackedSources>true</EmbedUntrackedSources>
 		<RepositoryUrl>https://github.com/kzdev-net/kzdev.perfutils</RepositoryUrl>
 	</PropertyGroup>

@@ -178,4 +178,12 @@
   <data name="InvalidOperation_TooLargeToCopyToArray" xml:space="preserve">
     <value>The length of the stream is too long to copy into an array.</value>
   </data>
+  <data name="Arg_SourceStreamMustBeReadable" xml:space="preserve">
+    <value>Source stream must be readable.</value>
+    <comment>This is an error when a stream provided as the source of an operation is required to be readable.</comment>
+  </data>
+  <data name="Arg_SourceStreamMustBeSeekable" xml:space="preserve">
+    <value>Source stream must be seekable.</value>
+    <comment>This is an error when a stream provided as the source of an operation is required to be seekable.</comment>
+  </data>
 </root>

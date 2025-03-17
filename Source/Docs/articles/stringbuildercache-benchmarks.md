@@ -55,5 +55,5 @@ The string segments used to build the strings are pre-allocated (outside of the 
 The benchmarks published here used the following versions of the libraries:
 
 - `BenchmarkDotNet` version: 0.14.0
-- `StringBuilderCache` version: 1.2.0
-- `StringBuilder` version: .NET 8.0.11
+- `StringBuilderCache` version: 2.0.0
+- `StringBuilder` version: .NET 9.0.3

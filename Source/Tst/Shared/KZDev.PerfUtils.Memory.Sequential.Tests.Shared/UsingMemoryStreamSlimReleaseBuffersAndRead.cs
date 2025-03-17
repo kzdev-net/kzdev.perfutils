@@ -50,7 +50,7 @@ namespace KZDev.PerfUtils.Tests;
             foreach (int testSegmentSize in TestSegmentSizes)
                 for (int testLoop = 0; testLoop < testLoops; testLoop++)
                 {
-                    await using MemoryStreamSlim testService = MemoryStreamSlim.Create(options => options.ZeroBufferBehavior = MemoryStreamSlimZeroBufferOption.OnRelease);
+                    await using MemoryStreamSlim testService = MemoryStreamSlim.Create(options => options.WithZeroBufferBehavior(MemoryStreamSlimZeroBufferOption.OnRelease));
                     int byteCount = testDataSizes[RandomSource.GetRandomInteger(testDataSizes.Length)];
                     TestWriteLine($"Running test loop {testLoop} with byte count of {byteCount} and segment size {testSegmentSize}");
 
@@ -67,7 +67,7 @@ namespace KZDev.PerfUtils.Tests;
             foreach (int testSegmentSize in TestSegmentSizes)
                 for (int testLoop = 0; testLoop < testLoops; testLoop++)
                 {
-                    await using MemoryStreamSlim testService = MemoryStreamSlim.Create(options => options.ZeroBufferBehavior = MemoryStreamSlimZeroBufferOption.OnRelease);
+                    await using MemoryStreamSlim testService = MemoryStreamSlim.Create(options => options.WithZeroBufferBehavior(MemoryStreamSlimZeroBufferOption.OnRelease));
                     int byteCount = testDataSizes[RandomSource.GetRandomInteger(testDataSizes.Length)];
                     TestWriteLine($"Running test loop {testLoop} with byte count of {byteCount} and segment size {testSegmentSize}");
 

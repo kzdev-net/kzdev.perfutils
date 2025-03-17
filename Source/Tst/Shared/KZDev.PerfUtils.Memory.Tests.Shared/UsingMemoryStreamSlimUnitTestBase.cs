@@ -36,7 +36,7 @@ public abstract class UsingMemoryStreamSlimUnitTestBase : UnitTestBase
     static UsingMemoryStreamSlimUnitTestBase ()
     {
 #if NATIVEMEMORY
-            MemoryStreamSlim.UseNativeLargeMemoryBuffers = true;
+        MemoryStreamSlim.UseNativeLargeMemoryBuffers = true;
 #else
         MemoryStreamSlim.UseNativeLargeMemoryBuffers = false;
 #endif
@@ -949,7 +949,7 @@ NextCurrentSizeLoop:;
     /// State data to pass to the options setup method.
     /// </param>
     protected static async Task TestStreamWriteAndVerifyContentAsync<TState> (IRandomSource randomSource,
-        int dataSize, Action<MemoryStreamSlimOptions, TState> optionsSetup,
+        int dataSize, Func<MemoryStreamSlimOptions, TState, MemoryStreamSlimOptions> optionsSetup,
         TState optionsSetupState)
     {
         await using MemoryStreamSlim testService = MemoryStreamSlim.Create(optionsSetup, optionsSetupState);
@@ -979,7 +979,7 @@ NextCurrentSizeLoop:;
     /// State data to pass to the options setup method.
     /// </param>
     protected static async Task TestStreamWriteAndVerifyContentAsync<TState> (IRandomSource randomSource,
-        int dataSize, int bySegmentSize, Action<MemoryStreamSlimOptions, TState> optionsSetup,
+        int dataSize, int bySegmentSize, Func<MemoryStreamSlimOptions, TState, MemoryStreamSlimOptions> optionsSetup,
         TState optionsSetupState)
     {
         await using MemoryStreamSlim testService = MemoryStreamSlim.Create(optionsSetup, optionsSetupState);

@@ -28,7 +28,7 @@ public partial class UsingMemoryStreamSlim
     private Func<int, MemoryStreamSlim> CreateTestService { get; } =
         // By default, we don't zero the buffer on release because we want to capture any possible buffer corruption
         // between uses
-        _ => MemoryStreamSlim.Create(options => options.ZeroBufferBehavior = MemoryStreamSlimZeroBufferOption.None);
+        _ => MemoryStreamSlim.Create(options => options.WithZeroBufferBehavior(MemoryStreamSlimZeroBufferOption.None));
     //--------------------------------------------------------------------------------
 
     #region Test Methods

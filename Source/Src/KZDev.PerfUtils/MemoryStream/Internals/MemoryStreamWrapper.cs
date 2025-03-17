@@ -4,7 +4,7 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
-
+using System.Text;
 using KZDev.PerfUtils.Helpers;
 using KZDev.PerfUtils.Observability;
 
@@ -107,6 +107,13 @@ internal sealed class MemoryStreamWrapper : MemoryStreamSlim
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get => _wrappedStream.CanSeek;
+    }
+    //--------------------------------------------------------------------------------
+    /// <inheritdoc />
+    public override string Decode (Encoding encoding)
+    {
+        ArgumentNullException.ThrowIfNull(encoding);
+        return encoding.GetString(_wrappedStream.GetBuffer(), 0, (int)_wrappedStream.Length);
     }
     //--------------------------------------------------------------------------------
     /// <inheritdoc />
@@ -219,7 +226,7 @@ internal sealed class MemoryStreamWrapper : MemoryStreamSlim
         byte[] returnArray = _wrappedStream.ToArray();
         if (0 == returnArray.Length) return returnArray;
         // Report the ToArray operation
-        UtilsEventSource.Log.MemoryStreamSlimToArray(Id, returnArray.Length);
+        UtilsEventSource.Log.MemoryStreamSlimToArray(Id, returnArray.Length, false);
         return returnArray;
     }
     //--------------------------------------------------------------------------------

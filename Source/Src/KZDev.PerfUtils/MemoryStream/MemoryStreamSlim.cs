@@ -2,8 +2,10 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.Versioning;
+using System.Text;
 
 using KZDev.PerfUtils.Helpers;
 using KZDev.PerfUtils.Internals;
@@ -496,6 +498,123 @@ public abstract class MemoryStreamSlim : MemoryStream
     //--------------------------------------------------------------------------------
     /// <summary>
     /// Creates a new instance of the <see cref="MemoryStreamSlim"/> class with an 
+    /// expandable capacity initialized as specified.
+    /// </summary>
+    /// <param name="sourceString">
+    /// The source string to convert to bytes and use to fill the stream.
+    /// </param>
+    /// <param name="encoding">
+    /// The encoding to use to convert the string to bytes.
+    /// </param>
+    /// <returns>
+    /// An instance of the <see cref="MemoryStreamSlim"/> class with an expandable
+    /// capacity initialized as specified.
+    /// </returns>
+    internal static MemoryStreamSlim Create(string sourceString, Encoding encoding)
+    {
+        byte[] bytes = encoding.GetBytes(sourceString);
+        MemoryStreamSlim returnStream = Create(bytes.Length);
+        returnStream.Write(bytes, 0, bytes.Length);
+        returnStream.Position = 0;
+        return returnStream;
+    }
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Creates a new instance of the <see cref="MemoryStreamSlim"/> class with an 
+    /// expandable capacity initialized as specified, and options to configure the 
+    /// stream instance.
+    /// </summary>
+    /// <param name="sourceString">
+    /// The source string to convert to bytes and use to fill the stream.
+    /// </param>
+    /// <param name="encoding">
+    /// The encoding to use to convert the string to bytes.
+    /// </param>
+    /// <param name="options">
+    /// Options to configure the stream instance.
+    /// </param>
+    /// <returns>
+    /// An instance of the <see cref="MemoryStreamSlim"/> class with an expandable
+    /// capacity initialized as specified.
+    /// </returns>
+    internal static MemoryStreamSlim Create(string sourceString, Encoding encoding,
+        in MemoryStreamSlimOptions options)
+    {
+        byte[] bytes = encoding.GetBytes(sourceString);
+        MemoryStreamSlim returnStream = Create(bytes.Length, options);
+        returnStream.Write(bytes, 0, bytes.Length);
+        returnStream.Position = 0;
+        return returnStream;
+    }
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Creates a new instance of the <see cref="MemoryStreamSlim"/> class with an 
+    /// expandable capacity initialized as specified, and a delegate to set up options for
+    /// the stream instance.
+    /// </summary>
+    /// <param name="sourceString">
+    /// The source string to convert to bytes and use to fill the stream.
+    /// </param>
+    /// <param name="encoding">
+    /// The encoding to use to convert the string to bytes.
+    /// </param>
+    /// <param name="optionsSetup">
+    /// Delegate to set up options to configure the stream instance.
+    /// </param>
+    /// <returns>
+    /// An instance of the <see cref="MemoryStreamSlim"/> class with an expandable
+    /// capacity initialized as specified.
+    /// </returns>
+    internal static MemoryStreamSlim Create(string sourceString, Encoding encoding,
+        Func<MemoryStreamSlimOptions, MemoryStreamSlimOptions> optionsSetup)
+    {
+        ArgumentNullException.ThrowIfNull(optionsSetup, nameof(optionsSetup));
+        byte[] bytes = encoding.GetBytes(sourceString);
+        MemoryStreamSlim returnStream = Create(bytes.Length, optionsSetup);
+        returnStream.Write(bytes, 0, bytes.Length);
+        returnStream.Position = 0;
+        return returnStream;
+    }
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Creates a new instance of the <see cref="MemoryStreamSlim"/> class filled with
+    /// the bytes from the specified string using the provided encoding.
+    /// </summary>
+    /// <typeparam name="TState">
+    /// The type of the state data to pass to the options setup delegate.
+    /// </typeparam>
+    /// <param name="sourceString">
+    /// The source string to convert to bytes and use to fill the stream.
+    /// </param>
+    /// <param name="encoding">
+    /// The encoding to use to convert the string to bytes.
+    /// </param>
+    /// <param name="optionsSetup">
+    /// Delegate to set up options to configure the stream instance.
+    /// </param>
+    /// <param name="state">
+    /// State data to pass to the options setup delegate.
+    /// </param>
+    /// <returns>
+    /// An instance of the <see cref="MemoryStreamSlim"/> class with an expandable
+    /// capacity initialized as specified.
+    /// </returns>
+    internal static MemoryStreamSlim Create<TState>(string sourceString, Encoding encoding,
+        Func<MemoryStreamSlimOptions, TState, MemoryStreamSlimOptions> optionsSetup,
+        TState state)
+    {
+        ArgumentNullException.ThrowIfNull(optionsSetup, nameof(optionsSetup));
+        byte[] bytes = encoding.GetBytes(sourceString);
+        MemoryStreamSlim returnStream = Create(bytes.Length, optionsSetup, state);
+        returnStream.Write(bytes, 0, bytes.Length);
+        returnStream.Position = 0;
+        return returnStream;
+    }
+    //--------------------------------------------------------------------------------
+
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Creates a new instance of the <see cref="MemoryStreamSlim"/> class with an 
     /// expandable capacity initialized to zero.
     /// </summary>
     /// <returns>
@@ -552,10 +671,8 @@ public abstract class MemoryStreamSlim : MemoryStream
     /// An instance of the <see cref="MemoryStreamSlim"/> class with an expandable
     /// capacity initialized to zero.
     /// </returns>
-    public static MemoryStreamSlim Create (MemoryStreamSlimOptions options)
+    public static MemoryStreamSlim Create (in MemoryStreamSlimOptions options)
     {
-        ArgumentNullException.ThrowIfNull(options, nameof(options));
-
         LockGlobalSettings();
 
         return new SegmentMemoryStreamSlim(GlobalMaximumCapacity, options);
@@ -576,10 +693,8 @@ public abstract class MemoryStreamSlim : MemoryStream
     /// An instance of the <see cref="MemoryStreamSlim"/> class with an expandable
     /// capacity initialized as specified.
     /// </returns>
-    public static MemoryStreamSlim Create (long capacity, MemoryStreamSlimOptions options)
+    public static MemoryStreamSlim Create (long capacity, in MemoryStreamSlimOptions options)
     {
-        ArgumentNullException.ThrowIfNull(options, nameof(options));
-
         LockGlobalSettings();
 
         return new SegmentMemoryStreamSlim(GlobalMaximumCapacity, capacity, options);
@@ -597,7 +712,7 @@ public abstract class MemoryStreamSlim : MemoryStream
     /// An instance of the <see cref="MemoryStreamSlim"/> class with an expandable
     /// capacity initialized to zero.
     /// </returns>
-    public static MemoryStreamSlim Create (Action<MemoryStreamSlimOptions> optionsSetup)
+    public static MemoryStreamSlim Create (Func<MemoryStreamSlimOptions, MemoryStreamSlimOptions> optionsSetup)
     {
         ArgumentNullException.ThrowIfNull(optionsSetup, nameof(optionsSetup));
 
@@ -609,7 +724,7 @@ public abstract class MemoryStreamSlim : MemoryStream
         {
             options = GlobalDefaultSettings.ToOptions();
         }
-        optionsSetup(options);
+        options = optionsSetup(options);
         return new SegmentMemoryStreamSlim(GlobalMaximumCapacity, options);
     }
     //--------------------------------------------------------------------------------
@@ -628,7 +743,7 @@ public abstract class MemoryStreamSlim : MemoryStream
     /// An instance of the <see cref="MemoryStreamSlim"/> class with an expandable
     /// capacity initialized as specified.
     /// </returns>
-    public static MemoryStreamSlim Create (long capacity, Action<MemoryStreamSlimOptions> optionsSetup)
+    public static MemoryStreamSlim Create (long capacity, Func<MemoryStreamSlimOptions, MemoryStreamSlimOptions> optionsSetup)
     {
         ArgumentNullException.ThrowIfNull(optionsSetup, nameof(optionsSetup));
 
@@ -640,7 +755,7 @@ public abstract class MemoryStreamSlim : MemoryStream
         {
             options = GlobalDefaultSettings.ToOptions();
         }
-        optionsSetup(options);
+        options = optionsSetup(options);
         return new SegmentMemoryStreamSlim(GlobalMaximumCapacity, capacity, options);
     }
     //--------------------------------------------------------------------------------
@@ -662,7 +777,7 @@ public abstract class MemoryStreamSlim : MemoryStream
     /// An instance of the <see cref="MemoryStreamSlim"/> class with an expandable
     /// capacity initialized to zero.
     /// </returns>
-    public static MemoryStreamSlim Create<TState> (Action<MemoryStreamSlimOptions, TState> optionsSetup,
+    public static MemoryStreamSlim Create<TState> (Func<MemoryStreamSlimOptions, TState, MemoryStreamSlimOptions> optionsSetup,
         TState state)
     {
         ArgumentNullException.ThrowIfNull(optionsSetup, nameof(optionsSetup));
@@ -675,7 +790,7 @@ public abstract class MemoryStreamSlim : MemoryStream
         {
             options = GlobalDefaultSettings.ToOptions();
         }
-        optionsSetup(options, state);
+        options = optionsSetup(options, state);
         return new SegmentMemoryStreamSlim(GlobalMaximumCapacity, options);
     }
     //--------------------------------------------------------------------------------
@@ -700,7 +815,7 @@ public abstract class MemoryStreamSlim : MemoryStream
     /// An instance of the <see cref="MemoryStreamSlim"/> class with an expandable
     /// capacity initialized as specified.
     /// </returns>
-    public static MemoryStreamSlim Create<TState> (long capacity, Action<MemoryStreamSlimOptions, TState> optionsSetup,
+    public static MemoryStreamSlim Create<TState> (long capacity, Func<MemoryStreamSlimOptions, TState, MemoryStreamSlimOptions> optionsSetup,
         TState state)
     {
         ArgumentNullException.ThrowIfNull(optionsSetup, nameof(optionsSetup));
@@ -713,7 +828,7 @@ public abstract class MemoryStreamSlim : MemoryStream
         {
             options = GlobalDefaultSettings.ToOptions();
         }
-        optionsSetup(options, state);
+        options = optionsSetup(options, state);
         return new SegmentMemoryStreamSlim(GlobalMaximumCapacity, capacity, options);
     }
     //--------------------------------------------------------------------------------
@@ -923,10 +1038,8 @@ public abstract class MemoryStreamSlim : MemoryStream
     /// <param name="options">
     /// Options to configure the global default settings.
     /// </param>
-    public static void SetGlobalDefaultSettings (MemoryStreamSlimOptions options)
+    public static void SetGlobalDefaultSettings (in MemoryStreamSlimOptions options)
     {
-        ArgumentNullException.ThrowIfNull(options, nameof(options));
-
         CheckGlobalSettings();
         lock (SettingsLock)
         {
@@ -942,7 +1055,7 @@ public abstract class MemoryStreamSlim : MemoryStream
     /// <param name="optionsSetup">
     /// Delegate to set up options to configure the global default settings.
     /// </param>
-    public static void SetGlobalDefaultSettings (Action<MemoryStreamSlimOptions> optionsSetup)
+    public static void SetGlobalDefaultSettings (Func<MemoryStreamSlimOptions, MemoryStreamSlimOptions> optionsSetup)
     {
         ArgumentNullException.ThrowIfNull(optionsSetup, nameof(optionsSetup));
 
@@ -955,7 +1068,7 @@ public abstract class MemoryStreamSlim : MemoryStream
             options = GlobalDefaultSettings.ToOptions();
         }
         // Let the user set up the options
-        optionsSetup(options);
+        options = optionsSetup(options);
         lock (SettingsLock)
         {
             // Update the global settings with the new options
@@ -973,7 +1086,7 @@ public abstract class MemoryStreamSlim : MemoryStream
     /// <param name="state">
     /// State data to pass to the options setup delegate.
     /// </param>
-    public static void SetGlobalDefaultSettings<TState> (Action<MemoryStreamSlimOptions, TState> optionsSetup,
+    public static void SetGlobalDefaultSettings<TState> (Func<MemoryStreamSlimOptions, TState, MemoryStreamSlimOptions> optionsSetup,
         TState state)
     {
         ArgumentNullException.ThrowIfNull(optionsSetup, nameof(optionsSetup));
@@ -986,7 +1099,7 @@ public abstract class MemoryStreamSlim : MemoryStream
             options = GlobalDefaultSettings.ToOptions();
         }
         // Let the user set up the options
-        optionsSetup(options, state);
+        options = optionsSetup(options, state);
         lock (SettingsLock)
         {
             // Update the global settings with the new options
@@ -1002,6 +1115,21 @@ public abstract class MemoryStreamSlim : MemoryStream
     /// A unique identifier for this stream instance.
     /// </summary>
     public string Id { get; } = Guid.NewGuid().ToString();
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Returns a string that is decoded from the data contained in the current stream 
+    /// using the specified encoding.
+    /// </summary>
+    /// <remarks>
+    /// This method will read the entire stream of data bytes for the decoding process,
+    /// regardless of the current position of the stream. This could also result in
+    /// an internal allocation of a temporary buffer to hold the data bytes, which
+    /// could be inefficient for large streams.
+    /// </remarks>
+    /// <param name="encoding">
+    /// The encoding to use to decode the byte stream.
+    /// </param>
+    public abstract string Decode(Encoding encoding);
     //--------------------------------------------------------------------------------
 
     #region Overrides of Object
@@ -1176,6 +1304,7 @@ public abstract class MemoryStreamSlim : MemoryStream
     }
     //--------------------------------------------------------------------------------
     /// <inheritdoc />
+    [DoesNotReturn]
     public override byte[] GetBuffer ()
     {
         ThrowHelper.ThrowNotSupportedException_FeatureNotSupported();

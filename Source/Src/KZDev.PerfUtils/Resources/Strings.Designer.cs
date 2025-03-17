@@ -151,6 +151,24 @@ namespace KZDev.PerfUtils.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Source stream must be readable..
+        /// </summary>
+        internal static string Arg_SourceStreamMustBeReadable {
+            get {
+                return ResourceManager.GetString("Arg_SourceStreamMustBeReadable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Source stream must be seekable..
+        /// </summary>
+        internal static string Arg_SourceStreamMustBeSeekable {
+            get {
+                return ResourceManager.GetString("Arg_SourceStreamMustBeSeekable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0} global default settings can not be updated after the first {0} instance has been created..
         /// </summary>
         internal static string InvalidOperation_GlobalSettingsCantBeUpdated {

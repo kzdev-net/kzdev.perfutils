@@ -1,13 +1,15 @@
 ﻿// Copyright (c) Kevin Zehrer
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
+
 namespace KZDev.PerfUtils;
 
 //################################################################################
 /// <summary>
 /// Options for configuring <see cref="MemoryStreamSlim"/> instances.
 /// </summary>
-public class MemoryStreamSlimOptions
+public record struct MemoryStreamSlimOptions
 {
     /// <summary>
     /// The default value for the <see cref="ZeroBufferBehavior"/> property.
@@ -34,7 +36,15 @@ public class MemoryStreamSlimOptions
     /// is particularly large.
     /// </para>
     /// </remarks>
-    public MemoryStreamSlimZeroBufferOption ZeroBufferBehavior { get; set; } = DefaultZeroBufferBehavior;
+    public MemoryStreamSlimZeroBufferOption ZeroBufferBehavior { [DebuggerStepThrough] get; [DebuggerStepThrough] init; }
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MemoryStreamSlimOptions"/> struct with default values.
+    /// </summary>
+    public MemoryStreamSlimOptions ()
+    {
+        ZeroBufferBehavior = DefaultZeroBufferBehavior;
+    }
     //--------------------------------------------------------------------------------
 }
 //################################################################################

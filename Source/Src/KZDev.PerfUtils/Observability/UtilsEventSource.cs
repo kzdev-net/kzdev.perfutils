@@ -55,7 +55,7 @@ class UtilsEventSource : EventSource
     /// The third string argument
     /// </param>
     [NonEvent]
-    private unsafe void WriteEvent (int eventId, string arg1, long arg2, string arg3, string arg4)
+    private unsafe void WriteEventInternal (int eventId, string arg1, long arg2, string arg3, string arg4)
     {
         if (!IsEnabled())
             return;
@@ -93,7 +93,7 @@ class UtilsEventSource : EventSource
     /// The second long argument
     /// </param>
     [NonEvent]
-    private unsafe void WriteEvent (int eventId, string arg1, long arg2, long arg3)
+    private unsafe void WriteEventInternal(int eventId, string arg1, long arg2, long arg3)
     {
         if (!IsEnabled())
             return;
@@ -127,7 +127,7 @@ class UtilsEventSource : EventSource
     /// The string argument
     /// </param>
     [NonEvent]
-    private unsafe void WriteEvent (int eventId, int arg1, int arg2, string arg3)
+    private unsafe void WriteEventInternal(int eventId, int arg1, int arg2, string arg3)
     {
         if (!IsEnabled())
             return;
@@ -284,7 +284,7 @@ class UtilsEventSource : EventSource
     private void MemoryStreamSlimCreated (string streamId, long maximumCapacity, string mode, string zeroBehavior)
     {
         // We expect that the IsEnabled check is done in the caller
-        WriteEvent(EventId_MemoryStreamSlimCreated, streamId, maximumCapacity, mode, zeroBehavior);
+        WriteEventInternal(EventId_MemoryStreamSlimCreated, streamId, maximumCapacity, mode, zeroBehavior);
     }
     //--------------------------------------------------------------------------------
     private const int EventId_MemoryStreamSlimDisposed = 2;
@@ -329,7 +329,7 @@ class UtilsEventSource : EventSource
     public void MemoryStreamSlimCapacityExpanded (string streamId, long oldCapacity, long newCapacity)
     {
         if (IsEnabled(EventLevel.Informational, Keywords.Capacity))
-            WriteEvent(EventId_MemoryStreamSlimCapacityExpanded, streamId, oldCapacity, newCapacity);
+            WriteEventInternal(EventId_MemoryStreamSlimCapacityExpanded, streamId, oldCapacity, newCapacity);
     }
     //--------------------------------------------------------------------------------
     private const int EventId_MemoryStreamSlimCapacityReduced = 5;
@@ -344,7 +344,7 @@ class UtilsEventSource : EventSource
     public void MemoryStreamSlimCapacityReduced (string streamId, long oldCapacity, long newCapacity)
     {
         if (IsEnabled(EventLevel.Informational, Keywords.Capacity))
-            WriteEvent(EventId_MemoryStreamSlimCapacityReduced, streamId, oldCapacity, newCapacity);
+            WriteEventInternal(EventId_MemoryStreamSlimCapacityReduced, streamId, oldCapacity, newCapacity);
     }
     //--------------------------------------------------------------------------------
     private const int EventId_MemoryBufferAllocate = 6;
@@ -386,10 +386,10 @@ class UtilsEventSource : EventSource
         Task = Tasks.MemoryStreamSlim,
         Opcode = Opcodes.ArrayAllocate,
         Level = EventLevel.Warning)]
-    public void MemoryStreamSlimToArray (string streamId, int arraySize)
+    private void MemoryStreamSlimToArray (string streamId, int arraySize, int stringDecode)
     {
         if (IsEnabled(EventLevel.Warning, Keywords.Memory))
-            WriteEvent(EventId_MemoryStreamSlimToArray, streamId, arraySize);
+            WriteEvent(EventId_MemoryStreamSlimToArray, streamId, arraySize, stringDecode);
     }
     //--------------------------------------------------------------------------------
     private const int EventId_StringBuilderCreate = 21;
@@ -437,7 +437,7 @@ class UtilsEventSource : EventSource
     private void StringBuilderCacheHit (int requestedCapacity, int builderCapacity, string cacheType)
     {
         // We expect that the IsEnabled check is done in the caller
-        WriteEvent(EventId_StringBuilderCacheHit, requestedCapacity, builderCapacity, cacheType);
+        WriteEventInternal(EventId_StringBuilderCacheHit, requestedCapacity, builderCapacity, cacheType);
     }
     //--------------------------------------------------------------------------------
     private const int EventId_StringBuilderCacheStore = 24;
@@ -506,6 +506,16 @@ class UtilsEventSource : EventSource
     {
         if (IsEnabled(EventLevel.Informational, Keywords.Memory))
             BufferMemoryRelease(allocationSize, NativeHeapMemoryTypeName);
+    }
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Event to report a ToArray call on a memory stream slim instance.
+    /// </summary>
+    [NonEvent]
+    public void MemoryStreamSlimToArray(string streamId, int arraySize, bool stringDecode)
+    {
+        if (IsEnabled(EventLevel.Warning, Keywords.Memory))
+            MemoryStreamSlimToArray(streamId, arraySize, stringDecode ? 1 : 0);
     }
     //--------------------------------------------------------------------------------
     /// <summary>

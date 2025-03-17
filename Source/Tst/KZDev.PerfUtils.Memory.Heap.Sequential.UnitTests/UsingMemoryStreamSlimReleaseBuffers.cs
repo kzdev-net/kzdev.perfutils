@@ -55,7 +55,7 @@ public class UsingMemoryStreamSlimReleaseBuffers : UsingMemoryStreamSlimUnitTest
             for (int testLoop = 0; testLoop < 1000; testLoop++)
             {
                 // We actually just want to load a number of streams and then release them - to build up the memory usage
-                using MemoryStreamSlim testService = MemoryStreamSlim.Create(options => options.ZeroBufferBehavior = MemoryStreamSlimZeroBufferOption.OnRelease);
+                using MemoryStreamSlim testService = MemoryStreamSlim.Create(options => options.WithZeroBufferBehavior(MemoryStreamSlimZeroBufferOption.OnRelease));
                 int byteCount = testDataSizes[RandomSource.GetRandomInteger(testDataSizes.Length)];
                 MemoryTestPrep.FillStreamAndArrayWithRandomBytes(testService, byteCount, testSegmentSize);
             }

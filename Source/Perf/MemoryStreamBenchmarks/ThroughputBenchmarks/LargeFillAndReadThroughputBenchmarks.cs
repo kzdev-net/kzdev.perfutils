@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Kevin Zehrer
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
+
 using BenchmarkDotNet.Attributes;
 
 using KZDev.PerfUtils;
@@ -49,7 +51,7 @@ public abstract class LargeFillAndReadThroughputBenchmarks
     /// <summary>
     /// The options to use for the MemoryStreamSlim instances
     /// </summary>
-    protected MemoryStreamSlimOptions MemoryStreamSlimOptions { get; set; } = new();
+    protected MemoryStreamSlimOptions MemoryStreamSlimOptions { [DebuggerStepThrough] get; [DebuggerStepThrough] set; } = new();
 
     /// <summary>
     /// The number of loop iterations to perform for each benchmark
@@ -64,31 +66,31 @@ public abstract class LargeFillAndReadThroughputBenchmarks
     /// The different data sizes that will be used for the benchmarks
     /// </summary>
     [Params(0x2000_0000, 0xC000_0000, 0x2_8000_0000)]
-    public long DataSize { get; set; } = 0xC000_0000;
+    public long DataSize { [DebuggerStepThrough] get; [DebuggerStepThrough] set; } = 0xC000_0000;
 
     /// <summary>
     /// The different ways to create the stream instances, by specifying capacity or not
     /// </summary>
     [ParamsAllValues]
-    public bool CapacityOnCreate { get; set; } = true;
+    public bool CapacityOnCreate { [DebuggerStepThrough] get; [DebuggerStepThrough] set; } = true;
 
     /// <summary>
     /// Indicates if the stream should be configured to zero out buffers when released
     /// </summary>
     [ParamsAllValues]
-    public bool ZeroBuffers { get; set; } = false;
+    public bool ZeroBuffers { [DebuggerStepThrough] get; [DebuggerStepThrough] set; } = false;
 
     /// <summary>
     /// Indicates if each loop iteration should grow the stream capacity
     /// </summary>
     [ParamsAllValues]
-    public bool GrowEachLoop { get; set; } = true;
+    public bool GrowEachLoop { [DebuggerStepThrough] get; [DebuggerStepThrough] set; } = true;
 
     /// <summary>
     /// The different ways to create the stream instances, by specifying capacity or not
     /// </summary>
     [ParamsAllValues]
-    public bool ExponentialBufferGrowth { get; set; } = true;
+    public bool ExponentialBufferGrowth { [DebuggerStepThrough] get; [DebuggerStepThrough] set; } = true;
 
     /// <summary>
     /// Indicates if the memory stream slim should use native memory
@@ -97,6 +99,6 @@ public abstract class LargeFillAndReadThroughputBenchmarks
     // future if needed, but currently the tests are showing no notable difference in performance
     // with or without native memory, so we are leaving it off by default.
     //[ParamsAllValues]
-    public bool UseNativeMemory { get; set; } = false;
+    public bool UseNativeMemory { [DebuggerStepThrough] get; [DebuggerStepThrough] set; } = false;
 }
 //################################################################################

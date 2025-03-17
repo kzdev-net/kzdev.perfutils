@@ -125,7 +125,7 @@ public partial class UsingMemoryStreamSlim : UsingMemoryStreamSlimUnitTestBase
     [Fact]
     public void UsingMemoryStreamSlim_CreateWithOptionsDelegate_HasExpectedSettingsAndCapacity ()
     {
-        using MemoryStreamSlim stream = MemoryStreamSlim.Create(options => options.ZeroBufferBehavior = MemoryStreamSlimZeroBufferOption.None);
+        using MemoryStreamSlim stream = MemoryStreamSlim.Create(options => options.WithZeroBufferBehavior(MemoryStreamSlimZeroBufferOption.None));
 
         stream.Capacity.Should().Be(0);
         stream.Settings.ZeroBufferBehavior.Should().Be(MemoryStreamSlimZeroBufferOption.None);
@@ -142,7 +142,7 @@ public partial class UsingMemoryStreamSlim : UsingMemoryStreamSlimUnitTestBase
     [ClassData(typeof(CapacityTestData))]
     public void UsingMemoryStreamSlim_CreateWithCapacityAndOptionsDelegate_HasExpectedSettingsAndCapacity (long testCapacity)
     {
-        using MemoryStreamSlim stream = MemoryStreamSlim.Create(testCapacity, options => options.ZeroBufferBehavior = MemoryStreamSlimZeroBufferOption.None);
+        using MemoryStreamSlim stream = MemoryStreamSlim.Create(testCapacity, options => options.WithZeroBufferBehavior(MemoryStreamSlimZeroBufferOption.None));
 
         stream.CapacityLong.Should().Be(testCapacity);
         stream.Settings.ZeroBufferBehavior.Should().Be(MemoryStreamSlimZeroBufferOption.None);
@@ -156,7 +156,7 @@ public partial class UsingMemoryStreamSlim : UsingMemoryStreamSlimUnitTestBase
     public void UsingMemoryStreamSlim_CreateWithOptionsStateDelegate_HasExpectedSettingsAndCapacity ()
     {
         using MemoryStreamSlim stream = MemoryStreamSlim.Create((options, bufferBehavior) =>
-            options.ZeroBufferBehavior = bufferBehavior, MemoryStreamSlimZeroBufferOption.None);
+            options.WithZeroBufferBehavior(bufferBehavior), MemoryStreamSlimZeroBufferOption.None);
 
         stream.Capacity.Should().Be(0);
         stream.Settings.ZeroBufferBehavior.Should().Be(MemoryStreamSlimZeroBufferOption.None);
@@ -174,7 +174,7 @@ public partial class UsingMemoryStreamSlim : UsingMemoryStreamSlimUnitTestBase
     public void UsingMemoryStreamSlim_CreateWithCapacityAndOptionsStateDelegate_HasExpectedSettingsAndCapacity (long testCapacity)
     {
         using MemoryStreamSlim stream = MemoryStreamSlim.Create(testCapacity,
-            (options, bufferBehavior) => options.ZeroBufferBehavior = bufferBehavior, MemoryStreamSlimZeroBufferOption.None);
+            (options, bufferBehavior) => options.WithZeroBufferBehavior(bufferBehavior), MemoryStreamSlimZeroBufferOption.None);
 
         stream.CapacityLong.Should().Be(testCapacity);
         stream.Settings.ZeroBufferBehavior.Should().Be(MemoryStreamSlimZeroBufferOption.None);
@@ -208,7 +208,7 @@ public partial class UsingMemoryStreamSlim : UsingMemoryStreamSlimUnitTestBase
     {
         for (int instanceLoop = 0; instanceLoop < 50; instanceLoop++)
         {
-            using MemoryStreamSlim testService = MemoryStreamSlim.Create(options => options.ZeroBufferBehavior = MemoryStreamSlimZeroBufferOption.None);
+            using MemoryStreamSlim testService = MemoryStreamSlim.Create(options => options.WithZeroBufferBehavior(MemoryStreamSlimZeroBufferOption.None));
             for (int testLoop = 0; testLoop < 200; testLoop++)
             {
                 long setCapacity = GetTestLongInteger(MemoryStreamSlim.AbsoluteMaxCapacity + 1);
@@ -253,7 +253,7 @@ public partial class UsingMemoryStreamSlim : UsingMemoryStreamSlimUnitTestBase
     {
         foreach (long[] testCapacitySizes in GetTestCapacitySizes())
         {
-            using MemoryStreamSlim testService = MemoryStreamSlim.Create(options => options.ZeroBufferBehavior = MemoryStreamSlimZeroBufferOption.OnRelease);
+            using MemoryStreamSlim testService = MemoryStreamSlim.Create(options => options.WithZeroBufferBehavior(MemoryStreamSlimZeroBufferOption.OnRelease));
             for (int testLoop = 0; testLoop < testCapacitySizes.Length; testLoop++)
             {
                 long setCapacity = testCapacitySizes[testLoop];
@@ -300,7 +300,7 @@ public partial class UsingMemoryStreamSlim : UsingMemoryStreamSlimUnitTestBase
         const int maxTestCapacity = MemorySegmentedBufferGroup.StandardBufferSegmentSize * 64;
         for (int instanceLoop = 0; instanceLoop < 50; instanceLoop++)
         {
-            using MemoryStreamSlim testService = MemoryStreamSlim.Create(options => options.ZeroBufferBehavior = MemoryStreamSlimZeroBufferOption.None);
+            using MemoryStreamSlim testService = MemoryStreamSlim.Create(options => options.WithZeroBufferBehavior(MemoryStreamSlimZeroBufferOption.None));
             for (int testLoop = 0; testLoop < 1000; testLoop++)
             {
                 int setLength = GetTestInteger(10, maxTestCapacity + 1);
@@ -389,7 +389,7 @@ public partial class UsingMemoryStreamSlim : UsingMemoryStreamSlimUnitTestBase
     {
         foreach (long[] testLengthValues in GetTestLengthValues())
         {
-            using MemoryStreamSlim testService = MemoryStreamSlim.Create(options => options.ZeroBufferBehavior = MemoryStreamSlimZeroBufferOption.None);
+            using MemoryStreamSlim testService = MemoryStreamSlim.Create(options => options.WithZeroBufferBehavior(MemoryStreamSlimZeroBufferOption.None));
             for (int testLoop = 0; testLoop < testLengthValues.Length; testLoop++)
             {
                 long setLength = testLengthValues[testLoop];
@@ -462,7 +462,7 @@ public partial class UsingMemoryStreamSlim : UsingMemoryStreamSlimUnitTestBase
         // Fill the stream with random bytes
         for (int testLoop = 0; testLoop < 1000; testLoop++)
         {
-            using MemoryStreamSlim testService = MemoryStreamSlim.Create(options => options.ZeroBufferBehavior = MemoryStreamSlimZeroBufferOption.None);
+            using MemoryStreamSlim testService = MemoryStreamSlim.Create(options => options.WithZeroBufferBehavior(MemoryStreamSlimZeroBufferOption.None));
             int byteCount = RandomSource.GetRandomInteger(10, 0x2_0000);
             int newLength = GetTestInteger(byteCount - 2);
             TestWriteLine($"Running test loop {testLoop} with byte count of {byteCount} and new length of {newLength}");
@@ -487,7 +487,7 @@ public partial class UsingMemoryStreamSlim : UsingMemoryStreamSlimUnitTestBase
     {
         for (int testLoop = 0; testLoop < 1000; testLoop++)
         {
-            using MemoryStreamSlim testService = MemoryStreamSlim.Create(options => options.ZeroBufferBehavior = MemoryStreamSlimZeroBufferOption.None);
+            using MemoryStreamSlim testService = MemoryStreamSlim.Create(options => options.WithZeroBufferBehavior(MemoryStreamSlimZeroBufferOption.None));
             int byteCount = RandomSource.GetRandomInteger(10, 0x2_0000);
             int newLength = GetTestInteger(byteCount - 2);
             TestWriteLine($"Running test loop {testLoop} with byte count of {byteCount} and new length of {newLength}");
@@ -510,7 +510,7 @@ public partial class UsingMemoryStreamSlim : UsingMemoryStreamSlimUnitTestBase
     {
         for (int testLoop = 0; testLoop < 1000; testLoop++)
         {
-            using MemoryStreamSlim testService = MemoryStreamSlim.Create(options => options.ZeroBufferBehavior = MemoryStreamSlimZeroBufferOption.None);
+            using MemoryStreamSlim testService = MemoryStreamSlim.Create(options => options.WithZeroBufferBehavior(MemoryStreamSlimZeroBufferOption.None));
             int byteCount = RandomSource.GetRandomInteger(10, 0x2_0000);
             int newLength = GetTestInteger(byteCount - 2);
             TestWriteLine($"Running test loop {testLoop} with byte count of {byteCount} and new length of {newLength}");
@@ -534,7 +534,7 @@ public partial class UsingMemoryStreamSlim : UsingMemoryStreamSlimUnitTestBase
     {
         for (int testLoop = 0; testLoop < 1000; testLoop++)
         {
-            using MemoryStreamSlim testService = MemoryStreamSlim.Create(options => options.ZeroBufferBehavior = MemoryStreamSlimZeroBufferOption.None);
+            using MemoryStreamSlim testService = MemoryStreamSlim.Create(options => options.WithZeroBufferBehavior(MemoryStreamSlimZeroBufferOption.None));
             int byteCount = RandomSource.GetRandomInteger(10, 0x2_0000);
             int newLength = GetTestInteger(byteCount - 2);
             TestWriteLine($"Running test loop {testLoop} with byte count of {byteCount} and new length of {newLength}");
@@ -565,7 +565,7 @@ public partial class UsingMemoryStreamSlim : UsingMemoryStreamSlimUnitTestBase
         // Fill the stream with random bytes
         for (int testLoop = 0; testLoop < 1000; testLoop++)
         {
-            using MemoryStreamSlim testService = MemoryStreamSlim.Create(options => options.ZeroBufferBehavior = MemoryStreamSlimZeroBufferOption.None);
+            using MemoryStreamSlim testService = MemoryStreamSlim.Create(options => options.WithZeroBufferBehavior(MemoryStreamSlimZeroBufferOption.None));
             int byteCount = RandomSource.GetRandomInteger(10, 0x2_0000);
             int newLength = byteCount + GetTestInteger(10, 1000);
             TestWriteLine($"Running test loop {testLoop} with byte count of {byteCount} and new length of {newLength}");
@@ -590,7 +590,7 @@ public partial class UsingMemoryStreamSlim : UsingMemoryStreamSlimUnitTestBase
         // Fill the stream with random bytes
         for (int testLoop = 0; testLoop < 5_000; testLoop++)
         {
-            using MemoryStreamSlim testService = MemoryStreamSlim.Create(options => options.ZeroBufferBehavior = MemoryStreamSlimZeroBufferOption.None);
+            using MemoryStreamSlim testService = MemoryStreamSlim.Create(options => options.WithZeroBufferBehavior(MemoryStreamSlimZeroBufferOption.None));
             int byteCount = RandomSource.GetRandomInteger(10, 0x2_0000);
             int addLength = GetTestInteger(10, 1000);
             int newLength = byteCount + addLength;
@@ -635,7 +635,7 @@ public partial class UsingMemoryStreamSlim : UsingMemoryStreamSlimUnitTestBase
                 for (int positionIndex = sizeIndex; positionIndex < testLengths.Length; positionIndex++)
                 {
                     int setPositionValue = testLengths[positionIndex];
-                    using MemoryStreamSlim testService = MemoryStreamSlim.Create(options => options.ZeroBufferBehavior = MemoryStreamSlimZeroBufferOption.None);
+                    using MemoryStreamSlim testService = MemoryStreamSlim.Create(options => options.WithZeroBufferBehavior(MemoryStreamSlimZeroBufferOption.None));
                     int addLength = fullLength - initialSize;
                     TestWriteLine($"Running test loop {sizeIndex} with byte count of {initialSize} and new length of {fullLength}");
 
@@ -726,7 +726,7 @@ public partial class UsingMemoryStreamSlim : UsingMemoryStreamSlimUnitTestBase
                     int byteCount = RandomSource.GetRandomInteger(20, maximumSmallBufferSize);
                     MemoryStreamSlim testService = MemoryStreamSlim
                         .Create(options =>
-                            options.ZeroBufferBehavior = (0 == (testLoop & 1)) ? MemoryStreamSlimZeroBufferOption.OnRelease : MemoryStreamSlimZeroBufferOption.None);
+                            options.WithZeroBufferBehavior((0 ==(testLoop & 1)) ? MemoryStreamSlimZeroBufferOption.OnRelease : MemoryStreamSlimZeroBufferOption.None));
                     TestWriteLine($"Running test loop {testLoop} with byte count of {byteCount}");
 
                     byte[] dataCopy =

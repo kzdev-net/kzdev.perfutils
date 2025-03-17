@@ -31,6 +31,8 @@
       href: memory-management.md
     - name: Monitoring
       href: memory-monitoring.md
+    - name: Compression
+      href: memorystream-compression.md
     - name: Benchmarks
       href: memorystream-benchmarks.md
       items:

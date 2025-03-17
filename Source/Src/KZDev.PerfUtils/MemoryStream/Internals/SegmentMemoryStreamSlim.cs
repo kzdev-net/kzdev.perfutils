@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-
+using System.Text;
 using KZDev.PerfUtils.Helpers;
 using KZDev.PerfUtils.Observability;
 
@@ -348,6 +348,7 @@ internal sealed class SegmentMemoryStreamSlim : MemoryStreamSlim
     /// </summary>
     private long VirtualPosition
     {
+        [DebuggerStepThrough]
         get => PositionInternal;
         set => SetCurrentVirtualPosition(value);
     }
@@ -1066,6 +1067,56 @@ internal sealed class SegmentMemoryStreamSlim : MemoryStreamSlim
 
     //--------------------------------------------------------------------------------
     /// <summary>
+    /// Performs the operations needed for converting the stream to an array.
+    /// </summary>
+    /// <param name="forStringDecode">
+    /// Indicates if this is for a string decode operation.
+    /// </param>
+    /// <returns>
+    /// The array that contains all the of bytes from the stream in a contiguous array.
+    /// </returns>
+    private byte[] ToArrayInternal(bool forStringDecode)
+    {
+        EnsureNotClosed();
+        switch (LengthInternal)
+        {
+            // If we have no data, then return an empty array
+            case 0:
+                return [];
+
+            // If the length of the stream is greater than int.MaxValue, then we cannot copy it to an array
+            case > int.MaxValue:
+                ThrowHelper.ThrowInvalidOperationException_TooLargeToCopyToArray();
+                break;
+        }
+        int bytesToCopy = (int)LengthInternal;
+
+        // If we have a small buffer, then we can just copy the data from the small buffer
+        byte[] returnArray = GC.AllocateUninitializedArray<byte>(bytesToCopy);
+        // Report the ToArray operation
+        UtilsEventSource.Log.MemoryStreamSlimToArray(Id, bytesToCopy, forStringDecode);
+        Debug.Assert(returnArray.Length == bytesToCopy, "returnArray.Length != bytesToCopy");
+        if (_currentBufferInfo.IsSmallBuffer)
+        {
+            _currentBufferInfo.Buffer[..bytesToCopy].CopyTo(returnArray);
+            return returnArray;
+        }
+        // If we have a buffer list, then we need to copy the data from the buffers
+        int bufferOffset = 0;
+        int bufferIndex = 0;
+        // We are not using a small buffer and length is not zero, so we must have a buffer list
+        while (bytesToCopy > 0)
+        {
+            SegmentBuffer currentBuffer = _bufferList![bufferIndex++].SegmentBuffer;
+            int copyLength = Math.Min(currentBuffer.Length, bytesToCopy);
+            currentBuffer[..copyLength].CopyTo(returnArray.AsSpan(bufferOffset, copyLength));
+            bufferOffset += copyLength;
+            bytesToCopy -= copyLength;
+        }
+        return returnArray;
+    }
+    //--------------------------------------------------------------------------------
+    /// <summary>
     /// Helper to release the current buffer (if appropriate)
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1760,6 +1811,15 @@ internal sealed class SegmentMemoryStreamSlim : MemoryStreamSlim
 
     //--------------------------------------------------------------------------------
     /// <inheritdoc />
+    public override string Decode (Encoding encoding)
+    {
+        //  TODO - Check the current state of the internal buffers and check if we can
+        //  decode directly from the buffers rather than copying the data to a new array.
+        byte[] bytes = ToArrayInternal(true);
+        return encoding.GetString(bytes, 0, bytes.Length);
+    }
+    //--------------------------------------------------------------------------------
+    /// <inheritdoc />
     public override async Task CopyToAsync (Stream destination, int bufferSize, CancellationToken cancellationToken)
     {
         // We don't use bufferSize (right now), but for consistency, check all the 
@@ -1884,11 +1944,16 @@ internal sealed class SegmentMemoryStreamSlim : MemoryStreamSlim
 
     //--------------------------------------------------------------------------------
     /// <inheritdoc />
-    public override long Length => LengthInternal;
+    public override long Length
+    {
+        [DebuggerStepThrough]
+        get => LengthInternal;
+    }
     //--------------------------------------------------------------------------------
     /// <inheritdoc />
     public override long Position
     {
+        [DebuggerStepThrough]
         get => VirtualPosition;
         set
         {
@@ -2119,46 +2184,7 @@ internal sealed class SegmentMemoryStreamSlim : MemoryStreamSlim
     }
     //--------------------------------------------------------------------------------
     /// <inheritdoc />
-    public override byte[] ToArray ()
-    {
-        EnsureNotClosed();
-        switch (LengthInternal)
-        {
-            // If we have no data, then return an empty array
-            case 0:
-                return [];
-
-            // If the length of the stream is greater than int.MaxValue, then we cannot copy it to an array
-            case > int.MaxValue:
-                ThrowHelper.ThrowInvalidOperationException_TooLargeToCopyToArray();
-                break;
-        }
-        int bytesToCopy = (int)LengthInternal;
-
-        // If we have a small buffer, then we can just copy the data from the small buffer
-        byte[] returnArray = GC.AllocateUninitializedArray<byte>(bytesToCopy);
-        // Report the ToArray operation
-        UtilsEventSource.Log.MemoryStreamSlimToArray(Id, bytesToCopy);
-        Debug.Assert(returnArray.Length == bytesToCopy, "returnArray.Length != bytesToCopy");
-        if (_currentBufferInfo.IsSmallBuffer)
-        {
-            _currentBufferInfo.Buffer[..bytesToCopy].CopyTo(returnArray);
-            return returnArray;
-        }
-        // If we have a buffer list, then we need to copy the data from the buffers
-        int bufferOffset = 0;
-        int bufferIndex = 0;
-        // We are not using a small buffer and length is not zero, so we must have a buffer list
-        while (bytesToCopy > 0)
-        {
-            SegmentBuffer currentBuffer = _bufferList![bufferIndex++].SegmentBuffer;
-            int copyLength = Math.Min(currentBuffer.Length, bytesToCopy);
-            currentBuffer[..copyLength].CopyTo(returnArray.AsSpan(bufferOffset, copyLength));
-            bufferOffset += copyLength;
-            bytesToCopy -= copyLength;
-        }
-        return returnArray;
-    }
+    public override byte[] ToArray() => ToArrayInternal(false);
     //--------------------------------------------------------------------------------
     /// <inheritdoc />
     public override unsafe void Write (byte[] buffer, int offset, int count)

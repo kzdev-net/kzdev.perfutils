@@ -21,7 +21,7 @@ You can control how the memory buffers are cleared by setting the `MemoryStreamS
 using KZDev.PerfUtils;
 
 // Create a new MemoryStreamSlim instance with an expandable initial capacity of 0 bytes, and setting the option to not clear memory buffers
-using (Stream stream = MemoryStreamSlim.Create(options => options.ZeroBufferBehavior = MemoryStreamSlimZeroBufferOption.None))
+using (Stream stream = MemoryStreamSlim.Create(options => options.WithZeroBufferBehavior(MemoryStreamSlimZeroBufferOption.None))
 {
     // Read and Write stream operations...
 }

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Kevin Zehrer
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using BenchmarkDotNet.Attributes;
 
 using KZDev.PerfUtils;
@@ -49,7 +50,7 @@ public class CopyToAsyncThroughputBenchmarks
     /// <summary>
     /// The options to use for the MemoryStreamSlim instances
     /// </summary>
-    protected MemoryStreamSlimOptions MemoryStreamSlimOptions { get; set; } = new();
+    protected MemoryStreamSlimOptions MemoryStreamSlimOptions { [DebuggerStepThrough] get; [DebuggerStepThrough] set; } = new();
 
     /// <summary>
     /// The common helper utility for processing stream benchmarks
@@ -69,19 +70,19 @@ public class CopyToAsyncThroughputBenchmarks
     /// The different bulk data sizes that will be used for the benchmarks
     /// </summary>
     [Params(0x2_0000, 0xF_0000, 0x100_0000, 0x5FF_0000, 0xC80_0000)]
-    public int DataSize { get; set; } = 0x100_0000;
+    public int DataSize { [DebuggerStepThrough] get; [DebuggerStepThrough] set; } = 0x100_0000;
 
     /// <summary>
     /// The different ways to create the stream instances, by specifying capacity or not
     /// </summary>
     [ParamsAllValues]
-    public bool CapacityOnCreate { get; set; } = false;
+    public bool CapacityOnCreate { [DebuggerStepThrough] get; [DebuggerStepThrough] set; } = false;
 
     /// <summary>
     /// Controls if the stream is initially filled with the data in a single operation or in segments
     /// </summary>
     [ParamsAllValues]
-    public bool BulkInitialFill { get; set; } = false;
+    public bool BulkInitialFill { [DebuggerStepThrough] get; [DebuggerStepThrough] set; } = false;
 
     /// <summary>
     /// The different ways to create the stream instances, by specifying capacity or not
@@ -90,7 +91,7 @@ public class CopyToAsyncThroughputBenchmarks
     // future if needed, but currently the tests are showing no notable difference in performance
     // with either approach, so we are leaving it linear by default.
     //[ParamsAllValues]
-    public bool ExponentialBufferGrowth { get; set; } = false;
+    public bool ExponentialBufferGrowth { [DebuggerStepThrough] get; [DebuggerStepThrough] set; } = false;
 
     /// <summary>
     /// Indicates if the memory stream slim should use native memory
@@ -99,7 +100,7 @@ public class CopyToAsyncThroughputBenchmarks
     // future if needed, but currently the tests are showing no notable difference in performance
     // with or without native memory, so we are leaving it off by default.
     //[ParamsAllValues]
-    public bool UseNativeMemory { get; set; } = false;
+    public bool UseNativeMemory { [DebuggerStepThrough] get; [DebuggerStepThrough] set; } = false;
     //--------------------------------------------------------------------------------
     /// <summary>
     /// Processes the bulk fill and read operation on the stream

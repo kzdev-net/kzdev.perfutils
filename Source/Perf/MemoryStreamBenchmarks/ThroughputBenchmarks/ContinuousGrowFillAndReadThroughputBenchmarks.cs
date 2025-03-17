@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Kevin Zehrer
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
+
 using BenchmarkDotNet.Attributes;
 
 using KZDev.PerfUtils;
@@ -60,19 +62,19 @@ public class ContinuousGrowFillAndReadThroughputBenchmarks
     /// <summary>
     /// The options to use for the MemoryStreamSlim instances
     /// </summary>
-    private MemoryStreamSlimOptions MemoryStreamSlimOptions { get; set; } = new();
+    private MemoryStreamSlimOptions MemoryStreamSlimOptions { [DebuggerStepThrough] get; [DebuggerStepThrough] set; } = new();
 
     /// <summary>
     /// Indicates if the stream should be configured to zero out buffers when released
     /// </summary>
     [ParamsAllValues]
-    public bool ZeroBuffers { get; set; } = true;
+    public bool ZeroBuffers { [DebuggerStepThrough] get; [DebuggerStepThrough] set; } = true;
 
     /// <summary>
     /// The different ways to create the stream instances, by specifying capacity or not
     /// </summary>
     [ParamsAllValues]
-    public bool ExponentialBufferGrowth { get; set; } = false;
+    public bool ExponentialBufferGrowth { [DebuggerStepThrough] get; [DebuggerStepThrough] set; } = false;
 
     /// <summary>
     /// Indicates if the memory stream slim should use native memory
@@ -81,7 +83,7 @@ public class ContinuousGrowFillAndReadThroughputBenchmarks
     // future if needed, but currently the tests are showing no measurable difference in performance
     // with or without native memory, so we are leaving it off by default.
     //[ParamsAllValues]
-    public bool UseNativeMemory { get; set; } = false;
+    public bool UseNativeMemory { [DebuggerStepThrough] get; [DebuggerStepThrough] set; } = false;
 
     //--------------------------------------------------------------------------------
     /// <summary>
@@ -96,7 +98,7 @@ public class ContinuousGrowFillAndReadThroughputBenchmarks
     /// <param name="getArrayCallback">
     /// The callback to get the array from the stream
     /// </param>
-    private void ProcessStream<T> (T stream, int dataLength, 
+    private void ProcessStream<T> (T stream, int dataLength,
         Func<T, byte[]> getArrayCallback)
         where T : Stream
     {
@@ -179,7 +181,7 @@ public class ContinuousGrowFillAndReadThroughputBenchmarks
         int processDataLength = StartDataSize;
         for (int loopIndex = 0; loopIndex < LoopCount; loopIndex++)
         {
-            using RecyclableMemoryStream stream = 
+            using RecyclableMemoryStream stream =
                 BenchMarkHelpers.GetMemoryStreamManager(ZeroBuffers, ExponentialBufferGrowth).GetStream("benchmark");
             ProcessStream(stream, processDataLength, workingStream => workingStream.GetBuffer());
             processDataLength += LoopGrowAmount;
@@ -195,7 +197,7 @@ public class ContinuousGrowFillAndReadThroughputBenchmarks
         int processDataLength = StartDataSize;
         for (int loopIndex = 0; loopIndex < LoopCount; loopIndex++)
         {
-            using MemoryStreamSlim stream = 
+            using MemoryStreamSlim stream =
                 MemoryStreamSlim.Create(MemoryStreamSlimOptions);
             ProcessStream(stream, processDataLength, workingStream => workingStream.ToArray());
             processDataLength += LoopGrowAmount;

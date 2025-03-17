@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Kevin Zehrer
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
+
 using BenchmarkDotNet.Attributes;
 
 using KZDev.PerfUtils;
@@ -67,7 +69,7 @@ public abstract class StringBuilderMultipleThreadThroughputBenchmarkBase : Strin
     /// The number of threads to use
     /// </summary>
     [ParamsSource(nameof(ThreadCountValues))]
-    public int ThreadCount { get; set; }
+    public int ThreadCount { [DebuggerStepThrough] get; [DebuggerStepThrough] set; }
 
     /// <summary>
     /// The number of loop iterations to perform for each benchmark

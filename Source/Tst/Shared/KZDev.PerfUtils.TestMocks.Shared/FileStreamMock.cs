@@ -7,7 +7,7 @@ namespace KZDev.PerfUtils.Tests;
 
 //################################################################################
 /// <summary>
-/// A class that mimics the <see cref="System.IO.FileStream"/> class to provide a
+/// A class that mimics the <see cref="FileStream"/> class to provide a
 /// predictable and controlled environment for the benchmarks with async file I/O
 /// </summary>
 internal class FileStreamMock : Stream

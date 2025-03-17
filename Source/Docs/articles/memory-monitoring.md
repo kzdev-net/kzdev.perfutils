@@ -238,7 +238,8 @@ The following table shows the event data.
 
 ### MemoryStreamSlimToArray event
 
-This event is raised when the ToArray() method is called on a `MemoryStreamSlim` instance and returns a non-zero length array. This is useful for tracking extra heap memory allocations caused by calling the ToArray() method.
+This event is raised when the ToArray() method is called on a `MemoryStreamSlim` instance and returns a non-zero length array. This is useful for tracking extra heap memory allocations caused by calling the ToArray() method. This also records the internal operation of putting all of the
+  bytes into a contiguous array for decoding the bytes into a string.
 
 The following table shows the task, keyword, level, and opcode.
 
@@ -256,7 +257,9 @@ The following table shows the event data.
 
 | Name | Type | Description |
 | --- | --- | --- |
+| StreamId | Guid | The unique identifier for the MemoryStreamSlim instance. |
 | ArraySize | Int32 | The size (in bytes) of the returned heap allocated array. |
+| StringDecode | Int32 | Indicates if the contiguous array was used for string decoding. 0 = ToArray() called, 1 = Decode() called. |
 
 ---
 

@@ -126,6 +126,30 @@ internal static class ThrowHelper
     internal static void ThrowArgumentException_DestinationTooShort (string argumentName) =>
         throw new ArgumentException(Strings.Arg_DestinationTooShort, argumentName);
     //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Throws an argument with the message for a source stream that is not readable 
+    /// </summary>
+    /// <param name="argumentName">
+    /// The name of the invalid argument.
+    /// </param>
+    /// <exception cref="ArgumentException">
+    /// </exception>
+    [DoesNotReturn]
+    internal static void ThrowArgumentException_SourceStreamMustBeReadable (string argumentName) =>
+        throw new ArgumentException(Strings.Arg_SourceStreamMustBeReadable, argumentName);
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Throws an argument with the message for a source stream that is not seekable
+    /// </summary>
+    /// <param name="argumentName">
+    /// The name of the invalid argument.
+    /// </param>
+    /// <exception cref="ArgumentException">
+    /// </exception>
+    [DoesNotReturn]
+    internal static void ThrowArgumentException_SourceStreamMustBeSeekable (string argumentName) =>
+        throw new ArgumentException(Strings.Arg_SourceStreamMustBeSeekable, argumentName);
+    //--------------------------------------------------------------------------------
 
     #endregion Argument Errors
 
