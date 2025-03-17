@@ -1,6 +1,7 @@
 ﻿
 
 using System.Buffers;
+using System.Diagnostics;
 
 namespace KZDev.PerfUtils.Tests;
 
@@ -109,10 +110,10 @@ internal class FileStreamMock : Stream
         // Use conditional compilation to check for negative async suspension count
         // instead of Debug.Assert to avoid creating a local variable in release builds
 #if DEBUG
-            int newCount = Interlocked.Decrement(ref _asyncSuspendCount);
-            if (newCount >= 0)
-                return;
-            Debug.Fail("The async suspension count has gone negative");
+        int newCount = Interlocked.Decrement(ref _asyncSuspendCount);
+        if (newCount >= 0)
+            return;
+        Debug.Fail("The async suspension count has gone negative");
 #else
         Interlocked.Decrement(ref _asyncSuspendCount);
 #endif

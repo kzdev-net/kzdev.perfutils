@@ -1179,7 +1179,7 @@ public abstract class MemoryStreamSlim : MemoryStream
     public override byte[] GetBuffer ()
     {
         ThrowHelper.ThrowNotSupportedException_FeatureNotSupported();
-        return default;
+        return null;
     }
     //--------------------------------------------------------------------------------
 
