@@ -44,6 +44,7 @@ public class LargeSegmentedFillAndReadThroughputBenchmarks : LargeFillAndReadThr
     [GlobalSetup]
     public void GlobalSetup ()
     {
+        DoCommonGlobalSetup();
         MemoryStreamSlim.UseNativeLargeMemoryBuffers = UseNativeMemory;
         // Only need to allocate the buffers once, and we want the same data for all benchmarks
         if (fillData is not null)
@@ -70,15 +71,18 @@ public class LargeSegmentedFillAndReadThroughputBenchmarks : LargeFillAndReadThr
     [Benchmark(Baseline = true, Description = "Large RecyclableMemoryStream fill and read")]
     public void UseLargeRecyclableMemoryStream ()
     {
+        // Capture the parameters once locally
         long processDataLength = DataSize;
-        for (int loopIndex = 0; loopIndex < LoopCount; loopIndex++)
+        int loopCount = LoopCount;
+        int loopGrowAmount = LoopGrowAmount;
+        for (int loopIndex = 0; loopIndex < loopCount; loopIndex++)
         {
             using RecyclableMemoryStream stream = CapacityOnCreate ?
                 BenchMarkHelpers.GetLargeMemoryStreamManager(ZeroBuffers, ExponentialBufferGrowth).GetStream("benchmark", processDataLength) :
                 BenchMarkHelpers.GetLargeMemoryStreamManager(ZeroBuffers, ExponentialBufferGrowth).GetStream("benchmark");
             ProcessStream(stream, processDataLength);
             if (GrowEachLoop)
-                processDataLength += LoopGrowAmount;
+                processDataLength += loopGrowAmount;
         }
     }
     //--------------------------------------------------------------------------------
@@ -88,15 +92,19 @@ public class LargeSegmentedFillAndReadThroughputBenchmarks : LargeFillAndReadThr
     [Benchmark(Description = "Large MemoryStreamSlim fill and read")]
     public void UseLargeMemoryStreamSlim ()
     {
+        // Capture the parameters once locally
         long processDataLength = DataSize;
-        for (int loopIndex = 0; loopIndex < LoopCount; loopIndex++)
+        int loopCount = LoopCount;
+        int loopGrowAmount = LoopGrowAmount;
+        MemoryStreamSlimOptions memoryStreamSlimOptions = MemoryStreamSlimOptions;
+        for (int loopIndex = 0; loopIndex < loopCount; loopIndex++)
         {
             using MemoryStreamSlim stream = CapacityOnCreate ? 
-                MemoryStreamSlim.Create(processDataLength, MemoryStreamSlimOptions) : 
-                MemoryStreamSlim.Create(MemoryStreamSlimOptions);
+                MemoryStreamSlim.Create(processDataLength, memoryStreamSlimOptions) : 
+                MemoryStreamSlim.Create(memoryStreamSlimOptions);
             ProcessStream(stream, processDataLength);
             if (GrowEachLoop)
-                processDataLength += LoopGrowAmount;
+                processDataLength += loopGrowAmount;
         }
     }
     //--------------------------------------------------------------------------------

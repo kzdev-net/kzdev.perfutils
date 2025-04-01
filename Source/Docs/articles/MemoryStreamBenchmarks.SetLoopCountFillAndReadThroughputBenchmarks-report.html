@@ -2,7 +2,7 @@
 <html lang='en'>
 <head>
 <meta charset='utf-8' />
-<title>MemoryStreamBenchmarks.SetLoopCountFillAndReadThroughputBenchmarks-20241230-231726</title>
+<title>MemoryStreamBenchmarks.SetLoopCountFillAndReadThroughputBenchmarks-20250414-000415</title>
 
 <style type="text/css">
 	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
@@ -13,47 +13,35 @@
 </head>
 <body>
 <pre><code>
-BenchmarkDotNet v0.14.0, Windows 11 (10.0.22631.4602/23H2/2023Update/SunValley3)
+BenchmarkDotNet v0.14.0, Windows 11 (10.0.26100.3775)
 Intel Core i9-14900K, 1 CPU, 32 logical and 24 physical cores
-.NET SDK 9.0.101
-  [Host]     : .NET 8.0.11 (8.0.1124.51707), X64 RyuJIT AVX2
-  DefaultJob : .NET 8.0.11 (8.0.1124.51707), X64 RyuJIT AVX2
+.NET SDK 9.0.203
+  [Host]     : .NET 9.0.4 (9.0.425.16305), X64 RyuJIT AVX2
+  DefaultJob : .NET 9.0.4 (9.0.425.16305), X64 RyuJIT AVX2
 </code></pre>
 <pre><code></code></pre>
 
 <table>
-<thead><tr><th>Method                                         </th><th>DataSize</th><th>ZeroBuffers</th><th>Mean    </th><th>Error </th><th>StdDev</th><th>Ratio</th><th>RatioSD</th><th>Gen0</th><th>Gen1</th><th>Gen2</th><th>Allocated</th><th>Alloc Ratio</th>
+<thead><tr><th>Method                                         </th><th>DataSize</th><th>ZeroBuffers</th><th>Mean     </th><th>Error  </th><th>StdDev </th><th>Ratio</th><th>RatioSD</th><th>Gen0</th><th>Gen1</th><th>Gen2</th><th>Allocated</th><th>Alloc Ratio</th>
 </tr>
-</thead><tbody><tr><td>&#39;MemoryStream set loop count fill and read&#39;</td><td>131072</td><td>False</td><td>2,205.0 &mu;s</td><td>38.34 &mu;s</td><td>35.86 &mu;s</td><td>1.00</td><td>0.02</td><td>2082.0313</td><td>2082.0313</td><td>2082.0313</td><td>12610.84 KB</td><td>1.000</td>
-</tr><tr><td>&#39;RecyclableMemoryStream set loop count fill and read&#39;</td><td>131072</td><td>False</td><td>143.3 &mu;s</td><td>0.67 &mu;s</td><td>0.62 &mu;s</td><td>0.06</td><td>0.00</td><td>0.7324</td><td>-</td><td>-</td><td>13.67 KB</td><td>0.001</td>
-</tr><tr><td>&#39;MemoryStreamSlim set loop count fill and read&#39;</td><td>131072</td><td>False</td><td>187.5 &mu;s</td><td>0.83 &mu;s</td><td>0.78 &mu;s</td><td>0.09</td><td>0.00</td><td>0.7324</td><td>-</td><td>-</td><td>14.06 KB</td><td>0.001</td>
-</tr><tr><td>&#39;MemoryStream set loop count fill and read&#39;</td><td>131072</td><td>True</td><td>2,199.1 &mu;s</td><td>14.32 &mu;s</td><td>12.70 &mu;s</td><td>1.00</td><td>0.01</td><td>2082.0313</td><td>2082.0313</td><td>2082.0313</td><td>12610.84 KB</td><td>1.000</td>
-</tr><tr><td>&#39;RecyclableMemoryStream set loop count fill and read&#39;</td><td>131072</td><td>True</td><td>214.4 &mu;s</td><td>1.46 &mu;s</td><td>1.37 &mu;s</td><td>0.10</td><td>0.00</td><td>0.7324</td><td>-</td><td>-</td><td>13.67 KB</td><td>0.001</td>
-</tr><tr><td>&#39;MemoryStreamSlim set loop count fill and read&#39;</td><td>131072</td><td>True</td><td>310.4 &mu;s</td><td>1.91 &mu;s</td><td>1.79 &mu;s</td><td>0.14</td><td>0.00</td><td>0.4883</td><td>-</td><td>-</td><td>14.06 KB</td><td>0.001</td>
-</tr><tr><td>&#39;MemoryStream set loop count fill and read&#39;</td><td>983040</td><td>False</td><td>27,905.6 &mu;s</td><td>168.82 &mu;s</td><td>157.92 &mu;s</td><td>1.00</td><td>0.01</td><td>24984.3750</td><td>24984.3750</td><td>24984.3750</td><td>102221.88 KB</td><td>1.000</td>
-</tr><tr><td>&#39;RecyclableMemoryStream set loop count fill and read&#39;</td><td>983040</td><td>False</td><td>1,028.8 &mu;s</td><td>6.69 &mu;s</td><td>6.26 &mu;s</td><td>0.04</td><td>0.00</td><td>1.9531</td><td>-</td><td>-</td><td>44.53 KB</td><td>0.000</td>
-</tr><tr><td>&#39;MemoryStreamSlim set loop count fill and read&#39;</td><td>983040</td><td>False</td><td>1,106.9 &mu;s</td><td>10.09 &mu;s</td><td>9.44 &mu;s</td><td>0.04</td><td>0.00</td><td>-</td><td>-</td><td>-</td><td>14.06 KB</td><td>0.000</td>
-</tr><tr><td>&#39;MemoryStream set loop count fill and read&#39;</td><td>983040</td><td>True</td><td>27,963.6 &mu;s</td><td>162.98 &mu;s</td><td>152.45 &mu;s</td><td>1.00</td><td>0.01</td><td>24984.3750</td><td>24984.3750</td><td>24984.3750</td><td>102221.88 KB</td><td>1.000</td>
-</tr><tr><td>&#39;RecyclableMemoryStream set loop count fill and read&#39;</td><td>983040</td><td>True</td><td>1,598.9 &mu;s</td><td>12.37 &mu;s</td><td>11.57 &mu;s</td><td>0.06</td><td>0.00</td><td>1.9531</td><td>-</td><td>-</td><td>44.53 KB</td><td>0.000</td>
-</tr><tr><td>&#39;MemoryStreamSlim set loop count fill and read&#39;</td><td>983040</td><td>True</td><td>1,601.7 &mu;s</td><td>6.52 &mu;s</td><td>6.10 &mu;s</td><td>0.06</td><td>0.00</td><td>-</td><td>-</td><td>-</td><td>14.06 KB</td><td>0.000</td>
-</tr><tr><td>&#39;MemoryStream set loop count fill and read&#39;</td><td>16777216</td><td>False</td><td>286,839.6 &mu;s</td><td>5,457.03 &mu;s</td><td>5,104.51 &mu;s</td><td>1.00</td><td>0.02</td><td>26500.0000</td><td>26500.0000</td><td>26500.0000</td><td>1638226.95 KB</td><td>1.000</td>
-</tr><tr><td>&#39;RecyclableMemoryStream set loop count fill and read&#39;</td><td>16777216</td><td>False</td><td>28,676.8 &mu;s</td><td>243.81 &mu;s</td><td>216.13 &mu;s</td><td>0.10</td><td>0.00</td><td>187.5000</td><td>-</td><td>-</td><td>3635.17 KB</td><td>0.002</td>
-</tr><tr><td>&#39;MemoryStreamSlim set loop count fill and read&#39;</td><td>16777216</td><td>False</td><td>28,903.9 &mu;s</td><td>546.07 &mu;s</td><td>536.32 &mu;s</td><td>0.10</td><td>0.00</td><td>-</td><td>-</td><td>-</td><td>14.07 KB</td><td>0.000</td>
-</tr><tr><td>&#39;MemoryStream set loop count fill and read&#39;</td><td>16777216</td><td>True</td><td>286,631.8 &mu;s</td><td>5,395.00 &mu;s</td><td>5,540.27 &mu;s</td><td>1.00</td><td>0.03</td><td>26500.0000</td><td>26500.0000</td><td>26500.0000</td><td>1638226.95 KB</td><td>1.000</td>
-</tr><tr><td>&#39;RecyclableMemoryStream set loop count fill and read&#39;</td><td>16777216</td><td>True</td><td>43,031.9 &mu;s</td><td>659.16 &mu;s</td><td>616.58 &mu;s</td><td>0.15</td><td>0.00</td><td>166.6667</td><td>-</td><td>-</td><td>3635.19 KB</td><td>0.002</td>
-</tr><tr><td>&#39;MemoryStreamSlim set loop count fill and read&#39;</td><td>16777216</td><td>True</td><td>43,799.9 &mu;s</td><td>813.42 &mu;s</td><td>760.87 &mu;s</td><td>0.15</td><td>0.00</td><td>-</td><td>-</td><td>-</td><td>14.09 KB</td><td>0.000</td>
-</tr><tr><td>&#39;MemoryStream set loop count fill and read&#39;</td><td>100597760</td><td>False</td><td>1,832,740.6 &mu;s</td><td>11,416.71 &mu;s</td><td>10,679.20 &mu;s</td><td>1.00</td><td>0.01</td><td>29000.0000</td><td>29000.0000</td><td>29000.0000</td><td>13107031.48 KB</td><td>1.000</td>
-</tr><tr><td>&#39;RecyclableMemoryStream set loop count fill and read&#39;</td><td>100597760</td><td>False</td><td>476,531.0 &mu;s</td><td>7,833.31 &mu;s</td><td>6,944.03 &mu;s</td><td>0.26</td><td>0.00</td><td>6000.0000</td><td>-</td><td>-</td><td>117458.98 KB</td><td>0.009</td>
-</tr><tr><td>&#39;MemoryStreamSlim set loop count fill and read&#39;</td><td>100597760</td><td>False</td><td>488,011.2 &mu;s</td><td>9,477.24 &mu;s</td><td>15,031.90 &mu;s</td><td>0.27</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>14.45 KB</td><td>0.000</td>
-</tr><tr><td>&#39;MemoryStream set loop count fill and read&#39;</td><td>100597760</td><td>True</td><td>1,838,209.1 &mu;s</td><td>12,033.64 &mu;s</td><td>11,256.28 &mu;s</td><td>1.00</td><td>0.01</td><td>29000.0000</td><td>29000.0000</td><td>29000.0000</td><td>13107031.48 KB</td><td>1.000</td>
-</tr><tr><td>&#39;RecyclableMemoryStream set loop count fill and read&#39;</td><td>100597760</td><td>True</td><td>720,765.8 &mu;s</td><td>8,566.87 &mu;s</td><td>7,153.73 &mu;s</td><td>0.39</td><td>0.00</td><td>6000.0000</td><td>-</td><td>-</td><td>117458.98 KB</td><td>0.009</td>
-</tr><tr><td>&#39;MemoryStreamSlim set loop count fill and read&#39;</td><td>100597760</td><td>True</td><td>732,584.7 &mu;s</td><td>14,201.95 &mu;s</td><td>14,584.35 &mu;s</td><td>0.40</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>14.45 KB</td><td>0.000</td>
-</tr><tr><td>&#39;MemoryStream set loop count fill and read&#39;</td><td>209715200</td><td>False</td><td>3,492,777.9 &mu;s</td><td>23,414.05 &mu;s</td><td>21,901.52 &mu;s</td><td>1.00</td><td>0.01</td><td>30000.0000</td><td>30000.0000</td><td>30000.0000</td><td>26214232.98 KB</td><td>1.000</td>
-</tr><tr><td>&#39;RecyclableMemoryStream set loop count fill and read&#39;</td><td>209715200</td><td>False</td><td>1,089,124.5 &mu;s</td><td>21,741.38 &mu;s</td><td>22,326.79 &mu;s</td><td>0.31</td><td>0.01</td><td>27000.0000</td><td>4000.0000</td><td>-</td><td>505322.72 KB</td><td>0.019</td>
-</tr><tr><td>&#39;MemoryStreamSlim set loop count fill and read&#39;</td><td>209715200</td><td>False</td><td>1,080,529.2 &mu;s</td><td>21,327.09 &mu;s</td><td>20,946.06 &mu;s</td><td>0.31</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>14.45 KB</td><td>0.000</td>
-</tr><tr><td>&#39;MemoryStream set loop count fill and read&#39;</td><td>209715200</td><td>True</td><td>3,469,517.3 &mu;s</td><td>19,402.92 &mu;s</td><td>18,149.51 &mu;s</td><td>1.00</td><td>0.01</td><td>30000.0000</td><td>30000.0000</td><td>30000.0000</td><td>26214232.98 KB</td><td>1.000</td>
-</tr><tr><td>&#39;RecyclableMemoryStream set loop count fill and read&#39;</td><td>209715200</td><td>True</td><td>1,611,836.6 &mu;s</td><td>22,138.52 &mu;s</td><td>20,708.38 &mu;s</td><td>0.46</td><td>0.01</td><td>27000.0000</td><td>4000.0000</td><td>-</td><td>505322.72 KB</td><td>0.019</td>
-</tr><tr><td>&#39;MemoryStreamSlim set loop count fill and read&#39;</td><td>209715200</td><td>True</td><td>1,615,335.8 &mu;s</td><td>29,871.95 &mu;s</td><td>27,942.24 &mu;s</td><td>0.47</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>14.45 KB</td><td>0.000</td>
+</thead><tbody><tr><td>&#39;MemoryStream set loop count fill and read&#39;</td><td>131072</td><td>False</td><td>1,006.36 &mu;s</td><td>5.858 &mu;s</td><td>5.193 &mu;s</td><td>1.00</td><td>0.01</td><td>1041.0156</td><td>1041.0156</td><td>1041.0156</td><td>6305.42 KB</td><td>1.000</td>
+</tr><tr><td>&#39;RecyclableMemoryStream set loop count fill and read&#39;</td><td>131072</td><td>False</td><td>70.82 &mu;s</td><td>0.134 &mu;s</td><td>0.104 &mu;s</td><td>0.07</td><td>0.00</td><td>0.3662</td><td>-</td><td>-</td><td>6.84 KB</td><td>0.001</td>
+</tr><tr><td>&#39;MemoryStreamSlim set loop count fill and read&#39;</td><td>131072</td><td>False</td><td>88.99 &mu;s</td><td>0.432 &mu;s</td><td>0.383 &mu;s</td><td>0.09</td><td>0.00</td><td>0.3662</td><td>-</td><td>-</td><td>7.42 KB</td><td>0.001</td>
+</tr><tr><td>&#39;MemoryStream set loop count fill and read&#39;</td><td>131072</td><td>True</td><td>1,007.39 &mu;s</td><td>4.353 &mu;s</td><td>3.859 &mu;s</td><td>1.00</td><td>0.01</td><td>1041.0156</td><td>1041.0156</td><td>1041.0156</td><td>6305.42 KB</td><td>1.000</td>
+</tr><tr><td>&#39;RecyclableMemoryStream set loop count fill and read&#39;</td><td>131072</td><td>True</td><td>106.40 &mu;s</td><td>0.610 &mu;s</td><td>0.541 &mu;s</td><td>0.11</td><td>0.00</td><td>0.3662</td><td>-</td><td>-</td><td>6.84 KB</td><td>0.001</td>
+</tr><tr><td>&#39;MemoryStreamSlim set loop count fill and read&#39;</td><td>131072</td><td>True</td><td>135.00 &mu;s</td><td>0.501 &mu;s</td><td>0.444 &mu;s</td><td>0.13</td><td>0.00</td><td>0.2441</td><td>-</td><td>-</td><td>7.42 KB</td><td>0.001</td>
+</tr><tr><td>&#39;MemoryStream set loop count fill and read&#39;</td><td>16777216</td><td>False</td><td>134,769.13 &mu;s</td><td>2,638.109 &mu;s</td><td>4,479.710 &mu;s</td><td>1.00</td><td>0.05</td><td>37600.0000</td><td>37600.0000</td><td>37600.0000</td><td>819121.24 KB</td><td>1.000</td>
+</tr><tr><td>&#39;RecyclableMemoryStream set loop count fill and read&#39;</td><td>16777216</td><td>False</td><td>15,959.39 &mu;s</td><td>168.795 &mu;s</td><td>157.891 &mu;s</td><td>0.12</td><td>0.00</td><td>93.7500</td><td>-</td><td>-</td><td>1817.59 KB</td><td>0.002</td>
+</tr><tr><td>&#39;MemoryStreamSlim set loop count fill and read&#39;</td><td>16777216</td><td>False</td><td>15,314.08 &mu;s</td><td>139.620 &mu;s</td><td>130.601 &mu;s</td><td>0.11</td><td>0.00</td><td>-</td><td>-</td><td>-</td><td>7.43 KB</td><td>0.000</td>
+</tr><tr><td>&#39;MemoryStream set loop count fill and read&#39;</td><td>16777216</td><td>True</td><td>134,475.88 &mu;s</td><td>1,085.410 &mu;s</td><td>962.188 &mu;s</td><td>1.00</td><td>0.01</td><td>37600.0000</td><td>37600.0000</td><td>37600.0000</td><td>819121.3 KB</td><td>1.000</td>
+</tr><tr><td>&#39;RecyclableMemoryStream set loop count fill and read&#39;</td><td>16777216</td><td>True</td><td>23,108.79 &mu;s</td><td>212.224 &mu;s</td><td>188.131 &mu;s</td><td>0.17</td><td>0.00</td><td>93.7500</td><td>-</td><td>-</td><td>1817.59 KB</td><td>0.002</td>
+</tr><tr><td>&#39;MemoryStreamSlim set loop count fill and read&#39;</td><td>16777216</td><td>True</td><td>22,486.14 &mu;s</td><td>191.408 &mu;s</td><td>169.678 &mu;s</td><td>0.17</td><td>0.00</td><td>-</td><td>-</td><td>-</td><td>7.43 KB</td><td>0.000</td>
+</tr><tr><td>&#39;MemoryStream set loop count fill and read&#39;</td><td>209715200</td><td>False</td><td>1,643,271.96 &mu;s</td><td>19,251.826 &mu;s</td><td>18,008.170 &mu;s</td><td>1.00</td><td>0.02</td><td>18000.0000</td><td>18000.0000</td><td>18000.0000</td><td>13107117.38 KB</td><td>1.000</td>
+</tr><tr><td>&#39;RecyclableMemoryStream set loop count fill and read&#39;</td><td>209715200</td><td>False</td><td>532,794.46 &mu;s</td><td>10,466.152 &mu;s</td><td>14,672.085 &mu;s</td><td>0.32</td><td>0.01</td><td>13000.0000</td><td>2000.0000</td><td>-</td><td>252661.72 KB</td><td>0.019</td>
+</tr><tr><td>&#39;MemoryStreamSlim set loop count fill and read&#39;</td><td>209715200</td><td>False</td><td>498,798.79 &mu;s</td><td>9,761.817 &mu;s</td><td>14,000.107 &mu;s</td><td>0.30</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>7.81 KB</td><td>0.000</td>
+</tr><tr><td>&#39;MemoryStream set loop count fill and read&#39;</td><td>209715200</td><td>True</td><td>1,632,078.79 &mu;s</td><td>18,444.671 &mu;s</td><td>17,253.157 &mu;s</td><td>1.00</td><td>0.01</td><td>18000.0000</td><td>18000.0000</td><td>18000.0000</td><td>13107117.66 KB</td><td>1.000</td>
+</tr><tr><td>&#39;RecyclableMemoryStream set loop count fill and read&#39;</td><td>209715200</td><td>True</td><td>800,268.48 &mu;s</td><td>14,847.050 &mu;s</td><td>13,887.940 &mu;s</td><td>0.49</td><td>0.01</td><td>13000.0000</td><td>2000.0000</td><td>-</td><td>252661.39 KB</td><td>0.019</td>
+</tr><tr><td>&#39;MemoryStreamSlim set loop count fill and read&#39;</td><td>209715200</td><td>True</td><td>784,353.33 &mu;s</td><td>15,166.048 &mu;s</td><td>18,054.102 &mu;s</td><td>0.48</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>7.81 KB</td><td>0.000</td>
 </tr></tbody></table>
 </body>
 </html>

@@ -20,23 +20,14 @@ namespace MemoryStreamBenchmarks;
 public class WrapperFillAndReadThroughputBenchmarks
 {
     /// <summary>
-    /// Helper method to compute the loop count based on the data size
+    /// The specifically set loop iteration count for the benchmarks
     /// </summary>
-    /// <param name="dataSize"></param>
-    /// <returns></returns>
-    private static int ComputeLoopCount (int dataSize)
-    {
-        return (int)Math.Max(10, Math.Min(200_000, 0x8000_0000 / Math.Pow(1.96, Math.Log(dataSize, 2))));
-    }
+    private int? _setLoopCount;
 
     /// <summary>
     /// The size of the segments to fill and read in.
     /// </summary>
     private const int SegmentSize = 0x1000;  // 4KB
-    /// <summary>
-    /// The specifically set loop iteration count for the benchmarks
-    /// </summary>
-    private int? _setLoopCount;
 
     /// <summary>
     /// The common helper utility for processing stream benchmarks
@@ -59,16 +50,11 @@ public class WrapperFillAndReadThroughputBenchmarks
     private byte[] _wrappedBuffer = [];
 
     /// <summary>
-    /// The options to use for the MemoryStreamSlim instances
-    /// </summary>
-    private MemoryStreamSlimOptions MemoryStreamSlimOptions { [DebuggerStepThrough] get; [DebuggerStepThrough] set; } = new();
-
-    /// <summary>
     /// The number of loop iterations to perform for each benchmark
     /// </summary>
     public int LoopCount
     {
-        get => _setLoopCount ?? ComputeLoopCount(DataSize);
+        get => _setLoopCount ?? GetDataSizeLoopCount(DataSize);
         set => _setLoopCount = (value < 1) ? null : value;
     }
 
@@ -77,12 +63,6 @@ public class WrapperFillAndReadThroughputBenchmarks
     /// </summary>
     [Params(0x2_0000, 0xF_0000, 0x100_0000, 0x5FF_0000, 0xC80_0000)]
     public int DataSize { [DebuggerStepThrough] get; [DebuggerStepThrough] set; } = 0x100_0000;
-
-    /// <summary>
-    /// Indicates if the stream should be configured to zero out buffers when released
-    /// </summary>
-    [ParamsAllValues]
-    public bool ZeroBuffers { [DebuggerStepThrough] get; [DebuggerStepThrough] set; } = true;
 
     /// <summary>
     /// The different ways to create the stream instances, by specifying capacity or not
@@ -102,6 +82,28 @@ public class WrapperFillAndReadThroughputBenchmarks
     //[ParamsAllValues]
     public bool UseNativeMemory { [DebuggerStepThrough] get; [DebuggerStepThrough] set; } = true;
 
+    /// <summary>
+    /// Helper method to get the loop count based on the data size
+    /// </summary>
+    /// <param name="dataSize">
+    /// The data size of the benchmark running.
+    /// </param>
+    /// <returns>
+    /// The number of loops that should be used for a given benchmark operation run.
+    /// </returns>
+    /// <remarks>
+    /// This is largely for providing the ability in the future if needed and/or to 
+    /// allow each derived benchmark class the ability to override the default.
+    /// </remarks>
+    protected virtual int GetDataSizeLoopCount(long dataSize) => 5;
+
+    /// <summary>
+    /// Common global setup for computed values.
+    /// </summary>
+    protected void DoCommonGlobalSetup()
+    {
+        _setLoopCount ??= GetDataSizeLoopCount(DataSize);
+    }
     //--------------------------------------------------------------------------------
     /// <summary>
     /// Processes the bulk fill and read operation on the stream
@@ -124,6 +126,7 @@ public class WrapperFillAndReadThroughputBenchmarks
     [GlobalSetup]
     public void GlobalSetup ()
     {
+        DoCommonGlobalSetup();
         MemoryStreamSlim.UseNativeLargeMemoryBuffers = UseNativeMemory;
         // Only need to allocate the buffers once, and we want the same data for all benchmarks
         if (_fillData is not null)
@@ -134,7 +137,6 @@ public class WrapperFillAndReadThroughputBenchmarks
         _wrappedBuffer = new byte[DataSize];
         TestData.GetRandomBytes(TestData.SecureRandomSource, _fillData, SegmentSize);
         TestData.GetRandomBytes(TestData.SecureRandomSource, _wrappedBuffer, DataSize);
-        MemoryStreamSlimOptions = new MemoryStreamSlimOptions() { ZeroBufferBehavior = ZeroBuffers ? MemoryStreamSlimZeroBufferOption.OnRelease : MemoryStreamSlimZeroBufferOption.None };
     }
     //--------------------------------------------------------------------------------
     /// <summary>
@@ -152,8 +154,10 @@ public class WrapperFillAndReadThroughputBenchmarks
     [Benchmark(Baseline = true, Description = "MemoryStream array wrapper fill and read")]
     public void UseMemoryStream ()
     {
+        // Capture the parameters once locally
         int processDataLength = DataSize;
-        for (int loopIndex = 0; loopIndex < LoopCount; loopIndex++)
+        int loopCount = LoopCount;
+        for (int loopIndex = 0; loopIndex < loopCount; loopIndex++)
         {
             using MemoryStream stream = new MemoryStream(_wrappedBuffer);
             ProcessStream(stream, processDataLength);
@@ -166,11 +170,13 @@ public class WrapperFillAndReadThroughputBenchmarks
     [Benchmark(Description = "RecyclableMemoryStream array wrapper fill and read")]
     public void UseRecyclableMemoryStream ()
     {
+        // Capture the parameters once locally
         int processDataLength = DataSize;
-        for (int loopIndex = 0; loopIndex < LoopCount; loopIndex++)
+        int loopCount = LoopCount;
+        for (int loopIndex = 0; loopIndex < loopCount; loopIndex++)
         {
             using RecyclableMemoryStream stream =
-                BenchMarkHelpers.GetMemoryStreamManager(ZeroBuffers, ExponentialBufferGrowth).GetStream("benchmark", _wrappedBuffer, 0, processDataLength);
+                BenchMarkHelpers.GetMemoryStreamManager(false, ExponentialBufferGrowth).GetStream("benchmark", _wrappedBuffer, 0, processDataLength);
             ProcessStream(stream, processDataLength);
         }
     }
@@ -181,8 +187,10 @@ public class WrapperFillAndReadThroughputBenchmarks
     [Benchmark(Description = "MemoryStreamSlim array wrapper fill and read")]
     public void UseMemoryStreamSlim ()
     {
+        // Capture the parameters once locally
         int processDataLength = DataSize;
-        for (int loopIndex = 0; loopIndex < LoopCount; loopIndex++)
+        int loopCount = LoopCount;
+        for (int loopIndex = 0; loopIndex < loopCount; loopIndex++)
         {
             using MemoryStreamSlim stream =
                 MemoryStreamSlim.Create(_wrappedBuffer, 0, processDataLength);

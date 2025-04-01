@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='utf-8' />
+<title>MemoryStreamBenchmarks.DeflateCompressionThroughputBenchmarks-20250413-213238</title>
+
+<style type="text/css">
+	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
+	td, th { padding: 6px 13px; border: 1px solid #ddd; text-align: right; }
+	tr { background-color: #fff; border-top: 1px solid #ccc; }
+	tr:nth-child(even) { background: #f8f8f8; }
+</style>
+</head>
+<body>
+<pre><code>
+BenchmarkDotNet v0.14.0, Windows 11 (10.0.26100.3775)
+Intel Core i9-14900K, 1 CPU, 32 logical and 24 physical cores
+.NET SDK 9.0.203
+  [Host]     : .NET 9.0.4 (9.0.425.16305), X64 RyuJIT AVX2
+  DefaultJob : .NET 9.0.4 (9.0.425.16305), X64 RyuJIT AVX2
+</code></pre>
+<pre><code></code></pre>
+
+<table>
+<thead><tr><th>Method                                </th><th>DataSize</th><th>CapacityOnCreate</th><th>Mean   </th><th>Error</th><th>StdDev</th><th>Ratio</th><th>Gen0</th><th>Gen1</th><th>Gen2</th><th>Allocated</th><th>Alloc Ratio</th>
+</tr>
+</thead><tbody><tr><td>&#39;MemoryStream Deflate Compression&#39;</td><td>131072</td><td>False</td><td>10.161 ms</td><td>0.0373 ms</td><td>0.0349 ms</td><td>1.00</td><td>609.3750</td><td>609.3750</td><td>609.3750</td><td>2522.4 KB</td><td>1.000</td>
+</tr><tr><td>&#39;RecyclableMemoryStream Deflate Compression&#39;</td><td>131072</td><td>False</td><td>9.501 ms</td><td>0.0369 ms</td><td>0.0327 ms</td><td>0.94</td><td>-</td><td>-</td><td>-</td><td>2.51 KB</td><td>0.001</td>
+</tr><tr><td>&#39;MemoryStreamSlim Deflate Compression&#39;</td><td>131072</td><td>False</td><td>9.590 ms</td><td>0.0813 ms</td><td>0.0760 ms</td><td>0.94</td><td>-</td><td>-</td><td>-</td><td>2.47 KB</td><td>0.001</td>
+</tr><tr><td>&#39;MemoryStream Deflate Compression&#39;</td><td>131072</td><td>True</td><td>10.061 ms</td><td>0.0383 ms</td><td>0.0340 ms</td><td>1.00</td><td>609.3750</td><td>609.3750</td><td>609.3750</td><td>1921.93 KB</td><td>1.000</td>
+</tr><tr><td>&#39;RecyclableMemoryStream Deflate Compression&#39;</td><td>131072</td><td>True</td><td>9.585 ms</td><td>0.0732 ms</td><td>0.0685 ms</td><td>0.95</td><td>-</td><td>-</td><td>-</td><td>2.51 KB</td><td>0.001</td>
+</tr><tr><td>&#39;MemoryStreamSlim Deflate Compression&#39;</td><td>131072</td><td>True</td><td>9.590 ms</td><td>0.0809 ms</td><td>0.0756 ms</td><td>0.95</td><td>-</td><td>-</td><td>-</td><td>2.47 KB</td><td>0.001</td>
+</tr><tr><td>&#39;MemoryStream Deflate Compression&#39;</td><td>16777216</td><td>False</td><td>1,319.166 ms</td><td>7.5423 ms</td><td>7.0551 ms</td><td>1.00</td><td>3000.0000</td><td>3000.0000</td><td>3000.0000</td><td>327645.48 KB</td><td>1.000</td>
+</tr><tr><td>&#39;RecyclableMemoryStream Deflate Compression&#39;</td><td>16777216</td><td>False</td><td>1,274.450 ms</td><td>3.9225 ms</td><td>3.6691 ms</td><td>0.97</td><td>-</td><td>-</td><td>-</td><td>365.37 KB</td><td>0.001</td>
+</tr><tr><td>&#39;MemoryStreamSlim Deflate Compression&#39;</td><td>16777216</td><td>False</td><td>1,278.473 ms</td><td>3.6578 ms</td><td>3.2425 ms</td><td>0.97</td><td>-</td><td>-</td><td>-</td><td>2.9 KB</td><td>0.000</td>
+</tr><tr><td>&#39;MemoryStream Deflate Compression&#39;</td><td>16777216</td><td>True</td><td>1,295.906 ms</td><td>3.4763 ms</td><td>3.2518 ms</td><td>1.00</td><td>1000.0000</td><td>1000.0000</td><td>1000.0000</td><td>245762.62 KB</td><td>1.000</td>
+</tr><tr><td>&#39;RecyclableMemoryStream Deflate Compression&#39;</td><td>16777216</td><td>True</td><td>1,277.056 ms</td><td>3.2037 ms</td><td>2.8400 ms</td><td>0.99</td><td>-</td><td>-</td><td>-</td><td>28.3 KB</td><td>0.000</td>
+</tr><tr><td>&#39;MemoryStreamSlim Deflate Compression&#39;</td><td>16777216</td><td>True</td><td>1,278.826 ms</td><td>4.2683 ms</td><td>3.9926 ms</td><td>0.99</td><td>-</td><td>-</td><td>-</td><td>2.9 KB</td><td>0.000</td>
+</tr><tr><td>&#39;MemoryStream Deflate Compression&#39;</td><td>209715200</td><td>False</td><td>16,143.340 ms</td><td>39.1144 ms</td><td>36.5876 ms</td><td>1.00</td><td>3000.0000</td><td>3000.0000</td><td>3000.0000</td><td>2621405.55 KB</td><td>1.000</td>
+</tr><tr><td>&#39;RecyclableMemoryStream Deflate Compression&#39;</td><td>209715200</td><td>False</td><td>15,904.731 ms</td><td>41.4735 ms</td><td>36.7652 ms</td><td>0.99</td><td>2000.0000</td><td>-</td><td>-</td><td>50533.79 KB</td><td>0.019</td>
+</tr><tr><td>&#39;MemoryStreamSlim Deflate Compression&#39;</td><td>209715200</td><td>False</td><td>15,864.483 ms</td><td>35.5313 ms</td><td>33.2360 ms</td><td>0.98</td><td>-</td><td>-</td><td>-</td><td>3.18 KB</td><td>0.000</td>
+</tr><tr><td>&#39;MemoryStream Deflate Compression&#39;</td><td>209715200</td><td>True</td><td>16,053.706 ms</td><td>25.8005 ms</td><td>22.8715 ms</td><td>1.00</td><td>1000.0000</td><td>1000.0000</td><td>1000.0000</td><td>3072002.62 KB</td><td>1.000</td>
+</tr><tr><td>&#39;RecyclableMemoryStream Deflate Compression&#39;</td><td>209715200</td><td>True</td><td>15,884.394 ms</td><td>42.9453 ms</td><td>40.1711 ms</td><td>0.99</td><td>-</td><td>-</td><td>-</td><td>315.52 KB</td><td>0.000</td>
+</tr><tr><td>&#39;MemoryStreamSlim Deflate Compression&#39;</td><td>209715200</td><td>True</td><td>15,849.313 ms</td><td>43.2807 ms</td><td>40.4848 ms</td><td>0.99</td><td>-</td><td>-</td><td>-</td><td>2.9 KB</td><td>0.000</td>
+</tr></tbody></table>
+</body>
+</html>

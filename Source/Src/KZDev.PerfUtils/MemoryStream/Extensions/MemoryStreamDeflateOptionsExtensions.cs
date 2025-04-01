@@ -14,8 +14,8 @@ public static class MemoryStreamDeflateOptionsExtensions
 #if NET9_0_OR_GREATER
     //--------------------------------------------------------------------------------
     /// <summary>
-    /// Sets the <see cref="MemoryStreamDeflateOptions.CompressionStrategy"/> property on the
-    /// <see cref="MemoryStreamDeflateOptions"/> instance.
+    /// Sets the <see cref="MemoryStreamZLibBaseOptions.CompressionStrategy"/> property on the
+    /// <see cref="MemoryStreamDeflateOptions"/> instance <b>[Available in .NET 9.0 and later only]</b>.
     /// </summary>
     /// <param name="options">
     /// The <see cref="MemoryStreamDeflateOptions"/> instance to modify.
@@ -34,7 +34,7 @@ public static class MemoryStreamDeflateOptionsExtensions
 #endif
     //--------------------------------------------------------------------------------
     /// <summary>
-    /// Sets the <see cref="MemoryStreamDeflateOptions.CompressionLevel"/> property on the
+    /// Sets the <see cref="MemoryStreamZLibBaseOptions.CompressionLevel"/> property on the
     /// <see cref="MemoryStreamDeflateOptions"/> instance.
     /// </summary>
     /// <param name="options">
@@ -56,7 +56,7 @@ public static class MemoryStreamDeflateOptionsExtensions
     //--------------------------------------------------------------------------------
     /// <summary>
     /// Sets the <see cref="MemoryStreamSlimOptions.ZeroBufferBehavior"/> property on the
-    /// <see cref="MemoryStreamDeflateOptions.NewStreamOptions"/> property value.
+    /// <see cref="MemoryStreamZLibBaseOptions.NewStreamOptions"/> property value.
     /// </summary>
     /// <param name="options">
     /// The <see cref="MemoryStreamDeflateOptions"/> instance to modify.
@@ -66,7 +66,7 @@ public static class MemoryStreamDeflateOptionsExtensions
     /// </param>
     /// <returns>
     /// A new <see cref="MemoryStreamDeflateOptions"/> instance with the specified zero buffer behavior
-    /// applied to the <see cref="MemoryStreamDeflateOptions.NewStreamOptions"/> property value.
+    /// applied to the <see cref="MemoryStreamZLibBaseOptions.NewStreamOptions"/> property value.
     /// </returns>
     public static MemoryStreamDeflateOptions WithZeroBufferBehavior(this MemoryStreamDeflateOptions options,
         MemoryStreamSlimZeroBufferOption zeroBufferBehavior) =>

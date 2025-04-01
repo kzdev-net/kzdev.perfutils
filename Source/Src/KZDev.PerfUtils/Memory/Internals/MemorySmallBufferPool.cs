@@ -3,7 +3,6 @@
 
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-
 using KZDev.PerfUtils.Helpers;
 
 namespace KZDev.PerfUtils.Internals;

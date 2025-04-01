@@ -394,6 +394,7 @@ public partial class UsingMemoryStreamSlim
     /// </summary>
     [Fact(Explicit = true)]
     [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.LongRun)]
+    [Trait(TestConstants.TestTrait.TestMode, TestConstants.TestMode.Explicit)]
     public async Task UsingMemoryStreamSlim_GetArray_ReturnsCorrectData ()
     {
         int[] testDataSizes = GenerateTestDataSizes(5000, 0xF_FFFF).ToArray();
@@ -721,6 +722,7 @@ public partial class UsingMemoryStreamSlim
     /// </summary>
     [Fact(Explicit = true)]
     [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.LongRun)]
+    [Trait(TestConstants.TestTrait.TestMode, TestConstants.TestMode.Explicit)]
     public async Task UsingMemoryStreamSlim_CopyToLargerStream_OnManyThreads_CopiesCorrectDataAsync ()
     {
         int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
@@ -840,6 +842,7 @@ public partial class UsingMemoryStreamSlim
     /// </summary>
     [Fact(Explicit = true)]
     [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.LongRun)]
+    [Trait(TestConstants.TestTrait.TestMode, TestConstants.TestMode.Explicit)]
     public async Task UsingMemoryStreamSlim_CopyToLargerAsyncStream_OnManyThreads_CopiesCorrectDataAsync ()
     {
         int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
@@ -1225,6 +1228,7 @@ public partial class UsingMemoryStreamSlim
     /// </summary>
     [Fact(Explicit = true)]
     [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.LongRun)]
+    [Trait(TestConstants.TestTrait.TestMode, TestConstants.TestMode.Explicit)]
     public void UsingMemoryStreamSlim_WriteWithChaos_WritesCorrectData ()
     {
         int[] testDataSizes = GenerateTestDataSizes(MemorySegmentedBufferGroup.StandardBufferSegmentSize, MemorySegmentedBufferGroup.StandardBufferSegmentSize * 20).ToArray();
@@ -1379,6 +1383,7 @@ public partial class UsingMemoryStreamSlim
     /// </summary>
     [Fact(Explicit = true)]
     [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.LongRun)]
+    [Trait(TestConstants.TestTrait.TestMode, TestConstants.TestMode.Explicit)]
     public async Task UsingMemoryStreamSlim_WriteWithChaos_OnManyThreads_WritesCorrectData ()
     {
         int[] testDataSizes = GenerateTestDataSizes(MemorySegmentedBufferGroup.StandardBufferSegmentSize, MemorySegmentedBufferGroup.StandardBufferSegmentSize * 20).ToArray();

@@ -681,6 +681,7 @@ public class UsingMemorySegmentedBufferGroupWithUsedPatterns : MemorySegmentedBu
     /// </summary>
     [Fact(Explicit = true)]
     [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.LongRun)]
+    [Trait(TestConstants.TestTrait.TestMode, TestConstants.TestMode.Explicit)]
     public void UsingMemorySegmentedBufferGroup_GetRemainingBuffers_WithRandomUsedPatterns_GetsProperBuffers ()
     {
         for (int testLoop = 0; testLoop < 200; testLoop++)
@@ -778,6 +779,7 @@ public class UsingMemorySegmentedBufferGroupWithUsedPatterns : MemorySegmentedBu
     /// </summary>
     [Fact(Explicit = true)]
     [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.LongRun)]
+    [Trait(TestConstants.TestTrait.TestMode, TestConstants.TestMode.Explicit)]
     public void UsingMemorySegmentedBufferGroup_GetRemainingBuffers_WithRandomUsedBlockFlags_GetsProperBuffers ()
     {
         const int BlockFlagSetTestCount = 9;
@@ -1288,6 +1290,7 @@ public class UsingMemorySegmentedBufferGroupWithUsedPatterns : MemorySegmentedBu
     /// </summary>
     [Fact(Explicit = true)]
     [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.LongRun)]
+    [Trait(TestConstants.TestTrait.TestMode, TestConstants.TestMode.Explicit)]
     public void UsingMemorySegmentedBufferGroup_GetPreferredRemainingBuffers_WithRandomUsedPatterns_GetsProperBuffers ()
     {
         for (int testLoop = 0; testLoop < 200; testLoop++)
@@ -1390,6 +1393,7 @@ public class UsingMemorySegmentedBufferGroupWithUsedPatterns : MemorySegmentedBu
     /// </summary>
     [Fact(Explicit = true)]
     [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.LongRun)]
+    [Trait(TestConstants.TestTrait.TestMode, TestConstants.TestMode.Explicit)]
     public void UsingMemorySegmentedBufferGroup_GetPreferredRemainingBuffers_WithRandomUsedBlockFlags_GetsProperBuffers ()
     {
         const int BlockFlagSetTestCount = 9;
@@ -1474,6 +1478,7 @@ public class UsingMemorySegmentedBufferGroupWithUsedPatterns : MemorySegmentedBu
     /// </summary>
     [Fact(Explicit = true)]
     [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.LongRun)]
+    [Trait(TestConstants.TestTrait.TestMode, TestConstants.TestMode.Explicit)]
     public void UsingMemorySegmentedBufferGroup_GetRandomBuffers_WithRandomUsedBlockFlags_GetsProperBuffers ()
     {
         const int blockFlagSetTestCount = 9;
@@ -1604,6 +1609,7 @@ public class UsingMemorySegmentedBufferGroupWithUsedPatterns : MemorySegmentedBu
     /// </summary>
     [Fact(Explicit = true)]
     [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.LongRun)]
+    [Trait(TestConstants.TestTrait.TestMode, TestConstants.TestMode.Explicit)]
     public void UsingMemorySegmentedBufferGroup_GetRandomBuffers_WithRandomUsedPatterns_GetsProperBuffers ()
     {
         const int BlockFlagSetTestCount = 9;

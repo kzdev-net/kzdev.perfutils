@@ -15,6 +15,11 @@
         <Product>KZDev Performance Utilities</Product>
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     </PropertyGroup>
+    <PropertyGroup>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <UseArtifactsOutput>true</UseArtifactsOutput>
+        <ArtifactsPath>$(MSBuildThisFileDirectory)..\..\artifacts</ArtifactsPath>
+    </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)'=='Package' ">
         <IsPacking>true</IsPacking>
     </PropertyGroup>

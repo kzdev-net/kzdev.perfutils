@@ -14,8 +14,8 @@ public static class MemoryStreamZLibOptionsExtensions
 #if NET9_0_OR_GREATER
     //--------------------------------------------------------------------------------
     /// <summary>
-    /// Sets the <see cref="MemoryStreamZLibOptions.CompressionStrategy"/> property on the
-    /// <see cref="MemoryStreamZLibOptions"/> instance.
+    /// Sets the <see cref="MemoryStreamZLibBaseOptions.CompressionStrategy"/> property on the
+    /// <see cref="MemoryStreamZLibOptions"/> instance <b>[Available in .NET 9.0 and later only]</b>.
     /// </summary>
     /// <param name="options">
     /// The <see cref="MemoryStreamZLibOptions"/> instance to modify.
@@ -34,7 +34,7 @@ public static class MemoryStreamZLibOptionsExtensions
 #endif
     //--------------------------------------------------------------------------------
     /// <summary>
-    /// Sets the <see cref="MemoryStreamZLibOptions.CompressionLevel"/> property on the
+    /// Sets the <see cref="MemoryStreamZLibBaseOptions.CompressionLevel"/> property on the
     /// <see cref="MemoryStreamZLibOptions"/> instance.
     /// </summary>
     /// <param name="options">
@@ -56,7 +56,7 @@ public static class MemoryStreamZLibOptionsExtensions
     //--------------------------------------------------------------------------------
     /// <summary>
     /// Sets the <see cref="MemoryStreamSlimOptions.ZeroBufferBehavior"/> property on the
-    /// <see cref="MemoryStreamZLibOptions.NewStreamOptions"/> property value.
+    /// <see cref="MemoryStreamZLibBaseOptions.NewStreamOptions"/> property value.
     /// </summary>
     /// <param name="options">
     /// The <see cref="MemoryStreamZLibOptions"/> instance to modify.
@@ -66,7 +66,7 @@ public static class MemoryStreamZLibOptionsExtensions
     /// </param>
     /// <returns>
     /// A new <see cref="MemoryStreamZLibOptions"/> instance with the specified zero buffer behavior
-    /// applied to the <see cref="MemoryStreamZLibOptions.NewStreamOptions"/> property value.
+    /// applied to the <see cref="MemoryStreamZLibBaseOptions.NewStreamOptions"/> property value.
     /// </returns>
     public static MemoryStreamZLibOptions WithZeroBufferBehavior(this MemoryStreamZLibOptions options,
         MemoryStreamSlimZeroBufferOption zeroBufferBehavior) =>

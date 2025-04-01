@@ -43,7 +43,7 @@ Alternatively, you can manually release the memory buffers that are being held f
 
 `MemoryStreamSlim` provides a static [`ReleaseMemoryBuffers`](xref:KZDev.PerfUtils.MemoryStreamSlim.ReleaseMemoryBuffers) method that allows you to release the memory buffers being cached for use by the stream instances. This hints to the system that the memory buffers are no longer needed and can be released for garbage collection. After calling this method, the memory buffers will be released as soon as possible based on current usage and other factors. Still, the release of memory may not be immediate.
 
-> It is important to note that calling `ReleaseMemoryBuffers` will mark all the currently allocated memory buffers as eligible for release, and new memory segments needed for new instances of `MemoryStreamSlim` will be allocated as needed. This can cause a performance hit if the memory buffers are needed again soon after being released. This is also different than the automatic memory release process, which will only release memory buffers that have not been used for a long period of time.
+> It is important to note that calling `ReleaseMemoryBuffers` will mark all the currently allocated memory buffers as eligible for release, and new memory segments needed for new instances of `MemoryStreamSlim` will be allocated as needed. This can cause a performance hit if the memory buffers are needed again soon after being released. This is also different than the automatic memory release process, which will only release memory buffers that have not been used for an extended period of time.
 
 ```csharp
 using KZDev.PerfUtils;
@@ -52,9 +52,9 @@ using KZDev.PerfUtils;
 MemoryStreamSlim.ReleaseMemoryBuffers();
 ```
 
-The idea with allocating and reusing memory buffers is to reduce the number of allocations and deallocations performed and to help prevent Large Object Heap fragmentation, so you typically would not use this method and instead let the system manage the memory for you. However, in cases where you may have used an exceptionally large `MemoryStreamSlim` instance and you can determine that it was a one-off use, you can call this method to release the large set of memory buffers being cached for reuse.
+The idea with allocating and reusing memory buffers is to reduce the number of allocations and deallocations performed and to help prevent Large Object Heap fragmentation, so you typically would not use this method and instead let the library manage the memory for you. However, in cases where you may have used an exceptionally large `MemoryStreamSlim` instance and you can determine that it was a one-off use, you can call this method to quickly release the large set of memory buffers being cached for reuse.
 
-After calling 'ReleaseMemoryBuffers', future instances of `MemoryStreamSlim` will allocate new memory buffers as needed, while the old memory buffers will be eligible for garbage collection when all stream instances using those old buffers are disposed.
+After calling 'ReleaseMemoryBuffers', future instances of `MemoryStreamSlim` will allocate new memory buffers and build up a new cache as needed, while the old memory buffers will be eligible for garbage collection when all stream instances using those old buffers are disposed.
 
 ## Native Memory
 

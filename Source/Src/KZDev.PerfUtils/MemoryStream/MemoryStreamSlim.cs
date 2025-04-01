@@ -2,11 +2,9 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.Versioning;
 using System.Text;
-
 using KZDev.PerfUtils.Helpers;
 using KZDev.PerfUtils.Internals;
 using KZDev.PerfUtils.Observability;
@@ -36,7 +34,7 @@ namespace KZDev.PerfUtils;
 /// <remarks>
 /// Since this operates on in-memory buffers, the asynchronous methods are not truly
 /// asynchronous, but they are provided for compatibility with the <see cref="Stream"/> class.
-/// The exception to this is the <see cref="MemoryStream.CopyToAsync(Stream)"/> method,
+/// The exception to this is the <see cref="MemoryStream.CopyToAsync(Stream, int, CancellationToken)"/> method,
 /// which does in fact copy the contents of the stream asynchronously assuming the 
 /// destination stream is a true asynchronous stream.
 /// </remarks>
@@ -1304,7 +1302,6 @@ public abstract class MemoryStreamSlim : MemoryStream
     }
     //--------------------------------------------------------------------------------
     /// <inheritdoc />
-    [DoesNotReturn]
     public override byte[] GetBuffer ()
     {
         ThrowHelper.ThrowNotSupportedException_FeatureNotSupported();

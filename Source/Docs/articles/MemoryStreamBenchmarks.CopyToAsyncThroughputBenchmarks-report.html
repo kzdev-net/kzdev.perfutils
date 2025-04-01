@@ -2,7 +2,7 @@
 <html lang='en'>
 <head>
 <meta charset='utf-8' />
-<title>MemoryStreamBenchmarks.CopyToAsyncThroughputBenchmarks-20241231-055908</title>
+<title>MemoryStreamBenchmarks.CopyToAsyncThroughputBenchmarks-20250413-210859</title>
 
 <style type="text/css">
 	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
@@ -13,77 +13,53 @@
 </head>
 <body>
 <pre><code>
-BenchmarkDotNet v0.14.0, Windows 11 (10.0.22631.4602/23H2/2023Update/SunValley3)
+BenchmarkDotNet v0.14.0, Windows 11 (10.0.26100.3775)
 Intel Core i9-14900K, 1 CPU, 32 logical and 24 physical cores
-.NET SDK 9.0.101
-  [Host]     : .NET 8.0.11 (8.0.1124.51707), X64 RyuJIT AVX2
-  DefaultJob : .NET 8.0.11 (8.0.1124.51707), X64 RyuJIT AVX2
+.NET SDK 9.0.203
+  [Host]     : .NET 9.0.4 (9.0.425.16305), X64 RyuJIT AVX2
+  DefaultJob : .NET 9.0.4 (9.0.425.16305), X64 RyuJIT AVX2
 </code></pre>
 <pre><code></code></pre>
 
 <table>
 <thead><tr><th>Method                        </th><th>DataSize</th><th>CapacityOnCreate</th><th>BulkInitialFill</th><th>Mean  </th><th>Error</th><th>StdDev</th><th>Ratio</th><th>RatioSD</th><th>Gen0</th><th>Gen1</th><th>Gen2</th><th>Allocated</th><th>Alloc Ratio</th>
 </tr>
-</thead><tbody><tr><td>&#39;MemoryStream CopyToAsync&#39;</td><td>131072</td><td>False</td><td>False</td><td>96.68 ms</td><td>1.308 ms</td><td>1.223 ms</td><td>1.00</td><td>0.02</td><td>4000.0000</td><td>4000.0000</td><td>4000.0000</td><td>25237.32 KB</td><td>1.000</td>
-</tr><tr><td>&#39;RecyclableMemoryStream CopyToAsync&#39;</td><td>131072</td><td>False</td><td>False</td><td>96.53 ms</td><td>1.750 ms</td><td>1.637 ms</td><td>1.00</td><td>0.02</td><td>-</td><td>-</td><td>-</td><td>41.96 KB</td><td>0.002</td>
-</tr><tr><td>&#39;MemoryStreamSlim CopyToAsync&#39;</td><td>131072</td><td>False</td><td>False</td><td>96.56 ms</td><td>1.559 ms</td><td>1.459 ms</td><td>1.00</td><td>0.02</td><td>-</td><td>-</td><td>-</td><td>44.54 KB</td><td>0.002</td>
-</tr><tr><td>&#39;MemoryStream CopyToAsync&#39;</td><td>131072</td><td>False</td><td>True</td><td>96.61 ms</td><td>1.707 ms</td><td>1.596 ms</td><td>1.00</td><td>0.02</td><td>4000.0000</td><td>4000.0000</td><td>4000.0000</td><td>12825.6 KB</td><td>1.000</td>
-</tr><tr><td>&#39;RecyclableMemoryStream CopyToAsync&#39;</td><td>131072</td><td>False</td><td>True</td><td>96.39 ms</td><td>1.503 ms</td><td>1.406 ms</td><td>1.00</td><td>0.02</td><td>-</td><td>-</td><td>-</td><td>41.91 KB</td><td>0.003</td>
-</tr><tr><td>&#39;MemoryStreamSlim CopyToAsync&#39;</td><td>131072</td><td>False</td><td>True</td><td>96.57 ms</td><td>1.698 ms</td><td>1.588 ms</td><td>1.00</td><td>0.02</td><td>-</td><td>-</td><td>-</td><td>44.43 KB</td><td>0.003</td>
-</tr><tr><td>&#39;MemoryStream CopyToAsync&#39;</td><td>131072</td><td>True</td><td>False</td><td>96.57 ms</td><td>1.403 ms</td><td>1.312 ms</td><td>1.00</td><td>0.02</td><td>4000.0000</td><td>4000.0000</td><td>4000.0000</td><td>12825.65 KB</td><td>1.000</td>
-</tr><tr><td>&#39;RecyclableMemoryStream CopyToAsync&#39;</td><td>131072</td><td>True</td><td>False</td><td>96.53 ms</td><td>1.518 ms</td><td>1.420 ms</td><td>1.00</td><td>0.02</td><td>-</td><td>-</td><td>-</td><td>41.96 KB</td><td>0.003</td>
-</tr><tr><td>&#39;MemoryStreamSlim CopyToAsync&#39;</td><td>131072</td><td>True</td><td>False</td><td>96.55 ms</td><td>1.505 ms</td><td>1.408 ms</td><td>1.00</td><td>0.02</td><td>-</td><td>-</td><td>-</td><td>44.38 KB</td><td>0.003</td>
-</tr><tr><td>&#39;MemoryStream CopyToAsync&#39;</td><td>131072</td><td>True</td><td>True</td><td>96.28 ms</td><td>1.339 ms</td><td>1.253 ms</td><td>1.00</td><td>0.02</td><td>4000.0000</td><td>4000.0000</td><td>4000.0000</td><td>12825.5 KB</td><td>1.000</td>
-</tr><tr><td>&#39;RecyclableMemoryStream CopyToAsync&#39;</td><td>131072</td><td>True</td><td>True</td><td>96.27 ms</td><td>1.784 ms</td><td>1.669 ms</td><td>1.00</td><td>0.02</td><td>-</td><td>-</td><td>-</td><td>42.12 KB</td><td>0.003</td>
-</tr><tr><td>&#39;MemoryStreamSlim CopyToAsync&#39;</td><td>131072</td><td>True</td><td>True</td><td>96.45 ms</td><td>1.654 ms</td><td>1.547 ms</td><td>1.00</td><td>0.02</td><td>-</td><td>-</td><td>-</td><td>44.33 KB</td><td>0.003</td>
-</tr><tr><td>&#39;MemoryStream CopyToAsync&#39;</td><td>983040</td><td>False</td><td>False</td><td>74.47 ms</td><td>1.441 ms</td><td>1.348 ms</td><td>1.00</td><td>0.02</td><td>22714.2857</td><td>22428.5714</td><td>22428.5714</td><td>108377.61 KB</td><td>1.000</td>
-</tr><tr><td>&#39;RecyclableMemoryStream CopyToAsync&#39;</td><td>983040</td><td>False</td><td>False</td><td>408.39 ms</td><td>7.938 ms</td><td>8.823 ms</td><td>5.49</td><td>0.15</td><td>-</td><td>-</td><td>-</td><td>71.78 KB</td><td>0.001</td>
-</tr><tr><td>&#39;MemoryStreamSlim CopyToAsync&#39;</td><td>983040</td><td>False</td><td>False</td><td>74.52 ms</td><td>1.282 ms</td><td>1.200 ms</td><td>1.00</td><td>0.02</td><td>-</td><td>-</td><td>-</td><td>24.79 KB</td><td>0.000</td>
-</tr><tr><td>&#39;MemoryStream CopyToAsync&#39;</td><td>983040</td><td>False</td><td>True</td><td>74.53 ms</td><td>0.976 ms</td><td>0.913 ms</td><td>1.00</td><td>0.02</td><td>10285.7143</td><td>10285.7143</td><td>10285.7143</td><td>50905.18 KB</td><td>1.000</td>
-</tr><tr><td>&#39;RecyclableMemoryStream CopyToAsync&#39;</td><td>983040</td><td>False</td><td>True</td><td>408.60 ms</td><td>7.998 ms</td><td>7.481 ms</td><td>5.48</td><td>0.12</td><td>-</td><td>-</td><td>-</td><td>55.62 KB</td><td>0.001</td>
-</tr><tr><td>&#39;MemoryStreamSlim CopyToAsync&#39;</td><td>983040</td><td>False</td><td>True</td><td>101.87 ms</td><td>0.455 ms</td><td>0.380 ms</td><td>1.37</td><td>0.02</td><td>-</td><td>-</td><td>-</td><td>26.2 KB</td><td>0.001</td>
-</tr><tr><td>&#39;MemoryStream CopyToAsync&#39;</td><td>983040</td><td>True</td><td>False</td><td>74.41 ms</td><td>1.077 ms</td><td>1.008 ms</td><td>1.00</td><td>0.02</td><td>9714.2857</td><td>9714.2857</td><td>9714.2857</td><td>50914.18 KB</td><td>1.000</td>
-</tr><tr><td>&#39;RecyclableMemoryStream CopyToAsync&#39;</td><td>983040</td><td>True</td><td>False</td><td>409.39 ms</td><td>8.068 ms</td><td>8.633 ms</td><td>5.50</td><td>0.13</td><td>-</td><td>-</td><td>-</td><td>53.07 KB</td><td>0.001</td>
-</tr><tr><td>&#39;MemoryStreamSlim CopyToAsync&#39;</td><td>983040</td><td>True</td><td>False</td><td>102.05 ms</td><td>0.514 ms</td><td>0.430 ms</td><td>1.37</td><td>0.02</td><td>-</td><td>-</td><td>-</td><td>26.25 KB</td><td>0.001</td>
-</tr><tr><td>&#39;MemoryStream CopyToAsync&#39;</td><td>983040</td><td>True</td><td>True</td><td>74.26 ms</td><td>0.937 ms</td><td>0.877 ms</td><td>1.00</td><td>0.02</td><td>10142.8571</td><td>10142.8571</td><td>10142.8571</td><td>50912.03 KB</td><td>1.000</td>
-</tr><tr><td>&#39;RecyclableMemoryStream CopyToAsync&#39;</td><td>983040</td><td>True</td><td>True</td><td>408.71 ms</td><td>8.132 ms</td><td>8.351 ms</td><td>5.50</td><td>0.13</td><td>-</td><td>-</td><td>-</td><td>53.55 KB</td><td>0.001</td>
-</tr><tr><td>&#39;MemoryStreamSlim CopyToAsync&#39;</td><td>983040</td><td>True</td><td>True</td><td>101.95 ms</td><td>0.474 ms</td><td>0.396 ms</td><td>1.37</td><td>0.02</td><td>-</td><td>-</td><td>-</td><td>26.2 KB</td><td>0.001</td>
-</tr><tr><td>&#39;MemoryStream CopyToAsync&#39;</td><td>16777216</td><td>False</td><td>False</td><td>368.85 ms</td><td>15.341 ms</td><td>45.234 ms</td><td>1.02</td><td>0.18</td><td>8000.0000</td><td>8000.0000</td><td>8000.0000</td><td>589775.61 KB</td><td>1.000</td>
-</tr><tr><td>&#39;RecyclableMemoryStream CopyToAsync&#39;</td><td>16777216</td><td>False</td><td>False</td><td>2,224.26 ms</td><td>4.935 ms</td><td>4.616 ms</td><td>6.12</td><td>0.75</td><td>-</td><td>-</td><td>-</td><td>1376 KB</td><td>0.002</td>
-</tr><tr><td>&#39;MemoryStreamSlim CopyToAsync&#39;</td><td>16777216</td><td>False</td><td>False</td><td>370.71 ms</td><td>2.041 ms</td><td>1.909 ms</td><td>1.02</td><td>0.13</td><td>-</td><td>-</td><td>-</td><td>24.78 KB</td><td>0.000</td>
-</tr><tr><td>&#39;MemoryStream CopyToAsync&#39;</td><td>16777216</td><td>False</td><td>True</td><td>279.54 ms</td><td>4.360 ms</td><td>4.078 ms</td><td>1.00</td><td>0.02</td><td>3500.0000</td><td>3500.0000</td><td>3500.0000</td><td>294927.66 KB</td><td>1.000</td>
-</tr><tr><td>&#39;RecyclableMemoryStream CopyToAsync&#39;</td><td>16777216</td><td>False</td><td>True</td><td>2,226.21 ms</td><td>6.875 ms</td><td>6.431 ms</td><td>7.97</td><td>0.11</td><td>-</td><td>-</td><td>-</td><td>161.84 KB</td><td>0.001</td>
-</tr><tr><td>&#39;MemoryStreamSlim CopyToAsync&#39;</td><td>16777216</td><td>False</td><td>True</td><td>444.26 ms</td><td>7.588 ms</td><td>7.097 ms</td><td>1.59</td><td>0.03</td><td>-</td><td>-</td><td>-</td><td>26.79 KB</td><td>0.000</td>
-</tr><tr><td>&#39;MemoryStream CopyToAsync&#39;</td><td>16777216</td><td>True</td><td>False</td><td>280.26 ms</td><td>4.329 ms</td><td>4.049 ms</td><td>1.00</td><td>0.02</td><td>3500.0000</td><td>3500.0000</td><td>3500.0000</td><td>294927.8 KB</td><td>1.000</td>
-</tr><tr><td>&#39;RecyclableMemoryStream CopyToAsync&#39;</td><td>16777216</td><td>True</td><td>False</td><td>2,227.42 ms</td><td>4.190 ms</td><td>3.919 ms</td><td>7.95</td><td>0.11</td><td>-</td><td>-</td><td>-</td><td>161.56 KB</td><td>0.001</td>
-</tr><tr><td>&#39;MemoryStreamSlim CopyToAsync&#39;</td><td>16777216</td><td>True</td><td>False</td><td>444.07 ms</td><td>6.295 ms</td><td>5.888 ms</td><td>1.58</td><td>0.03</td><td>-</td><td>-</td><td>-</td><td>26.93 KB</td><td>0.000</td>
-</tr><tr><td>&#39;MemoryStream CopyToAsync&#39;</td><td>16777216</td><td>True</td><td>True</td><td>281.53 ms</td><td>4.035 ms</td><td>3.775 ms</td><td>1.00</td><td>0.02</td><td>3500.0000</td><td>3500.0000</td><td>3500.0000</td><td>294927.66 KB</td><td>1.000</td>
-</tr><tr><td>&#39;RecyclableMemoryStream CopyToAsync&#39;</td><td>16777216</td><td>True</td><td>True</td><td>2,245.21 ms</td><td>20.960 ms</td><td>19.606 ms</td><td>7.98</td><td>0.12</td><td>-</td><td>-</td><td>-</td><td>160.81 KB</td><td>0.001</td>
-</tr><tr><td>&#39;MemoryStreamSlim CopyToAsync&#39;</td><td>16777216</td><td>True</td><td>True</td><td>452.20 ms</td><td>6.998 ms</td><td>6.546 ms</td><td>1.61</td><td>0.03</td><td>-</td><td>-</td><td>-</td><td>26.36 KB</td><td>0.000</td>
-</tr><tr><td>&#39;MemoryStream CopyToAsync&#39;</td><td>100597760</td><td>False</td><td>False</td><td>878.20 ms</td><td>9.809 ms</td><td>8.696 ms</td><td>1.00</td><td>0.01</td><td>5000.0000</td><td>5000.0000</td><td>5000.0000</td><td>2359273.53 KB</td><td>1.000</td>
-</tr><tr><td>&#39;RecyclableMemoryStream CopyToAsync&#39;</td><td>100597760</td><td>False</td><td>False</td><td>6,832.79 ms</td><td>35.577 ms</td><td>33.279 ms</td><td>7.78</td><td>0.08</td><td>1000.0000</td><td>-</td><td>-</td><td>21325.7 KB</td><td>0.009</td>
-</tr><tr><td>&#39;MemoryStreamSlim CopyToAsync&#39;</td><td>100597760</td><td>False</td><td>False</td><td>1,233.53 ms</td><td>23.350 ms</td><td>22.933 ms</td><td>1.40</td><td>0.03</td><td>-</td><td>-</td><td>-</td><td>38.59 KB</td><td>0.000</td>
-</tr><tr><td>&#39;MemoryStream CopyToAsync&#39;</td><td>100597760</td><td>False</td><td>True</td><td>707.89 ms</td><td>11.495 ms</td><td>10.753 ms</td><td>1.00</td><td>0.02</td><td>1000.0000</td><td>1000.0000</td><td>1000.0000</td><td>884167.98 KB</td><td>1.000</td>
-</tr><tr><td>&#39;RecyclableMemoryStream CopyToAsync&#39;</td><td>100597760</td><td>False</td><td>True</td><td>6,806.75 ms</td><td>21.427 ms</td><td>20.042 ms</td><td>9.62</td><td>0.14</td><td>-</td><td>-</td><td>-</td><td>455.47 KB</td><td>0.001</td>
-</tr><tr><td>&#39;MemoryStreamSlim CopyToAsync&#39;</td><td>100597760</td><td>False</td><td>True</td><td>1,259.32 ms</td><td>8.545 ms</td><td>7.993 ms</td><td>1.78</td><td>0.03</td><td>-</td><td>-</td><td>-</td><td>42.38 KB</td><td>0.000</td>
-</tr><tr><td>&#39;MemoryStream CopyToAsync&#39;</td><td>100597760</td><td>True</td><td>False</td><td>723.31 ms</td><td>13.247 ms</td><td>12.391 ms</td><td>1.00</td><td>0.02</td><td>1000.0000</td><td>1000.0000</td><td>1000.0000</td><td>884168.05 KB</td><td>1.000</td>
-</tr><tr><td>&#39;RecyclableMemoryStream CopyToAsync&#39;</td><td>100597760</td><td>True</td><td>False</td><td>6,719.79 ms</td><td>21.186 ms</td><td>19.818 ms</td><td>9.29</td><td>0.16</td><td>-</td><td>-</td><td>-</td><td>454.86 KB</td><td>0.001</td>
-</tr><tr><td>&#39;MemoryStreamSlim CopyToAsync&#39;</td><td>100597760</td><td>True</td><td>False</td><td>1,275.42 ms</td><td>12.776 ms</td><td>11.950 ms</td><td>1.76</td><td>0.03</td><td>-</td><td>-</td><td>-</td><td>42.45 KB</td><td>0.000</td>
-</tr><tr><td>&#39;MemoryStream CopyToAsync&#39;</td><td>100597760</td><td>True</td><td>True</td><td>700.27 ms</td><td>9.784 ms</td><td>9.152 ms</td><td>1.00</td><td>0.02</td><td>1000.0000</td><td>1000.0000</td><td>1000.0000</td><td>884167.98 KB</td><td>1.000</td>
-</tr><tr><td>&#39;RecyclableMemoryStream CopyToAsync&#39;</td><td>100597760</td><td>True</td><td>True</td><td>6,803.99 ms</td><td>17.661 ms</td><td>16.520 ms</td><td>9.72</td><td>0.12</td><td>-</td><td>-</td><td>-</td><td>455.12 KB</td><td>0.001</td>
-</tr><tr><td>&#39;MemoryStreamSlim CopyToAsync&#39;</td><td>100597760</td><td>True</td><td>True</td><td>1,258.97 ms</td><td>14.592 ms</td><td>13.650 ms</td><td>1.80</td><td>0.03</td><td>-</td><td>-</td><td>-</td><td>42.38 KB</td><td>0.000</td>
-</tr><tr><td>&#39;MemoryStream CopyToAsync&#39;</td><td>209715200</td><td>False</td><td>False</td><td>1,314.85 ms</td><td>15.388 ms</td><td>14.394 ms</td><td>1.00</td><td>0.02</td><td>3000.0000</td><td>3000.0000</td><td>3000.0000</td><td>3669998.02 KB</td><td>1.000</td>
-</tr><tr><td>&#39;RecyclableMemoryStream CopyToAsync&#39;</td><td>209715200</td><td>False</td><td>False</td><td>11,105.68 ms</td><td>38.598 ms</td><td>36.105 ms</td><td>8.45</td><td>0.09</td><td>3000.0000</td><td>-</td><td>-</td><td>71038.52 KB</td><td>0.019</td>
-</tr><tr><td>&#39;MemoryStreamSlim CopyToAsync&#39;</td><td>209715200</td><td>False</td><td>False</td><td>1,947.56 ms</td><td>14.717 ms</td><td>13.766 ms</td><td>1.48</td><td>0.02</td><td>-</td><td>-</td><td>-</td><td>55.98 KB</td><td>0.000</td>
-</tr><tr><td>&#39;MemoryStream CopyToAsync&#39;</td><td>209715200</td><td>False</td><td>True</td><td>1,030.23 ms</td><td>8.564 ms</td><td>8.011 ms</td><td>1.00</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>1433605.91 KB</td><td>1.000</td>
-</tr><tr><td>&#39;RecyclableMemoryStream CopyToAsync&#39;</td><td>209715200</td><td>False</td><td>True</td><td>11,132.92 ms</td><td>30.470 ms</td><td>28.502 ms</td><td>10.81</td><td>0.09</td><td>-</td><td>-</td><td>-</td><td>732.71 KB</td><td>0.001</td>
-</tr><tr><td>&#39;MemoryStreamSlim CopyToAsync&#39;</td><td>209715200</td><td>False</td><td>True</td><td>2,112.58 ms</td><td>9.482 ms</td><td>8.405 ms</td><td>2.05</td><td>0.02</td><td>-</td><td>-</td><td>-</td><td>60.37 KB</td><td>0.000</td>
-</tr><tr><td>&#39;MemoryStream CopyToAsync&#39;</td><td>209715200</td><td>True</td><td>False</td><td>1,044.67 ms</td><td>14.006 ms</td><td>13.102 ms</td><td>1.00</td><td>0.02</td><td>-</td><td>-</td><td>-</td><td>1433606.25 KB</td><td>1.000</td>
-</tr><tr><td>&#39;RecyclableMemoryStream CopyToAsync&#39;</td><td>209715200</td><td>True</td><td>False</td><td>11,128.22 ms</td><td>26.833 ms</td><td>25.100 ms</td><td>10.65</td><td>0.13</td><td>-</td><td>-</td><td>-</td><td>733.41 KB</td><td>0.001</td>
-</tr><tr><td>&#39;MemoryStreamSlim CopyToAsync&#39;</td><td>209715200</td><td>True</td><td>False</td><td>2,112.20 ms</td><td>6.929 ms</td><td>6.143 ms</td><td>2.02</td><td>0.03</td><td>-</td><td>-</td><td>-</td><td>60.42 KB</td><td>0.000</td>
-</tr><tr><td>&#39;MemoryStream CopyToAsync&#39;</td><td>209715200</td><td>True</td><td>True</td><td>1,030.40 ms</td><td>5.352 ms</td><td>4.744 ms</td><td>1.00</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>1433605.91 KB</td><td>1.000</td>
-</tr><tr><td>&#39;RecyclableMemoryStream CopyToAsync&#39;</td><td>209715200</td><td>True</td><td>True</td><td>11,120.28 ms</td><td>27.368 ms</td><td>25.600 ms</td><td>10.79</td><td>0.05</td><td>-</td><td>-</td><td>-</td><td>732.77 KB</td><td>0.001</td>
-</tr><tr><td>&#39;MemoryStreamSlim CopyToAsync&#39;</td><td>209715200</td><td>True</td><td>True</td><td>2,104.13 ms</td><td>11.946 ms</td><td>10.590 ms</td><td>2.04</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>60.65 KB</td><td>0.000</td>
+</thead><tbody><tr><td>&#39;MemoryStream CopyToAsync&#39;</td><td>131072</td><td>False</td><td>False</td><td>4.897 ms</td><td>0.0404 ms</td><td>0.0378 ms</td><td>1.00</td><td>0.01</td><td>203.1250</td><td>203.1250</td><td>203.1250</td><td>1262 KB</td><td>1.000</td>
+</tr><tr><td>&#39;RecyclableMemoryStream CopyToAsync&#39;</td><td>131072</td><td>False</td><td>False</td><td>4.898 ms</td><td>0.0343 ms</td><td>0.0321 ms</td><td>1.00</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>2.23 KB</td><td>0.002</td>
+</tr><tr><td>&#39;MemoryStreamSlim CopyToAsync&#39;</td><td>131072</td><td>False</td><td>False</td><td>4.864 ms</td><td>0.0211 ms</td><td>0.0198 ms</td><td>0.99</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>2.43 KB</td><td>0.002</td>
+</tr><tr><td>&#39;MemoryStream CopyToAsync&#39;</td><td>131072</td><td>False</td><td>True</td><td>4.886 ms</td><td>0.0432 ms</td><td>0.0405 ms</td><td>1.00</td><td>0.01</td><td>203.1250</td><td>203.1250</td><td>203.1250</td><td>641.42 KB</td><td>1.000</td>
+</tr><tr><td>&#39;RecyclableMemoryStream CopyToAsync&#39;</td><td>131072</td><td>False</td><td>True</td><td>4.912 ms</td><td>0.0328 ms</td><td>0.0306 ms</td><td>1.01</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>2.23 KB</td><td>0.003</td>
+</tr><tr><td>&#39;MemoryStreamSlim CopyToAsync&#39;</td><td>131072</td><td>False</td><td>True</td><td>4.889 ms</td><td>0.0384 ms</td><td>0.0359 ms</td><td>1.00</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>2.43 KB</td><td>0.004</td>
+</tr><tr><td>&#39;MemoryStream CopyToAsync&#39;</td><td>131072</td><td>True</td><td>False</td><td>4.887 ms</td><td>0.0244 ms</td><td>0.0228 ms</td><td>1.00</td><td>0.01</td><td>203.1250</td><td>203.1250</td><td>203.1250</td><td>641.42 KB</td><td>1.000</td>
+</tr><tr><td>&#39;RecyclableMemoryStream CopyToAsync&#39;</td><td>131072</td><td>True</td><td>False</td><td>4.914 ms</td><td>0.0340 ms</td><td>0.0318 ms</td><td>1.01</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>2.23 KB</td><td>0.003</td>
+</tr><tr><td>&#39;MemoryStreamSlim CopyToAsync&#39;</td><td>131072</td><td>True</td><td>False</td><td>4.901 ms</td><td>0.0413 ms</td><td>0.0386 ms</td><td>1.00</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>2.43 KB</td><td>0.004</td>
+</tr><tr><td>&#39;MemoryStream CopyToAsync&#39;</td><td>131072</td><td>True</td><td>True</td><td>4.903 ms</td><td>0.0395 ms</td><td>0.0369 ms</td><td>1.00</td><td>0.01</td><td>203.1250</td><td>203.1250</td><td>203.1250</td><td>641.41 KB</td><td>1.000</td>
+</tr><tr><td>&#39;RecyclableMemoryStream CopyToAsync&#39;</td><td>131072</td><td>True</td><td>True</td><td>4.902 ms</td><td>0.0403 ms</td><td>0.0377 ms</td><td>1.00</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>2.22 KB</td><td>0.003</td>
+</tr><tr><td>&#39;MemoryStreamSlim CopyToAsync&#39;</td><td>131072</td><td>True</td><td>True</td><td>4.894 ms</td><td>0.0279 ms</td><td>0.0261 ms</td><td>1.00</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>2.42 KB</td><td>0.004</td>
+</tr><tr><td>&#39;MemoryStream CopyToAsync&#39;</td><td>16777216</td><td>False</td><td>False</td><td>81.477 ms</td><td>1.5778 ms</td><td>1.6203 ms</td><td>1.00</td><td>0.03</td><td>3500.0000</td><td>3500.0000</td><td>3500.0000</td><td>163827.26 KB</td><td>1.000</td>
+</tr><tr><td>&#39;RecyclableMemoryStream CopyToAsync&#39;</td><td>16777216</td><td>False</td><td>False</td><td>624.013 ms</td><td>3.1840 ms</td><td>2.9783 ms</td><td>7.66</td><td>0.15</td><td>-</td><td>-</td><td>-</td><td>382.54 KB</td><td>0.002</td>
+</tr><tr><td>&#39;MemoryStreamSlim CopyToAsync&#39;</td><td>16777216</td><td>False</td><td>False</td><td>103.947 ms</td><td>1.7337 ms</td><td>1.6217 ms</td><td>1.28</td><td>0.03</td><td>-</td><td>-</td><td>-</td><td>7.03 KB</td><td>0.000</td>
+</tr><tr><td>&#39;MemoryStream CopyToAsync&#39;</td><td>16777216</td><td>False</td><td>True</td><td>79.419 ms</td><td>1.3835 ms</td><td>1.2942 ms</td><td>1.00</td><td>0.02</td><td>857.1429</td><td>857.1429</td><td>857.1429</td><td>81924.4 KB</td><td>1.000</td>
+</tr><tr><td>&#39;RecyclableMemoryStream CopyToAsync&#39;</td><td>16777216</td><td>False</td><td>True</td><td>624.408 ms</td><td>4.5190 ms</td><td>4.2271 ms</td><td>7.86</td><td>0.14</td><td>-</td><td>-</td><td>-</td><td>45.02 KB</td><td>0.001</td>
+</tr><tr><td>&#39;MemoryStreamSlim CopyToAsync&#39;</td><td>16777216</td><td>False</td><td>True</td><td>125.978 ms</td><td>0.8135 ms</td><td>0.7609 ms</td><td>1.59</td><td>0.03</td><td>-</td><td>-</td><td>-</td><td>7.56 KB</td><td>0.000</td>
+</tr><tr><td>&#39;MemoryStream CopyToAsync&#39;</td><td>16777216</td><td>True</td><td>False</td><td>78.796 ms</td><td>0.9133 ms</td><td>0.8543 ms</td><td>1.00</td><td>0.01</td><td>857.1429</td><td>857.1429</td><td>857.1429</td><td>81924.4 KB</td><td>1.000</td>
+</tr><tr><td>&#39;RecyclableMemoryStream CopyToAsync&#39;</td><td>16777216</td><td>True</td><td>False</td><td>624.585 ms</td><td>5.7377 ms</td><td>5.3670 ms</td><td>7.93</td><td>0.11</td><td>-</td><td>-</td><td>-</td><td>45.2 KB</td><td>0.001</td>
+</tr><tr><td>&#39;MemoryStreamSlim CopyToAsync&#39;</td><td>16777216</td><td>True</td><td>False</td><td>125.744 ms</td><td>0.9553 ms</td><td>0.8936 ms</td><td>1.60</td><td>0.02</td><td>-</td><td>-</td><td>-</td><td>7.63 KB</td><td>0.000</td>
+</tr><tr><td>&#39;MemoryStream CopyToAsync&#39;</td><td>16777216</td><td>True</td><td>True</td><td>79.449 ms</td><td>1.2619 ms</td><td>1.1804 ms</td><td>1.00</td><td>0.02</td><td>857.1429</td><td>857.1429</td><td>857.1429</td><td>81924.4 KB</td><td>1.000</td>
+</tr><tr><td>&#39;RecyclableMemoryStream CopyToAsync&#39;</td><td>16777216</td><td>True</td><td>True</td><td>628.713 ms</td><td>3.8275 ms</td><td>3.5802 ms</td><td>7.92</td><td>0.12</td><td>-</td><td>-</td><td>-</td><td>45.44 KB</td><td>0.001</td>
+</tr><tr><td>&#39;MemoryStreamSlim CopyToAsync&#39;</td><td>16777216</td><td>True</td><td>True</td><td>126.012 ms</td><td>0.8654 ms</td><td>0.8095 ms</td><td>1.59</td><td>0.03</td><td>-</td><td>-</td><td>-</td><td>7.63 KB</td><td>0.000</td>
+</tr><tr><td>&#39;MemoryStream CopyToAsync&#39;</td><td>209715200</td><td>False</td><td>False</td><td>895.971 ms</td><td>12.9062 ms</td><td>12.0725 ms</td><td>1.00</td><td>0.02</td><td>2000.0000</td><td>2000.0000</td><td>2000.0000</td><td>2621427.52 KB</td><td>1.000</td>
+</tr><tr><td>&#39;RecyclableMemoryStream CopyToAsync&#39;</td><td>209715200</td><td>False</td><td>False</td><td>7,920.621 ms</td><td>20.7709 ms</td><td>19.4291 ms</td><td>8.84</td><td>0.12</td><td>2000.0000</td><td>-</td><td>-</td><td>50742.32 KB</td><td>0.019</td>
+</tr><tr><td>&#39;MemoryStreamSlim CopyToAsync&#39;</td><td>209715200</td><td>False</td><td>False</td><td>1,388.802 ms</td><td>11.4180 ms</td><td>10.6804 ms</td><td>1.55</td><td>0.02</td><td>-</td><td>-</td><td>-</td><td>40.12 KB</td><td>0.000</td>
+</tr><tr><td>&#39;MemoryStream CopyToAsync&#39;</td><td>209715200</td><td>False</td><td>True</td><td>717.077 ms</td><td>6.3184 ms</td><td>5.9102 ms</td><td>1.00</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>1024004.46 KB</td><td>1.000</td>
+</tr><tr><td>&#39;RecyclableMemoryStream CopyToAsync&#39;</td><td>209715200</td><td>False</td><td>True</td><td>7,915.937 ms</td><td>31.6060 ms</td><td>29.5642 ms</td><td>11.04</td><td>0.10</td><td>-</td><td>-</td><td>-</td><td>523.6 KB</td><td>0.001</td>
+</tr><tr><td>&#39;MemoryStreamSlim CopyToAsync&#39;</td><td>209715200</td><td>False</td><td>True</td><td>1,500.233 ms</td><td>9.7613 ms</td><td>9.1307 ms</td><td>2.09</td><td>0.02</td><td>-</td><td>-</td><td>-</td><td>43.52 KB</td><td>0.000</td>
+</tr><tr><td>&#39;MemoryStream CopyToAsync&#39;</td><td>209715200</td><td>True</td><td>False</td><td>729.782 ms</td><td>5.4017 ms</td><td>5.0528 ms</td><td>1.00</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>1024004.22 KB</td><td>1.000</td>
+</tr><tr><td>&#39;RecyclableMemoryStream CopyToAsync&#39;</td><td>209715200</td><td>True</td><td>False</td><td>7,918.119 ms</td><td>26.7204 ms</td><td>24.9943 ms</td><td>10.85</td><td>0.08</td><td>-</td><td>-</td><td>-</td><td>523.16 KB</td><td>0.001</td>
+</tr><tr><td>&#39;MemoryStreamSlim CopyToAsync&#39;</td><td>209715200</td><td>True</td><td>False</td><td>1,502.928 ms</td><td>10.3252 ms</td><td>9.6582 ms</td><td>2.06</td><td>0.02</td><td>-</td><td>-</td><td>-</td><td>43.84 KB</td><td>0.000</td>
+</tr><tr><td>&#39;MemoryStream CopyToAsync&#39;</td><td>209715200</td><td>True</td><td>True</td><td>722.332 ms</td><td>6.1485 ms</td><td>5.7513 ms</td><td>1.00</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>1024004.46 KB</td><td>1.000</td>
+</tr><tr><td>&#39;RecyclableMemoryStream CopyToAsync&#39;</td><td>209715200</td><td>True</td><td>True</td><td>7,923.251 ms</td><td>21.6769 ms</td><td>20.2766 ms</td><td>10.97</td><td>0.09</td><td>-</td><td>-</td><td>-</td><td>523.08 KB</td><td>0.001</td>
+</tr><tr><td>&#39;MemoryStreamSlim CopyToAsync&#39;</td><td>209715200</td><td>True</td><td>True</td><td>1,504.902 ms</td><td>8.7599 ms</td><td>8.1940 ms</td><td>2.08</td><td>0.02</td><td>-</td><td>-</td><td>-</td><td>43.8 KB</td><td>0.000</td>
 </tr></tbody></table>
 </body>
 </html>

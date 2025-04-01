@@ -37,12 +37,12 @@ public class StringBuilderMultipleThreadThroughputBenchmarks : StringBuilderMult
     /// <param name="builder"></param>
     protected override void BuildString (StringBuilder builder)
     {
-        List<string> sourceList = buildSourceStrings[buildSourceIndex];
+        List<string> sourceList = buildSourceStrings[_buildSourceIndex];
         for (int stringIndex = 0; stringIndex < sourceList.Count; stringIndex++)
         {
             builder.Append(sourceList[stringIndex]);
         }
-        buildSourceIndex = (buildSourceIndex + 1) % buildSourceStrings.Length;
+        _buildSourceIndex = (_buildSourceIndex + 1) % buildSourceStrings.Length;
     }
     //--------------------------------------------------------------------------------
     /// <summary>

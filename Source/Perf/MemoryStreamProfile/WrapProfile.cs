@@ -18,10 +18,7 @@ internal static class WrapProfile
     public static void RunProfile (string[] args)
     {
         Thread.Sleep(2000);
-        WrapperFillAndReadThroughputBenchmarks wrapTest = new()
-        {
-            ZeroBuffers = false
-        };
+        WrapperFillAndReadThroughputBenchmarks wrapTest = new();
         wrapTest.GlobalSetup();
 
         // Determine which stream class type to use.

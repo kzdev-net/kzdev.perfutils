@@ -63,7 +63,7 @@ public class TestMetricsMonitor : EventListener
         }
 
         // Get event updated every second
-        EnableEvents(source, EventLevel.Verbose, EventKeywords.All, new Dictionary<string, string?>()
+        EnableEvents(source, EventLevel.Verbose, EventKeywords.All, new Dictionary<string, string?>
         {
             ["EventCounterIntervalSec"] = "1"
         });

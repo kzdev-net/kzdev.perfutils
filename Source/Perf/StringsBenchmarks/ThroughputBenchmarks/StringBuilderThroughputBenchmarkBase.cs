@@ -24,20 +24,20 @@ public abstract class StringBuilderThroughputBenchmarkBase
     /// <summary>
     /// The current list that is being used to build the strings
     /// </summary>
-    protected int buildSourceIndex = 0;
+    protected int _buildSourceIndex = 0;
 
     /// <summary>
     /// The specifically set loop iteration count for the benchmarks
     /// </summary>
-    protected int? setLoopCount;
+    protected int? _setLoopCount;
 
     /// <summary>
     /// The number of loop iterations to perform for each benchmark
     /// </summary>
     public virtual int LoopCount
     {
-        get => setLoopCount ?? 500_000;
-        set => setLoopCount = (value < 1) ? null : value;
+        get => _setLoopCount ?? 100_000;
+        set => _setLoopCount = (value < 1) ? null : value;
     }
     //--------------------------------------------------------------------------------
     /// <summary>
@@ -46,12 +46,12 @@ public abstract class StringBuilderThroughputBenchmarkBase
     /// <param name="builder"></param>
     protected virtual void BuildString (StringBuilder builder)
     {
-        List<string> sourceList = buildSourceStrings[buildSourceIndex];
+        List<string> sourceList = buildSourceStrings[_buildSourceIndex];
         for (int stringIndex = 0; stringIndex < sourceList.Count; stringIndex++)
         {
             builder.Append(sourceList[stringIndex]);
         }
-        buildSourceIndex = (buildSourceIndex + 1) % buildSourceStrings.Length;
+        _buildSourceIndex = (_buildSourceIndex + 1) % buildSourceStrings.Length;
     }
     //--------------------------------------------------------------------------------
     /// <summary>
@@ -71,7 +71,7 @@ public abstract class StringBuilderThroughputBenchmarkBase
                 buildList.Add(nextString);
             }
         }
-        buildSourceIndex = 0;
+        _buildSourceIndex = 0;
     }
     //--------------------------------------------------------------------------------
     /// <summary>

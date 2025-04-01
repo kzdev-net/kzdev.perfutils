@@ -52,7 +52,7 @@ For this scenario, the streams are instantiated with an already allocated and av
 
 ### Continuous Growth Throughput
 
-This scenario demonstrates the performance impact of accessing the internal buffer directly then then continuaing to grow the stream after that. [Read More](./continuous-growth-throughput-benchmarks.md)
+This scenario demonstrates the performance impact of accessing the internal buffer directly then continuing to grow the stream after that. [Read More](./continuous-growth-throughput-benchmarks.md)
 
 ### CopyToAsync Throughput
 
@@ -74,7 +74,7 @@ The specific parameter values that have similar caveats will be noted in the ben
 
 ### Loop Count Impact
 
-In order to keep the benchmark operation times reasonable and measurable and not too fast or slow, each operation involves a number of stream instances being instantiated, written to, read from, and released in a loop. The number of loops is calculated based on the `DataSize` parameter, which is the amount of data written to the stream in each loop of the operation. The loop count is always the same for all classes being compared for any given `DataSize` parameter value, but will be different for different `DataSize` values. Keep this in mind when comparing the results for different `DataSize` values. Performance comparisons should be scoped or partitioned to a common `DataSize` value for the different classes being compared and the other parameter values. In other words, consider each `DataSize` value as a separate benchmark scenario and report.
+In order to keep the benchmark operation times reasonable and measurable and not too fast or slow, each benchmark operation involves a number of stream instances being instantiated, written to, read from, and released in a loop. The number of loops is calculated based on the `DataSize` parameter, which is the amount of data written to the stream in each loop of the operation. For any given value of the `DataSize` parameter, the loop count is the same for all classes being benchmarked with that `DataSize` value. Keep this in mind when comparing the results for different `DataSize` values. Performance comparisons should be scoped or partitioned to a common `DataSize` value for the different classes being compared and the other parameter values. In other words, consider each `DataSize` value as a separate benchmark scenario and report.
 
 The exception to this is the ['Set Loop Count'](./set-loop-count-throughput-benchmarks.md) benchmark scenario, where the loop count is set to a fixed value for all classes and all data sizes being compared, while the `DataSize` parameter is still varied to see the impact of the data size on the operation times. This scenario is useful for understanding the performance impact of different data sizes on the different classes being compared, given that the other benchmarks can not be read that way due to the loop count being determined by the `DataSize` parameter.
 
@@ -89,6 +89,6 @@ This is another reason why the ['Set Loop Count'](./set-loop-count-throughput-be
 The benchmarks published here used the following versions of the libraries:
 
 - `BenchmarkDotNet` version: 0.14.0
-- `MemoryStreamSlim` version: 2.0.0
+- `KZDev.PerfUtils` version: 2.0.0
 - `RecyclableMemoryStream` version: 3.0.1
 - `MemoryStream` version: .NET 9.0.3

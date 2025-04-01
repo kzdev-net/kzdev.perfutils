@@ -19,21 +19,32 @@ public sealed record MemoryStreamBrotliOptions
 
 #if NET9_0_OR_GREATER
     /// <summary>
-    /// Gets the compression quality for a Brotli compression operation. By default, this property
-    /// has no value. If no value is specified, the <see cref="CompressionLevel"/> is used instead.
+    /// Gets the compression quality for a Brotli  compression operation. By default, 
+    /// this property has no value. If no value is specified, the <see cref="CompressionLevel"/> 
+    /// is used instead <b>[Available in .NET 9.0 and later only]</b>.
     /// </summary>
     /// <remarks>
+    /// <para>
+    /// <b>** NOTE: This property is only available in .NET 9.0 and later. **</b>
+    /// </para>
+    /// <para>
     /// The higher the quality, the slower the compression. The range is from 0 to 11.
+    /// </para>
     /// </remarks>
+    /// <seealso cref="BrotliCompressionOptions.Quality"/>
     public int? Quality { [DebuggerStepThrough] get; [DebuggerStepThrough] internal set; } = null;
 #endif
 
 #if NET9_0_OR_GREATER
-    /// If this is not specified, then <see cref="Quality"/> is used instead.
     /// <summary>
     /// The compression level to use for the stream. The default value is <see cref="CompressionLevel.Optimal"/>.
-    /// If this is not specified, then <see cref="Quality"/> is used instead.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>NOTE: For .NET 9.0 and later:</b> If this is not specified (set to null), 
+    /// then <see cref="Quality"/> is used instead. This property is ignored if <see cref="Quality"/> is specified.
+    /// </para>
+    /// </remarks>
 #else
     /// <summary>
     /// The compression level to use for the stream. The default value is <see cref="CompressionLevel.Optimal"/>.

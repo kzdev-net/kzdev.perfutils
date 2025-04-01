@@ -163,6 +163,7 @@ public class ContinuousGrowFillAndReadThroughputBenchmarks
     [Benchmark(Baseline = true, Description = "MemoryStream growth fill and read")]
     public void UseMemoryStream ()
     {
+        // Capture the parameters once locally
         int processDataLength = StartDataSize;
         for (int loopIndex = 0; loopIndex < LoopCount; loopIndex++)
         {
@@ -178,6 +179,7 @@ public class ContinuousGrowFillAndReadThroughputBenchmarks
     [Benchmark(Description = "RecyclableMemoryStream growth fill and read")]
     public void UseRecyclableMemoryStream ()
     {
+        // Capture the parameters once locally
         int processDataLength = StartDataSize;
         for (int loopIndex = 0; loopIndex < LoopCount; loopIndex++)
         {
@@ -194,6 +196,7 @@ public class ContinuousGrowFillAndReadThroughputBenchmarks
     [Benchmark(Description = "MemoryStreamSlim growth fill and read")]
     public void UseMemoryStreamSlim ()
     {
+        // Capture the parameters once locally
         int processDataLength = StartDataSize;
         for (int loopIndex = 0; loopIndex < LoopCount; loopIndex++)
         {

@@ -54,14 +54,14 @@ public class SetLoopCountFillAndReadThroughputBenchmarks
     /// </summary>
     public int LoopCount
     {
-        get => _setLoopCount ?? 50;
+        get => _setLoopCount ?? 25;
         set => _setLoopCount = (value < 1) ? null : value;
     }
 
     /// <summary>
     /// The different bulk data sizes that will be used for the benchmarks
     /// </summary>
-    [Params(0x2_0000, 0xF_0000, 0x100_0000, 0x5FF_0000, 0xC80_0000)]
+    [Params(0x2_0000, 0x100_0000, 0xC80_0000)]
     public int DataSize { [DebuggerStepThrough] get; [DebuggerStepThrough] set; } = 0x100_0000;
 
     /// <summary>
@@ -97,7 +97,7 @@ public class SetLoopCountFillAndReadThroughputBenchmarks
     /// <param name="dataLength">
     /// The length of the data to fill and read back
     /// </param>
-    private void ProcessStream (Stream stream, long dataLength)
+    private void ProcessStream(Stream stream, long dataLength)
     {
         stream.Position = 0;
         streamUtility.SegmentFillAndRead(stream, fillData!, readBuffer!, dataLength, SegmentSize);
@@ -107,7 +107,7 @@ public class SetLoopCountFillAndReadThroughputBenchmarks
     /// Common global setup for the benchmark methods
     /// </summary>
     [GlobalSetup]
-    public void GlobalSetup ()
+    public void GlobalSetup()
     {
         MemoryStreamSlim.UseNativeLargeMemoryBuffers = UseNativeMemory;
         // Only need to allocate the buffers once, and we want the same data for all benchmarks
@@ -124,7 +124,7 @@ public class SetLoopCountFillAndReadThroughputBenchmarks
     /// Common global cleanup for the benchmark methods
     /// </summary>
     [GlobalCleanup]
-    public void GlobalCleanup ()
+    public void GlobalCleanup()
     {
         fillData = null;
     }
@@ -133,7 +133,7 @@ public class SetLoopCountFillAndReadThroughputBenchmarks
     /// Benchmark using MemoryStream
     /// </summary>
     [Benchmark(Baseline = true, Description = "MemoryStream set loop count fill and read")]
-    public void UseMemoryStream ()
+    public void UseMemoryStream()
     {
         int processDataLength = DataSize;
         for (int loopIndex = 0; loopIndex < LoopCount; loopIndex++)
@@ -147,7 +147,7 @@ public class SetLoopCountFillAndReadThroughputBenchmarks
     /// Benchmark using RecyclableMemoryStream
     /// </summary>
     [Benchmark(Description = "RecyclableMemoryStream set loop count fill and read")]
-    public void UseRecyclableMemoryStream ()
+    public void UseRecyclableMemoryStream()
     {
         int processDataLength = DataSize;
         for (int loopIndex = 0; loopIndex < LoopCount; loopIndex++)
@@ -162,7 +162,7 @@ public class SetLoopCountFillAndReadThroughputBenchmarks
     /// Benchmark using MemoryStreamSlim
     /// </summary>
     [Benchmark(Description = "MemoryStreamSlim set loop count fill and read")]
-    public void UseMemoryStreamSlim ()
+    public void UseMemoryStreamSlim()
     {
         int processDataLength = DataSize;
         for (int loopIndex = 0; loopIndex < LoopCount; loopIndex++)

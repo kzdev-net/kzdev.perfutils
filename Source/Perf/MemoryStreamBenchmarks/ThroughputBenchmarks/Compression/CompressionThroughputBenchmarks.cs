@@ -16,14 +16,6 @@ namespace MemoryStreamBenchmarks;
 public abstract class CompressionThroughputBenchmarks
 {
     /// <summary>
-    /// Helper method to compute the loop count based on the data size
-    /// </summary>
-    /// <param name="dataSize"></param>
-    /// <returns></returns>
-    private static int ComputeLoopCount (long dataSize) =>
-        (dataSize >= 0x100_0000) ? 1 : (int)Math.Max(2, Math.Min(50, 50_000 / Math.Pow(1.2, Math.Log(dataSize, 2))));
-
-    /// <summary>
     /// The specifically set loop iteration count for the benchmarks
     /// </summary>
     private int? _setLoopCount;
@@ -43,14 +35,14 @@ public abstract class CompressionThroughputBenchmarks
     /// </summary>
     public int LoopCount
     {
-        get => _setLoopCount ?? ComputeLoopCount(DataSize);
+        get => _setLoopCount ?? GetDataSizeLoopCount(DataSize);
         set => _setLoopCount = (value < 1) ? null : value;
     }
 
     /// <summary>
     /// The different bulk data sizes that will be used for the benchmarks
     /// </summary>
-    [Params(0x2_0000, 0xF_0000, 0x100_0000, 0x5FF_0000, 0xC80_0000)]
+    [Params(0x2_0000, 0x100_0000, 0xC80_0000)]
     public int DataSize { [DebuggerStepThrough] get; [DebuggerStepThrough] set; } = 0x100_0000;
 
     /// <summary>
@@ -76,5 +68,28 @@ public abstract class CompressionThroughputBenchmarks
     // with or without native memory, so we are leaving it off by default.
     //[ParamsAllValues]
     public bool UseNativeMemory { [DebuggerStepThrough] get; [DebuggerStepThrough] set; } = false;
+
+    /// <summary>
+    /// Helper method to get the loop count based on the data size
+    /// </summary>
+    /// <param name="dataSize">
+    /// The data size of the benchmark running.
+    /// </param>
+    /// <returns>
+    /// The number of loops that should be used for a given benchmark operation run.
+    /// </returns>
+    /// <remarks>
+    /// This is largely for providing the ability in the future if needed and/or to 
+    /// allow each derived benchmark class the ability to override the default.
+    /// </remarks>
+    protected virtual int GetDataSizeLoopCount(long dataSize) => 5;
+
+    /// <summary>
+    /// Common global setup for computed values.
+    /// </summary>
+    protected void DoCommonGlobalSetup()
+    {
+        _setLoopCount ??= GetDataSizeLoopCount(DataSize);
+    }
 }
 //################################################################################

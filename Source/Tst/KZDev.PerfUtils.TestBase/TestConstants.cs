@@ -29,6 +29,11 @@ public static class TestConstants
         /// The model trait name.
         /// </summary>
         public const string Model = "Model";
+
+        /// <summary>
+        /// The test mode trait name.
+        /// </summary>
+        public const string TestMode = "TestMode";
     }
     //================================================================================
     /// <summary>
@@ -77,6 +82,17 @@ public static class TestConstants
         /// The concurrency unit test category.
         /// </summary>
         public const string Concurrency = "Concurrency";
+    }
+    //================================================================================
+    /// <summary>
+    /// Constants for test mode names.
+    /// </summary>
+    public static class TestMode
+    {
+        /// <summary>
+        /// The Explicit unit test run mode.
+        /// </summary>
+        public const string Explicit = "Explicit";
     }
     //================================================================================
 }

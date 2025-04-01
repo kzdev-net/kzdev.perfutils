@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Text;
-
 using KZDev.PerfUtils.Helpers;
 using KZDev.PerfUtils.Observability;
 

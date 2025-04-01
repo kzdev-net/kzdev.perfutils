@@ -19,16 +19,6 @@ namespace MemoryStreamBenchmarks;
 public class CopyToAsyncThroughputBenchmarks
 {
     /// <summary>
-    /// Helper method to compute the loop count based on the data size
-    /// </summary>
-    /// <param name="dataSize"></param>
-    /// <returns></returns>
-    private static int ComputeLoopCount (int dataSize)
-    {
-        return (int)Math.Max(5, Math.Min(100, 10_000 / Math.Pow(1.3, Math.Log(dataSize, 2))));
-    }
-
-    /// <summary>
     /// The size of the segments to fill and read in.
     /// </summary>
     private const int SegmentSize = 0x1000;  // 4KB
@@ -37,6 +27,7 @@ public class CopyToAsyncThroughputBenchmarks
     /// The specifically set loop iteration count for the benchmarks
     /// </summary>
     private int? _setLoopCount;
+
     /// <summary>
     /// The mock file stream instance used for the benchmarks
     /// </summary>
@@ -62,14 +53,14 @@ public class CopyToAsyncThroughputBenchmarks
     /// </summary>
     public int LoopCount
     {
-        get => _setLoopCount ?? ComputeLoopCount(DataSize);
+        get => _setLoopCount ?? GetDataSizeLoopCount(DataSize);
         set => _setLoopCount = (value < 1) ? null : value;
     }
 
     /// <summary>
     /// The different bulk data sizes that will be used for the benchmarks
     /// </summary>
-    [Params(0x2_0000, 0xF_0000, 0x100_0000, 0x5FF_0000, 0xC80_0000)]
+    [Params(0x2_0000, 0x100_0000, 0xC80_0000)]
     public int DataSize { [DebuggerStepThrough] get; [DebuggerStepThrough] set; } = 0x100_0000;
 
     /// <summary>
@@ -101,6 +92,29 @@ public class CopyToAsyncThroughputBenchmarks
     // with or without native memory, so we are leaving it off by default.
     //[ParamsAllValues]
     public bool UseNativeMemory { [DebuggerStepThrough] get; [DebuggerStepThrough] set; } = false;
+
+    /// <summary>
+    /// Helper method to get the loop count based on the data size
+    /// </summary>
+    /// <param name="dataSize">
+    /// The data size of the benchmark running.
+    /// </param>
+    /// <returns>
+    /// The number of loops that should be used for a given benchmark operation run.
+    /// </returns>
+    /// <remarks>
+    /// This is largely for providing the ability in the future if needed and/or to 
+    /// allow each derived benchmark class the ability to override the default.
+    /// </remarks>
+    protected virtual int GetDataSizeLoopCount(long dataSize) => 5;
+
+    /// <summary>
+    /// Common global setup for computed values.
+    /// </summary>
+    protected void DoCommonGlobalSetup()
+    {
+        _setLoopCount ??= GetDataSizeLoopCount(DataSize);
+    }
     //--------------------------------------------------------------------------------
     /// <summary>
     /// Processes the bulk fill and read operation on the stream
@@ -124,6 +138,7 @@ public class CopyToAsyncThroughputBenchmarks
     [GlobalSetup]
     public void GlobalSetup ()
     {
+        DoCommonGlobalSetup();
         MemoryStreamSlim.UseNativeLargeMemoryBuffers = UseNativeMemory;
         // Only need to allocate the buffers once, and we want the same data for all benchmarks
         if (fillData is not null)
@@ -155,9 +170,11 @@ public class CopyToAsyncThroughputBenchmarks
     [Benchmark(Baseline = true, Description = "MemoryStream CopyToAsync")]
     public void UseMemoryStream ()
     {
+        // Capture the parameters once locally
         int processDataLength = DataSize;
+        int loopCount = LoopCount;
         ManualResetEventSlim completeEvent = new(false);
-        for (int loopIndex = 0; loopIndex < LoopCount; loopIndex++)
+        for (int loopIndex = 0; loopIndex < loopCount; loopIndex++)
         {
             completeEvent.Reset();
             using MemoryStream stream = CapacityOnCreate ? new MemoryStream(processDataLength) : new MemoryStream();
@@ -181,9 +198,11 @@ public class CopyToAsyncThroughputBenchmarks
     [Benchmark(Description = "RecyclableMemoryStream CopyToAsync")]
     public void UseRecyclableMemoryStream ()
     {
+        // Capture the parameters once locally
         int processDataLength = DataSize;
+        int loopCount = LoopCount;
         ManualResetEventSlim completeEvent = new(false);
-        for (int loopIndex = 0; loopIndex < LoopCount; loopIndex++)
+        for (int loopIndex = 0; loopIndex < loopCount; loopIndex++)
         {
             completeEvent.Reset();
             // Avoid any benchmark impacts from clearing memory buffers
@@ -210,14 +229,17 @@ public class CopyToAsyncThroughputBenchmarks
     [Benchmark(Description = "MemoryStreamSlim CopyToAsync")]
     public void UseMemoryStreamSlim ()
     {
+        // Capture the parameters once locally
         int processDataLength = DataSize;
+        int loopCount = LoopCount;
+        MemoryStreamSlimOptions memoryStreamSlimOptions = MemoryStreamSlimOptions;
         ManualResetEventSlim completeEvent = new(false);
-        for (int loopIndex = 0; loopIndex < LoopCount; loopIndex++)
+        for (int loopIndex = 0; loopIndex < loopCount; loopIndex++)
         {
             completeEvent.Reset();
             using MemoryStreamSlim stream = CapacityOnCreate ?
-                MemoryStreamSlim.Create(processDataLength, MemoryStreamSlimOptions) :
-                MemoryStreamSlim.Create(MemoryStreamSlimOptions);
+                MemoryStreamSlim.Create(processDataLength, memoryStreamSlimOptions) :
+                MemoryStreamSlim.Create(memoryStreamSlimOptions);
             Task asyncTask = ProcessStreamAsync(stream, processDataLength)
                 .ContinueWith(task =>
                 {

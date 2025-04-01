@@ -44,6 +44,7 @@ public class SegmentedFillAndReadThroughputBenchmarks : FillAndReadThroughputBen
     [GlobalSetup]
     public void GlobalSetup ()
     {
+        DoCommonGlobalSetup();
         MemoryStreamSlim.UseNativeLargeMemoryBuffers = UseNativeMemory;
         // Only need to allocate the buffers once, and we want the same data for all benchmarks
         if (fillData is not null)
@@ -70,15 +71,18 @@ public class SegmentedFillAndReadThroughputBenchmarks : FillAndReadThroughputBen
     [Benchmark(Baseline = true, Description = "MemoryStream segmented fill and read")]
     public void UseMemoryStream ()
     {
+        // Capture the parameters once locally
         long processDataLength = DataSize;
-        for (int loopIndex = 0; loopIndex < LoopCount; loopIndex++)
+        int loopCount = LoopCount;
+        int loopGrowAmount = LoopGrowAmount;
+        for (int loopIndex = 0; loopIndex < loopCount; loopIndex++)
         {
             using MemoryStream stream = CapacityOnCreate ? 
                 (processDataLength > int.MaxValue ? throw new InvalidOperationException($"({nameof(processDataLength)}) must be less than or equal to int.MaxValue") : new MemoryStream((int)processDataLength)) : 
                 new MemoryStream();
             ProcessStream(stream, processDataLength);
             if (GrowEachLoop)
-                processDataLength += LoopGrowAmount;
+                processDataLength += loopGrowAmount;
         }
     }
     //--------------------------------------------------------------------------------
@@ -88,15 +92,18 @@ public class SegmentedFillAndReadThroughputBenchmarks : FillAndReadThroughputBen
     [Benchmark(Description = "RecyclableMemoryStream segmented fill and read")]
     public void UseRecyclableMemoryStream ()
     {
+        // Capture the parameters once locally
         long processDataLength = DataSize;
-        for (int loopIndex = 0; loopIndex < LoopCount; loopIndex++)
+        int loopCount = LoopCount;
+        int loopGrowAmount = LoopGrowAmount;
+        for (int loopIndex = 0; loopIndex < loopCount; loopIndex++)
         {
             using RecyclableMemoryStream stream = CapacityOnCreate ?
                 BenchMarkHelpers.GetMemoryStreamManager(ZeroBuffers, ExponentialBufferGrowth).GetStream("benchmark", processDataLength) :
                 BenchMarkHelpers.GetMemoryStreamManager(ZeroBuffers, ExponentialBufferGrowth).GetStream("benchmark");
             ProcessStream(stream, processDataLength);
             if (GrowEachLoop)
-                processDataLength += LoopGrowAmount;
+                processDataLength += loopGrowAmount;
         }
     }
     //--------------------------------------------------------------------------------
@@ -106,15 +113,19 @@ public class SegmentedFillAndReadThroughputBenchmarks : FillAndReadThroughputBen
     [Benchmark(Description = "MemoryStreamSlim segmented fill and read")]
     public void UseMemoryStreamSlim ()
     {
+        // Capture the parameters once locally
         long processDataLength = DataSize;
-        for (int loopIndex = 0; loopIndex < LoopCount; loopIndex++)
+        int loopCount = LoopCount;
+        int loopGrowAmount = LoopGrowAmount;
+        MemoryStreamSlimOptions memoryStreamSlimOptions = MemoryStreamSlimOptions;
+        for (int loopIndex = 0; loopIndex < loopCount; loopIndex++)
         {
             using MemoryStreamSlim stream = CapacityOnCreate ? 
-                MemoryStreamSlim.Create(processDataLength, MemoryStreamSlimOptions) : 
-                MemoryStreamSlim.Create(MemoryStreamSlimOptions);
+                MemoryStreamSlim.Create(processDataLength, memoryStreamSlimOptions) : 
+                MemoryStreamSlim.Create(memoryStreamSlimOptions);
             ProcessStream(stream, processDataLength);
             if (GrowEachLoop)
-                processDataLength += LoopGrowAmount;
+                processDataLength += loopGrowAmount;
         }
     }
     //--------------------------------------------------------------------------------

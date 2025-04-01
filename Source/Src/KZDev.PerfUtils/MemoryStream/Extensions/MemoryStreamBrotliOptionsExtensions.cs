@@ -15,7 +15,7 @@ public static class MemoryStreamBrotliOptionsExtensions
     //--------------------------------------------------------------------------------
     /// <summary>
     /// Sets the <see cref="MemoryStreamBrotliOptions.Quality"/> property on the
-    /// <see cref="MemoryStreamBrotliOptions"/> instance.
+    /// <see cref="MemoryStreamBrotliOptions"/> instance <b>[Available in .NET 9.0 and later only]</b>.
     /// </summary>
     /// <param name="options">
     /// The <see cref="MemoryStreamBrotliOptions"/> instance to modify.

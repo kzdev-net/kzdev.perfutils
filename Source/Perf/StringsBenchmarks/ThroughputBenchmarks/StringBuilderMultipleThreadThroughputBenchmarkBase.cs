@@ -76,8 +76,8 @@ public abstract class StringBuilderMultipleThreadThroughputBenchmarkBase : Strin
     /// </summary>
     public override int LoopCount
     {
-        get => setLoopCount ?? 50_000;
-        set => setLoopCount = (value < 1) ? null : value;
+        get => _setLoopCount ?? 10_000;
+        set => _setLoopCount = (value < 1) ? null : value;
     }
 
     /// <summary>

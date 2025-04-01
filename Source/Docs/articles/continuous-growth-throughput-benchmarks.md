@@ -2,7 +2,7 @@
 
 This benchmark scenario uses stream instances that are instantiated as expandable (dynamic growth) streams. The stream is created with an initial zero length and capacity, and then filled with data in a loop. The data is then read back in a loop to examine the throughput performance of reading and writing, as well as the memory allocation and garbage collection impact of the different stream classes. The data is written and read in 4 kilobyte segments to simulate a real-world scenario where data is written and read in chunks.
 
-The twist to this scenario is that during the write operations, once the size of the stream reaches 256KB, the buffer from the stream is gotten as an array of bytes from the stream. In the `MemoryStream` and `MemoryStreamSlim` classes, the `ToArray()` method is used to get the buffer. In the `RecyclableMemoryStream` class, the `GetBuffer()` method is used to get the buffer, since `ToArray()` is marked as obsolete in that class and it is suggested that `GetBuffer()` be used instead. This is a one time operation and is only done at that point in time, otherwise the operation simply continues to write data to the stream and then read it back once the stream gets to the specified size.
+The twist to this scenario is that during the write operations, once the size of the stream reaches 256KB, the buffer from the stream is retrieved as an array of bytes from the stream. In the `MemoryStream` and `MemoryStreamSlim` classes, the `ToArray()` method is used to get the buffer. In the `RecyclableMemoryStream` class, the `GetBuffer()` method is used to get the buffer, since `ToArray()` is marked as obsolete in that class and it is suggested that `GetBuffer()` be used instead. This is a one time operation and is only done at that point in time, otherwise the operation simply continues to write data to the stream and then read it back once the stream gets to the specified size.
 
 It is important to note that there are much better, safer, and performant ways to get the data in to and out of the stream than getting a buffer and using it directly. This is just a scenario to show the performance impact of performing such an operation and continuing to grow the stream after that.
 
@@ -25,7 +25,7 @@ A single benchmark operation consists of performing a loop of steps that does th
 
 The first loop uses a data size of 0x8_0000 for the writing and reading steps. The data size is then increased by 0x40_0000 for each subsequent loop iteration. The loops continue until the data size reaches at least 0x600_0000, at which point the benchmark operation is complete.
 
-During the write operation, the data is written in 4KB chunks, and once the stream size reaches 256KB, the buffer is gotten from the stream and stored in a local variable. This is done to simulate a real-world scenario where the buffer is needed for some operation. This capture of the buffer is only done once, and otherwise the operation continues to write data to the stream and then read it back once the stream reaches the specified size.
+During the write operation, the data is written in 4KB chunks, and once the stream size reaches 256KB, the buffer is retrieved from the stream and stored in a local variable. This is done to simulate a real-world scenario where the buffer is needed for some operation. This capture of the buffer is only done once, and otherwise the operation continues to write data to the stream and then read it back once the stream reaches the specified size.
 
 ### Benchmark Parameters
 

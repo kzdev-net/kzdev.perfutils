@@ -27,8 +27,8 @@ See the individual [documentation pages](./articles/getting-started.md) and the 
 
 * Acquire : Get a `StringBuilder` instance from the cache.
 * Release : Return a `StringBuilder` instance to the cache.
-* GetStringAndRelease : Get the string from a `StringBuilder` instance and return it to the cache.
-* GetScope : Get a `using` scoped `StringBuilder` instance from the cache and return it to the cache when the scope is exited.
+* GetStringAndRelease : Get the string from a `StringBuilder` instance and return the builder to the cache.
+* GetScope : Get a `using` scoped `StringBuilder` instance from the cache and return the builder to the cache when the scope is exited.
 * Monitoring with `Events` feature of the .NET runtime for detailed cache management.
 
 `InterlockedOps` is a static class providing the following thread-safe atomic operations:

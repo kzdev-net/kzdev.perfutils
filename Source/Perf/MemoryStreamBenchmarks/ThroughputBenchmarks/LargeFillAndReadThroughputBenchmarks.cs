@@ -16,22 +16,14 @@ namespace MemoryStreamBenchmarks;
 public abstract class LargeFillAndReadThroughputBenchmarks
 {
     /// <summary>
-    /// Helper method to compute the loop count based on the data size
-    /// </summary>
-    /// <param name="dataSize"></param>
-    /// <returns></returns>
-    private static int ComputeLoopCount (long dataSize) =>
-        (dataSize >= 0x1_0000_0000) ? 1 : ((dataSize >= 0x4000_0000) ? 2 : 3);
-
-    /// <summary>
     /// The specifically set loop iteration count for the benchmarks
     /// </summary>
     private int? _setLoopCount;
 
     /// <summary>
-    /// The amount that each loop iteration will grow the processing data set by
+    /// The specifically set loop grow amount for the benchmarks
     /// </summary>
-    protected const int LoopGrowAmount = 0x1000;
+    private int? _setLoopGrowAmount;
 
     /// <summary>
     /// The common helper utility for processing stream benchmarks
@@ -58,8 +50,18 @@ public abstract class LargeFillAndReadThroughputBenchmarks
     /// </summary>
     public int LoopCount
     {
-        get => _setLoopCount ?? ComputeLoopCount(DataSize);
+        get => _setLoopCount ?? GetDataSizeLoopCount(DataSize);
         set => _setLoopCount = (value < 1) ? null : value;
+    }
+
+    /// <summary>
+    /// The amount that the data size should grow for each loop when 
+    /// <see cref="GrowEachLoop"/> is <c>true</c>.
+    /// </summary>
+    public int LoopGrowAmount
+    {
+        get => _setLoopGrowAmount ?? GetDataSizeLoopGrowAmount(DataSize);
+        set => _setLoopGrowAmount = (value < 1) ? null : value;
     }
 
     /// <summary>
@@ -89,7 +91,7 @@ public abstract class LargeFillAndReadThroughputBenchmarks
     /// <summary>
     /// The different ways to create the stream instances, by specifying capacity or not
     /// </summary>
-    [ParamsAllValues]
+    //[ParamsAllValues]
     public bool ExponentialBufferGrowth { [DebuggerStepThrough] get; [DebuggerStepThrough] set; } = true;
 
     /// <summary>
@@ -100,5 +102,41 @@ public abstract class LargeFillAndReadThroughputBenchmarks
     // with or without native memory, so we are leaving it off by default.
     //[ParamsAllValues]
     public bool UseNativeMemory { [DebuggerStepThrough] get; [DebuggerStepThrough] set; } = false;
+
+    /// <summary>
+    /// Helper method to get the loop grow amount based on the data size
+    /// </summary>
+    /// <param name="dataSize">
+    /// The data size of the benchmark running.
+    /// </param>
+    /// <returns>
+    /// The amount that the processed data size should grow for given benchmark operation run.
+    /// </returns>
+    protected virtual int GetDataSizeLoopGrowAmount(long dataSize) =>
+        (dataSize >= int.MaxValue) ? (int.MaxValue >> 6) : ((int)dataSize / (LoopCount << 4));
+
+    /// <summary>
+    /// Helper method to get the loop count based on the data size
+    /// </summary>
+    /// <param name="dataSize">
+    /// The data size of the benchmark running.
+    /// </param>
+    /// <returns>
+    /// The number of loops that should be used for a given benchmark operation run.
+    /// </returns>
+    /// <remarks>
+    /// This is largely for providing the ability in the future if needed and/or to 
+    /// allow each derived benchmark class the ability to override the default.
+    /// </remarks>
+    protected virtual int GetDataSizeLoopCount(long dataSize) => 1;
+
+    /// <summary>
+    /// Common global setup for computed values.
+    /// </summary>
+    protected void DoCommonGlobalSetup()
+    {
+        _setLoopCount ??= GetDataSizeLoopCount(DataSize);
+        _setLoopGrowAmount ??= GetDataSizeLoopGrowAmount(DataSize);
+    }
 }
 //################################################################################

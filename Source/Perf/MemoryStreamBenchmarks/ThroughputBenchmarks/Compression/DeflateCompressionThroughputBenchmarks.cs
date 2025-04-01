@@ -42,6 +42,7 @@ public class DeflateCompressionThroughputBenchmarks : CompressionThroughputBench
     [GlobalSetup]
     public void GlobalSetup ()
     {
+        DoCommonGlobalSetup();
         MemoryStreamSlim.UseNativeLargeMemoryBuffers = UseNativeMemory;
         // Only need to allocate the buffers once, and we want the same data for all benchmarks
         if (byteData is not null)
@@ -67,12 +68,15 @@ public class DeflateCompressionThroughputBenchmarks : CompressionThroughputBench
     [Benchmark(Baseline = true, Description = "MemoryStream Deflate Compression")]
     public void UseMemoryStream ()
     {
-        for (int loopIndex = 0; loopIndex < LoopCount; loopIndex++)
+        // Capture the parameters once locally
+        int dataSize = DataSize;
+        int loopCount = LoopCount;
+        for (int loopIndex = 0; loopIndex < loopCount; loopIndex++)
         {
             using MemoryStream stream = CapacityOnCreate ?
-                new MemoryStream(DataSize) :
+                new MemoryStream(dataSize) :
                 new MemoryStream();
-            ProcessStream(stream, DataSize);
+            ProcessStream(stream, dataSize);
         }
     }
     //--------------------------------------------------------------------------------
@@ -82,12 +86,15 @@ public class DeflateCompressionThroughputBenchmarks : CompressionThroughputBench
     [Benchmark(Description = "RecyclableMemoryStream Deflate Compression")]
     public void UseRecyclableMemoryStream ()
     {
-        for (int loopIndex = 0; loopIndex < LoopCount; loopIndex++)
+        // Capture the parameters once locally
+        int dataSize = DataSize;
+        int loopCount = LoopCount;
+        for (int loopIndex = 0; loopIndex < loopCount; loopIndex++)
         {
             using RecyclableMemoryStream stream = CapacityOnCreate ?
-                BenchMarkHelpers.GetMemoryStreamManager(false, ExponentialBufferGrowth).GetStream("benchmark", DataSize) :
+                BenchMarkHelpers.GetMemoryStreamManager(false, ExponentialBufferGrowth).GetStream("benchmark", dataSize) :
                 BenchMarkHelpers.GetMemoryStreamManager(false, ExponentialBufferGrowth).GetStream("benchmark");
-            ProcessStream(stream, DataSize);
+            ProcessStream(stream, dataSize);
         }
     }
     //--------------------------------------------------------------------------------
@@ -97,12 +104,16 @@ public class DeflateCompressionThroughputBenchmarks : CompressionThroughputBench
     [Benchmark(Description = "MemoryStreamSlim Deflate Compression")]
     public void UseMemoryStreamSlim ()
     {
-        for (int loopIndex = 0; loopIndex < LoopCount; loopIndex++)
+        // Capture the parameters once locally
+        int dataSize = DataSize;
+        int loopCount = LoopCount;
+        MemoryStreamSlimOptions memoryStreamSlimOptions = MemoryStreamSlimOptions;
+        for (int loopIndex = 0; loopIndex < loopCount; loopIndex++)
         {
             using MemoryStreamSlim stream = CapacityOnCreate ?
-                MemoryStreamSlim.Create(DataSize, MemoryStreamSlimOptions) :
-                MemoryStreamSlim.Create(MemoryStreamSlimOptions);
-            ProcessStream(stream, DataSize);
+                MemoryStreamSlim.Create(dataSize, memoryStreamSlimOptions) :
+                MemoryStreamSlim.Create(memoryStreamSlimOptions);
+            ProcessStream(stream, dataSize);
         }
     }
     //--------------------------------------------------------------------------------
