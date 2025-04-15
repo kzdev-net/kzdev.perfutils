@@ -4,17 +4,17 @@
 
 ## Metrics
 
-`MemoryStreamSlim` provides a few metrics that you can use with tools such as [`dotnet-counters`](https://learn.microsoft.com/en-us/dotnet/core/diagnostics/dotnet-counters) to monitor the memory usage of `MemoryStreamSlim` instances in your application. 
+**MemoryStreamSlim** provides a few metrics that you can use with tools such as [`dotnet-counters`](https://learn.microsoft.com/en-us/dotnet/core/diagnostics/dotnet-counters) to monitor the memory usage of **MemoryStreamSlim** instances in your application. 
 
-`"kzdev.perfutils.memory"` is the counter name for the metrics that are provided by `MemoryStreamSlim`. 
+`"kzdev.perfutils.memory"` is the counter name for the metrics that are provided by **MemoryStreamSlim**. 
 
-For example, you can use the following command to monitor the `MemoryStreamSlim` metrics for a specific process by name.
+For example, you can use the following command to monitor the **MemoryStreamSlim** metrics for a specific process by name.
 
 ```cmd
 dotnet-counters monitor -n <process-name> --counters "kzdev.perfutils.memory"
 ```
 
-Or you can use the following command to monitor the `MemoryStreamSlim` metrics for a specific process by process id.
+Or you can use the following command to monitor the **MemoryStreamSlim** metrics for a specific process by process id.
 
 ```cmd
 dotnet-counters monitor -p <process-id> --counters "kzdev.perfutils.memory"
@@ -28,7 +28,7 @@ The following metric counters are available.
 
 ### MemoryStreamSlim.Count Counter
 
-This counter provides the number of `MemoryStreamSlim` instances that are currently active in the application. The counter name is `memory_stream_slim.count`.
+This counter provides the number of **MemoryStreamSlim** instances that are currently active in the application. The counter name is `memory_stream_slim.count`.
 
 | Units | Description |
 | --- | --- |
@@ -58,11 +58,11 @@ This counter provides the number of buffer segments currently allocated from the
 
 ## Events
 
-For detailed monitoring of `MemoryStreamSlim` instances and memory management, you can use the `EventSource` events that are provided by the `PerfUtils` library with tools such as [`PerfView`](#perfview-example). The event source name is `KZDev.PerfUtils`. The following events are available.
+For detailed monitoring of **MemoryStreamSlim** instances and memory management, you can use the `EventSource` events that are provided by the `PerfUtils` library with tools such as [`PerfView`](#perfview-example). The event source name is `KZDev.PerfUtils`. The following events are available.
 
 ### MemoryStreamSlimCreated event
 
-This event is raised when a new `MemoryStreamSlim` instance is created.
+This event is raised when a new MemoryStreamSlim instance is created.
 
 The following table shows the task, keyword, level, and opcode.
 
@@ -88,7 +88,7 @@ The following table shows the event data.
 
 ### MemoryStreamSlimDisposed event
 
-This event is raised when a `MemoryStreamSlim` instance is disposed.
+This event is raised when a MemoryStreamSlim instance is disposed.
 
 The following table shows the task, keyword, level, and opcode.
 
@@ -112,7 +112,7 @@ The following table shows the event data.
 
 ### MemoryStreamSlimFinalized event
 
-This event is raised when a `MemoryStreamSlim` instance finalizer is executed. This event will not be raised if the `MemoryStreamSlim` instance is disposed properly.
+This event is raised when a MemoryStreamSlim instance finalizer is executed. This event will not be raised if the MemoryStreamSlim instance is disposed properly.
 
 The following table shows the task, keyword, level, and opcode.
 
@@ -136,7 +136,7 @@ The following table shows the event data.
 
 ### MemoryStreamSlimCapacityExpanded event
 
-This event is raised when a `MemoryStreamSlim` instance capacity is expanded.
+This event is raised when a MemoryStreamSlim instance capacity is expanded.
 
 The following table shows the task, keyword, level, and opcode.
 
@@ -162,7 +162,7 @@ The following table shows the event data.
 
 ### MemoryStreamSlimCapacityReduced event
 
-This event is raised when a `MemoryStreamSlim` instance capacity is reduced.
+This event is raised when a MemoryStreamSlim instance capacity is reduced.
 
 The following table shows the task, keyword, level, and opcode.
 
@@ -238,7 +238,7 @@ The following table shows the event data.
 
 ### MemoryStreamSlimToArray event
 
-This event is raised when the ToArray() method is called on a `MemoryStreamSlim` instance and returns a non-zero length array. This is useful for tracking extra heap memory allocations caused by calling the ToArray() method. This also records the internal operation of putting all of the
+This event is raised when the ToArray() method is called on a MemoryStreamSlim instance and returns a non-zero length array. This is useful for tracking extra heap memory allocations caused by calling the ToArray() method. This also records the internal operation of putting all of the
   bytes into a contiguous array for decoding the bytes into a string.
 
 The following table shows the task, keyword, level, and opcode.

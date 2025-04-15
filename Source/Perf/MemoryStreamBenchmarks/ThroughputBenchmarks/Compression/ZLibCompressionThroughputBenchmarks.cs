@@ -60,6 +60,7 @@ public class ZLibCompressionThroughputBenchmarks : CompressionThroughputBenchmar
     public void GlobalCleanup ()
     {
         byteData = null;
+        BenchMarkHelpers.ReleaseStreamManagers();
     }
     //--------------------------------------------------------------------------------
     /// <summary>

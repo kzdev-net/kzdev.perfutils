@@ -60,6 +60,7 @@ public class DeflateCompressionThroughputBenchmarks : CompressionThroughputBench
     public void GlobalCleanup ()
     {
         byteData = null;
+        BenchMarkHelpers.ReleaseStreamManagers();
     }
     //--------------------------------------------------------------------------------
     /// <summary>

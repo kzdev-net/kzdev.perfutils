@@ -60,6 +60,7 @@ public class BrotliCompressionThroughputBenchmarks : CompressionThroughputBenchm
     public void GlobalCleanup ()
     {
         byteData = null;
+        BenchMarkHelpers.ReleaseStreamManagers();
     }
     //--------------------------------------------------------------------------------
     /// <summary>

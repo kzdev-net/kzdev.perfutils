@@ -155,6 +155,7 @@ public class ContinuousGrowFillAndReadThroughputBenchmarks
     public void GlobalCleanup ()
     {
         _fillData = null;
+        BenchMarkHelpers.ReleaseStreamManagers();
     }
     //--------------------------------------------------------------------------------
     /// <summary>

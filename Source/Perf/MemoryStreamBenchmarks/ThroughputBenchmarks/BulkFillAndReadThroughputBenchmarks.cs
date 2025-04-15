@@ -62,6 +62,7 @@ public class BulkFillAndReadThroughputBenchmarks : FillAndReadThroughputBenchmar
     public void GlobalCleanup ()
     {
         fillData = null;
+        BenchMarkHelpers.ReleaseStreamManagers();
     }
     //--------------------------------------------------------------------------------
     /// <summary>

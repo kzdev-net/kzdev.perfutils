@@ -127,6 +127,7 @@ public class SetLoopCountFillAndReadThroughputBenchmarks
     public void GlobalCleanup()
     {
         fillData = null;
+        BenchMarkHelpers.ReleaseStreamManagers();
     }
     //--------------------------------------------------------------------------------
     /// <summary>

@@ -103,14 +103,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Articles", "Articles", "{B9
 		Docs\articles\MemoryStreamBenchmarks.LargeSegmentedFillAndReadThroughputBenchmarks-report.html = Docs\articles\MemoryStreamBenchmarks.LargeSegmentedFillAndReadThroughputBenchmarks-report.html
 		Docs\articles\MemoryStreamBenchmarks.SegmentedFillAndReadThroughputBenchmarks-report-github.md = Docs\articles\MemoryStreamBenchmarks.SegmentedFillAndReadThroughputBenchmarks-report-github.md
 		Docs\articles\MemoryStreamBenchmarks.SegmentedFillAndReadThroughputBenchmarks-report.html = Docs\articles\MemoryStreamBenchmarks.SegmentedFillAndReadThroughputBenchmarks-report.html
-		Docs\articles\MemoryStreamBenchmarks.SetLoopCountFillAndReadThroughputBenchmarks-report-github.md = Docs\articles\MemoryStreamBenchmarks.SetLoopCountFillAndReadThroughputBenchmarks-report-github.md
-		Docs\articles\MemoryStreamBenchmarks.SetLoopCountFillAndReadThroughputBenchmarks-report.html = Docs\articles\MemoryStreamBenchmarks.SetLoopCountFillAndReadThroughputBenchmarks-report.html
 		Docs\articles\MemoryStreamBenchmarks.WrapperFillAndReadThroughputBenchmarks-report-github.md = Docs\articles\MemoryStreamBenchmarks.WrapperFillAndReadThroughputBenchmarks-report-github.md
 		Docs\articles\MemoryStreamBenchmarks.WrapperFillAndReadThroughputBenchmarks-report.html = Docs\articles\MemoryStreamBenchmarks.WrapperFillAndReadThroughputBenchmarks-report.html
 		Docs\articles\MemoryStreamBenchmarks.ZLibCompressionThroughputBenchmarks-report-github.md = Docs\articles\MemoryStreamBenchmarks.ZLibCompressionThroughputBenchmarks-report-github.md
 		Docs\articles\MemoryStreamBenchmarks.ZLibCompressionThroughputBenchmarks-report.html = Docs\articles\MemoryStreamBenchmarks.ZLibCompressionThroughputBenchmarks-report.html
 		Docs\articles\memorystreamslim.md = Docs\articles\memorystreamslim.md
-		Docs\articles\set-loop-count-throughput-benchmarks.md = Docs\articles\set-loop-count-throughput-benchmarks.md
 		Docs\articles\stringbuildercache-benchmarks.md = Docs\articles\stringbuildercache-benchmarks.md
 		Docs\articles\stringbuildercache-monitoring.md = Docs\articles\stringbuildercache-monitoring.md
 		Docs\articles\stringbuildercache-multithread-throughput-benchmarks.md = Docs\articles\stringbuildercache-multithread-throughput-benchmarks.md
@@ -144,8 +141,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Package", "Package", "{D103
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{E69AE4BE-78A2-44D1-A68A-6E9A6A27DE79}"
 	ProjectSection(SolutionItems) = preProject
+		Docs\images\brotli_compression_allocated.jpg = Docs\images\brotli_compression_allocated.jpg
+		Docs\images\bulk_fillandread_mean.jpg = Docs\images\bulk_fillandread_mean.jpg
+		Docs\images\copytoasync.jpg = Docs\images\copytoasync.jpg
 		Docs\images\favicon.ico = Docs\images\favicon.ico
 		Docs\images\kzdevlogo.svg = Docs\images\kzdevlogo.svg
+		Docs\images\multithread_stringbuilder_allocated.jpg = Docs\images\multithread_stringbuilder_allocated.jpg
+		Docs\images\multithread_stringbuilder_mean.jpg = Docs\images\multithread_stringbuilder_mean.jpg
+		Docs\images\segmented_fillandread_allocated.jpg = Docs\images\segmented_fillandread_allocated.jpg
+		Docs\images\wrapped_fillandread.jpg = Docs\images\wrapped_fillandread.jpg
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KZDev.PerfUtils.Memory.Fixed.UnitTests", "Tst\KZDev.PerfUtils.Memory.Fixed.UnitTests\KZDev.PerfUtils.Memory.Fixed.UnitTests.csproj", "{5D74ECD3-20EC-4049-8C84-D5550E835CD1}"

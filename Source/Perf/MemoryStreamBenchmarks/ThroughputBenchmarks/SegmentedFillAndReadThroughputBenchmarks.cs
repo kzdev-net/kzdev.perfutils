@@ -63,6 +63,7 @@ public class SegmentedFillAndReadThroughputBenchmarks : FillAndReadThroughputBen
     public void GlobalCleanup ()
     {
         fillData = null;
+        BenchMarkHelpers.ReleaseStreamManagers();
     }
     //--------------------------------------------------------------------------------
     /// <summary>

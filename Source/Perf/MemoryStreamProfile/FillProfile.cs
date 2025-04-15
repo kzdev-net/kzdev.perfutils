@@ -16,8 +16,8 @@ internal static class FillProfile
         SegmentedFillAndReadThroughputBenchmarks fillTest = new()
         {
             DataSize = 0xC80_0000,
-            LoopCount = 200, //1_000_000,
-            CapacityOnCreate = true,
+            LoopCount = 10, 
+            CapacityOnCreate = false,
             GrowEachLoop = false,
             ZeroBuffers = false
         };

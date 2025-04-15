@@ -1,29 +1,5 @@
 - name: Getting Started
   href: getting-started.md
-- name: Interlocked Operations
-  href: interlockedops.md
-- name: StringBuilder Cache
-  href: stringbuildercache.md
-  items:
-    - name: Monitoring
-      href: stringbuildercache-monitoring.md
-    - name: Benchmarks
-      href: stringbuildercache-benchmarks.md
-      items:
-        - name: Single Thread Benchmarks
-          href: wrapper-throughput-benchmarks.md
-          items:
-            - name: Benchmark Results
-              href: StringsBenchmarks.StringBuilderThroughputBenchmarks-report-github.md
-            - name: Benchmark Results (Full HTML Table)
-              href: StringsBenchmarks.StringBuilderThroughputBenchmarks-report.html
-        - name: Multiple Thread Benchmarks
-          href: continuous-growth-throughput-benchmarks.md
-          items:
-            - name: Benchmark Results
-              href: StringsBenchmarks.StringBuilderMultipleThreadThroughputBenchmarks-report-github.md
-            - name: Benchmark Results (Full HTML Table)
-              href: StringsBenchmarks.StringBuilderMultipleThreadThroughputBenchmarks-report.html
 - name: Memory Stream
   href: memorystreamslim.md
   items:
@@ -31,8 +7,6 @@
       href: memory-management.md
     - name: Monitoring
       href: memory-monitoring.md
-    - name: Compression
-      href: memorystream-compression.md
     - name: Benchmarks
       href: memorystream-benchmarks.md
       items:
@@ -47,13 +21,6 @@
               href: MemoryStreamBenchmarks.BulkFillAndReadThroughputBenchmarks-report.html
             - name: Segmented Fill And Read (Full HTML Table)
               href: MemoryStreamBenchmarks.SegmentedFillAndReadThroughputBenchmarks-report.html
-        - name: Wrapper Throughput Benchmarks
-          href: wrapper-throughput-benchmarks.md
-          items:
-            - name: Benchmark Results
-              href: MemoryStreamBenchmarks.WrapperFillAndReadThroughputBenchmarks-report-github.md
-            - name: Benchmark Results (Full HTML Table)
-              href: MemoryStreamBenchmarks.WrapperFillAndReadThroughputBenchmarks-report.html
         - name: CopyToAsync Throughput Benchmarks
           href: copytoasync-throughput-benchmarks.md
           items:
@@ -61,13 +28,13 @@
               href: MemoryStreamBenchmarks.CopyToAsyncThroughputBenchmarks-report-github.md
             - name: Benchmark Results (Full HTML Table)
               href: MemoryStreamBenchmarks.CopyToAsyncThroughputBenchmarks-report.html
-        - name: Set Loop Count Throughput Benchmarks
-          href: set-loop-count-throughput-benchmarks.md
+        - name: Wrapper Throughput Benchmarks
+          href: wrapper-throughput-benchmarks.md
           items:
             - name: Benchmark Results
-              href: MemoryStreamBenchmarks.SetLoopCountFillAndReadThroughputBenchmarks-report-github.md
+              href: MemoryStreamBenchmarks.WrapperFillAndReadThroughputBenchmarks-report-github.md
             - name: Benchmark Results (Full HTML Table)
-              href: MemoryStreamBenchmarks.SetLoopCountFillAndReadThroughputBenchmarks-report.html
+              href: MemoryStreamBenchmarks.WrapperFillAndReadThroughputBenchmarks-report.html
         - name: Continuous Growth Throughput Benchmarks
           href: continuous-growth-throughput-benchmarks.md
           items:
@@ -75,5 +42,51 @@
               href: MemoryStreamBenchmarks.ContinuousGrowFillAndReadThroughputBenchmarks-report-github.md
             - name: Benchmark Results (Full HTML Table)
               href: MemoryStreamBenchmarks.ContinuousGrowFillAndReadThroughputBenchmarks-report.html
+- name: Compression
+  href: memorystream-compression.md
+  items:
+    - name: Benchmarks
+      href: memorystream-compression-benchmarks.md
+      items:
+        - name: Brotli Compression Benchmarks
+          href: MemoryStreamBenchmarks.BrotliCompressionThroughputBenchmarks-report-github.md
+        - name: Brotli Compression Benchmarks (Full HTML Table)
+          href: MemoryStreamBenchmarks.BrotliCompressionThroughputBenchmarks-report.html
+        - name: Deflate Compression Benchmarks
+          href: MemoryStreamBenchmarks.DeflateCompressionThroughputBenchmarks-report-github.md
+        - name: Deflate Compression Benchmarks (Full HTML Table)
+          href: MemoryStreamBenchmarks.DeflateCompressionThroughputBenchmarks-report.html
+        - name: GZip Compression Benchmarks
+          href: MemoryStreamBenchmarks.GZipCompressionThroughputBenchmarks-report-github.md
+        - name: GZip Compression Benchmarks (Full HTML Table)
+          href: MemoryStreamBenchmarks.GZipCompressionThroughputBenchmarks-report.html
+        - name: ZLib Compression Benchmarks
+          href: MemoryStreamBenchmarks.ZLibCompressionThroughputBenchmarks-report-github.md
+        - name: ZLib Compression Benchmarks (Full HTML Table)
+          href: MemoryStreamBenchmarks.ZLibCompressionThroughputBenchmarks-report.html
+- name: StringBuilder Cache
+  href: stringbuildercache.md
+  items:
+    - name: Monitoring
+      href: stringbuildercache-monitoring.md
+    - name: Benchmarks
+      href: stringbuildercache-benchmarks.md
+      items:
+        - name: Single Thread Benchmarks
+          href: stringbuildercache-throughput-benchmarks.md
+          items:
+            - name: Benchmark Results
+              href: StringsBenchmarks.StringBuilderThroughputBenchmarks-report-github.md
+            - name: Benchmark Results (Full HTML Table)
+              href: StringsBenchmarks.StringBuilderThroughputBenchmarks-report.html
+        - name: Multiple Thread Benchmarks
+          href: stringbuildercache-multithread-throughput-benchmarks.md
+          items:
+            - name: Benchmark Results
+              href: StringsBenchmarks.StringBuilderMultipleThreadThroughputBenchmarks-report-github.md
+            - name: Benchmark Results (Full HTML Table)
+              href: StringsBenchmarks.StringBuilderMultipleThreadThroughputBenchmarks-report.html
+- name: Interlocked Operations
+  href: interlockedops.md
 - name: NuGet Package (KZDev.PerfUtils)
   href: https://www.nuget.org/packages/KZDev.PerfUtils

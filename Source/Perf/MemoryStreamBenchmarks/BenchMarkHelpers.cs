@@ -357,5 +357,21 @@ public static class BenchMarkHelpers
             (zeroBuffers ? LargeExponentialZeroBufferStreamManager : LargeExponentialNonZeroBufferStreamManager) :
             (zeroBuffers ? LargeZeroBufferStreamManager : LargeNonZeroBufferStreamManager);
     //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Releases the stream managers for the benchmarks as part of cleanup
+    /// </summary>
+    public static void ReleaseStreamManagers()
+    {
+        _zeroBufferStreamManager = null;
+        _nonZeroBufferStreamManager = null;
+        _exponentialZeroBufferStreamManager = null;
+        _exponentialNonZeroBufferStreamManager = null;
+        _largeZeroBufferStreamManager = null;
+        _largeNonZeroBufferStreamManager = null;
+        _largeExponentialZeroBufferStreamManager = null;
+        _largeExponentialNonZeroBufferStreamManager = null;
+        GC.Collect();
+    }
+    //--------------------------------------------------------------------------------
 }
 //################################################################################

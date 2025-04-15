@@ -23,6 +23,9 @@
         }
     ],
     "build": {
+        "markdownEngineProperties": {
+            "markdigExtensions": [ "footnotes", "attributes" ]
+        },
         "content": [
             {
                 "files": [

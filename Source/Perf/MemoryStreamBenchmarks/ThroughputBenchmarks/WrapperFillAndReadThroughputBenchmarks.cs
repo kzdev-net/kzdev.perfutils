@@ -146,6 +146,9 @@ public class WrapperFillAndReadThroughputBenchmarks
     public void GlobalCleanup ()
     {
         _fillData = null;
+        _readBuffer = null;
+        _wrappedBuffer = [];
+        BenchMarkHelpers.ReleaseStreamManagers();
     }
     //--------------------------------------------------------------------------------
     /// <summary>

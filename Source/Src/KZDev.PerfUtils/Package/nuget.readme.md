@@ -2,27 +2,27 @@
 
 The `KZDev.PerfUtils` package contains the following performance utility classes:
 
-- `MemoryStreamSlim` - a high-performance, memory-efficient, easy-to-use replacement for the `MemoryStream` class that provides particular performance benefits for large or frequently used streams. 
-- `StringBuilderCache` - a thread-safe cache of `StringBuilder` instances to improve speed and reduce the overhead of memory allocations associated with using the `StringBuilder` class. 
-- `InterlockedOps` - which provides additional atomic thread-safe operations to extend the functionality of the `Interlocked` class in the .NET Class Library.
+- `MemoryStreamSlim` - a high-performance, memory-efficient, easy-to-use replacement for the **MemoryStream** class that provides particular performance benefits for large or frequently used streams. 
+- `StringBuilderCache` - a thread-safe cache of **StringBuilder** instances to improve speed and reduce the overhead of memory allocations associated with using the **StringBuilder** class. 
+- `InterlockedOps` - which provides additional atomic thread-safe operations to extend the functionality of the **Interlocked** class in the .NET Class Library.
 
 ## Features
 
-`MemoryStreamSlim` is a drop-in replacement for the `MemoryStream` class that provides the following benefits:
+`MemoryStreamSlim` is a drop-in replacement for the **MemoryStream** class that provides the following benefits:
 
-* Throughput performance is better than the standard `MemoryStream`.
-* Much lower memory traffic and far fewer garbage collections than the standard `MemoryStream`.
-* Eliminates Large Object Heap (LOH) fragmentation caused by frequent use and release of single-byte arrays used by the standard `MemoryStream`.
-* Simple replacement for `MemoryStream` with the same API, other than the constructor.
+* Throughput performance is better than the standard **MemoryStream**.
+* Much lower memory traffic and far fewer garbage collections than the standard **MemoryStream**.
+* Eliminates Large Object Heap (LOH) fragmentation caused by frequent use and release of single-byte arrays used by the standard **MemoryStream**.
+* Simple replacement for **MemoryStream** with the same API, other than the constructor.
 * Optionally allows using native memory for storage, which allows even more flexibility to minimize GC pressure.
 
-`StringBuilderCache` is a static class that provides a thread-safe cache of `StringBuilder` instances to reduce the number of allocations and deallocations of `StringBuilder` objects in high-throughput scenarios with simple operations:
+`StringBuilderCache` is a static class that provides a thread-safe cache of **StringBuilder** instances to reduce the number of allocations and deallocations of **StringBuilder** objects in high-throughput scenarios with simple operations:
 
-* Acquire : Get a `StringBuilder` instance from the cache.
-* Release : Return a `StringBuilder` instance to the cache.
-* GetStringAndRelease : Get the string from a `StringBuilder` instance and return it to the cache.
-* GetScope : Get a `using` scoped `StringBuilder` instance from the cache and return it to the cache when the scope is exited.
-* Monitoring with `Events` feature of the .NET runtime for detailed cache management.
+* Acquire : Get a **StringBuilder** instance from the cache.
+* Release : Return a **StringBuilder** instance to the cache.
+* GetStringAndRelease : Get the string from a **StringBuilder** instance and return it to the cache.
+* GetScope : Get a `using` scoped **StringBuilder** instance from the cache and return it to the cache when the scope is exited.
+* Monitoring with **Events** feature of the .NET runtime for detailed cache management.
 
 `InterlockedOps` is a static class providing the following thread-safe atomic operations:
 
@@ -56,7 +56,7 @@ public class XorExample
 
 ## MemoryStreamSlim Example
 
-Below is an example of how to use the `MemoryStreamSlim` class. Other than instantiation using the `Create` method, the API is identical to the standard `MemoryStream` class. It is always a best practice to dispose of the `MemoryStreamSlim` instance when it is no longer needed.
+Below is an example of how to use the `MemoryStreamSlim` class. Other than instantiation using the `Create` method, the API is identical to the standard **MemoryStream** class. It is always a best practice to dispose of the **MemoryStreamSlim** instance when it is no longer needed.
 
 ```csharp
 using KZDev.PerfUtils;
@@ -66,19 +66,19 @@ using KZDev.PerfUtils;
 // dispose of the MemoryStreamSlim instance when it is no longer needed.
 using (MemoryStreamSlim stream = MemoryStreamSlim.Create())
 {
-		// Write some data to the stream
-		stream.Write(new byte[] { 1, 2, 3, 4, 5 }, 0, 5);
+        // Write some data to the stream
+        stream.Write(new byte[] { 1, 2, 3, 4, 5 }, 0, 5);
 
-		// Read the data back from the stream
-		stream.Position = 0;
-		byte[] buffer = new byte[5];
-		stream.Read(buffer, 0, 5);
+        // Read the data back from the stream
+        stream.Position = 0;
+        byte[] buffer = new byte[5];
+        stream.Read(buffer, 0, 5);
 }
 ```
 
 ### Compare to RecyclableMemoryStream
 
-The `MemoryStreamSlim` class is similar in concept and purpose to the [`RecyclableMemoryStream`](https://www.nuget.org/packages/Microsoft.IO.RecyclableMemoryStream) class from Microsoft however the internal implementation of buffer management is quite different. Also, compared to `RecyclableMemoryStream`, the `MemoryStreamSlim` class is designed to:
+The `MemoryStreamSlim` class is similar in concept and purpose to the [`RecyclableMemoryStream`](https://www.nuget.org/packages/Microsoft.IO.RecyclableMemoryStream) class from Microsoft however the internal implementation of buffer management is quite different. Also, compared to **RecyclableMemoryStream**, the **MemoryStreamSlim** class is designed to:
 
 * 'Just work' and be easier to use without tuning parameters.
 * Be more flexible in most use cases.

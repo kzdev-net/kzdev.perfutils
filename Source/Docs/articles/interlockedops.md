@@ -1,16 +1,14 @@
 # Interlocked Operations
 
-The `Interlocked` class provides atomic operations for variables that are shared between threads. These operations are guaranteed atomic, meaning they are thread-safe and can be used in a multithreaded environment without locking.
+The `Interlocked` class provides atomic operations for variables shared between threads. These operations are guaranteed to be atomic, meaning they are thread-safe and can be used in a multithreaded environment without requiring locks.
 
-The [`InterlockedOps`](xref:KZDev.PerfUtils.InterlockedOps) class provides a set of static helper methods that provide additional functionality that is not currently available in the `Interlocked` class.
-
-All the operations provided by the `InterlockedOps` class are convenience methods that can be implemented directly in code using the existing `Interlocked` class. However, the `InterlockedOps` class offers a more readable, concise, and consistent way to perform the provided operations than repeatedly copying and pasting code. Reducing code duplication can make the code easier to understand and maintain.
+The [`InterlockedOps`](xref:KZDev.PerfUtils.InterlockedOps) class extends the functionality of the Interlocked class by providing additional static helper methods. These methods offer convenience and readability for operations that would otherwise require repetitive and verbose code. By reducing code duplication, `InterlockedOps` makes the codebase easier to understand and maintain.
 
 ## Variable Exclusive OR Operations
 
-The `InterlockedOps` class provides the [`Xor`](xref:KZDev.PerfUtils.InterlockedOps.Xor*) method, which performs an atomic XOR operation on a variable, stores the operation result in the provided variable, and returns the variable's original value. This method is useful for toggling an integer variable bit value between `1` and `0` in a thread-safe manner.
+The `InterlockedOps` class provides the [`Xor`](xref:KZDev.PerfUtils.InterlockedOps.Xor*) method, which performs an atomic XOR operation on a variable. The result of the operation is stored in the provided variable, and the method returns the variable's original value. This method is particularly useful for toggling a bit in an integer variable between 1 and 0 in a thread-safe manner.
 
-The operation can be performed on any integer type, including `int`, `long`, `uint`, and `ulong`.
+The Xor operation supports all integer types, including **int**, **long**, **uint**, and **ulong**.
 
 ```csharp
 public class XorExample
@@ -27,21 +25,44 @@ public class XorExample
 
 ## Variable ClearBits Operations
 
-The [`ClearBits`](xref:KZDev.PerfUtils.InterlockedOps.ClearBits*) methods are used to clear (set to 0) one or more bits that are currently set (set to 1) in a thread-safe atomic operation. The methods return a value tuple of the original value and a new value of the variable at the instant the operation was applied.
+The [`ClearBits`](xref:KZDev.PerfUtils.InterlockedOps.ClearBits*) method clears (sets to 0) one or more bits in a variable in a thread-safe atomic operation. The method returns a value tuple containing:
+
+- The original value of the variable.
+- The new value of the variable after the operation.
 
 ## Variable SetBits Operations
 
-The [`SetBits`](xref:KZDev.PerfUtils.InterlockedOps.SetBits*) methods are semantically clearer equivalents of the `Interlocked` [`Or`](xref:System.Threading.Interlocked.Or*). The difference is that the SetBits method returns a value tuple of the original value and a new variable value when the operation is applied.
+The [`SetBits`](xref:KZDev.PerfUtils.InterlockedOps.SetBits*) method is a semantically clearer equivalent of the `Interlocked.Or` method. It sets (to 1) one or more bits in a variable in a thread-safe atomic operation. Like `ClearBits`, it returns a value tuple containing:
+
+- The original value of the variable.
+- The new value of the variable after the operation.
 
 ## Conditional Update Operations
 
-The `InterlockedOps` class provides conditional bitwise update operations for [`And`](xref:KZDev.PerfUtils.InterlockedOps.ConditionAnd*), [`Or`](xref:KZDev.PerfUtils.InterlockedOps.ConditionOr*), [`Xor`](xref:KZDev.PerfUtils.InterlockedOps.ConditionXor*), [`ClearBits`](xref:KZDev.PerfUtils.InterlockedOps.ConditionClearBits*), and [`SetBits`](xref:KZDev.PerfUtils.InterlockedOps.ConditionSetBits*), allowing you to update a variable based on a boolean condition. These methods help implement lock-free algorithms that require atomic updates to a variable that depends on a dynamic condition and guarantee that the operation only occurs if the condition is met in a thread-safe manner.
+The `InterlockedOps` class provides conditional bitwise update methods for the following operations:
 
-The conditional methods are the same as the non-conditional methods, except these methods also take a predicate delegate that gets called with the current value of the variable. The predicate determines whether the corresponding operation should be applied based on the variable's value at that instant. When there is a race condition, and another thread changes the variable's value between the start of the condition delegate call, and applying the operation to the variable, the predicate delegate will be called again with the new variable value and continue until the newly computed value can be applied or the predicate returns `false`.
+- [`And`](xref:KZDev.PerfUtils.InterlockedOps.ConditionAnd*)
+- [`Or`](xref:KZDev.PerfUtils.InterlockedOps.ConditionOr*)
+- [`Xor`](xref:KZDev.PerfUtils.InterlockedOps.ConditionXor*)
+- [`ClearBits`](xref:KZDev.PerfUtils.InterlockedOps.ConditionClearBits*)
+- [`SetBits`](xref:KZDev.PerfUtils.InterlockedOps.ConditionSetBits*)
 
-The conditional methods all return a value tuple with the original variable value and the new value at the instant the operation was performed. If the condition predicate returns false, both value tuple values will be the same and set to the value of the variable passed to the condition predicate that returned false.
+These methods allow you to update a variable based on a boolean condition, enabling lock-free algorithms that require atomic updates dependent on dynamic conditions. The operation is only applied if the condition is met, ensuring thread safety.
 
-Also, overloads of the condition operations take a predicate-argument to avoid closures when the predicate needs additional values to process the conditional logic.
+### How Conditional Methods Work
+
+The conditional methods are similar to their non-conditional counterparts but include a predicate delegate. The predicate is called with the current value of the variable and determines whether the operation should be applied. If a race condition occurs and another thread modifies the variable between the predicate call and the operation, the predicate is called again with the updated value. This process continues until the operation is successfully applied or the predicate returns false.
+
+The conditional methods return a value tuple containing:
+
+- The original value of the variable.
+- The new value of the variable after the operation.
+
+If the predicate returns false, both values in the tuple will be the same, reflecting the variable's value at the time the predicate returned false.
+
+### Predicate Overloads
+
+To avoid closures when the predicate requires additional arguments, overloads of the conditional methods accept a predicate with an additional condition data argument.
 
 ```csharp
 public class ConditionXorExample

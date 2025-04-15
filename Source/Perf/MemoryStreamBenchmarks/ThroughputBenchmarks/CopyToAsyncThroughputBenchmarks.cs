@@ -162,6 +162,7 @@ public class CopyToAsyncThroughputBenchmarks
     public void GlobalCleanup ()
     {
         fillData = null;
+        BenchMarkHelpers.ReleaseStreamManagers();
     }
     //--------------------------------------------------------------------------------
     /// <summary>
