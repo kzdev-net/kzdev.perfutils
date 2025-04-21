@@ -149,6 +149,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{E69AE4
 		Docs\images\multithread_stringbuilder_allocated.jpg = Docs\images\multithread_stringbuilder_allocated.jpg
 		Docs\images\multithread_stringbuilder_mean.jpg = Docs\images\multithread_stringbuilder_mean.jpg
 		Docs\images\segmented_fillandread_allocated.jpg = Docs\images\segmented_fillandread_allocated.jpg
+		Docs\images\stringbuilder_sample.jpg = Docs\images\stringbuilder_sample.jpg
 		Docs\images\wrapped_fillandread.jpg = Docs\images\wrapped_fillandread.jpg
 	EndProjectSection
 EndProject

@@ -35,13 +35,6 @@
               href: MemoryStreamBenchmarks.WrapperFillAndReadThroughputBenchmarks-report-github.md
             - name: Benchmark Results (Full HTML Table)
               href: MemoryStreamBenchmarks.WrapperFillAndReadThroughputBenchmarks-report.html
-        - name: Continuous Growth Throughput Benchmarks
-          href: continuous-growth-throughput-benchmarks.md
-          items:
-            - name: Benchmark Results
-              href: MemoryStreamBenchmarks.ContinuousGrowFillAndReadThroughputBenchmarks-report-github.md
-            - name: Benchmark Results (Full HTML Table)
-              href: MemoryStreamBenchmarks.ContinuousGrowFillAndReadThroughputBenchmarks-report.html
 - name: Compression
   href: memorystream-compression.md
   items:

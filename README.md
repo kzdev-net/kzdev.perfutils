@@ -1,49 +1,69 @@
 # KZDev.PerfUtils
 
-This is the repository for the ['KZDev.PerfUtils'](https://www.nuget.org/packages/KZDev.PerfUtils) nuget package that contains the `MemoryStreamSlim` class; a high-performance, memory-efficient, and easy-to-use replacement for the `MemoryStream` class that provides particular benefits for large or frequently used streams. As well as the `StringBuilderCache` which allows better performance when using `StringBuilder` instances, and the `InterlockedOps` class, which provides additional atomic thread-safe operations to extend the functionality of the `Interlocked` class in the .NET Class Library.
+This repository contains the  ['KZDev.PerfUtils'](https://www.nuget.org/packages/KZDev.PerfUtils) NuGet package, which provides the following high-performance utilities:
+
+- **MemoryStreamSlim**: A memory-efficient, high-performance replacement for the MemoryStream class, offering significant benefits for large or frequently used streams.
+- **StringBuilderCache**: A utility for caching StringBuilder instances to improve performance in high-throughput scenarios.
+- **InterlockedOps**: A set of additional atomic thread-safe operations that extend the functionality of the Interlocked class in the .NET Class Library.
+
+## Performance Highlights
+
+This sampling of performance benchmarks clearly demonstrates the advantages of using the KZDev.PerfUtils package:
+
+![StringBuilderCache Performance Sample](https://raw.githubusercontent.com/kzdev-net/kzdev.perfutils/refs/heads/main/Source/Docs/images/stringbuilder_sample.jpg)
+
+![MemoryStreamSlim Performance Sample](https://raw.githubusercontent.com/kzdev-net/kzdev.perfutils/refs/heads/main/Source/Docs/images/memorystreamslim_sample.jpg)
+
+For more details, refer to the benchmark related pages in the [documentation](https://kzdev-net.github.io/kzdev.perfutils/).
 
 ## Features
 
-`MemoryStreamSlim` is a drop-in replacement for the `MemoryStream` class that provides the following benefits:
+### MemoryStreamSlim
 
-* Throughput performance is better than the standard `MemoryStream`.
-* Much lower memory traffic and far fewer garbage collections than the standard `MemoryStream`.
-* Eliminates Large Object Heap (LOH) fragmentation caused by frequent use and release of single-byte arrays used by the standard `MemoryStream`.
-* Simple replacement for `MemoryStream` with the same API, other than the constructor.
-* Optionally allows using native memory for storage, which allows even more flexibility to minimize GC pressure.
+`MemoryStreamSlim` is a drop-in replacement for the **MemoryStream** class, offering the following advantages:
 
-`StringBuilderCache` is a static class that provides a thread-safe cache of `StringBuilder` instances to reduce the number of allocations and deallocations of `StringBuilder` objects in high-throughput scenarios with simple operations:
+- **Improved Throughput**: Outperforms the standard MemoryStream in terms of throughput.
+- **Reduced Memory Traffic**: Significantly lowers memory traffic and garbage collection compared to the standard MemoryStream.
+- **Eliminates LOH Fragmentation**: Prevents Large Object Heap (LOH) fragmentation caused by frequent use and release of single-byte arrays.
+- **API Compatibility**: Provides the same API as MemoryStream, with minor differences in the constructor.
+- **Optional Native Memory Storage**: Allows the use of native memory for storage, further reducing GC pressure and increasing flexibility.
 
-* Acquire : Get a `StringBuilder` instance from the cache.
-* Release : Return a `StringBuilder` instance to the cache.
-* GetStringAndRelease : Get the string from a `StringBuilder` instance and return it to the cache.
-* GetScope : Get a `using` scoped `StringBuilder` instance from the cache and return it to the cache when the scope is exited.
-* Monitoring with `Events` feature of the .NET runtime for detailed cache management.
+### StringBuilderCache
 
-`InterlockedOps` is a static class providing the following thread-safe atomic operations:
+`StringBuilderCache` is a static class that provides a thread-safe cache of StringBuilder instances, reducing allocations and deallocations in high-throughput scenarios. Key features include:
 
-* Xor : Exclusive OR operation on any integer types.
-* ClearBits : Clear bits on any integer types.
-* SetBits : Set bits on any integer types.
-* ConditionAnd : Conditionally update bits using an AND operation on any integer types.
-* ConditionOr : Conditionally update bits using an OR operation on any integer types.
-* ConditionXor : Conditionally update bits using an XOR operation on any integer types.
-* ConditionClearBits : Conditionally clear bits on any integer types.
-* ConditionSetBits : Conditionally set bits on any integer types.
+- **Acquire**: Retrieve a StringBuilder instance from the cache.
+- **Release**: Return a StringBuilder instance to the cache.
+- **GetStringAndRelease**: Retrieve the string from a StringBuilder instance and return it to the cache.
+- **GetScope**: Use a using-scoped StringBuilder instance, which is automatically returned to the cache when the scope is exited.
+- **Monitoring**: Leverages the .NET runtime's Events feature for detailed cache management and monitoring.
+
+### InterlockedOps
+
+`InterlockedOps` is a static class that provides additional thread-safe atomic operations for integer types, including:
+
+- **Xor**: Perform an exclusive OR operation.
+- **ClearBits**: Clear specific bits.
+- **SetBits**: Set specific bits.
+- **ConditionAnd**: Conditionally update bits using an AND operation.
+- **ConditionOr**: Conditionally update bits using an OR operation.
+- **ConditionXor**: Conditionally update bits using an XOR operation.
+- **ConditionClearBits**: Conditionally clear specific bits.
+- **ConditionSetBits**: Conditionally set specific bits.
 
 ## Documentation
 
-Full documentation for the package is available on the [PerfUtils Documentation](https://kzdev-net.github.io/kzdev.perfutils/) page.
+Comprehensive documentation for the package is available on the [PerfUtils Documentation](https://kzdev-net.github.io/kzdev.perfutils/) page.
 
 ## Future Features
 
-The roadmap plan for this package is to add several additional helpful performance focused utilities as time allows.
+The roadmap for this package includes plans to add additional performance-focused utilities as time allows.
 
 ## Contribution Guidelines
 
-At this time, I am not accepting external pull requests. However, any feedback or suggestions are welcome and can be provided through the following channels:
+At this time, external pull requests are not being accepted. However, feedback and suggestions are welcome through the following channels:
 
-- **Feature Requests:** Please use GitHub Discussions to discuss new features or enhancements before opening a feature request. This will help ensure that your request is in line with the project's goals and vision.
-- **Bug Reports:** If you encounter any issues, feel free to open an issue so it can be addressed promptly.
+- **Feature Requests**: Use GitHub Discussions to propose new features or enhancements. This ensures alignment with the project's goals and vision before opening a feature request.
+- **Bug Reports**: If you encounter any issues, please open an issue on GitHub to report them.
 
-I appreciate your understanding and look forward to collaborating with you through discussions and issue tracking.
+Your understanding is appreciated, and I look forward to collaborating with you through discussions and issue tracking.

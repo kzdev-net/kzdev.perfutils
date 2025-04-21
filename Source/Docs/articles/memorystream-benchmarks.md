@@ -26,10 +26,6 @@ The benchmark scenarios are categorized into five groups:
 
   Benchmarks for streams instantiated with an already allocated and available byte array to evaluate "wrapped" mode behavior. [Read More](./wrapper-throughput-benchmarks.md)
 
-- **Continuous Growth Throughput**
-
-  Benchmarks demonstrating the performance impact of accessing the internal buffer directly and continuing to grow the stream afterward. [Read More](./continuous-growth-throughput-benchmarks.md)
-
 ## Reading Results
 
 ### Parameter Effect
