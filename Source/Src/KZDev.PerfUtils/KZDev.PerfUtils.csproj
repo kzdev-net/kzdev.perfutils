@@ -7,11 +7,11 @@
 	<PropertyGroup Label="Package">
 		<Title>KZDev Performance Utilities</Title>
 		<PackageId>KZDev.PerfUtils</PackageId>
-		<PackageTags>KZDev,Utilities,Performance,Concurrency,Interlocked,Interlocked-Xor,InterlockedOps,GC,Garbage-Collection,MemoryStream,MemoryStreamSlim,Stream,StringBuilder,StringBuilderCache</PackageTags>
+		<PackageTags>KZDev,Utilities,Performance,Concurrency,Interlocked,Interlocked-Xor,InterlockedOps,GC,Garbage-Collection,MemoryStream,MemoryStreamSlim,Stream,StringBuilder,StringBuilderCache,Compression</PackageTags>
 		<PackageReadmeFile>docs\README.md</PackageReadmeFile>
 		<PackageIcon>images\icon.png</PackageIcon>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<PackageDescription>Performance utilities for .NET projects, including the 'MemoryStreamSlim', 'StringBuilderCache', and 'InterlockedOps' classes.</PackageDescription>
+		<PackageDescription>Performance utilities for .NET projects, including the MemoryStreamSlim, StringBuilderCache, InterlockedOps, and Compression classes.</PackageDescription>
 		<PackageReleaseNotes>.NET 9 Support, MemoryStreamSlim Int64 Capacity Support, Added compression stream helper classes (version 2.0.0).</PackageReleaseNotes>
 		<EmbedUntrackedSources>true</EmbedUntrackedSources>
 		<RepositoryUrl>https://github.com/kzdev-net/kzdev.perfutils</RepositoryUrl>
