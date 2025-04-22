@@ -6,7 +6,7 @@ _layout: landing
 
 The [`KZDev.PerfUtils`](https://www.nuget.org/packages/KZDev.PerfUtils) package contains the following performance utility classes:
 
-- [`MemoryStreamSlim`](./articles/memorystreamslim.md): A high-performance, memory-efficient, and easy-to-use replacement for the `MemoryStream` class, offering significant performance benefits for large or frequently used streams.
+- [`MemoryStreamSlim`](./articles/memorystreamslim.md): A high-performance, memory-efficient, and easy-to-use drop-in replacement for the `MemoryStream` class, offering significant performance benefits for large or frequently used streams.
   - Compression helper classes that provide easy compression operations using `MemoryStreamSlim`:
     - [`MemoryStreamBrotli`](xref:KZDev.PerfUtils.MemoryStreamBrotli): Compresses source data using the Brotli algorithm into a **MemoryStreamSlim** instance.
     - [`MemoryStreamDeflate`](xref:KZDev.PerfUtils.MemoryStreamDeflate): Compresses source data using the Deflate algorithm into a **MemoryStreamSlim** instance.
@@ -138,12 +138,12 @@ The `MemoryStreamSlim` class is similar in concept to the [`RecyclableMemoryStre
 - More flexible across a broad range of use cases.
 - Fewer memory allocations and garbage collections.
 - Consistent performance across workloads.
-- Security-first design with opt-out zeroing of unused memory.
+- Security-first design with **opt-out** zeroing of unused memory.
 - Automatic memory trimming and release.
 - Supports **.NET Metrics and Events** for monitoring.
 - Optionally uses native memory to avoid GC pressure.
 
-Unlike **RecyclableMemoryStream**, **MemoryStreamSlim** is specifically designed for dynamically sized memory streams and not as a `Stream` wrapper for existing byte arrays, although that use case is supported. This is covered more in the full [documentation](articles/getting-started.md). Performance comparisons are available in the [Benchmarks](./articles/memorystream-benchmarks.md) section.
+Performance comparisons are available in the [Benchmarks](./articles/memorystream-benchmarks.md) section.
 
 ## Documentation
 

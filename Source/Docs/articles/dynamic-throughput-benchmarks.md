@@ -4,9 +4,9 @@ These benchmarks evaluate the performance of dynamic, expandable streams. The st
 
 ## Summary 
 
-The benchmark results show that `MemoryStreamSlim` consistently allocates less memory than other classes, with throughput performance on par with or better than **RecyclableMemoryStream**. In some use cases, MemoryStreamSlim performs dramatically better. While these cases are generally edge scenarios, they demonstrate that MemoryStreamSlim provides more consistent and deterministic performance across a wide range of scenarios.
+The benchmark results show that `MemoryStreamSlim` consistently allocates less memory than other classes, with throughput performance on par with or better than **RecyclableMemoryStream**. In some use cases, **MemoryStreamSlim** performs dramatically better. While these cases may not always represent real-world scenarios, they demonstrate that **MemoryStreamSlim** provides more consistent and deterministic performance across a wide range of scenarios.
 
-For security-sensitive applications, `MemoryStreamSlim` performs better in most cases when the option to zero out unused memory buffers is enabled ([`ZeroBuffers`](#zerobuffers) benchmark parameter). In these benchmarks, when zeroing out memory buffers is enabled, the MemoryStreamSlim option to clear memory buffers "on release" was used to provide a fair comparison to other classes. However, by default, a more efficient option to clear buffers out-of-band is used, which further improves throughput performance by avoiding the cost of clearing memory buffers at the time of release, instead performing this task in a background thread.
+For security-sensitive applications, `MemoryStreamSlim` performs better in most cases when the option to zero out unused memory buffers is enabled ([`ZeroBuffers`](#zerobuffers) benchmark parameter). In these benchmarks, when zeroing out memory buffers is enabled, the **MemoryStreamSlim** option to clear memory buffers "on release" was used to provide a fair comparison to other classes. However, by default, a more efficient option to clear buffers out-of-band is used, which further improves throughput performance by avoiding the cost of clearing memory buffers at the time of release, instead performing this task in a background thread.
 
 The results for segmented operations also show that **RecyclableMemoryStream** has a high memory allocation rate and incurs a large number of garbage collections when stream sizes grow large, especially when the initial capacity is not provided during instantiation ([`CapacityOnCreate`](#capacityoncreate) benchmark parameter is **false**).
 
@@ -77,7 +77,7 @@ The amount of data written to the stream in each loop of the operation. The data
 - When **true**, the stream is created with the option to zero out memory buffers when they are no longer used.
 - When **false**, the stream is created with the option to not zero out memory buffers.
 
-For the **MemoryStreamSlim** class, the [`ZeroBufferBehavior`](xref:KZDev.PerfUtils.MemoryStreamSlimOptions.ZeroBufferBehavior) option is set to `OnRelease` to provide a fair comparison to other classes. The MemoryStream class does not support zeroing out memory buffers (used memory is always cleared), so this parameter does not apply to that class.
+When **ZeroBuffers** is **true**, for the **MemoryStreamSlim** class, the [`ZeroBufferBehavior`](xref:KZDev.PerfUtils.MemoryStreamSlimOptions.ZeroBufferBehavior) option is set to `OnRelease` to provide a fair comparison to other classes. The **MemoryStream** class does not support zeroing out memory buffers (used memory is always cleared), so this parameter does not apply to that class.
 
 ### GrowEachLoop
 

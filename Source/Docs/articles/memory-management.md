@@ -12,9 +12,9 @@ By default, **MemoryStreamSlim** zeroes out its memory buffers when they are no 
 
 You can control how memory buffers are cleared by setting the `MemoryStreamSlimOptions` [`ZeroBufferBehavior`](xref:KZDev.PerfUtils.MemoryStreamSlimOptions.ZeroBufferBehavior) property. This property can be set globally as a default value or per instance when instantiating **MemoryStreamSlim**. The ZeroBufferBehavior property can be set to one of the following [MemoryStreamSlimZeroBufferOption](xref:KZDev.PerfUtils.MemoryStreamSlimZeroBufferOption) values:
 
-- None: No clearing of memory buffers is performed. This is the fastest option but may leave potentially sensitive data in memory. For streams that do not contain sensitive data, this can improve performance.
-- OutOfBand: This is the default behavior. Memory buffers are cleared out-of-band, meaning the clearing is done on a separate thread. This reduces the latency impact on the thread disposing of or reducing the capacity of **MemoryStreamSlim**. However, it may briefly leave information in memory before it is cleared and returned to the buffer cache. This hybrid approach balances security and performance.
-- OnRelease: Memory buffers are cleared immediately when the **MemoryStreamSlim** instance is disposed or when buffers are released due to capacity reduction. This is the most secure option but can impact latency performance when disposing of **MemoryStreamSlim** instances with large memory buffers.
+- **None**: No clearing of memory buffers is performed. This is the fastest option but may leave potentially sensitive data in memory. For streams that do not contain sensitive data, this can improve performance.
+- **OutOfBand**: This is the default behavior. Memory buffers are cleared out-of-band, meaning the clearing is done on a separate thread. This reduces the latency impact on the thread disposing of or reducing the capacity of **MemoryStreamSlim**. However, it may briefly leave information in memory before it is cleared and returned to the buffer cache. This hybrid approach balances security and performance.
+- **OnRelease**: Memory buffers are cleared immediately when the **MemoryStreamSlim** instance is disposed or when buffers are released due to capacity reduction. This is the most secure option but can impact latency performance when disposing of **MemoryStreamSlim** instances with large memory buffers.
 
 ```csharp
 using KZDev.PerfUtils;
@@ -49,7 +49,7 @@ using KZDev.PerfUtils;
 MemoryStreamSlim.ReleaseMemoryBuffers();
 ```
 
-The primary goal of caching and reusing memory buffers is to reduce allocations and deallocations and prevent LOH fragmentation. Therefore, it is generally best to let the library manage memory automatically. However, in cases where you have used an exceptionally large **MemoryStreamSlim** instance and know it was a one-off use, you can call this method to quickly release the cached memory buffers.
+The primary goal of caching and reusing memory buffers is to reduce allocations and deallocations and prevent LOH fragmentation. Therefore, it is generally best to let the library manage memory automatically. However, in cases where you have used an exceptionally large **MemoryStreamSlim** instance and know it was a one-off use, you can call this method to quickly release the excess cached memory buffers.
 
 After calling `ReleaseMemoryBuffers`, future **MemoryStreamSlim** instances will allocate new memory buffers and rebuild the cache as needed. Old memory buffers will become eligible for garbage collection once all stream instances using them are disposed.
 

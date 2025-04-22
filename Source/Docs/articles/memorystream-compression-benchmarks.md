@@ -40,7 +40,7 @@ A single benchmark operation consists of performing five loops of the following 
 For the benchmarks:
 
 - **MemoryStreamSlim** and **RecyclableMemoryStream** are created with the option to zero out memory buffers disabled to focus the performance comparison on the compression operation.
-- The MemoryStream class does not support zeroing out memory buffers (its internal buffers are always allocated with new byte[]), so this option does not apply.
+- The **MemoryStream** class does not support zeroing out memory buffers (its internal buffers are always allocated with new byte[]), so this option does not apply.
 
 ### Benchmark Parameters
 
@@ -55,9 +55,9 @@ The size of the source data that is compressed into the destination stream in ea
 - When **true**, the destination stream is instantiated with the data size as the initial capacity.
 - When **false**, the stream is created with the default capacity (no initial capacity specified).
 
-The results show no notable difference in throughput performance whether this parameter is 'true' or 'false'. However, there is a noticeable impact on memory allocations for **MemoryStream** and a significant impact for **RecyclableMemoryStream** when this is **false**. 
+The results show no notable difference in throughput performance whether this parameter is **true** or **false**. However, there is a noticeable impact on memory allocations for **MemoryStream** and a significant impact for **RecyclableMemoryStream** when this is **false**. 
 
-The issue with this parameter is that the capacity set on the stream for the benchmark is a best guess based on the data size, and the actual size of the compressed data is not known until after the compression operation is complete. This means that the used capacity may be too small or too large, however the guess capacity used did result in generally better allocation results in these benchmarks. 
+The issue with this parameter is that the capacity set on the stream for the benchmark is a best guess based on the data size (source data size is used), and the actual size of the compressed data is not known until after the compression operation is complete. This means that the used capacity may be too small or too large, however the guess capacity used in these benchmarks did result in generally better allocation results in this case. 
 
 ## Benchmark Results
 

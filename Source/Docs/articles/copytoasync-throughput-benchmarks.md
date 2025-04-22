@@ -1,6 +1,6 @@
 # CopyToAsync Throughput Benchmark
 
-In-memory-based streams typically do not require asynchronous operations in most scenarios because all operations are synchronous and in-memory. However, there are cases where the data in the stream needs to be copied to another stream instance with actual asynchronous behavior, such as a **FileStream**. While this may not be a common use case, it is a real-world scenario. This is where the `CopyToAsync` method becomes relevant.
+In-memory-based streams typically do not require asynchronous operations in most scenarios because all operations are synchronous and in-memory. However, there are cases where the data in the stream needs to be copied to another stream instance with actual asynchronous behavior, such as a **FileStream**. This is where the `CopyToAsync` method becomes relevant.
 
 This benchmark scenario uses stream instances that are instantiated as expandable (dynamically growing) streams. The stream is filled with random data, similar to the [`Bulk Fill and Read`](./dynamic-throughput-benchmarks.md#bulk-fill-and-read) scenario.
 
@@ -35,7 +35,7 @@ A single benchmark operation consists of performing five loops of the following 
 1. Call CopyToAsync() on the stream, passing a mock asynchronous file I/O stream destination.
 1. Dispose of the stream instance.
 
-**MemoryStreamSlim** and **RecyclableMemoryStream** classes are created with the option to zero out memory buffers when they are no longer used disabled to focus the benchmark performance on the **CopyToAsync()** call. The **MemoryStream** class does not have an option to zero out memory buffers (used memory is always cleared, i.e., internal buffers are allocated with new byte[]), so this parameter does not apply to that class.
+**MemoryStreamSlim** and **RecyclableMemoryStream** classes are created with the option to zero out memory buffers when they are no longer used set to disabled in order to focus the benchmark performance on the **CopyToAsync()** call. The **MemoryStream** class does not have an option to zero out memory buffers (used memory is always cleared, i.e., internal buffers are allocated with new byte[]), so this parameter does not apply to that class.
 
 ### Asynchronous Stream Emulation
 

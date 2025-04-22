@@ -62,7 +62,7 @@ If the predicate returns false, both values in the tuple will be the same, refle
 
 ### Predicate Overloads
 
-To avoid closures when the predicate requires additional arguments, overloads of the conditional methods accept a predicate with an additional condition data argument.
+To avoid **closures** when the predicate requires additional arguments, overloads of the conditional methods accept a predicate with an additional condition data argument.
 
 ```csharp
 public class ConditionXorExample
