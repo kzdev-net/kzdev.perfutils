@@ -9,7 +9,7 @@
     <PropertyGroup Label="SourceGlobals">
         <Configurations>Debug;Release;Profile;Package</Configurations>
         <TargetFrameworks>net9.0;net8.0;net6.0</TargetFrameworks>
-        <Version>2.0.0-alpha.0</Version>
+        <Version>2.0.0</Version>
         <Authors>Kevin Zehrer</Authors>
         <Copyright>Copyright © 2024-2025 Kevin Zehrer. All rights reserved.</Copyright>
         <Product>KZDev Performance Utilities</Product>

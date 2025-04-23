@@ -175,6 +175,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StringsBenchmarks", "Perf\S
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KZDev.PerfUtils.Memory.Compression.UnitTests", "Tst\KZDev.PerfUtils.Memory.Compression.UnitTests\KZDev.PerfUtils.Memory.Compression.UnitTests.csproj", "{100B56BC-D0CE-4FF0-AD96-C07E412F6689}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "v2.0", "v2.0", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "images", "images", "{3ECAE712-143D-49CF-B7C9-1971EEDDDBBC}"
+	ProjectSection(SolutionItems) = preProject
+		Src\KZDev.PerfUtils\Package\v2.0\images\memorystreamslim_sample.jpg = Src\KZDev.PerfUtils\Package\v2.0\images\memorystreamslim_sample.jpg
+		Src\KZDev.PerfUtils\Package\v2.0\images\stringbuilder_sample.jpg = Src\KZDev.PerfUtils\Package\v2.0\images\stringbuilder_sample.jpg
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -357,6 +365,8 @@ Global
 		{F7CED94F-D445-4ACB-AA59-438B3A05068F} = {F8C76B35-0758-433E-953B-0D7E9D63DE13}
 		{C648FCE8-1F9F-4E2B-8CC7-52BE3692A8E4} = {FC849880-867F-4404-B3A7-A9E0D32B323B}
 		{100B56BC-D0CE-4FF0-AD96-C07E412F6689} = {F8C76B35-0758-433E-953B-0D7E9D63DE13}
+		{02EA681E-C7D8-13C7-8484-4AC65E1B71E8} = {D1035E58-BF82-446D-BF8B-168266DAE600}
+		{3ECAE712-143D-49CF-B7C9-1971EEDDDBBC} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FE0AB859-B820-470E-AA57-2337B2495B50}
