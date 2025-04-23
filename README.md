@@ -10,9 +10,9 @@ This repository contains the  ['KZDev.PerfUtils'](https://www.nuget.org/packages
 
 This sampling of performance benchmarks clearly demonstrates the advantages of using the KZDev.PerfUtils package:
 
-![StringBuilderCache Performance Sample](https://raw.githubusercontent.com/kzdev-net/kzdev.perfutils/refs/heads/main/Source/Docs/images/stringbuilder_sample.jpg)
+![StringBuilderCache Performance Sample](https://raw.githubusercontent.com/kzdev-net/kzdev.perfutils/refs/heads/main/Source/Src/KZDev.PerfUtils/Package/v2.0/images/stringbuilder_sample.jpg)
 
-![MemoryStreamSlim Performance Sample](https://raw.githubusercontent.com/kzdev-net/kzdev.perfutils/refs/heads/main/Source/Docs/images/memorystreamslim_sample.jpg)
+![MemoryStreamSlim Performance Sample](https://raw.githubusercontent.com/kzdev-net/kzdev.perfutils/refs/heads/main/Source/Src/KZDev.PerfUtils/Package/v2.0/images/memorystreamslim_sample.jpg)
 
 For more details, refer to the benchmark related pages in the [documentation](https://kzdev-net.github.io/kzdev.perfutils/).
 
