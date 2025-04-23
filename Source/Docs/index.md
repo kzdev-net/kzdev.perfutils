@@ -4,47 +4,97 @@ _layout: landing
 
 # PerfUtils
 
-The `KZDev.PerfUtils` package contains the following performance utility classes:
+The [`KZDev.PerfUtils`](https://www.nuget.org/packages/KZDev.PerfUtils) package contains the following performance utility classes:
 
-- [`MemoryStreamSlim`](./articles/memorystreamslim.md) - a high-performance, memory-efficient, easy-to-use replacement for the `MemoryStream` class that provides particular performance benefits for large or frequently used streams. 
-- [`StringBuilderCache`](./articles/stringbuildercache.md) - a thread-safe cache of `StringBuilder` instances to improve speed and reduce the overhead of memory allocations associated with using the `StringBuilder` class. 
-- [`InterlockedOps`](./articles/interlockedops.md) - which provides additional atomic thread-safe operations to extend the functionality of the `Interlocked` class in the .NET Class Library.
+- [`MemoryStreamSlim`](./articles/memorystreamslim.md): A high-performance, memory-efficient, and easy-to-use drop-in replacement for the `MemoryStream` class, offering significant performance benefits for large or frequently used streams.
+  - Compression helper classes that provide easy compression operations using `MemoryStreamSlim`:
+    - [`MemoryStreamBrotli`](xref:KZDev.PerfUtils.MemoryStreamBrotli): Compresses source data using the Brotli algorithm into a **MemoryStreamSlim** instance.
+    - [`MemoryStreamDeflate`](xref:KZDev.PerfUtils.MemoryStreamDeflate): Compresses source data using the Deflate algorithm into a **MemoryStreamSlim** instance.
+    - [`MemoryStreamGZip`](xref:KZDev.PerfUtils.MemoryStreamGZip): Compresses source data using the GZip algorithm into a **MemoryStreamSlim** instance.
+    - [`MemoryStreamZLib`](xref:KZDev.PerfUtils.MemoryStreamZLib): Compresses source data using the ZLib algorithm into a **MemoryStreamSlim** instance.
+- [`StringBuilderCache`](./articles/stringbuildercache.md): A thread-safe cache of `StringBuilder` instances to improve speed and reduce the overhead of memory allocations associated with using the **StringBuilder** class.
+- [`InterlockedOps`](./articles/interlockedops.md): Provides additional atomic thread-safe operations to extend the functionality of the `Interlocked` class in the .NET Class Library.
 
 See the individual [documentation pages](./articles/getting-started.md) and the [API Reference](xref:KZDev.PerfUtils) for more detailed information.
 
 ## Features
 
-`MemoryStreamSlim` is a drop-in replacement for the `MemoryStream` class used for dynamically sized streams that provides the following benefits:
+### MemoryStreamSlim
 
-* Throughput performance is better than the standard `MemoryStream`.
-* Much lower memory traffic and far fewer garbage collections than the standard `MemoryStream`.
-* Eliminates Large Object Heap (LOH) fragmentation caused by frequent use and release of various sized byte arrays used by the standard `MemoryStream`.
-* Simple replacement for `MemoryStream` with the same API, other than the constructor.
-* Optionally allows using native memory for storage, which allows even more flexibility to minimize GC pressure.
-* Monitoring with `Metrics` and `Events` features of the .NET runtime.
+`MemoryStreamSlim` is a drop-in replacement for the **MemoryStream** class used for dynamically sized streams, offering the following benefits:
 
-`StringBuilderCache` is a static class that provides a thread-safe cache of `StringBuilder` instances to reduce the number of allocations and deallocations of `StringBuilder` objects in high-throughput scenarios with simple operations:
+- Better throughput performance compared to the standard **MemoryStream** and the **RecyclableMemoryStream**.
+- Significantly lower memory traffic and fewer garbage collections.
+- Eliminates Large Object Heap (LOH) fragmentation caused by frequent use and release of various-sized byte arrays.
+- Simple replacement for **MemoryStream** with the same API, except for the constructor.
+- Optionally uses native memory for storage, minimizing GC pressure.
+- Supports monitoring with **.NET Metrics and Events**.
+- More efficient compression when used as a destination for compressed data.
 
-* Acquire : Get a `StringBuilder` instance from the cache.
-* Release : Return a `StringBuilder` instance to the cache.
-* GetStringAndRelease : Get the string from a `StringBuilder` instance and return it to the cache.
-* GetScope : Get a `using` scoped `StringBuilder` instance from the cache and return it to the cache when the scope is exited.
-* Monitoring with `Events` feature of the .NET runtime for detailed cache management.
+### StringBuilderCache
 
-`InterlockedOps` is a static class providing the following thread-safe atomic operations:
+`StringBuilderCache` is a static class that provides a thread-safe cache of **StringBuilder** instances, reducing the number of allocations and deallocations in high-throughput scenarios. Key features include:
 
-* Xor : Exclusive OR operation on any integer types.
-* ClearBits : Clear bits on any integer types.
-* SetBits : Set bits on any integer types.
-* ConditionAnd : Conditionally update bits using an AND operation on any integer types.
-* ConditionOr : Conditionally update bits using an OR operation on any integer types.
-* ConditionXor : Conditionally update bits using an XOR operation on any integer types.
-* ConditionClearBits : Conditionally clear bits on any integer types.
-* ConditionSetBits : Conditionally set bits on any integer types.
+- `Acquire`: Retrieves a **StringBuilder** instance from the cache.
+- `Release`: Returns a **StringBuilder** instance to the cache.
+- `GetStringAndRelease`: Retrieves a string from a **StringBuilder** instance and returns the builder to the cache.
+- `GetScope`: Provides a `using` scoped **StringBuilder** instance, automatically returning it to the cache when the scope is exited.
+- Supports monitoring with **.NET Events** for detailed cache management.
 
-## StringBuilderCache Example
+### InterlockedOps
 
-Below is an example of how to use the `StringBuilderCache` class to reduce the number of allocations and deallocations of `StringBuilder` objects in high-throughput scenarios. The `GetStringAndRelease` method is used to get the string from a `StringBuilder` instance and return it to the cache.
+`InterlockedOps` is a static class providing thread-safe atomic operations, including:
+
+- `Xor`: Performs an exclusive OR operation on any integer type.
+- `ClearBits`: Clears bits on any integer type.
+- `SetBits`: Sets bits on any integer type.
+- `ConditionAnd`: Conditionally updates bits using an AND operation.
+- `ConditionOr`: Conditionally updates bits using an OR operation.
+- `ConditionXor`: Conditionally updates bits using an XOR operation.
+- `ConditionClearBits`: Conditionally clears bits.
+- `ConditionSetBits`: Conditionally sets bits.
+
+## Examples
+
+### MemoryStreamSlim Example
+
+Below is an example of how to use the `MemoryStreamSlim` class. Other than instantiation using the `Create` method, the API is identical to the standard **MemoryStream** class:
+
+```csharp
+using KZDev.PerfUtils;
+
+// Create a new MemoryStreamSlim instance
+// For the best management of the memory buffers, it is very important to
+// dispose of the MemoryStreamSlim instance when it is no longer needed.
+using (MemoryStreamSlim stream = MemoryStreamSlim.Create())
+{
+    // Write some data to the stream
+    stream.Write(new byte[] { 1, 2, 3, 4, 5 }, 0, 5);
+
+    // Read the data back from the stream
+    stream.Position = 0;
+    byte[] buffer = new byte[5];
+    stream.Read(buffer, 0, 5);
+}
+```
+
+### Compression Example
+
+Below is an example of using the `MemoryStreamDeflate` class for efficient compression:
+
+```csharp
+using KZDev.PerfUtils;
+
+public MemoryStreamSlim CompressData(byte[] data)
+{
+    return MemoryStreamDeflate.Compress(data);
+}
+```
+
+### StringBuilderCache Example
+
+Below is an example of using the `StringBuilderCache` class to reduce allocations and deallocations of **StringBuilder** objects in high-throughput scenarios:
+
 ```csharp
 using KZDev.PerfUtils;
 
@@ -60,9 +110,10 @@ public class StringBuilderExample
 }
 ```
 
-## InterlockedOps Example
 
-Below is an example of how to use the `InterlockedOps` class to perform an atomic XOR operation on an integer variable. The `Xor` method is used to toggle a bit flag between `1` and `0` in a thread-safe manner and returns a boolean value indicating if the bit flag was set to 1.
+### InterlockedOps Example
+
+This example demonstrates using the `InterlockedOps` class to perform an atomic XOR operation on an integer variable:
 
 ```csharp
 using KZDev.PerfUtils;
@@ -79,44 +130,20 @@ public class XorExample
 }
 ```
 
-## MemoryStreamSlim Example
-
-Below is an example of how to use the `MemoryStreamSlim` class. Other than instantiation using the `Create` method, the API is identical to the standard `MemoryStream` class. It is always a best practice to dispose of the `MemoryStreamSlim` instance when it is no longer needed.
-
-```csharp
-using KZDev.PerfUtils;
-
-// Create a new MemoryStreamSlim instance
-// For the best management of the memory buffers, it is very important to
-// dispose of the MemoryStreamSlim instance when it is no longer needed.
-using (MemoryStreamSlim stream = MemoryStreamSlim.Create())
-{
-	// Write some data to the stream
-	stream.Write(new byte[] { 1, 2, 3, 4, 5 }, 0, 5);
-
-	// Read the data back from the stream
-	stream.Position = 0;
-	byte[] buffer = new byte[5];
-	stream.Read(buffer, 0, 5);
-}
-```
-
 ## Compare to RecyclableMemoryStream
 
-The `MemoryStreamSlim` class is similar in concept and purpose to the [`RecyclableMemoryStream`](https://www.nuget.org/packages/Microsoft.IO.RecyclableMemoryStream) class from Microsoft however the internal implementation of buffer management is quite different. Also, compared to `RecyclableMemoryStream`, the `MemoryStreamSlim` class is designed to:
+The `MemoryStreamSlim` class is similar in concept to the [`RecyclableMemoryStream`](https://www.nuget.org/packages/Microsoft.IO.RecyclableMemoryStream) class but offers several advantages:
 
-* 'Just work' and be easier to use without tuning parameters.
-* Be more flexible in most use cases.
-* Perform fewer memory allocations.
-* Incur fewer garbage collections.
-* Perform on par or better in terms of throughput performance.
-* Provide more consistent performance across different workloads.
-* Treat security as a priority and opt-out rather than opt-in zero'ing unused memory.
-* Automatically trim and release extra memory when possible.
-* Monitoring available through .NET counter `Metrics` as well as `Events`.
-* Optionally allow using native memory for storage to avoid GC pressure altogether.
+- Easier to use without requiring parameter tuning.
+- More flexible across a broad range of use cases.
+- Fewer memory allocations and garbage collections.
+- Consistent performance across workloads.
+- Security-first design with **opt-out** zeroing of unused memory.
+- Automatic memory trimming and release.
+- Supports **.NET Metrics and Events** for monitoring.
+- Optionally uses native memory to avoid GC pressure.
 
-One other important difference is that `MemoryStreamSlim` is specifically designed to be used for dynamically sized memory streams and not as a `Stream` wrapper around existing in-memory byte arrays. `RecyclableMemoryStream` is designed to be used in both scenarios, but that approach can lead to some significant performance issues and non-deterministic behaviors. This is covered more in the full documentation. Performance comparisons are also available in the [Benchmarks](./articles/memorystream-benchmarks.md) section.
+Performance comparisons are available in the [Benchmarks](./articles/memorystream-benchmarks.md) section.
 
 ## Documentation
 
@@ -124,4 +151,4 @@ Full documentation for the package is available on the [PerfUtils Documentation]
 
 ## Future Features
 
-The roadmap plan for this package is to add a number of additional helpful performance focused utilities. These will be forthcoming as time permits.
+The roadmap for this package includes additional performance-focused utilities, which will be added as time permits.

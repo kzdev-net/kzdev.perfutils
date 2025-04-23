@@ -1,18 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<ItemGroup>
-		<PackageReference Include="Bogus" Version="$(PerfUtils-Pkg-Bogus)" />
-		<PackageReference Include="FluentAssertions" Version="$(PerfUtils-Pkg-FluentAssertions)" />
-		<PackageReference Include="Microsoft.Extensions.Configuration" Version="$(PerfUtils-Pkg-Microsoft_Extensions_Configuration)" />
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(PerfUtils-Pkg-Microsoft_Extensions_DependencyInjection)" />
-		<PackageReference Include="Microsoft.Extensions.Hosting" Version="$(PerfUtils-Pkg-Microsoft_Extensions_Hosting)" />
-		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(PerfUtils-Pkg-Microsoft_NET_Test_Sdk)" />
-		<PackageReference Include="Moq" Version="$(PerfUtils-Pkg-Moq)" />
-		<PackageReference Include="xunit" Version="$(PerfUtils-Pkg-xunit)" />
-		<PackageReference Include="XunitXml.TestLogger" Version="$(PerfUtils-Pkg-XunitXml_TestLogger)" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage" />
+		<PackageReference Include="Bogus" />
+		<PackageReference Include="FluentAssertions" />
+		<PackageReference Include="Microsoft.Extensions.Configuration" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+		<PackageReference Include="Microsoft.Extensions.Hosting" />
+		<PackageReference Include="Moq" />
+		<PackageReference Include="xunit.v3.extensibility.core" />
+		<PackageReference Include="XunitXml.TestLogger" />
 	</ItemGroup>
 
 	<ItemGroup>

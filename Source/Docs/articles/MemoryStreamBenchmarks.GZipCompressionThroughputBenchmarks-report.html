@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='utf-8' />
+<title>MemoryStreamBenchmarks.GZipCompressionThroughputBenchmarks-20250413-221746</title>
+
+<style type="text/css">
+	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
+	td, th { padding: 6px 13px; border: 1px solid #ddd; text-align: right; }
+	tr { background-color: #fff; border-top: 1px solid #ccc; }
+	tr:nth-child(even) { background: #f8f8f8; }
+</style>
+</head>
+<body>
+<pre><code>
+BenchmarkDotNet v0.14.0, Windows 11 (10.0.26100.3775)
+Intel Core i9-14900K, 1 CPU, 32 logical and 24 physical cores
+.NET SDK 9.0.203
+  [Host]     : .NET 9.0.4 (9.0.425.16305), X64 RyuJIT AVX2
+  DefaultJob : .NET 9.0.4 (9.0.425.16305), X64 RyuJIT AVX2
+</code></pre>
+<pre><code></code></pre>
+
+<table>
+<thead><tr><th>Method                             </th><th>DataSize</th><th>CapacityOnCreate</th><th>Mean   </th><th>Error</th><th>StdDev</th><th>Ratio</th><th>RatioSD</th><th>Gen0</th><th>Gen1</th><th>Gen2</th><th>Allocated</th><th>Alloc Ratio</th>
+</tr>
+</thead><tbody><tr><td>&#39;MemoryStream GZip Compression&#39;</td><td>131072</td><td>False</td><td>10.099 ms</td><td>0.1433 ms</td><td>0.1341 ms</td><td>1.00</td><td>0.02</td><td>609.3750</td><td>609.3750</td><td>609.3750</td><td>2522.56 KB</td><td>1.000</td>
+</tr><tr><td>&#39;RecyclableMemoryStream GZip Compression&#39;</td><td>131072</td><td>False</td><td>9.561 ms</td><td>0.0615 ms</td><td>0.0480 ms</td><td>0.95</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>2.67 KB</td><td>0.001</td>
+</tr><tr><td>&#39;MemoryStreamSlim GZip Compression&#39;</td><td>131072</td><td>False</td><td>9.535 ms</td><td>0.0658 ms</td><td>0.0616 ms</td><td>0.94</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>2.63 KB</td><td>0.001</td>
+</tr><tr><td>&#39;MemoryStream GZip Compression&#39;</td><td>131072</td><td>True</td><td>9.888 ms</td><td>0.0737 ms</td><td>0.0689 ms</td><td>1.00</td><td>0.01</td><td>609.3750</td><td>609.3750</td><td>609.3750</td><td>1922.09 KB</td><td>1.000</td>
+</tr><tr><td>&#39;RecyclableMemoryStream GZip Compression&#39;</td><td>131072</td><td>True</td><td>9.522 ms</td><td>0.0519 ms</td><td>0.0485 ms</td><td>0.96</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>2.67 KB</td><td>0.001</td>
+</tr><tr><td>&#39;MemoryStreamSlim GZip Compression&#39;</td><td>131072</td><td>True</td><td>9.550 ms</td><td>0.0493 ms</td><td>0.0462 ms</td><td>0.97</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>2.62 KB</td><td>0.001</td>
+</tr><tr><td>&#39;MemoryStream GZip Compression&#39;</td><td>16777216</td><td>False</td><td>1,308.009 ms</td><td>3.9998 ms</td><td>3.7414 ms</td><td>1.00</td><td>0.00</td><td>3000.0000</td><td>3000.0000</td><td>3000.0000</td><td>327645.35 KB</td><td>1.000</td>
+</tr><tr><td>&#39;RecyclableMemoryStream GZip Compression&#39;</td><td>16777216</td><td>False</td><td>1,271.541 ms</td><td>4.9122 ms</td><td>4.5948 ms</td><td>0.97</td><td>0.00</td><td>-</td><td>-</td><td>-</td><td>365.52 KB</td><td>0.001</td>
+</tr><tr><td>&#39;MemoryStreamSlim GZip Compression&#39;</td><td>16777216</td><td>False</td><td>1,270.226 ms</td><td>7.1360 ms</td><td>6.6750 ms</td><td>0.97</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>3.34 KB</td><td>0.000</td>
+</tr><tr><td>&#39;MemoryStream GZip Compression&#39;</td><td>16777216</td><td>True</td><td>1,288.504 ms</td><td>3.8238 ms</td><td>3.5768 ms</td><td>1.00</td><td>0.00</td><td>1000.0000</td><td>1000.0000</td><td>1000.0000</td><td>245763.05 KB</td><td>1.000</td>
+</tr><tr><td>&#39;RecyclableMemoryStream GZip Compression&#39;</td><td>16777216</td><td>True</td><td>1,271.058 ms</td><td>3.1034 ms</td><td>2.7510 ms</td><td>0.99</td><td>0.00</td><td>-</td><td>-</td><td>-</td><td>28.18 KB</td><td>0.000</td>
+</tr><tr><td>&#39;MemoryStreamSlim GZip Compression&#39;</td><td>16777216</td><td>True</td><td>1,274.414 ms</td><td>5.5392 ms</td><td>5.1814 ms</td><td>0.99</td><td>0.00</td><td>-</td><td>-</td><td>-</td><td>3.05 KB</td><td>0.000</td>
+</tr><tr><td>&#39;MemoryStream GZip Compression&#39;</td><td>209715200</td><td>False</td><td>16,086.608 ms</td><td>32.7362 ms</td><td>30.6215 ms</td><td>1.00</td><td>0.00</td><td>3000.0000</td><td>3000.0000</td><td>3000.0000</td><td>2621405.98 KB</td><td>1.000</td>
+</tr><tr><td>&#39;RecyclableMemoryStream GZip Compression&#39;</td><td>209715200</td><td>False</td><td>15,858.875 ms</td><td>41.2183 ms</td><td>38.5556 ms</td><td>0.99</td><td>0.00</td><td>2000.0000</td><td>-</td><td>-</td><td>50534.27 KB</td><td>0.019</td>
+</tr><tr><td>&#39;MemoryStreamSlim GZip Compression&#39;</td><td>209715200</td><td>False</td><td>15,866.391 ms</td><td>26.9045 ms</td><td>25.1665 ms</td><td>0.99</td><td>0.00</td><td>-</td><td>-</td><td>-</td><td>3.34 KB</td><td>0.000</td>
+</tr><tr><td>&#39;MemoryStream GZip Compression&#39;</td><td>209715200</td><td>True</td><td>16,085.437 ms</td><td>34.7819 ms</td><td>27.1554 ms</td><td>1.00</td><td>0.00</td><td>1000.0000</td><td>1000.0000</td><td>1000.0000</td><td>3072002.77 KB</td><td>1.000</td>
+</tr><tr><td>&#39;RecyclableMemoryStream GZip Compression&#39;</td><td>209715200</td><td>True</td><td>15,838.077 ms</td><td>25.3705 ms</td><td>23.7316 ms</td><td>0.98</td><td>0.00</td><td>-</td><td>-</td><td>-</td><td>315.68 KB</td><td>0.000</td>
+</tr><tr><td>&#39;MemoryStreamSlim GZip Compression&#39;</td><td>209715200</td><td>True</td><td>15,865.440 ms</td><td>33.1069 ms</td><td>30.9682 ms</td><td>0.99</td><td>0.00</td><td>-</td><td>-</td><td>-</td><td>3.71 KB</td><td>0.000</td>
+</tr></tbody></table>
+</body>
+</html>

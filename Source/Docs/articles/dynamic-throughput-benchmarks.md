@@ -1,66 +1,92 @@
 ﻿# Dynamic Growth Throughput Benchmarks
 
-The two scenarios in this category use a dynamic expandable stream that is instantiated with an initial zero length and capacity. The stream is then filled with data in a loop, and the data is read back in a loop to examing the throughput performance of reading and writing as well as the memory allocation and garbage collection impact of the different stream classes.
+These benchmarks evaluate the performance of dynamic, expandable streams. The stream is filled with data in a loop, and the data is read back in a loop to examine the throughput performance of reading and writing, as well as the memory allocation and garbage collection impact of different stream classes.
 
 ## Summary 
 
-The benchmark results show that `MemoryStreamSlim` consistently allocates less memory than the other classes, and the throughput performance is on par with, or better than, `RecyclableMemoryStream`. There are some use cases where `MemoryStreamSlim` performs dramatically better. While those are generally edge cases, it does show that `MemoryStreamSlim` performance is more consistent and deterministic across a wide range of scenarios.
+The benchmark results show that `MemoryStreamSlim` consistently allocates less memory than other classes, with throughput performance on par with or better than **RecyclableMemoryStream**. In some use cases, **MemoryStreamSlim** performs dramatically better. While these cases may not always represent real-world scenarios, they demonstrate that **MemoryStreamSlim** provides more consistent and deterministic performance across a wide range of scenarios.
 
-For security senstive applications, `MemoryStreamSlim` performs better in most cases when the option to zero out unused memory buffers is enabled ([`ZeroBuffers`](#zerobuffers) benchmark parameter). In these benchmarks, when zeroing out memory buffers is enabled, the `MemoryStreamSlim` option to clear memory buffers 'on release' was used as a fair comparison to the other classes. However, by default, a more efficient option to clear buffers out-of-band is used, and would further improve throughput performance by not incuring the cost of clearing memory buffers at the time of release, but instead doing so in a background thread.
+For security-sensitive applications, `MemoryStreamSlim` performs better in most cases when the option to zero out unused memory buffers is enabled ([`ZeroBuffers`](#zerobuffers) benchmark parameter). In these benchmarks, when zeroing out memory buffers is enabled, the **MemoryStreamSlim** option to clear memory buffers "on release" was used to provide a fair comparison to other classes. However, by default, a more efficient option to clear buffers out-of-band is used, which further improves throughput performance by avoiding the cost of clearing memory buffers at the time of release, instead performing this task in a background thread.
 
-The results for the segmented operations also show that `RecyclableMemoryStream` has a pretty high memory allocation rate and incurs a large number of garbage collections when the stream sizes get large, and the initial capacity is not provided on instantiation ([`CapacityOnCreate`](#capacityoncreate) benchmark parameter is `false`).
+The results for segmented operations also show that **RecyclableMemoryStream** has a high memory allocation rate and incurs a large number of garbage collections when stream sizes grow large, especially when the initial capacity is not provided during instantiation ([`CapacityOnCreate`](#capacityoncreate) benchmark parameter is **false**).
 
-The following sections describe the different types of benchmarks run, and some general information on how to read the results, the benchmark operations, parameters and scenarios used.
+The following sections describe the different types of benchmarks run, along with general information on how to interpret the results, the benchmark operations, parameters, and scenarios used.
 
-### Benchmark Operations
+## Example
 
-A single benchmark operation consists of performing a loop of steps that does the following:
+The following graph shows the memory allocations for the [`Segmented Fill And Read`](#segmented-fill-and-read) benchmarks. The horizontal axis shows the [DataSize](#datasize) written to the stream, and the allocations are expressed in KB. For this example, the **CapacityOnCreate**, **ZeroBuffers**, and **GrowEachLoop** parameters are all set to **false**. The graph shows the values in a logarithmic scale for better visibility of the differences in memory allocations.
+
+![Segmented Fill and Read Allocations](../images/segmented_fillandread_allocated.jpg){class="benchmarkimgcentered"}
+
+Even with a logarithmic scale, this graph highlights the efficiency of `MemoryStreamSlim` in handling memory allocations and reuse. It minimizes memory traffic and avoids unnecessary allocations, resulting in significantly lower memory usage on average. This efficiency is further reflected in the garbage collection (GC) values observed in the same benchmarks.
+
+| Class | DataSize | Gen0 | Gen1 | Gen2 |
+| --- | --: | --: | --: | --: |
+| MemoryStream | 131,072 | 208.252 | 208.252 | 208.252
+| RecyclableMemoryStream  | 131,072 | 0.0610 | 0 | 0
+| MemoryStreamSlim  | 131,072 | 0.0610 | 0 | 0
+| MemoryStream | 983,040 | 2496.0938 | 2496.0938 | 2496.0938
+| RecyclableMemoryStream  | 983,040 | 0.1221 | 0 | 0
+| MemoryStreamSlim  | 983,040 | 0 | 0 | 0
+| MemoryStream | 16,777,216 | 7468.75 | 7468.75 | 7468.75
+| RecyclableMemoryStream  | 16,777,216 | 19.5313 | 0 | 0
+| MemoryStreamSlim  | 16,777,216 | 0 | 0 | 0
+| MemoryStream | 100,597,760 | 24,666.6667 | 24,666.6667 | 24,666.6667
+| RecyclableMemoryStream  | 100,597,760 | 636.3636 | 0 | 0
+| MemoryStreamSlim  | 100,597,760 | 0 | 0 | 0
+| MemoryStream | 209,715,200 | 8000.00 | 8000.00 | 8000.00
+| RecyclableMemoryStream  | 209,715,200 | 2600.00 | 200.00 | 0
+| MemoryStreamSlim  | 209,715,200 | 0 | 0 | 0
+
+## Benchmark Scenarios
+
+The following scenarios were used for the benchmarks:
+
+### Bulk Fill and Read
+
+In this scenario, the write and read operations are performed in bulk. The entire data size is written in a single operation and read back in a single operation. The results of the benchmarks are available in the [`Bulk Fill And Read`](./MemoryStreamBenchmarks.BulkFillAndReadThroughputBenchmarks-report-github.md) benchmark output.
+
+### Segmented Fill and Read
+
+In this scenario, the write step is performed by writing a successive series of 4-kilobyte segments until [`DataSize`](#datasize) bytes have been written to the stream. The same approach is used to read the data back in 4KB segments. The results of the benchmarks are available in the [`Segmented Fill And Read`](./MemoryStreamBenchmarks.SegmentedFillAndReadThroughputBenchmarks-report-github.md) benchmark output.
+
+## Benchmark Operation
+
+A single benchmark operation consists of performing five loops of the following steps:
 
 1. Create a new stream instance.
 1. Write test data to the stream.
 1. Read data back from the stream.
 1. Dispose of the stream instance.
 
-The [number of loops](./memorystream-benchmarks.md#loop-count-impact) in each operation is determined by the [`DataSize`](#datasize) parameter to keep each benchmark reasonably consistent in duration, but the loop count is always the same for all classes being compared for any given DataSize parameter value.
+## Benchmark Parameters
 
-### Benchmark Parameters
+The following parameters were used in the benchmarks. These parameters appear as columns in the benchmark results alongside the [standard BenchmarkDotNet columns](./memorystream-benchmarks.md#legend).
 
-The following parameters were used in the benchmarks. These will appear as columns in the benchmark results along with the [standard BenchmarkDotNet columns](./memorystream-benchmarks.md#legend).
+### DataSize
 
-#### DataSize
+The amount of data written to the stream in each loop of the operation. The data is a byte array of the specified size. When the [GrowEachLoop](#groweachloop) parameter is set to true, the data size increases by a ratio of this value for each loop iteration. Otherwise, the data size remains fixed for all loop iterations.
 
-The amount of data to write to the stream in each loop of the operation. The data is a byte array of the specified size. When the [GrowEachLoop](#groweachloop) parameter is set to `true`, the data size is increased by 256 bytes for each loop iteration, otherwise the data size is fixed for all loop iterations.
+### CapacityOnCreate
 
-#### CapacityOnCreate
+- When **true**, the stream is instantiated with the current loop iteration's data size as the initial stream capacity.
+- When **false**, the stream is created with the default capacity (no initial capacity specified).
 
-When `true`, the stream is instantiated with the current loop iteration data size as the initial capacity. When `false`, the stream is created with the default capacity (no initial capacity specified).
+### ZeroBuffers
 
-#### ZeroBuffers
+- When **true**, the stream is created with the option to zero out memory buffers when they are no longer used.
+- When **false**, the stream is created with the option to not zero out memory buffers.
 
-When `true`, the stream is created with the option to zero out memory buffers when they are no longer used. When `false`, the stream is created with the option to not zero out memory buffers specified. For the `MemoryStreamSlim` class, the [`ZeroBufferBehavior`](xref:KZDev.PerfUtils.MemoryStreamSlimOptions.ZeroBufferBehavior) option is set to `OnRelease` to provide a fair comparison to the other classes.
+When **ZeroBuffers** is **true**, for the **MemoryStreamSlim** class, the [`ZeroBufferBehavior`](xref:KZDev.PerfUtils.MemoryStreamSlimOptions.ZeroBufferBehavior) option is set to `OnRelease` to provide a fair comparison to other classes. The **MemoryStream** class does not support zeroing out memory buffers (used memory is always cleared), so this parameter does not apply to that class.
 
-The `MemoryStream` class has no option to zero out memory buffers (used memory is always cleared), so this parameter does not apply to that class.
+### GrowEachLoop
 
-#### GrowEachLoop
+- When **true**, the data size increases for each loop iteration within a benchmark operation. The amount of growth for each loop is a fixed ratio of the initial [DataSize](#datasize) parameter value.
+- When **false**, the data size remains fixed for all loop iterations.
 
-When `true`, the data size is increased by 256 bytes for each loop iteration within a benchmark operation. When `false`, the data size is fixed for all loop iterations.
+## HTML Reports
 
-## Benchmark Scenarios
+Since the benchmark results can create large tables that are difficult to navigate due to horizontal and vertical scrolling, the results are also provided in separate HTML tables for each scenario.
 
-The following scenarios were used for the benchmarks.
-
-### Bulk Fill and Read
-
-For this scenario, the write and read operations are done in bulk, with the entire data size written in a single operation and read back in a single operation. The results of the benchmarks are found in the [`Bulk Fill And Read`](./MemoryStreamBenchmarks.BulkFillAndReadThroughputBenchmarks-report-github.md) benchmark output.
-
-### Segmented Fill and Read
-
-For this scenario, the write step is done by writing a successive series of 4 kilobyte segments until [`DataSize`](#datasize) bytes have been written to the stream. The same approach is then used to read the data back in 4K segments.
-The results of the benchmarks are found in the [`Segmented Fill And Read`](./MemoryStreamBenchmarks.SegmentedFillAndReadThroughputBenchmarks-report-github.md) benchmark output.
-
-### HTML Reports
-
-Since the benchmark results can create rather large tables, and the Markdown tables can be hard to absorb with the horizontal and vertical table scrolling, the results are also provided in separate HTML files for each scenario. 
-
-
-They can be found [here](./MemoryStreamBenchmarks.BulkFillAndReadThroughputBenchmarks-report.html) for the `Bulk Fill And Read` scenario and [here](./MemoryStreamBenchmarks.SegmentedFillAndReadThroughputBenchmarks-report.html) for the `Segmented Fill And Read` scenario.
+- [Bulk Fill and Read](./MemoryStreamBenchmarks.BulkFillAndReadThroughputBenchmarks-report.html)
+- [Segmented Fill and Read](./MemoryStreamBenchmarks.SegmentedFillAndReadThroughputBenchmarks-report.html)

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='utf-8' />
+<title>MemoryStreamBenchmarks.ZLibCompressionThroughputBenchmarks-20250414-001737</title>
+
+<style type="text/css">
+	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
+	td, th { padding: 6px 13px; border: 1px solid #ddd; text-align: right; }
+	tr { background-color: #fff; border-top: 1px solid #ccc; }
+	tr:nth-child(even) { background: #f8f8f8; }
+</style>
+</head>
+<body>
+<pre><code>
+BenchmarkDotNet v0.14.0, Windows 11 (10.0.26100.3775)
+Intel Core i9-14900K, 1 CPU, 32 logical and 24 physical cores
+.NET SDK 9.0.203
+  [Host]     : .NET 9.0.4 (9.0.425.16305), X64 RyuJIT AVX2
+  DefaultJob : .NET 9.0.4 (9.0.425.16305), X64 RyuJIT AVX2
+</code></pre>
+<pre><code></code></pre>
+
+<table>
+<thead><tr><th>Method                             </th><th>DataSize</th><th>CapacityOnCreate</th><th>Mean   </th><th>Error</th><th>StdDev</th><th>Ratio</th><th>Gen0</th><th>Gen1</th><th>Gen2</th><th>Allocated</th><th>Alloc Ratio</th>
+</tr>
+</thead><tbody><tr><td>&#39;MemoryStream ZLib Compression&#39;</td><td>131072</td><td>False</td><td>9.991 ms</td><td>0.0547 ms</td><td>0.0485 ms</td><td>1.00</td><td>609.3750</td><td>609.3750</td><td>609.3750</td><td>2522.56 KB</td><td>1.000</td>
+</tr><tr><td>&#39;RecyclableMemoryStream ZLib Compression&#39;</td><td>131072</td><td>False</td><td>9.535 ms</td><td>0.0606 ms</td><td>0.0537 ms</td><td>0.95</td><td>-</td><td>-</td><td>-</td><td>2.66 KB</td><td>0.001</td>
+</tr><tr><td>&#39;MemoryStreamSlim ZLib Compression&#39;</td><td>131072</td><td>False</td><td>9.691 ms</td><td>0.0703 ms</td><td>0.0658 ms</td><td>0.97</td><td>-</td><td>-</td><td>-</td><td>2.63 KB</td><td>0.001</td>
+</tr><tr><td>&#39;MemoryStream ZLib Compression&#39;</td><td>131072</td><td>True</td><td>10.015 ms</td><td>0.0580 ms</td><td>0.0543 ms</td><td>1.00</td><td>609.3750</td><td>609.3750</td><td>609.3750</td><td>1922.09 KB</td><td>1.000</td>
+</tr><tr><td>&#39;RecyclableMemoryStream ZLib Compression&#39;</td><td>131072</td><td>True</td><td>9.587 ms</td><td>0.0334 ms</td><td>0.0279 ms</td><td>0.96</td><td>-</td><td>-</td><td>-</td><td>2.66 KB</td><td>0.001</td>
+</tr><tr><td>&#39;MemoryStreamSlim ZLib Compression&#39;</td><td>131072</td><td>True</td><td>9.602 ms</td><td>0.0710 ms</td><td>0.0664 ms</td><td>0.96</td><td>-</td><td>-</td><td>-</td><td>2.63 KB</td><td>0.001</td>
+</tr><tr><td>&#39;MemoryStream ZLib Compression&#39;</td><td>16777216</td><td>False</td><td>1,312.773 ms</td><td>6.2521 ms</td><td>5.8482 ms</td><td>1.00</td><td>3000.0000</td><td>3000.0000</td><td>3000.0000</td><td>327645.63 KB</td><td>1.000</td>
+</tr><tr><td>&#39;RecyclableMemoryStream ZLib Compression&#39;</td><td>16777216</td><td>False</td><td>1,276.056 ms</td><td>5.1711 ms</td><td>4.8371 ms</td><td>0.97</td><td>-</td><td>-</td><td>-</td><td>365.52 KB</td><td>0.001</td>
+</tr><tr><td>&#39;MemoryStreamSlim ZLib Compression&#39;</td><td>16777216</td><td>False</td><td>1,275.155 ms</td><td>7.9215 ms</td><td>7.4098 ms</td><td>0.97</td><td>-</td><td>-</td><td>-</td><td>3.05 KB</td><td>0.000</td>
+</tr><tr><td>&#39;MemoryStream ZLib Compression&#39;</td><td>16777216</td><td>True</td><td>1,290.594 ms</td><td>7.9316 ms</td><td>7.4193 ms</td><td>1.00</td><td>1000.0000</td><td>1000.0000</td><td>1000.0000</td><td>245763.05 KB</td><td>1.000</td>
+</tr><tr><td>&#39;RecyclableMemoryStream ZLib Compression&#39;</td><td>16777216</td><td>True</td><td>1,270.175 ms</td><td>4.3321 ms</td><td>4.0523 ms</td><td>0.98</td><td>-</td><td>-</td><td>-</td><td>27.9 KB</td><td>0.000</td>
+</tr><tr><td>&#39;MemoryStreamSlim ZLib Compression&#39;</td><td>16777216</td><td>True</td><td>1,269.116 ms</td><td>3.1212 ms</td><td>2.9195 ms</td><td>0.98</td><td>-</td><td>-</td><td>-</td><td>3.34 KB</td><td>0.000</td>
+</tr><tr><td>&#39;MemoryStream ZLib Compression&#39;</td><td>209715200</td><td>False</td><td>16,089.546 ms</td><td>54.9184 ms</td><td>51.3707 ms</td><td>1.00</td><td>3000.0000</td><td>3000.0000</td><td>3000.0000</td><td>2621405.98 KB</td><td>1.000</td>
+</tr><tr><td>&#39;RecyclableMemoryStream ZLib Compression&#39;</td><td>209715200</td><td>False</td><td>15,873.406 ms</td><td>63.7087 ms</td><td>56.4761 ms</td><td>0.99</td><td>2000.0000</td><td>-</td><td>-</td><td>50534.93 KB</td><td>0.019</td>
+</tr><tr><td>&#39;MemoryStreamSlim ZLib Compression&#39;</td><td>209715200</td><td>False</td><td>15,865.850 ms</td><td>41.1266 ms</td><td>38.4698 ms</td><td>0.99</td><td>-</td><td>-</td><td>-</td><td>3.34 KB</td><td>0.000</td>
+</tr><tr><td>&#39;MemoryStream ZLib Compression&#39;</td><td>209715200</td><td>True</td><td>16,028.777 ms</td><td>20.8391 ms</td><td>19.4929 ms</td><td>1.00</td><td>1000.0000</td><td>1000.0000</td><td>1000.0000</td><td>3072003.05 KB</td><td>1.000</td>
+</tr><tr><td>&#39;RecyclableMemoryStream ZLib Compression&#39;</td><td>209715200</td><td>True</td><td>15,842.508 ms</td><td>24.4629 ms</td><td>21.6857 ms</td><td>0.99</td><td>-</td><td>-</td><td>-</td><td>315.4 KB</td><td>0.000</td>
+</tr><tr><td>&#39;MemoryStreamSlim ZLib Compression&#39;</td><td>209715200</td><td>True</td><td>15,853.586 ms</td><td>52.8778 ms</td><td>49.4619 ms</td><td>0.99</td><td>-</td><td>-</td><td>-</td><td>3.05 KB</td><td>0.000</td>
+</tr></tbody></table>
+</body>
+</html>

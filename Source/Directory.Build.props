@@ -7,13 +7,6 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <LangVersion>latest</LangVersion>
-    </PropertyGroup>
-    <!-- 
-    Define solution level package version properties
-   -->
-    <PropertyGroup Label="PackageVersions">
-	    <PerfUtils-Pkg-Microsoft_Extensions_Configuration>8.0.0</PerfUtils-Pkg-Microsoft_Extensions_Configuration>
-	    <PerfUtils-Pkg-Microsoft_Extensions_DependencyInjection>8.0.1</PerfUtils-Pkg-Microsoft_Extensions_DependencyInjection>
-	    <PerfUtils-Pkg-Microsoft_Extensions_Hosting>8.0.1</PerfUtils-Pkg-Microsoft_Extensions_Hosting>
+        <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     </PropertyGroup>
 </Project>

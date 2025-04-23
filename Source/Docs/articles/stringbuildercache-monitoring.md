@@ -1,10 +1,10 @@
 # Monitoring Events
 
-For detailed monitoring of `StringBuilderCache` cache management, you can use the `EventSource` events that are provided by the `PerfUtils` library with tools such as [`PerfView`](#perfview-example). The event source name is `KZDev.PerfUtils`. The following events are available.
+For detailed monitoring of `StringBuilderCache` cache management, you can use the **EventSource** events provided by the `PerfUtils` library with tools such as [`PerfView`](#perfview-example). The event source name is `KZDev.PerfUtils`. The following events are available.
 
 ## StringBuilderCreate event
 
-This event is raised when a new `StringBuilderCache.Acquire` method is called and a new `StringBuilder` instance is created because either the requested size is larger than the maximum size allowed in the cache or no `StringBuilder` instances are available in the cache to satisfy the request.
+This event is raised when a new `StringBuilderCache.Acquire` method is called and a new **StringBuilder** instance is created because either the requested size is larger than the maximum size allowed in the cache or no **StringBuilder** instances are available in the cache to satisfy the request.
 
 The following table shows the task, keyword, level, and opcode.
 
@@ -29,7 +29,7 @@ The following table shows the event data.
 
 ## StringBuilderCacheMiss event
 
-This event is raised when a `StringBuilderCache.Acquire` method is called and no `StringBuilder` instances are available in the cache to satisfy the request.
+This event is raised when a `StringBuilderCache.Acquire` method is called, and no **StringBuilder** instances are available in the cache to satisfy the request.
 
 The following table shows the task, keyword, level, and opcode.
 
@@ -53,7 +53,7 @@ The following table shows the event data.
 
 ## StringBuilderCacheHit event
 
-This event is raised when a `StringBuilderCache.Acquire` method is called and a `StringBuilder` instance is available in the cache and returned to satisfy the request.
+This event is raised when a `StringBuilderCache.Acquire` method is called, and a **StringBuilder** instance is available in the cache and returned to satisfy the request.
 
 The following table shows the task, keyword, level, and opcode.
 
@@ -73,13 +73,13 @@ The following table shows the event data.
 | --- | --- | --- |
 | requestedCapacity | Int32 | The requested StringBuilder capacity. |
 | builderCapacity | Int32 | The actual capacity of the returned StringBuilder instance. |
-| cacheType | UnicodeString | The type of cache the returned StringBuilder was pulled from. One of ['Global', 'Thread Local'] |
+| cacheType | UnicodeString | The type of cache from which the returned StringBuilder was pulled. One of ['Global', 'Thread Local'] |
 
 ---
 
 ## StringBuilderCacheStore event
 
-This event is raised when a `StringBuilder` instance is stored in the cache.
+This event is raised when a **StringBuilder** instance is stored in the cache.
 
 The following table shows the task, keyword, level, and opcode.
 
@@ -104,5 +104,5 @@ The following table shows the event data.
 
 ### PerfView example
 
-To capture all the events in [PerfView](https://github.com/microsoft/perfview) from the `KZDev.PerfUtils` library, you can use the string `*KZDev.PerfUtils` as an argument to the `-providers` option of the `perfview` command line tool. To also capture stack traces for the events, you can use the `StacksEnabled` command (`*KZDev.PerfUtils:@StacksEnabled=true`). See the [`perfview`](https://github.com/microsoft/perfview) documentation for more information on how to use the tool.
+To capture all the events in [PerfView](https://github.com/microsoft/perfview) from the `KZDev.PerfUtils` library, you can use the string `*KZDev.PerfUtils` as an argument for the `-providers` option of the `perfview` command line tool. To also capture stack traces for the events, you can use the `StacksEnabled` command (`*KZDev.PerfUtils:@StacksEnabled=true`). See the [`perfview`](https://github.com/microsoft/perfview) documentation for more information on how to use the tool.
 

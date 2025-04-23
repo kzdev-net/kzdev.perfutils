@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='utf-8' />
+<title>MemoryStreamBenchmarks.LargeSegmentedFillAndReadThroughputBenchmarks-20250413-230027</title>
+
+<style type="text/css">
+	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
+	td, th { padding: 6px 13px; border: 1px solid #ddd; text-align: right; }
+	tr { background-color: #fff; border-top: 1px solid #ccc; }
+	tr:nth-child(even) { background: #f8f8f8; }
+</style>
+</head>
+<body>
+<pre><code>
+BenchmarkDotNet v0.14.0, Windows 11 (10.0.26100.3775)
+Intel Core i9-14900K, 1 CPU, 32 logical and 24 physical cores
+.NET SDK 9.0.203
+  [Host]     : .NET 9.0.4 (9.0.425.16305), X64 RyuJIT AVX2
+  DefaultJob : .NET 9.0.4 (9.0.425.16305), X64 RyuJIT AVX2
+</code></pre>
+<pre><code></code></pre>
+
+<table>
+<thead><tr><th>Method                                </th><th>DataSize</th><th>CapacityOnCreate</th><th>ZeroBuffers</th><th>GrowEachLoop</th><th>Mean </th><th>Error</th><th>StdDev</th><th>Ratio</th><th>RatioSD</th><th>Gen0</th><th>Gen1</th><th>Gen2</th><th>Allocated</th><th>Alloc Ratio</th>
+</tr>
+</thead><tbody><tr><td>&#39;Large RecyclableMemoryStream fill and read&#39;</td><td>10737418240</td><td>False</td><td>False</td><td>False</td><td>1,082.80 ms</td><td>4.755 ms</td><td>4.447 ms</td><td>1.00</td><td>0.01</td><td>22000.0000</td><td>4000.0000</td><td>-</td><td>420127328 B</td><td>1.000</td>
+</tr><tr><td>&#39;Large MemoryStreamSlim fill and read&#39;</td><td>10737418240</td><td>False</td><td>False</td><td>False</td><td>1,072.46 ms</td><td>3.269 ms</td><td>3.058 ms</td><td>0.99</td><td>0.00</td><td>-</td><td>-</td><td>-</td><td>704 B</td><td>0.000</td>
+</tr><tr><td>&#39;Large RecyclableMemoryStream fill and read&#39;</td><td>10737418240</td><td>False</td><td>False</td><td>True</td><td>1,075.13 ms</td><td>4.993 ms</td><td>4.671 ms</td><td>1.00</td><td>0.01</td><td>22000.0000</td><td>4000.0000</td><td>-</td><td>420126992 B</td><td>1.000</td>
+</tr><tr><td>&#39;Large MemoryStreamSlim fill and read&#39;</td><td>10737418240</td><td>False</td><td>False</td><td>True</td><td>1,068.06 ms</td><td>4.738 ms</td><td>4.200 ms</td><td>0.99</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>704 B</td><td>0.000</td>
+</tr><tr><td>&#39;Large RecyclableMemoryStream fill and read&#39;</td><td>10737418240</td><td>False</td><td>True</td><td>False</td><td>1,831.72 ms</td><td>19.504 ms</td><td>18.244 ms</td><td>1.00</td><td>0.01</td><td>22000.0000</td><td>4000.0000</td><td>-</td><td>11157791752 B</td><td>1.000</td>
+</tr><tr><td>&#39;Large MemoryStreamSlim fill and read&#39;</td><td>10737418240</td><td>False</td><td>True</td><td>False</td><td>1,656.63 ms</td><td>5.272 ms</td><td>4.932 ms</td><td>0.90</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>416 B</td><td>0.000</td>
+</tr><tr><td>&#39;Large RecyclableMemoryStream fill and read&#39;</td><td>10737418240</td><td>False</td><td>True</td><td>True</td><td>1,816.98 ms</td><td>13.428 ms</td><td>12.560 ms</td><td>1.00</td><td>0.01</td><td>22000.0000</td><td>4000.0000</td><td>-</td><td>11157791752 B</td><td>1.000</td>
+</tr><tr><td>&#39;Large MemoryStreamSlim fill and read&#39;</td><td>10737418240</td><td>False</td><td>True</td><td>True</td><td>1,648.27 ms</td><td>4.427 ms</td><td>3.924 ms</td><td>0.91</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>704 B</td><td>0.000</td>
+</tr><tr><td>&#39;Large RecyclableMemoryStream fill and read&#39;</td><td>10737418240</td><td>True</td><td>False</td><td>False</td><td>1,042.03 ms</td><td>3.295 ms</td><td>2.921 ms</td><td>1.00</td><td>0.00</td><td>-</td><td>-</td><td>-</td><td>410240 B</td><td>1.000</td>
+</tr><tr><td>&#39;Large MemoryStreamSlim fill and read&#39;</td><td>10737418240</td><td>True</td><td>False</td><td>False</td><td>1,039.83 ms</td><td>4.765 ms</td><td>4.457 ms</td><td>1.00</td><td>0.00</td><td>-</td><td>-</td><td>-</td><td>704 B</td><td>0.002</td>
+</tr><tr><td>&#39;Large RecyclableMemoryStream fill and read&#39;</td><td>10737418240</td><td>True</td><td>False</td><td>True</td><td>1,043.10 ms</td><td>4.864 ms</td><td>4.312 ms</td><td>1.00</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>410240 B</td><td>1.00</td>
+</tr><tr><td>&#39;Large MemoryStreamSlim fill and read&#39;</td><td>10737418240</td><td>True</td><td>False</td><td>True</td><td>1,040.53 ms</td><td>5.460 ms</td><td>5.107 ms</td><td>1.00</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>13040 B</td><td>0.03</td>
+</tr><tr><td>&#39;Large RecyclableMemoryStream fill and read&#39;</td><td>10737418240</td><td>True</td><td>True</td><td>False</td><td>2,179.39 ms</td><td>10.348 ms</td><td>9.679 ms</td><td>1.00</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>10738074664 B</td><td>1.000</td>
+</tr><tr><td>&#39;Large MemoryStreamSlim fill and read&#39;</td><td>10737418240</td><td>True</td><td>True</td><td>False</td><td>1,593.69 ms</td><td>6.672 ms</td><td>6.241 ms</td><td>0.73</td><td>0.00</td><td>-</td><td>-</td><td>-</td><td>704 B</td><td>0.000</td>
+</tr><tr><td>&#39;Large RecyclableMemoryStream fill and read&#39;</td><td>10737418240</td><td>True</td><td>True</td><td>True</td><td>2,176.55 ms</td><td>9.522 ms</td><td>8.441 ms</td><td>1.00</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>10738074712 B</td><td>1.000</td>
+</tr><tr><td>&#39;Large MemoryStreamSlim fill and read&#39;</td><td>10737418240</td><td>True</td><td>True</td><td>True</td><td>1,591.62 ms</td><td>4.874 ms</td><td>4.559 ms</td><td>0.73</td><td>0.00</td><td>-</td><td>-</td><td>-</td><td>416 B</td><td>0.000</td>
+</tr><tr><td>&#39;Large RecyclableMemoryStream fill and read&#39;</td><td>3221225472</td><td>False</td><td>False</td><td>False</td><td>315.64 ms</td><td>1.471 ms</td><td>1.376 ms</td><td>1.00</td><td>0.01</td><td>2000.0000</td><td>-</td><td>-</td><td>37958040 B</td><td>1.000</td>
+</tr><tr><td>&#39;Large MemoryStreamSlim fill and read&#39;</td><td>3221225472</td><td>False</td><td>False</td><td>False</td><td>317.10 ms</td><td>2.097 ms</td><td>1.751 ms</td><td>1.00</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>416 B</td><td>0.000</td>
+</tr><tr><td>&#39;Large RecyclableMemoryStream fill and read&#39;</td><td>3221225472</td><td>False</td><td>False</td><td>True</td><td>316.36 ms</td><td>2.079 ms</td><td>1.944 ms</td><td>1.00</td><td>0.01</td><td>2000.0000</td><td>-</td><td>-</td><td>37958040 B</td><td>1.000</td>
+</tr><tr><td>&#39;Large MemoryStreamSlim fill and read&#39;</td><td>3221225472</td><td>False</td><td>False</td><td>True</td><td>317.08 ms</td><td>1.581 ms</td><td>1.479 ms</td><td>1.00</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>504 B</td><td>0.000</td>
+</tr><tr><td>&#39;Large RecyclableMemoryStream fill and read&#39;</td><td>3221225472</td><td>False</td><td>True</td><td>False</td><td>548.57 ms</td><td>7.999 ms</td><td>7.483 ms</td><td>1.00</td><td>0.02</td><td>2000.0000</td><td>-</td><td>-</td><td>3259258200 B</td><td>1.000</td>
+</tr><tr><td>&#39;Large MemoryStreamSlim fill and read&#39;</td><td>3221225472</td><td>False</td><td>True</td><td>False</td><td>494.43 ms</td><td>2.790 ms</td><td>2.610 ms</td><td>0.90</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>416 B</td><td>0.000</td>
+</tr><tr><td>&#39;Large RecyclableMemoryStream fill and read&#39;</td><td>3221225472</td><td>False</td><td>True</td><td>True</td><td>548.26 ms</td><td>7.955 ms</td><td>7.441 ms</td><td>1.00</td><td>0.02</td><td>2000.0000</td><td>-</td><td>-</td><td>3259257864 B</td><td>1.000</td>
+</tr><tr><td>&#39;Large MemoryStreamSlim fill and read&#39;</td><td>3221225472</td><td>False</td><td>True</td><td>True</td><td>495.30 ms</td><td>2.374 ms</td><td>2.221 ms</td><td>0.90</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>416 B</td><td>0.000</td>
+</tr><tr><td>&#39;Large RecyclableMemoryStream fill and read&#39;</td><td>3221225472</td><td>True</td><td>False</td><td>False</td><td>312.76 ms</td><td>0.897 ms</td><td>0.796 ms</td><td>1.00</td><td>0.00</td><td>-</td><td>-</td><td>-</td><td>123152 B</td><td>1.000</td>
+</tr><tr><td>&#39;Large MemoryStreamSlim fill and read&#39;</td><td>3221225472</td><td>True</td><td>False</td><td>False</td><td>311.03 ms</td><td>2.264 ms</td><td>2.118 ms</td><td>0.99</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>504 B</td><td>0.004</td>
+</tr><tr><td>&#39;Large RecyclableMemoryStream fill and read&#39;</td><td>3221225472</td><td>True</td><td>False</td><td>True</td><td>311.94 ms</td><td>1.374 ms</td><td>1.148 ms</td><td>1.00</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>123320 B</td><td>1.000</td>
+</tr><tr><td>&#39;Large MemoryStreamSlim fill and read&#39;</td><td>3221225472</td><td>True</td><td>False</td><td>True</td><td>312.07 ms</td><td>0.850 ms</td><td>0.664 ms</td><td>1.00</td><td>0.00</td><td>-</td><td>-</td><td>-</td><td>360 B</td><td>0.003</td>
+</tr><tr><td>&#39;Large RecyclableMemoryStream fill and read&#39;</td><td>3221225472</td><td>True</td><td>True</td><td>False</td><td>659.29 ms</td><td>4.358 ms</td><td>4.077 ms</td><td>1.00</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>3221423480 B</td><td>1.000</td>
+</tr><tr><td>&#39;Large MemoryStreamSlim fill and read&#39;</td><td>3221225472</td><td>True</td><td>True</td><td>False</td><td>478.44 ms</td><td>2.706 ms</td><td>2.531 ms</td><td>0.73</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>368 B</td><td>0.000</td>
+</tr><tr><td>&#39;Large RecyclableMemoryStream fill and read&#39;</td><td>3221225472</td><td>True</td><td>True</td><td>True</td><td>666.56 ms</td><td>6.586 ms</td><td>6.161 ms</td><td>1.00</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>3221423480 B</td><td>1.000</td>
+</tr><tr><td>&#39;Large MemoryStreamSlim fill and read&#39;</td><td>3221225472</td><td>True</td><td>True</td><td>True</td><td>480.10 ms</td><td>3.869 ms</td><td>3.430 ms</td><td>0.72</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>704 B</td><td>0.000</td>
+</tr><tr><td>&#39;Large RecyclableMemoryStream fill and read&#39;</td><td>536870912</td><td>False</td><td>False</td><td>False</td><td>51.90 ms</td><td>0.221 ms</td><td>0.184 ms</td><td>1.00</td><td>0.00</td><td>-</td><td>-</td><td>-</td><td>1083640 B</td><td>1.000</td>
+</tr><tr><td>&#39;Large MemoryStreamSlim fill and read&#39;</td><td>536870912</td><td>False</td><td>False</td><td>False</td><td>52.70 ms</td><td>0.314 ms</td><td>0.279 ms</td><td>1.02</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>344 B</td><td>0.000</td>
+</tr><tr><td>&#39;Large RecyclableMemoryStream fill and read&#39;</td><td>536870912</td><td>False</td><td>False</td><td>True</td><td>52.08 ms</td><td>0.196 ms</td><td>0.174 ms</td><td>1.00</td><td>0.00</td><td>-</td><td>-</td><td>-</td><td>1083611 B</td><td>1.000</td>
+</tr><tr><td>&#39;Large MemoryStreamSlim fill and read&#39;</td><td>536870912</td><td>False</td><td>False</td><td>True</td><td>52.66 ms</td><td>0.344 ms</td><td>0.305 ms</td><td>1.01</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>344 B</td><td>0.000</td>
+</tr><tr><td>&#39;Large RecyclableMemoryStream fill and read&#39;</td><td>536870912</td><td>False</td><td>True</td><td>False</td><td>91.30 ms</td><td>0.547 ms</td><td>0.485 ms</td><td>1.00</td><td>0.01</td><td>500.0000</td><td>500.0000</td><td>500.0000</td><td>537967791 B</td><td>1.000</td>
+</tr><tr><td>&#39;Large MemoryStreamSlim fill and read&#39;</td><td>536870912</td><td>False</td><td>True</td><td>False</td><td>82.09 ms</td><td>0.778 ms</td><td>0.728 ms</td><td>0.90</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>320 B</td><td>0.000</td>
+</tr><tr><td>&#39;Large RecyclableMemoryStream fill and read&#39;</td><td>536870912</td><td>False</td><td>True</td><td>True</td><td>91.11 ms</td><td>0.786 ms</td><td>0.736 ms</td><td>1.00</td><td>0.01</td><td>500.0000</td><td>500.0000</td><td>500.0000</td><td>537967791 B</td><td>1.000</td>
+</tr><tr><td>&#39;Large MemoryStreamSlim fill and read&#39;</td><td>536870912</td><td>False</td><td>True</td><td>True</td><td>82.13 ms</td><td>0.550 ms</td><td>0.488 ms</td><td>0.90</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>320 B</td><td>0.000</td>
+</tr><tr><td>&#39;Large RecyclableMemoryStream fill and read&#39;</td><td>536870912</td><td>True</td><td>False</td><td>False</td><td>52.12 ms</td><td>0.505 ms</td><td>0.472 ms</td><td>1.00</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>20760 B</td><td>1.00</td>
+</tr><tr><td>&#39;Large MemoryStreamSlim fill and read&#39;</td><td>536870912</td><td>True</td><td>False</td><td>False</td><td>51.84 ms</td><td>0.458 ms</td><td>0.406 ms</td><td>0.99</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>344 B</td><td>0.02</td>
+</tr><tr><td>&#39;Large RecyclableMemoryStream fill and read&#39;</td><td>536870912</td><td>True</td><td>False</td><td>True</td><td>51.86 ms</td><td>0.245 ms</td><td>0.204 ms</td><td>1.00</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>20731 B</td><td>1.00</td>
+</tr><tr><td>&#39;Large MemoryStreamSlim fill and read&#39;</td><td>536870912</td><td>True</td><td>False</td><td>True</td><td>51.80 ms</td><td>0.300 ms</td><td>0.266 ms</td><td>1.00</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>344 B</td><td>0.02</td>
+</tr><tr><td>&#39;Large RecyclableMemoryStream fill and read&#39;</td><td>536870912</td><td>True</td><td>True</td><td>False</td><td>111.59 ms</td><td>0.671 ms</td><td>0.628 ms</td><td>1.00</td><td>0.01</td><td>400.0000</td><td>400.0000</td><td>400.0000</td><td>536904832 B</td><td>1.000</td>
+</tr><tr><td>&#39;Large MemoryStreamSlim fill and read&#39;</td><td>536870912</td><td>True</td><td>True</td><td>False</td><td>79.56 ms</td><td>0.377 ms</td><td>0.334 ms</td><td>0.71</td><td>0.00</td><td>-</td><td>-</td><td>-</td><td>361 B</td><td>0.000</td>
+</tr><tr><td>&#39;Large RecyclableMemoryStream fill and read&#39;</td><td>536870912</td><td>True</td><td>True</td><td>True</td><td>111.49 ms</td><td>0.833 ms</td><td>0.779 ms</td><td>1.00</td><td>0.01</td><td>400.0000</td><td>400.0000</td><td>400.0000</td><td>536904832 B</td><td>1.000</td>
+</tr><tr><td>&#39;Large MemoryStreamSlim fill and read&#39;</td><td>536870912</td><td>True</td><td>True</td><td>True</td><td>79.67 ms</td><td>0.536 ms</td><td>0.475 ms</td><td>0.71</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>361 B</td><td>0.000</td>
+</tr></tbody></table>
+</body>
+</html>

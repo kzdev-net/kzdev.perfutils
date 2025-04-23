@@ -1,63 +1,75 @@
 # CopyToAsync Throughput Benchmark
 
-In-memory-based streams have no asynchronous needs when used in most scenarios because all operations are synchronous and in-memory. However, there are times where the data in the stream needs to be copied to another stream instance with actual asynchronous behavior, such as a FileStream. While this may not be an everyday use case, it is a real-world situation. This is where the `CopyToAsync` method comes into play.
-This benchmark scenario uses stream instances that are instantiated as expandable (dynamic growth) streams. The stream is filled with random data, similar to the [`Bulk Fill and Read`](./dynamic-throughput-benchmarks.md#bulk-fill-and-read) scenario.
+In-memory-based streams typically do not require asynchronous operations in most scenarios because all operations are synchronous and in-memory. However, there are cases where the data in the stream needs to be copied to another stream instance with actual asynchronous behavior, such as a **FileStream**. This is where the `CopyToAsync` method becomes relevant.
 
-In each operation, the `CopyToAsync` method copies data from the stream to another stream designed to mock an actual file I/O-based stream with asynchronous behavior.
+This benchmark scenario uses stream instances that are instantiated as expandable (dynamically growing) streams. The stream is filled with random data, similar to the [`Bulk Fill and Read`](./dynamic-throughput-benchmarks.md#bulk-fill-and-read) scenario.
+
+In each operation, the **CopyToAsync** method copies data from the stream to another stream designed to emulate an actual file I/O-based stream with asynchronous behavior.
 
 ## Summary 
 
-The benchmark results show that for smaller streams, all the stream classes perform similarly in terms of throughput performance. `MemoryStreamSlim` and RecyclableMemoryStream perform better than MemoryStream in terms of memory allocation performance. However, as the stream size increases, the `MemoryStreamSlim` class performance stays consistent and deterministic, even as the internal chained memory segments slow things down slightly compared to `MemoryStream` to copy the entire stream contents to the destination stream.
+The benchmark results show that for smaller streams, all the stream classes perform similarly in terms of throughput performance. `MemoryStreamSlim` and **RecyclableMemoryStream** outperform **MemoryStream** in terms of memory allocation performance. However, as the stream size increases, the **MemoryStreamSlim** class maintains consistent and deterministic performance, even though the internal chained memory segments slightly slow down the process compared to **MemoryStream** when copying the entire stream contents to the destination stream.
 
-By far, the `MemoryStream` class performs the worst in terms of memory allocation performance in this scenario under all conditions, but does perform better in terms of throughput performance compared to `RecyclableMemoryStream` and `MemoryStreamSlim` for larger stream sizes.
+The **MemoryStream** class performs the worst in terms of memory allocation performance under all conditions but achieves better throughput performance compared to **RecyclableMemoryStream** and **MemoryStreamSlim** for larger stream sizes.
 
-Once the stream size approaches 1MB, the `RecyclableMemoryStream` class starts to perform very poorly in terms of throughput performance, and the performance rapidly deteriorates as the stream size increases further. Using the `UseExponentialLargeBuffer` option did not affect the throughput performance in this scenario.
+As the stream size becomes substantial, the **RecyclableMemoryStream** class exhibits poor throughput performance, with performance rapidly deteriorating as the stream size increases further. Using the **UseExponentialLargeBuffer** option did not impact throughput performance in this scenario.
 
-_Given that file systems managed by the OS and related drivers employ a series of buffer and caching mechanisms, the [emulation](#asynchronous-stream-emulation) approach used in this benchmark is not a perfect representation of the actual performance of the `CopyToAsync` method in a real-world **local** file-based scenario. However, it does provide a means to compare the performance of the different stream classes in a consistent and deterministic way for asynchronous I/O operations that do incur regular asynchronous latencies such as for **network** based files on file servers, etc._
+> _Given that file systems managed by the OS and related drivers employ a series of buffering and caching mechanisms, the [emulation](#asynchronous-stream-emulation) approach used in this benchmark is not a perfect representation of the actual performance of the **CopyToAsync** method in a real-world local file-based scenario. However, it provides a consistent and deterministic way to compare the performance of different stream classes for asynchronous I/O operations that incur regular asynchronous latencies, such as for network-based files on file servers._
 
-### Benchmark Operation
+## Example
 
-A single benchmark operation consists of performing a loop of steps that does the following:
+The following graphs illustrate the performance of the **CopyToAsync** method for the different stream classes. The **MemoryStreamSlim** class achieves mean throughput comparable to the standard **MemoryStream** while significantly outperforming **RecyclableMemoryStream**.
 
-1. Create a new stream instance with a capacity set to the operation data size.
+For memory allocations, the **MemoryStreamSlim** class performs dramatically better than **RecyclableMemoryStream** and **MemoryStream**, with the performance gap becoming more pronounced as the stream size increases.
+
+The differences in performance are so significant that the graphs are shown with a logarithmic scale to make the differences visible.
+
+![CopyToAsync Mean Time and Allocations](../images/copytoasync.jpg){class="benchmarkimgcentered"}
+
+## Benchmark Operation
+
+A single benchmark operation consists of performing five loops of the following steps:
+
+1. Create a new stream instance; with a capacity set to the operation data size when the [CapacityOnCreate](#capacityoncreate) parameter is **true**.
 1. Write the test data synchronously to the stream (either in a single write or segmented based on the [BulkInitialFill](#bulkinitialfill) parameter).
-1. Call CopyToAsync() on the stream passing a mock asynchronous File I/O stream destination.
+1. Call CopyToAsync() on the stream, passing a mock asynchronous file I/O stream destination.
 1. Dispose of the stream instance.
 
-The [number of loops](./memorystream-benchmarks.md#loop-count-impact) in each operation is determined by the [`DataSize`](#datasize) parameter to keep each benchmark reasonably consistent in duration, but the loop count is always the same for all classes being compared for any given DataSize parameter value.
+**MemoryStreamSlim** and **RecyclableMemoryStream** classes are created with the option to zero out memory buffers when they are no longer used set to disabled in order to focus the benchmark performance on the **CopyToAsync()** call. The **MemoryStream** class does not have an option to zero out memory buffers (used memory is always cleared, i.e., internal buffers are allocated with new byte[]), so this parameter does not apply to that class.
 
-`MemoryStreamSlim` and `RecyclableMemoryStream` classes are created with the option to zero out memory buffers when they are no longer used disabled to keep the benchmark performance focused on the `CopyToAsync()` call. The `MemoryStream` class has no option to zero out memory buffers (used memory is always cleared - i.e. internal buffers are allocated with `new byte[]`), so this parameter does not apply to that class.
+### Asynchronous Stream Emulation
 
-#### Asynchronous Stream Emulation
+The destination stream used in the **CopyToAsync** call is a simple mock stream that emulates the behavior of an asynchronous I/O-based stream. This is achieved by using a **MemoryStream** instance internally to manage the stream contents. Each asynchronous operation on the mock stream class (**ReadAsync**, **WriteAsync**, **CopyToAsync**) is counted, and on every 8th operation (or after at least 10MB of data has been processed), an asynchronous delay is introduced to simulate the latency of an actual I/O operation. The delay time is calculated to emulate a data throughput of 2GB/sec with a 0.5 ms latency for every separate asynchronous operation.
 
-A note on how the destination stream is used in the `CopyToAsync` call. 
+While not a perfect real-world emulation, this approach provides a consistent and deterministic performance comparison between the different stream classes, specifically for benchmarking and highlighting the impact of the number of internal asynchronous operations performed. Results using different I/O-based streams will vary based on the actual I/O performance characteristics of the underlying system.
 
-The destination stream used in the `CopyToAsync` call is a simple mock stream that emulates the behavior of an asynchronous I/O based stream. This is accomplished by using a `MemoryStream` instance internally to manage the stream contents. Then each asynchronous operation on the mock stream class (ReadAsync, WriteAsync, CopyToAsync) is counted and on every 8th operation (or at least 10MB have been processed), an asynchronous delay is introduced to simulate the latency of an actual I/O operation. The delay time is calculated to emulate a data thoughput of 2GB/sec with a 0.5 ms latency for every separate asynchronous operation.
+## Benchmark Parameters
 
-This is all done to provide a consistent and deterministic performance comparison between the different stream classes specifically for benchmarking and accentuating the impact of the number of internal asynchronous operations performed. Results using different I/O based streams will vary based on the actual I/O performance characteristics of the underlying system.
+The following parameters were used in the benchmarks. These appear as columns in the benchmark results along with the [standard BenchmarkDotNet columns](./memorystream-benchmarks.md#legend).
 
-### Benchmark Parameters
-
-The following parameters were used in the benchmarks. These will appear as columns in the benchmark results along with the [standard BenchmarkDotNet columns](./memorystream-benchmarks.md#legend).
-
-#### DataSize
+### DataSize
 
 The amount of data to write to the stream in each operation loop. The data is a byte array of the specified size.
 
-#### CapacityOnCreate
+### CapacityOnCreate
 
-When `true`, the stream is instantiated with the current loop iteration data size as the initial capacity. When `false`, the stream is created with the default capacity (no initial capacity specified). The results show no notable difference in performance between the two options, but is included in this benchmark to clarify that fact.
+- **true**: The stream is instantiated with the current loop iteration data size as the initial capacity.
+- **false**: The stream is created with the default capacity (no initial capacity specified).
 
-#### BulkInitialFill
+The results show no notable difference in performance between the two options, but this parameter is included in the benchmark to clarify that fact.
 
-When `true`, the stream is initially filled with random data in a single bulk write operation. When `false`, the stream is filled with random data in a loop of write operations. The initial stream data fill operation is similar to the operations used in the [Bulk Fill and Read](./dynamic-throughput-benchmarks.md#bulk-fill-and-read) (**BulkInitialFill** is _true_) and [Segmented Fill and Read](./dynamic-throughput-benchmarks.md#segmented-fill-and-read) (**BulkInitialFill** is _false_) benchmarks. The results show no notable difference in performance between the two options, but is included in this benchmark to clarify that fact.
+### BulkInitialFill
+
+- **true**: The stream is initially filled with random data in a single bulk write operation.
+- **false**: The stream is filled with random data in a loop of write operations.
+
+The initial stream data fill operation is similar to the operations used in the [Bulk Fill and Read](./dynamic-throughput-benchmarks.md#bulk-fill-and-read) (**BulkInitialFill** is _true_) and [Segmented Fill and Read](./dynamic-throughput-benchmarks.md#segmented-fill-and-read) (**BulkInitialFill** is _false_) benchmarks. The results show no notable difference in performance between the two options, but this parameter is included in the benchmark to clarify that fact.
 
 ## Benchmark Results
 
-The results of the benchmarks are found in the [`CopyToAsync()`](./MemoryStreamBenchmarks.CopyToAsyncThroughputBenchmarks-report-github.md) benchmark output.
+The results of the benchmarks are available in the [`CopyToAsync()`](./MemoryStreamBenchmarks.CopyToAsyncThroughputBenchmarks-report-github.md) benchmark output.
 
 ### HTML Report
 
-Since the benchmark results can create rather large tables, and the Markdown tables can be hard to absorb with the horizontal and vertical table scrolling, the results are also provided in a separate HTML file. 
-
-This can be found [here](./MemoryStreamBenchmarks.CopyToAsyncThroughputBenchmarks-report.html).
+Since the benchmark results can create large tables, which may be difficult to navigate due to horizontal and vertical scrolling, the results are also provided in a simpler HTML table format.
+The HTML report can be found [here](./MemoryStreamBenchmarks.CopyToAsyncThroughputBenchmarks-report.html).

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='utf-8' />
+<title>MemoryStreamBenchmarks.BrotliCompressionThroughputBenchmarks-20250413-202010</title>
+
+<style type="text/css">
+	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
+	td, th { padding: 6px 13px; border: 1px solid #ddd; text-align: right; }
+	tr { background-color: #fff; border-top: 1px solid #ccc; }
+	tr:nth-child(even) { background: #f8f8f8; }
+</style>
+</head>
+<body>
+<pre><code>
+BenchmarkDotNet v0.14.0, Windows 11 (10.0.26100.3775)
+Intel Core i9-14900K, 1 CPU, 32 logical and 24 physical cores
+.NET SDK 9.0.203
+  [Host]     : .NET 9.0.4 (9.0.425.16305), X64 RyuJIT AVX2
+  DefaultJob : .NET 9.0.4 (9.0.425.16305), X64 RyuJIT AVX2
+</code></pre>
+<pre><code></code></pre>
+
+<table>
+<thead><tr><th>Method                                     </th><th>DataSize</th><th>CapacityOnCreate</th><th>Mean    </th><th>Error </th><th>StdDev</th><th>Ratio</th><th>RatioSD</th><th>Gen0</th><th>Gen1</th><th>Gen2</th><th>Allocated</th><th>Alloc Ratio</th>
+</tr>
+</thead><tbody><tr><td>&#39;MemoryStream BrotliStream Compression&#39;</td><td>131072</td><td>False</td><td>1,265.1 &mu;s</td><td>16.01 &mu;s</td><td>14.19 &mu;s</td><td>1.00</td><td>0.02</td><td>623.0469</td><td>623.0469</td><td>623.0469</td><td>2241.79 KB</td><td>1.000</td>
+</tr><tr><td>&#39;RecyclableMemoryStream BrotliStream Compression&#39;</td><td>131072</td><td>False</td><td>797.4 &mu;s</td><td>7.18 &mu;s</td><td>6.72 &mu;s</td><td>0.63</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>2.11 KB</td><td>0.001</td>
+</tr><tr><td>&#39;MemoryStreamSlim BrotliStream Compression&#39;</td><td>131072</td><td>False</td><td>804.5 &mu;s</td><td>2.77 &mu;s</td><td>2.59 &mu;s</td><td>0.64</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>2.07 KB</td><td>0.001</td>
+</tr><tr><td>&#39;MemoryStream BrotliStream Compression&#39;</td><td>131072</td><td>True</td><td>1,166.3 &mu;s</td><td>6.63 &mu;s</td><td>6.20 &mu;s</td><td>1.00</td><td>0.01</td><td>623.0469</td><td>623.0469</td><td>623.0469</td><td>1921.67 KB</td><td>1.000</td>
+</tr><tr><td>&#39;RecyclableMemoryStream BrotliStream Compression&#39;</td><td>131072</td><td>True</td><td>788.5 &mu;s</td><td>7.57 &mu;s</td><td>7.08 &mu;s</td><td>0.68</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>2.11 KB</td><td>0.001</td>
+</tr><tr><td>&#39;MemoryStreamSlim BrotliStream Compression&#39;</td><td>131072</td><td>True</td><td>784.9 &mu;s</td><td>2.72 &mu;s</td><td>2.54 &mu;s</td><td>0.67</td><td>0.00</td><td>-</td><td>-</td><td>-</td><td>2.07 KB</td><td>0.001</td>
+</tr><tr><td>&#39;MemoryStream BrotliStream Compression&#39;</td><td>16777216</td><td>False</td><td>160,363.5 &mu;s</td><td>3,118.43 &mu;s</td><td>5,123.67 &mu;s</td><td>1.00</td><td>0.04</td><td>4666.6667</td><td>4666.6667</td><td>4666.6667</td><td>327365.88 KB</td><td>1.000</td>
+</tr><tr><td>&#39;RecyclableMemoryStream BrotliStream Compression&#39;</td><td>16777216</td><td>False</td><td>122,424.4 &mu;s</td><td>1,118.25 &mu;s</td><td>991.30 &mu;s</td><td>0.76</td><td>0.02</td><td>-</td><td>-</td><td>-</td><td>364.39 KB</td><td>0.001</td>
+</tr><tr><td>&#39;MemoryStreamSlim BrotliStream Compression&#39;</td><td>16777216</td><td>False</td><td>123,307.7 &mu;s</td><td>1,845.81 &mu;s</td><td>1,636.26 &mu;s</td><td>0.77</td><td>0.03</td><td>-</td><td>-</td><td>-</td><td>2.23 KB</td><td>0.000</td>
+</tr><tr><td>&#39;MemoryStream BrotliStream Compression&#39;</td><td>16777216</td><td>True</td><td>144,735.8 &mu;s</td><td>1,935.22 &mu;s</td><td>1,510.89 &mu;s</td><td>1.00</td><td>0.01</td><td>4750.0000</td><td>4750.0000</td><td>4750.0000</td><td>245767.18 KB</td><td>1.000</td>
+</tr><tr><td>&#39;RecyclableMemoryStream BrotliStream Compression&#39;</td><td>16777216</td><td>True</td><td>123,696.0 &mu;s</td><td>2,400.16 &mu;s</td><td>2,245.11 &mu;s</td><td>0.85</td><td>0.02</td><td>-</td><td>-</td><td>-</td><td>27.04 KB</td><td>0.000</td>
+</tr><tr><td>&#39;MemoryStreamSlim BrotliStream Compression&#39;</td><td>16777216</td><td>True</td><td>122,721.4 &mu;s</td><td>1,680.01 &mu;s</td><td>1,489.28 &mu;s</td><td>0.85</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>2.3 KB</td><td>0.000</td>
+</tr><tr><td>&#39;MemoryStream BrotliStream Compression&#39;</td><td>209715200</td><td>False</td><td>1,657,996.1 &mu;s</td><td>17,018.54 &mu;s</td><td>15,919.15 &mu;s</td><td>1.00</td><td>0.01</td><td>3000.0000</td><td>3000.0000</td><td>3000.0000</td><td>2621125.72 KB</td><td>1.000</td>
+</tr><tr><td>&#39;RecyclableMemoryStream BrotliStream Compression&#39;</td><td>209715200</td><td>False</td><td>1,412,500.9 &mu;s</td><td>25,484.85 &mu;s</td><td>23,838.54 &mu;s</td><td>0.85</td><td>0.02</td><td>2000.0000</td><td>-</td><td>-</td><td>50534.08 KB</td><td>0.019</td>
+</tr><tr><td>&#39;MemoryStreamSlim BrotliStream Compression&#39;</td><td>209715200</td><td>False</td><td>1,394,513.0 &mu;s</td><td>11,134.35 &mu;s</td><td>9,297.68 &mu;s</td><td>0.84</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>3 KB</td><td>0.000</td>
+</tr><tr><td>&#39;MemoryStream BrotliStream Compression&#39;</td><td>209715200</td><td>True</td><td>1,623,939.0 &mu;s</td><td>18,348.17 &mu;s</td><td>17,162.89 &mu;s</td><td>1.00</td><td>0.01</td><td>1000.0000</td><td>1000.0000</td><td>1000.0000</td><td>3072002.65 KB</td><td>1.000</td>
+</tr><tr><td>&#39;RecyclableMemoryStream BrotliStream Compression&#39;</td><td>209715200</td><td>True</td><td>1,393,359.5 &mu;s</td><td>17,534.00 &mu;s</td><td>15,543.43 &mu;s</td><td>0.86</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>315.02 KB</td><td>0.000</td>
+</tr><tr><td>&#39;MemoryStreamSlim BrotliStream Compression&#39;</td><td>209715200</td><td>True</td><td>1,390,654.6 &mu;s</td><td>15,145.63 &mu;s</td><td>14,167.23 &mu;s</td><td>0.86</td><td>0.01</td><td>-</td><td>-</td><td>-</td><td>2.72 KB</td><td>0.000</td>
+</tr></tbody></table>
+</body>
+</html>

@@ -1,27 +1,26 @@
 ﻿// Copyright (c) Kevin Zehrer
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-using Xunit.Abstractions;
+using Xunit;
 
-namespace KZDev.PerfUtils.Tests
+namespace KZDev.PerfUtils.Tests;
+
+//################################################################################
+/// <summary>
+/// The base class for all unit tests.
+/// </summary>
+public abstract class UnitTestBase : TestBase
 {
-    //################################################################################
+    //--------------------------------------------------------------------------------
     /// <summary>
-    /// The base class for all unit tests.
+    /// Initializes a new instance of the <see cref="UnitTestBase"/> class.
     /// </summary>
-    public abstract class UnitTestBase : TestBase
+    /// <param name="xUnitTestOutputHelper">
+    /// The Xunit test output helper that can be used to output test messages
+    /// </param>
+    protected UnitTestBase (ITestOutputHelper xUnitTestOutputHelper) : base(xUnitTestOutputHelper)
     {
-        //--------------------------------------------------------------------------------
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UnitTestBase"/> class.
-        /// </summary>
-        /// <param name="xUnitTestOutputHelper">
-        /// The Xunit test output helper that can be used to output test messages
-        /// </param>
-        protected UnitTestBase (ITestOutputHelper xUnitTestOutputHelper) : base(xUnitTestOutputHelper)
-        {
-        }
-        //--------------------------------------------------------------------------------
     }
-    //################################################################################
+    //--------------------------------------------------------------------------------
 }
+//################################################################################

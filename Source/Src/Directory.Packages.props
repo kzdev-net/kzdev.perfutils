@@ -1,0 +1,12 @@
+<Project>
+    <!-- 
+    Import the next higher level Directory.Packages.props file. 
+   -->
+    <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Packages.props', '$(MSBuildThisFileDirectory)..\'))" />
+    <!-- 
+    Define source code project package version properties
+   -->
+    <ItemGroup Label="SourcePackageVersions" Condition="'$(TargetFramework)' == 'net6.0'">
+        <PackageVersion Include="System.Diagnostics.DiagnosticSource" Version="8.0.1" />
+    </ItemGroup>
+</Project>

@@ -6,21 +6,18 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="coverlet.collector" Version="$(PerfUtils-Pkg-coverlet_collector)">
+		<PackageReference Include="coverlet.collector" >
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(PerfUtils-Pkg-Microsoft_NET_Test_Sdk)" />
-		<PackageReference Include="xunit.runner.visualstudio" Version="$(PerfUtils-Pkg-xunit_runner_visualstudio)" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" />
+		<PackageReference Include="xunit.v3" />
+		<PackageReference Include="xunit.runner.visualstudio" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\..\Src\KZDev.PerfUtils\KZDev.PerfUtils.csproj" />
 		<ProjectReference Include="..\KZDev.PerfUtils.UnitTestBase\KZDev.PerfUtils.UnitTestBase.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage" />
 	</ItemGroup>
 
 	<ItemGroup>

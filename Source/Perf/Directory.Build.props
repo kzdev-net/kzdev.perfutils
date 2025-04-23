@@ -4,19 +4,11 @@
    -->
     <PropertyGroup Label="SourceGlobals">
         <Configurations>Debug;Release;Profile</Configurations>
-        <TargetFrameworks>net8.0</TargetFrameworks>
+        <TargetFrameworks>net9.0</TargetFrameworks>
         <IsPackable>false</IsPackable>
     </PropertyGroup>
     <!-- 
     Import the next higher level Directory.Build.props file. 
    -->
     <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)..\'))" />
-    <!-- 
-    Define performance project package version properties
-   -->
-    <PropertyGroup Label="PackageVersions">
-		<PerfUtils-Pkg-BenchmarkDotNet>0.14.0</PerfUtils-Pkg-BenchmarkDotNet>
-		<PerfUtils-Pkg-JetBrains_Profiler_Api>1.4.8</PerfUtils-Pkg-JetBrains_Profiler_Api>
-		<PerfUtils-Pkg-Microsoft_IO_RecyclableMemoryStream>3.0.1</PerfUtils-Pkg-Microsoft_IO_RecyclableMemoryStream>
-    </PropertyGroup>
 </Project>

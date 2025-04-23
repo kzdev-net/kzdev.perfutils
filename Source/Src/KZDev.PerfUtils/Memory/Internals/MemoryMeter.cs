@@ -3,18 +3,17 @@
 
 using System.Diagnostics.Metrics;
 
-namespace KZDev.PerfUtils.Internals
+namespace KZDev.PerfUtils.Internals;
+
+//################################################################################
+/// <summary>
+/// Observable meter for memory related components.
+/// </summary>
+internal static class MemoryMeter
 {
-    //################################################################################
     /// <summary>
-    /// Observable meter for memory related components.
+    /// The meter used for memory related components.
     /// </summary>
-    internal static class MemoryMeter
-    {
-        /// <summary>
-        /// The meter used for memory related components.
-        /// </summary>
-        public static readonly Meter Meter = new("kzdev.perfutils.memory");
-    }
-    //################################################################################
+    public static readonly Meter Meter = new("kzdev.perfutils.memory");
 }
+//################################################################################

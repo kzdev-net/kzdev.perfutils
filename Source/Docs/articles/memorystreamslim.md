@@ -1,74 +1,71 @@
-# MemoryStream
+# MemoryStreamSlim
 
-The .NET class library provides a `MemoryStream` class representing a stream of bytes stored in memory. It operates in one of two implied modes: expandable (dynamic) or fixed, determined by how you instantiate the `MemoryStream` instance. In expandable mode, the `MemoryStream` class uses a single-byte array to store the data, and the array is resized as needed to accommodate the data as the length and capacity change. In fixed mode, the `MemoryStream` class uses a fixed-size byte array to store the data provided to the constructor during instantiation.
+The .NET class library provides a **MemoryStream** class representing a stream of bytes stored in memory. It operates in one of two implied modes: expandable (dynamic) or fixed, determined by how you instantiate the **MemoryStream** instance. In expandable mode, the **MemoryStream** class uses a single byte array to store the data, resizing the array as needed to accommodate changes in length and capacity. In fixed mode, the **MemoryStream** class uses a fixed-size byte array provided during instantiation.
 
-The [`MemoryStream`](xref:System.IO.MemoryStream) class is optimized for, and works well in, fixed mode, providing `Stream` semantics to a byte array you have already allocated. However, in expandable mode, the `MemoryStream` class can result in poor performance and a lot of garbage collection pressure when working with large amounts of memory, many `MemoryStream` instances being created and disposed of frequently, or when the stream instances grow dynamically.
+The [`MemoryStream`](xref:System.IO.MemoryStream) class is optimized for fixed mode, providing `Stream` semantics to a pre-allocated byte array. However, in expandable mode, the MemoryStream class can result in poor performance and significant garbage collection (GC) pressure when working with large amounts of memory, frequently creating and disposing of MemoryStream instances, or dynamically growing streams.
 
-Microsoft released a separate [`RecyclableMemoryStream`](https://www.nuget.org/packages/Microsoft.IO.RecyclableMemoryStream) package that addresses many issues with the expandable mode of the `MemoryStream` class. Unfortunately, the `RecyclableMemoryStream` package is somewhat cumbersome to use. It also has several limitations, including requiring an application to have consistent usage and behavior patterns and then tune configuration options to those patterns. In some scenarios, this class can also perform much worse than the standard `MemoryStream` class. One mistake with the `RecyclableMemoryStream` class is that it doesn't focus strictly on fixing the expandable mode of the `MemoryStream` class but instead tries to provide a more general-purpose memory stream class that can be used for a fixed mode scenario as well. The issue is that `RecyclableMemoryStream` typically has worse throughput performance than the standard `MemoryStream` class in most fixed-mode scenarios.
+Microsoft released the [`RecyclableMemoryStream`](https://www.nuget.org/packages/Microsoft.IO.RecyclableMemoryStream) package to address many of the issues associated with the expandable mode of the **MemoryStream** class. However, the **RecyclableMemoryStream** package has limitations, including the need for careful tuning of configuration options and consistent usage patterns to achieve optimal performance. In some scenarios, it can perform worse than the standard **MemoryStream** class. Specifically, **RecyclableMemoryStream** attempts to support both expandable and fixed modes, but it often exhibits worse throughput performance than **MemoryStream** in fixed-mode scenarios.
 
-[`MemoryStreamSlim`](xref:KZDev.PerfUtils.MemoryStreamSlim) is a memory stream that is optimized for performance. It is a drop-in replacement for the `MemoryStream` class and is designed to be used in scenarios where performance and memory management are crucial. This class is instrumental in scenarios where you need expandable memory-based stream instances that are substantially large, the stream size needs or the general use cases vary a lot, or you use memory-based streams frequently. Since the standard `MemoryStream` works so well as a `Stream` semantic API wrapper around existing byte arrays, `MemoryStreamSlim` does not attempt to fix what isn't broken and focuses on the expandable mode use cases. This is discussed more below.
+[`MemoryStreamSlim`](xref:KZDev.PerfUtils.MemoryStreamSlim) is a high-performance, memory-efficient alternative to the **MemoryStream** class. It is specifically designed for scenarios where performance and memory management are critical, particularly for expandable memory-based streams that are large, frequently used, or have varying use cases. **MemoryStreamSlim** focuses on improving performance in expandable mode use cases, while leaving fixed-mode scenarios to the standard **MemoryStream** class. By concentrating on what needs improvement, **MemoryStreamSlim** avoids unnecessary complexity and delivers targeted optimizations for expandable mode. This is discussed in more detail below.
 
 ## Memory Traffic
 
-Even relatively small memory streams can generate a lot of memory traffic by allocating and releasing memory buffers. This can lead to performance issues by putting pressure on the garbage collector.
+Even relatively small memory streams can generate significant memory traffic (churn) by frequently allocating and releasing memory buffers, leading to performance issues and GC pressure.
 
-Larger memory streams can cause issues because they can create allocations on the [Large Object Heap (LOH)](https://learn.microsoft.com/en-us/dotnet/standard/garbage-collection/large-object-heap). The LOH is a particular heap in the .NET runtime that is used to store large objects (objects that are 85,000 bytes or larger by default). The LOH is not usually compacted by the garbage collector, which means that if you have a lot of large objects on the LOH, it can become fragmented over time, leading to performance issues.
+Larger memory streams can exacerbate these issues by creating allocations on the [Large Object Heap (LOH)](https://learn.microsoft.com/en-us/dotnet/standard/garbage-collection/large-object-heap). The LOH is used to store large objects (85,000 bytes or larger by default) and is typically not compacted by the garbage collector, which can lead to fragmentation and performance degradation over time.
 
+**MemoryStreamSlim** minimizes memory traffic by reusing memory buffers. It uses a specialized, internally managed pool of small, heap-allocated reusable buffers for smaller memory needs. For larger buffers, it allocates groups of segments from the LOH and reuses them as needed, avoiding LOH fragmentation. This approach reduces allocations and deallocations, prevents LOH fragmentation, and improves performance by reducing GC pressure.
 
-
-`MemoryStreamSlim` is designed to minimize memory traffic by reusing memory buffers. It uses a specialized, internally managed, and optimized set of 'small' heap-allocated re-usable buffers for buffers smaller than a certain threshold.
-
-`MemoryStreamSlim` allocates groups of buffer segments from the LOH by default for larger buffers and reuses them as needed. This helps reduce the number of allocations and deallocations performed and helps prevent LOH fragmentation, which can help improve performance by reducing GC pressure.
-
-This memory management is only utilized when the `MemoryStreamSlim` instance is created without wrapping an existing byte array. If you create a `MemoryStreamSlim` instance with an existing byte array, the `MemoryStreamSlim` instance will become a wrapper around the standard `MemoryStream` class because there is no beneficial memory management that can be provided in this case. Suppose you need stream semantic access to a byte array you have already allocated. In that case, it might be best to use the standard `MemoryStream` class directly, though the overhead of the `MemoryStreamSlim` wrapper is not measurable and can be used in cases where you just want to use the same class type for all stream instances.
+When a **MemoryStreamSlim** instance is created with an existing byte array, it acts as a wrapper around the standard **MemoryStream** class, as no additional memory management benefits can be provided in this case. For scenarios requiring `Stream` semantics for pre-allocated byte arrays, the standard **MemoryStream** class is recommended, though the overhead of the **MemoryStreamSlim** wrapper is negligible.
 
 ## Usage
 
-To create a `MemoryStreamSlim` instance, use one of the [`Create`](xref:KZDev.PerfUtils.MemoryStreamSlim.Create) static overload methods on the MemoryStreamSlim class. These methods allow you to create a `MemoryStreamSlim` instance with an optional specified initial capacity, select options for the stream instance, or provide an existing byte array to wrap.
+To create a `MemoryStreamSlim` instance, use one of the [`Create`](xref:KZDev.PerfUtils.MemoryStreamSlim.Create) static overload methods. These methods allow you to specify an initial capacity, configure options for the stream instance, or provide an existing byte array to wrap.
 
-Besides creation, the `MemoryStreamSlim` class can be used exactly like the standard `MemoryStream` class. It implements all the same current methods and properties as `MemoryStream` so that you can use it as a drop-in replacement in your code. Deprecated and outdated methods and properties are not implemented in `MemoryStreamSlim`.
+Once created, **MemoryStreamSlim** can be used as a drop-in replacement for the standard **MemoryStream** class. It implements all current methods and properties of **MemoryStream**, except for deprecated or outdated ones.
 
 ```csharp
 using KZDev.PerfUtils;
 
 // Create a new MemoryStreamSlim instance with an initial capacity of 1024 bytes, and setting the option to not clear memory buffers
-using (Stream stream = MemoryStreamSlim.Create(1024, options => options.ZeroBufferBehavior = MemoryStreamSlimZeroBufferOption.None))
+using (Stream stream = MemoryStreamSlim.Create(1024, options => options.WithZeroBufferBehavior(MemoryStreamSlimZeroBufferOption.None))
 {
     // Read and Write stream operations...
 }
 ```
 
-The one notable difference between `MemoryStreamSlim` and `MemoryStream` behavior is the implementation of the [GetBuffer](xref:KZDev.PerfUtils.MemoryStreamSlim.GetBuffer*) method. For fixed mode, the `GetBuffer` method works exactly as the `MemoryStream` class does, returning the underlying byte array that the stream is using if the instance was created with the 'publiclyVisible' parameter set to `true`, otherwise throwing an exception. For expandable mode `MemoryStreamSlim` instances, the `GetBuffer` method will strictly throw a `NotSupportedException`. This is a purposeful design decision to prevent misuse of the `MemoryStreamSlim` class in scenarios where the underlying buffer is not guaranteed to be contiguous in memory, and there are better and safer ways to access the data in the stream than getting direct access to the buffer. The `MemoryStreamSlim` class is designed to be a high-performance memory stream, and the `GetBuffer` method is not a high-performance method in the general case, and results of direct buffer access can be unpredictable and unsafe.
+## Key Difference: GetBuffer Method
 
-`RecyclableMemoryStream` on the other hand, supports calling `GetBuffer` and suggests using it over `ToArray` for performance reasons to get a byte array representation of the stream contents. The documentation has many warnings about the potential performance implications of using `GetBuffer` however and the need to be careful with its use. In addition, the first call to `GetBuffer` will cause the `RecyclableMemoryStream` class's internal workings to change so that performance could degrade significantly for that instance from that point on.
+The primary behavioral difference between **MemoryStreamSlim** and **MemoryStream** is the implementation of the [GetBuffer](xref:KZDev.PerfUtils.MemoryStreamSlim.GetBuffer*) method:
+
+- In fixed mode, `GetBuffer` behaves like **MemoryStream**, returning the underlying byte array if the instance was created with the publiclyVisible parameter set to true. Otherwise, it throws an exception.
+- In expandable mode, `GetBuffer` always throws a `NotSupportedException`. This design prevents misuse in scenarios where the underlying buffer is not guaranteed to be contiguous in memory. Safer and more efficient methods are available for accessing stream data.
+
+In contrast, **RecyclableMemoryStream** supports `GetBuffer` and recommends it over `ToArray` for performance reasons. However, its documentation warns about potential performance implications and the need for careful use. Additionally, the initial call to `GetBuffer` can significantly degrade the performance of the **RecyclableMemoryStream** instance from that point on.
 
 ## How MemoryStreamSlim Works
 
-`MemoryStreamSlim` is designed to be highly efficient regarding memory usage and throughput performance. It combines techniques to achieve this, but the primary technique is to reuse memory buffers as much as possible. . First, this is done by breaking memory needs into small and large (standard) buffers. These buffers are internally chained to create a logically contiguous memory stream of nearly any size.
+`MemoryStreamSlim` achieves high efficiency in memory usage and throughput performance by reusing memory buffers. It divides memory needs into small and large buffers, which are internally chained to create a logically contiguous memory stream.
 
-`MemoryStreamSlim` stores the byte stream in an internally optimized pool of small reusable buffers when the stream's memory capacity is relatively small. Given their size, these buffers are GC-allocated the same as any byte array, but they are cached for reuse when no longer needed, so there is a performance gain there.
-
-When the memory capacity of the stream is larger than the small buffer threshold, `MemoryStreamSlim` allocates large buffers from the Large Object Heap (LOH) 
-divided into 64K logical segments. The segments are internally managed and linked together to create highly efficient memory streams of any size within the limits of the memory limitations placed on the process. These large buffers are cached for future use, which avoids memory traffic as well as helps to prevent LOH fragmentation, which could otherwise lead to performance issues by putting pressure on the GC.
+- Small Buffers: For smaller memory capacities, **MemoryStreamSlim** uses a pool of small, reusable buffers. These buffers are GC-allocated but cached for reuse, reducing allocation overhead.
+- Large Buffers: For larger memory capacities, **MemoryStreamSlim** allocates multiples of 64KB segments from the LOH. These segments are linked together to create efficient memory streams of any size. By caching these buffers, **MemoryStreamSlim** avoids memory traffic and prevents LOH fragmentation.
 
 ## Features
 
-One of `MemoryStreamSlim`'s primary design goals is to provide a high-performance memory stream that is easy to use and minimizes memory traffic. It 'just works' without testing and tweaking different usage scenarios and option settings. However, a few options are available that can be used to control some of the behavior of MemoryStreamSlim instances. Those are discussed below.
+MemoryStreamSlim is designed to "just work" without requiring extensive configuration or tuning. However, it provides a few options for controlling its behavior:
 
 ### Clearing Memory
 
-By default, `MemoryStreamSlim` will zero out the memory buffers that are used when they are released. This is done for security reasons, to prevent potentially sensitive data from being left in memory after use. There are options that allow you to control this behavior. [Read More](./memory-management.md#clearing-memory)
+By default, **MemoryStreamSlim** zeroes out memory buffers when they are released to prevent sensitive data from remaining in memory. This behavior can be customized. [Read More](./memory-management.md#clearing-memory)
 
 ### Releasing Memory
 
-`MemoryStreamSlim` will occasionally release memory buffers that are no longer needed. This is done internally on a regular timed basis, and will release buffers that have not been used for a certain period of time. 
-
-While it is generally best to let this automatic mechanism take care of releasing unused memory, `MemoryStreamSlim` also provides a [`ReleaseMemoryBuffers`](xref:KZDev.PerfUtils.MemoryStreamSlim.ReleaseMemoryBuffers) method that that allows you to release the memory buffers cached for use by new stream instances. Releasing this memory can be useful when you want to free up cached memory that is no longer needed. [Read More](./memory-management.md#releasing-memory)
+**MemoryStreamSlim** automatically releases memory buffers that have been unused for an extended period on a regular schedule. Additionally, you can manually release cached buffers when they are no longer needed by calling the [`ReleaseMemoryBuffers`](xref:KZDev.PerfUtils.MemoryStreamSlim.ReleaseMemoryBuffers) method. [Learn more](./memory-management.md#releasing-memory)
 
 ### Native Memory
 
-`MemoryStreamSlim` can use native memory internally instead of the GC heap to further avoid the GC Large Object Heap fragmentation. [Read More](./memory-management.md#native-memory)
+**MemoryStreamSlim** can use native memory instead of the GC heap to further reduce LOH fragmentation. [Read More](./memory-management.md#native-memory)
 
 ## Monitoring
 
-`MemoryStreamSlim` provides a couple of ways to monitor usage using the `Metrics` and `Events` features of the .NET runtime. [Read More](./memory-monitoring.md)
+**MemoryStreamSlim** supports monitoring through the **.NET Metrics and Events** features, allowing you to track memory usage and performance. [Read More](./memory-monitoring.md)

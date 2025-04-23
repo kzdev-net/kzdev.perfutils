@@ -1,10 +1,8 @@
 ﻿// Copyright (c) Kevin Zehrer
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-using Xunit.Abstractions;
+namespace KZDev.PerfUtils.Tests;
 
-namespace KZDev.PerfUtils.Tests
-{
     //################################################################################
     /// <summary>
     /// Unit tests for the <see cref="MemoryStreamSlim"/> class that never run in 
@@ -52,7 +50,7 @@ namespace KZDev.PerfUtils.Tests
             foreach (int testSegmentSize in TestSegmentSizes)
                 for (int testLoop = 0; testLoop < testLoops; testLoop++)
                 {
-                    await using MemoryStreamSlim testService = MemoryStreamSlim.Create(options => options.ZeroBufferBehavior = MemoryStreamSlimZeroBufferOption.OnRelease);
+                    await using MemoryStreamSlim testService = MemoryStreamSlim.Create(options => options.WithZeroBufferBehavior(MemoryStreamSlimZeroBufferOption.OnRelease));
                     int byteCount = testDataSizes[RandomSource.GetRandomInteger(testDataSizes.Length)];
                     TestWriteLine($"Running test loop {testLoop} with byte count of {byteCount} and segment size {testSegmentSize}");
 
@@ -69,7 +67,7 @@ namespace KZDev.PerfUtils.Tests
             foreach (int testSegmentSize in TestSegmentSizes)
                 for (int testLoop = 0; testLoop < testLoops; testLoop++)
                 {
-                    await using MemoryStreamSlim testService = MemoryStreamSlim.Create(options => options.ZeroBufferBehavior = MemoryStreamSlimZeroBufferOption.OnRelease);
+                    await using MemoryStreamSlim testService = MemoryStreamSlim.Create(options => options.WithZeroBufferBehavior(MemoryStreamSlimZeroBufferOption.OnRelease));
                     int byteCount = testDataSizes[RandomSource.GetRandomInteger(testDataSizes.Length)];
                     TestWriteLine($"Running test loop {testLoop} with byte count of {byteCount} and segment size {testSegmentSize}");
 
@@ -86,4 +84,3 @@ namespace KZDev.PerfUtils.Tests
         #endregion Test Methods
     }
     //################################################################################
-}
