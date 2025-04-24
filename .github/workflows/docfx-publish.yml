@@ -15,7 +15,7 @@ permissions:
 concurrency:
   group: "pages"
   cancel-in-progress: false
-  
+
 jobs:
   publish-docs:
     environment:
@@ -23,21 +23,23 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-    - name: Dotnet Setup
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 9.x
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Dotnet Setup
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.x
 
-    - run: dotnet tool update -g docfx
-    - run: docfx Source/Docs/docfx.json
+      - run: dotnet restore Source/KZDev.PerfUtils.sln
+      - run: dotnet build -c Release Source/Src/KZDev.PerfUtils/KZDev.PerfUtils.csproj
+      - run: dotnet tool update -g docfx
+      - run: docfx Source/Docs/docfx.json
 
-    - name: Upload artifact
-      uses: actions/upload-pages-artifact@v3
-      with:
-        # Upload entire site directory
-        path: 'Source/Docs/_site'
-    - name: Deploy to GitHub Pages
-      id: deployment
-      uses: actions/deploy-pages@v4
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Upload entire site directory
+          path: "Source/Docs/_site"
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

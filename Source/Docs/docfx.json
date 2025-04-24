@@ -4,7 +4,7 @@
             "src": [
                 {
                     "src": "../../artifacts/bin/KZDev.PerfUtils/release_net9.0",
-                    "dest": "api/net9",
+                    "dest": "api",
                     "cwd": "src",
                     "properties": {
                         "TargetFramework": "net9"
@@ -14,7 +14,7 @@
                     ]
                 }
             ],
-            "dest": "api/net9",
+            "dest": "api",
             "filter": "filterConfig.yml",
             "outputFormat": "mref",
             "memberLayout": "separatePages",
