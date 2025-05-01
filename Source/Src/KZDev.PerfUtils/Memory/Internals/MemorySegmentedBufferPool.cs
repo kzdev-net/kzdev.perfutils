@@ -21,7 +21,7 @@ internal class MemorySegmentedBufferPool : IDisposable
     /// </summary>
     private const int TrimTimerIntervalMs =
 #if DEBUG
-            20_000;
+        20_000;
 #else
         600_000;
 #endif
@@ -398,6 +398,7 @@ internal class MemorySegmentedBufferPool : IDisposable
             // Someone else already expanded the array group, so we will just try again with that
             // generation.
             generationArray = currentGenerationArray;
+            groupCount = generationArray.Groups.Length;
         }
     }
     //--------------------------------------------------------------------------------
