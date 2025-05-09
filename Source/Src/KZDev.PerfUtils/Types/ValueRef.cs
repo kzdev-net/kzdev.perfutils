@@ -1,17 +1,9 @@
 ﻿// Copyright (c) Kevin Zehrer
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace KZDev.PerfUtils;
 
 using System;
-
-// TODO - Add support in InterlockedOps for this type
 
 /// <summary>
 /// A reference type wrapper for value types. Using this wrapper can
@@ -97,6 +89,34 @@ public class ValueRef<T> : IComparable<T>, IEquatable<T>
     public static bool operator ==(ValueRef<T> left, ValueRef<T> right) => left.Equals(right.Value);
 
     /// <summary>
+    /// Equality operator overload for <see cref="ValueRef{T}"/> and <typeparamref name="T"/>.
+    /// </summary>
+    /// <param name="left">
+    /// The left operand of the equality operator.
+    /// </param>
+    /// <param name="right">
+    /// The right operand of the equality operator.
+    /// </param>
+    /// <returns>
+    /// True if the left and right operands are equal; otherwise, false.
+    /// </returns>
+    public static bool operator ==(ValueRef<T> left, T right) => left.Value.Equals(right);
+
+    /// <summary>
+    /// Equality operator overload for <typeparamref name="T"/> and <see cref="ValueRef{T}"/>.
+    /// </summary>
+    /// <param name="left">
+    /// The left operand of the equality operator.
+    /// </param>
+    /// <param name="right">
+    /// The right operand of the equality operator.
+    /// </param>
+    /// <returns>
+    /// True if the left and right operands are equal; otherwise, false.
+    /// </returns>
+    public static bool operator ==(T left, ValueRef<T> right) => left.Equals(right.Value);
+
+    /// <summary>
     /// Inequality operator overload for <see cref="ValueRef{T}"/>.
     /// </summary>
     /// <param name="left">
@@ -109,6 +129,34 @@ public class ValueRef<T> : IComparable<T>, IEquatable<T>
     /// True if the left and right operands are not equal; otherwise, false.
     /// </returns>
     public static bool operator !=(ValueRef<T> left, ValueRef<T> right) => !left.Equals(right.Value);
+
+    /// <summary>
+    /// Inequality operator overload for <see cref="ValueRef{T}"/> and <typeparamref name="T"/>.
+    /// </summary>
+    /// <param name="left">
+    /// The left operand of the inequality operator.
+    /// </param>
+    /// <param name="right">
+    /// The right operand of the inequality operator.
+    /// </param>
+    /// <returns>
+    /// True if the left and right operands are not equal; otherwise, false.
+    /// </returns>
+    public static bool operator !=(ValueRef<T> left, T right) => !left.Value.Equals(right);
+
+    /// <summary>
+    /// Inequality operator overload for <typeparamref name="T"/> and <see cref="ValueRef{T}"/>.
+    /// </summary>
+    /// <param name="left">
+    /// The left operand of the inequality operator.
+    /// </param>
+    /// <param name="right">
+    /// The right operand of the inequality operator.
+    /// </param>
+    /// <returns>
+    /// True if the left and right operands are not equal; otherwise, false.
+    /// </returns>
+    public static bool operator !=(T left, ValueRef<T> right) => !left.Equals(right.Value);
 
     /// <summary>
     /// Greater than operator overload for <see cref="ValueRef{T}"/>.
@@ -125,18 +173,32 @@ public class ValueRef<T> : IComparable<T>, IEquatable<T>
     public static bool operator >(ValueRef<T> left, ValueRef<T> right) => left.Value.CompareTo(right.Value) > 0;
 
     /// <summary>
-    /// Less than operator overload for <see cref="ValueRef{T}"/>.
+    /// Greater than operator overload for <see cref="ValueRef{T}"/> and <typeparamref name="T"/>.
     /// </summary>
     /// <param name="left">
-    /// The left operand of the less than operator.
+    /// The left operand of the greater than operator.
     /// </param>
     /// <param name="right">
-    /// The right operand of the less than operator.
+    /// The right operand of the greater than operator.
     /// </param>
     /// <returns>
-    /// True if the left operand is less than the right operand; otherwise, false.
+    /// True if the left operand is greater than the right operand; otherwise, false.
     /// </returns>
-    public static bool operator >=(ValueRef<T> left, ValueRef<T> right) => left.Value.CompareTo(right.Value) >= 0;
+    public static bool operator >(ValueRef<T> left, T right) => left.Value.CompareTo(right) > 0;
+
+    /// <summary>
+    /// Greater than operator overload for <typeparamref name="T"/> and <see cref="ValueRef{T}"/>.
+    /// </summary>
+    /// <param name="left">
+    /// The left operand of the greater than operator.
+    /// </param>
+    /// <param name="right">
+    /// The right operand of the greater than operator.
+    /// </param>
+    /// <returns>
+    /// True if the left operand is greater than the right operand; otherwise, false.
+    /// </returns>
+    public static bool operator >(T left, ValueRef<T> right) => left.CompareTo(right.Value) > 0;
 
     /// <summary>
     /// Less than or equal to operator overload for <see cref="ValueRef{T}"/>.
@@ -153,6 +215,76 @@ public class ValueRef<T> : IComparable<T>, IEquatable<T>
     public static bool operator <(ValueRef<T> left, ValueRef<T> right) => left.Value.CompareTo(right.Value) < 0;
 
     /// <summary>
+    /// Less than operator overload for <see cref="ValueRef{T}"/> and <typeparamref name="T"/>.
+    /// </summary>
+    /// <param name="left">
+    /// The left operand of the less than operator.
+    /// </param>
+    /// <param name="right">
+    /// The right operand of the less than operator.
+    /// </param>
+    /// <returns>
+    /// True if the left operand is less than the right operand; otherwise, false.
+    /// </returns>
+    public static bool operator <(ValueRef<T> left, T right) => left.Value.CompareTo(right) < 0;
+
+    /// <summary>
+    /// Less than operator overload for <typeparamref name="T"/> and <see cref="ValueRef{T}"/>.
+    /// </summary>
+    /// <param name="left">
+    /// The left operand of the less than operator.
+    /// </param>
+    /// <param name="right">
+    /// The right operand of the less than operator.
+    /// </param>
+    /// <returns>
+    /// True if the left operand is less than the right operand; otherwise, false.
+    /// </returns>
+    public static bool operator <(T left, ValueRef<T> right) => left.CompareTo(right.Value) < 0;
+
+    /// <summary>
+    /// Less than operator overload for <see cref="ValueRef{T}"/>.
+    /// </summary>
+    /// <param name="left">
+    /// The left operand of the less than operator.
+    /// </param>
+    /// <param name="right">
+    /// The right operand of the less than operator.
+    /// </param>
+    /// <returns>
+    /// True if the left operand is less than the right operand; otherwise, false.
+    /// </returns>
+    public static bool operator >=(ValueRef<T> left, ValueRef<T> right) => left.Value.CompareTo(right.Value) >= 0;
+
+    /// <summary>
+    /// Greater than or equal to operator overload for <see cref="ValueRef{T}"/> and <typeparamref name="T"/>.
+    /// </summary>
+    /// <param name="left">
+    /// The left operand of the greater than or equal to operator.
+    /// </param>
+    /// <param name="right">
+    /// The right operand of the greater than or equal to operator.
+    /// </param>
+    /// <returns>
+    /// True if the left operand is greater than or equal to the right operand; otherwise, false.
+    /// </returns>
+    public static bool operator >=(ValueRef<T> left, T right) => left.Value.CompareTo(right) >= 0;
+
+    /// <summary>
+    /// Greater than or equal to operator overload for <typeparamref name="T"/> and <see cref="ValueRef{T}"/>.
+    /// </summary>
+    /// <param name="left">
+    /// The left operand of the greater than or equal to operator.
+    /// </param>
+    /// <param name="right">
+    /// The right operand of the greater than or equal to operator.
+    /// </param>
+    /// <returns>
+    /// True if the left operand is greater than or equal to the right operand; otherwise, false.
+    /// </returns>
+    public static bool operator >=(T left, ValueRef<T> right) => left.CompareTo(right.Value) >= 0;
+
+    /// <summary>
     /// Less than or equal to operator overload for <see cref="ValueRef{T}"/>.
     /// </summary>
     /// <param name="left">
@@ -166,6 +298,32 @@ public class ValueRef<T> : IComparable<T>, IEquatable<T>
     /// </returns>
     public static bool operator <=(ValueRef<T> left, ValueRef<T> right) => left.Value.CompareTo(right.Value) <= 0;
 
+    /// <summary>
+    /// Less than or equal to operator overload for <see cref="ValueRef{T}"/> and <typeparamref name="T"/>.
+    /// </summary>
+    /// <param name="left">
+    /// The left operand of the less than or equal to operator.
+    /// </param>
+    /// <param name="right">
+    /// The right operand of the less than or equal to operator.
+    /// </param>
+    /// <returns>
+    /// True if the left operand is less than or equal to the right operand; otherwise, false.
+    /// </returns>
+    public static bool operator <=(ValueRef<T> left, T right) => left.Value.CompareTo(right) <= 0;
 
+    /// <summary>
+    /// Less than or equal to operator overload for <typeparamref name="T"/> and <see cref="ValueRef{T}"/>.
+    /// </summary>
+    /// <param name="left">
+    /// The left operand of the less than or equal to operator.
+    /// </param>
+    /// <param name="right">
+    /// The right operand of the less than or equal to operator.
+    /// </param>
+    /// <returns>
+    /// True if the left operand is less than or equal to the right operand; otherwise, false.
+    /// </returns>
+    public static bool operator <=(T left, ValueRef<T> right) => left.CompareTo(right.Value) <= 0;
 }
 
