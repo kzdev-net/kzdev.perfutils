@@ -2,9 +2,9 @@
     <!-- 
     Define Source-Level properties
    -->
-    <PropertyGroup Label="SourceGlobals">
+    <PropertyGroup Label="PerfGlobals">
         <Configurations>Debug;Release;Profile</Configurations>
-        <TargetFrameworks>net9.0</TargetFrameworks>
+        <TargetFrameworks>net9.0;net8.0</TargetFrameworks>
         <IsPackable>false</IsPackable>
     </PropertyGroup>
     <!-- 

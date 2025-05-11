@@ -49,49 +49,6 @@ internal sealed class SegmentMemoryStreamSlim : MemoryStreamSlim
     }
     //================================================================================
     /// <summary>
-    /// Information about the needs for allocation based on the requested capacity.
-    /// </summary>
-    /// <param name="allocatedCapacity">
-    /// Total internal allocation capacity needed.
-    /// </param>
-    /// <param name="standardBufferSegmentCount">
-    /// The number of standard size buffer segments needed.
-    /// </param>
-    /// <param name="smallBufferIndex">
-    /// The index in the small buffer size array of the small buffer needed.
-    /// </param>
-    /// <remarks>
-    /// This will return information about either the number of standard size buffers needed
-    /// or the index of the small buffer size needed. If the StandardBufferCount is greater than
-    /// zero, then the SmallBufferIndex will be -1. If the SmallBufferIndex is greater than or
-    /// zero, then the StandardBufferCount will be zero.
-    /// </remarks>
-    [DebuggerDisplay($"{{{nameof(DebugDisplayValue)},nq}}")]
-    private readonly struct AllocationNeedInfo (long allocatedCapacity, int standardBufferSegmentCount, int smallBufferIndex)
-    {
-        /// <summary>
-        /// Debug helper to display the state of the group.
-        /// </summary>
-        [ExcludeFromCodeCoverage]
-#pragma warning disable HAA0601
-        internal string DebugDisplayValue => $"AllocatedCapacity = {AllocatedCapacity}, StdBuffers = {StandardBufferSegmentCount}, SmallIndex = {SmallBufferIndex}";
-#pragma warning restore HAA0601
-
-        /// <summary>
-        /// Total internal allocation capacity needed.
-        /// </summary>
-        public long AllocatedCapacity { [DebuggerStepThrough] get; } = allocatedCapacity;
-        /// <summary>
-        /// The number of standard size buffer segments needed.
-        /// </summary>
-        public int StandardBufferSegmentCount { [DebuggerStepThrough] get; } = standardBufferSegmentCount;
-        /// <summary>
-        /// The index in the small buffer size array of the small buffer needed.
-        /// </summary>
-        public int SmallBufferIndex { [DebuggerStepThrough] get; } = smallBufferIndex;
-    }
-    //================================================================================
-    /// <summary>
     /// Holds information about the current active buffer based on the current stream position.
     /// That is, the index of the buffer in the buffer list and the buffer itself that
     /// maps to the current position of the stream.
@@ -269,20 +226,24 @@ internal sealed class SegmentMemoryStreamSlim : MemoryStreamSlim
         int systemPageSize = Environment.SystemPageSize;
         List<int> buildSmallBufferSize = [];
         // The size of the 'small' buffers we'll use.
-        int smallBufferSize = systemPageSize;
+        int baseSmallBufferSize = systemPageSize >> 1;
         // If the system page size is larger than 1/8th of the max buffer size, 
-        // then we will use system page size increments for the small buffer sizes.
+        // then we will use 1/2 system page size increments for the small buffer sizes.
         if (systemPageSize > StandardBufferSegmentSize >> 3)
         {
+            // The size of the 'small' buffers we'll use.
+            int smallBufferSize = baseSmallBufferSize;
             while (smallBufferSize < StandardBufferSegmentSize)
             {
                 buildSmallBufferSize.Add(smallBufferSize);
-                smallBufferSize += systemPageSize;
+                smallBufferSize += baseSmallBufferSize;
             }
         }
         else
         {
             // Otherwise, we will use powers of 2 for the small buffer sizes.
+            // The size of the 'small' buffers we'll use.
+            int smallBufferSize = baseSmallBufferSize;
             while (smallBufferSize < StandardBufferSegmentSize)
             {
                 buildSmallBufferSize.Add(smallBufferSize);
@@ -296,11 +257,12 @@ internal sealed class SegmentMemoryStreamSlim : MemoryStreamSlim
 
         // Determine the buffer list cache buffer count capacities
         BufferListCacheBufferCountCapacities = new int[BufferListCacheSize];
-        int setBufferCount = 1;
+        // The first slot is always size 1, and then we double the size for each slot.
+        int setBufferSize = 1;
         for (int checkIndex = 0; checkIndex < BufferListCacheSize; checkIndex++)
         {
-            BufferListCacheBufferCountCapacities[checkIndex] = setBufferCount;
-            setBufferCount <<= 1;
+            BufferListCacheBufferCountCapacities[checkIndex] = setBufferSize;
+            setBufferSize <<= 1;
         }
     }
     //--------------------------------------------------------------------------------
@@ -547,6 +509,79 @@ internal sealed class SegmentMemoryStreamSlim : MemoryStreamSlim
     }
     //--------------------------------------------------------------------------------
     /// <summary>
+    /// Rents a buffer from the small buffer array pool based on the index in the static
+    /// small buffer sizes array.
+    /// </summary>
+    /// <param name="smallBufferIndex">
+    /// The index in the static small buffer sizes array that the buffer should be
+    /// rented from.
+    /// </param>
+    /// <returns>
+    /// A byte array buffer that is at least the size of the requested buffer.
+    /// </returns>
+    private SegmentBuffer RentSmallBufferFromIndex (int smallBufferIndex)
+    {
+        Debug.Assert(smallBufferIndex >= 0, "smallBufferIndex < 0");
+        Debug.Assert(smallBufferIndex < SmallBufferSizes.Length, "smallBufferIndex >= SmallBufferSizes.Length");
+
+        // Determine which small cache we should use based on the zero buffer behavior.
+        bool zeroBuffer = Settings.ZeroBufferBehavior != MemoryStreamSlimZeroBufferOption.None;
+        byte[]? returnBuffer;
+        if (zeroBuffer)
+        {
+            // Try to get the buffer from the zeroed cache first.
+            // Do a simple read first to see if the Interlocked operation is worth a try
+            if (SmallBufferZeroedCache[smallBufferIndex] is not null)
+            {
+                returnBuffer = Interlocked.Exchange(ref SmallBufferZeroedCache[smallBufferIndex], null);
+                if (returnBuffer is not null)
+                {
+                    return returnBuffer;
+                }
+            }
+            // If we didn't get a buffer from the zeroed cache, then try to get one from the non-zeroed cache
+            // and zero it out before returning it.
+            // Do a simple read first to see if the Interlocked operation is worth a try
+            if (SmallBufferNonZeroedCache[smallBufferIndex] is not null)
+            {
+                returnBuffer = Interlocked.Exchange(ref SmallBufferNonZeroedCache[smallBufferIndex], null);
+                if (returnBuffer is not null)
+                {
+                    Array.Clear(returnBuffer, 0, returnBuffer.Length);
+                    return returnBuffer;
+                }
+            }
+        }
+        else
+        {
+            // Try to get the buffer from the non-zeroed cache first.
+            // Do a simple read first to see if the Interlocked operation is worth a try
+            if (SmallBufferNonZeroedCache[smallBufferIndex] is not null)
+            {
+                returnBuffer = Interlocked.Exchange(ref SmallBufferNonZeroedCache[smallBufferIndex], null);
+                if (returnBuffer is not null)
+                {
+                    return returnBuffer;
+                }
+            }
+            // If we didn't get a buffer from the non-zeroed cache, then try to get one from the zeroed cache
+            // Do a simple read first to see if the Interlocked operation is worth a try
+            if (SmallBufferZeroedCache[smallBufferIndex] is not null)
+            {
+                returnBuffer = Interlocked.Exchange(ref SmallBufferZeroedCache[smallBufferIndex], null);
+                if (returnBuffer is not null)
+                {
+                    return returnBuffer;
+                }
+            }
+        }
+
+        // We don't have a fast cache instance, so we need to rent a buffer from the shared pool.
+        SegmentBuffer returnSegmentBuffer = SmallBufferArrayPool.Rent(smallBufferIndex, zeroBuffer);
+        return returnSegmentBuffer;
+    }
+    //--------------------------------------------------------------------------------
+    /// <summary>
     /// Rents a buffer of at least the requested size from the small buffer array pool.
     /// </summary>
     /// <param name="bufferSize">
@@ -562,45 +597,7 @@ internal sealed class SegmentMemoryStreamSlim : MemoryStreamSlim
 
         // Get buffers in specific increment sizes based on the small buffer array sizes.
         int smallBufferIndex = GetSmallBufferIndex(bufferSize);
-        // Determine which small cache we should use based on the zero buffer behavior.
-        bool zeroBuffer = Settings.ZeroBufferBehavior != MemoryStreamSlimZeroBufferOption.None;
-        byte[]? returnBuffer;
-        if (zeroBuffer)
-        {
-            // Try to get the buffer from the zeroed cache first.
-            returnBuffer = Interlocked.Exchange(ref SmallBufferZeroedCache[smallBufferIndex], null);
-            if (returnBuffer is not null)
-            {
-                return returnBuffer;
-            }
-            // If we didn't get a buffer from the zeroed cache, then try to get one from the non-zeroed cache
-            // and zero it out before returning it.
-            returnBuffer = Interlocked.Exchange(ref SmallBufferNonZeroedCache[smallBufferIndex], null);
-            if (returnBuffer is not null)
-            {
-                Array.Clear(returnBuffer, 0, returnBuffer.Length);
-                return returnBuffer;
-            }
-        }
-        else
-        {
-            // Try to get the buffer from the non-zeroed cache first.
-            returnBuffer = Interlocked.Exchange(ref SmallBufferNonZeroedCache[smallBufferIndex], null);
-            if (returnBuffer is not null)
-            {
-                return returnBuffer;
-            }
-            // If we didn't get a buffer from the non-zeroed cache, then try to get one from the zeroed cache
-            returnBuffer = Interlocked.Exchange(ref SmallBufferZeroedCache[smallBufferIndex], null);
-            if (returnBuffer is not null)
-            {
-                return returnBuffer;
-            }
-        }
-
-        // We don't have a fast cache instance, so we need to rent a buffer from the shared pool.
-        SegmentBuffer returnSegmentBuffer = SmallBufferArrayPool.Rent(smallBufferIndex, zeroBuffer);
-        return returnSegmentBuffer;
+        return RentSmallBufferFromIndex(smallBufferIndex);
     }
     //--------------------------------------------------------------------------------
     /// <summary>
@@ -674,7 +671,7 @@ internal sealed class SegmentMemoryStreamSlim : MemoryStreamSlim
                 return;
             }
             // Return the buffer to the shared pool.
-            SmallBufferArrayPool.Return(rawBuffer, true);
+            SmallBufferArrayPool.ReturnToIndex(smallBufferIndex, rawBuffer, true);
             return;
         }
         // Try to store in the static (fast) cache first, if we can't, then return to the array pool.
@@ -684,7 +681,7 @@ internal sealed class SegmentMemoryStreamSlim : MemoryStreamSlim
             return;
         }
         // Return the buffer to the shared pool.
-        SmallBufferArrayPool.Return(rawBuffer, false);
+        SmallBufferArrayPool.ReturnToIndex(smallBufferIndex, rawBuffer, false);
     }
     //--------------------------------------------------------------------------------
     /// <summary>
@@ -786,7 +783,7 @@ internal sealed class SegmentMemoryStreamSlim : MemoryStreamSlim
         // If we don't currently have a small buffer, then we don't need to copy anything
         if (_currentBufferInfo.Buffer.IsEmpty || LengthInternal == 0)
         {
-            _currentBufferInfo = new CurrentBufferInfo(smallBufferIndex, true, RentSmallBuffer(SmallBufferSizes[smallBufferIndex]));
+            _currentBufferInfo = new CurrentBufferInfo(smallBufferIndex, true, RentSmallBufferFromIndex(smallBufferIndex));
             _allocatedCapacity = _currentBufferInfo.Buffer.Length;
             return;
         }
@@ -794,7 +791,7 @@ internal sealed class SegmentMemoryStreamSlim : MemoryStreamSlim
         if (_currentBufferInfo.Buffer.Length >= bufferSize) return;
 
         // Allocate a small buffer and copy the data from the current small buffer
-        SegmentBuffer newBuffer = RentSmallBuffer(bufferSize);
+        SegmentBuffer newBuffer = RentSmallBufferFromIndex(smallBufferIndex);
         // Our current length can be safely cast to an int because we are currently using small buffers
         _currentBufferInfo.Buffer[..(int)LengthInternal].CopyTo(newBuffer);
         // Set the new buffer as the current buffer
@@ -815,10 +812,10 @@ internal sealed class SegmentMemoryStreamSlim : MemoryStreamSlim
     /// The requested capacity to allocate.
     /// </param>
     /// <returns>
-    /// An instance of <see cref="AllocationNeedInfo"/> that contains the 
+    /// An instance of <see cref="StreamAllocationNeedInfo"/> that contains the 
     /// needed allocation information.
     /// </returns>
-    private AllocationNeedInfo GetAllocateCapacity (long requestedCapacity)
+    private StreamAllocationNeedInfo GetAllocateCapacity (long requestedCapacity)
     {
         Debug.Assert(requestedCapacity >= 0, "capacity < 0");
         Debug.Assert(requestedCapacity <= MaximumCapacity, "capacity > MaximumCapacity");
@@ -835,7 +832,7 @@ internal sealed class SegmentMemoryStreamSlim : MemoryStreamSlim
             else
             {
                 int smallBufferIndex = GetSmallBufferIndex((int)requestedCapacity);
-                return new AllocationNeedInfo(SmallBufferSizes[smallBufferIndex], 0, smallBufferIndex);
+                return new StreamAllocationNeedInfo(SmallBufferSizes[smallBufferIndex], 0, smallBufferIndex);
             }
         }
         // Do we need additional space beyond the complete standard buffers?
@@ -843,7 +840,7 @@ internal sealed class SegmentMemoryStreamSlim : MemoryStreamSlim
             standardBuffersCount++;
         // Calculate the size of the standard buffer allocation
         long standardBufferSize = Convert.ToInt64(StandardBufferSegmentSize) * standardBuffersCount;
-        return new AllocationNeedInfo(standardBufferSize, standardBuffersCount, -1);
+        return new StreamAllocationNeedInfo(standardBufferSize, standardBuffersCount, -1);
     }
     //--------------------------------------------------------------------------------
     /// <summary>
@@ -978,7 +975,7 @@ internal sealed class SegmentMemoryStreamSlim : MemoryStreamSlim
             return;
         }
         // Get the allocation information for the needed capacity
-        AllocationNeedInfo allocationInfoForCapacity = GetAllocateCapacity(neededCapacity);
+        StreamAllocationNeedInfo allocationInfoForCapacity = GetAllocateCapacity(neededCapacity);
         // Check if we only need a small buffer
         if (allocationInfoForCapacity.StandardBufferSegmentCount > 0)
         {
@@ -1018,7 +1015,7 @@ internal sealed class SegmentMemoryStreamSlim : MemoryStreamSlim
         // than or equal to the capacity of the stream.
 
         // Get the capacity information for the requested capacity
-        AllocationNeedInfo capacityInfo = GetAllocateCapacity(requestedCapacity);
+        StreamAllocationNeedInfo capacityInfo = GetAllocateCapacity(requestedCapacity);
         // If the target allocation capacity is the same as the current allocation capacity, or we are
         // currently using a small buffer, then we don't need to do anything.
         if (capacityInfo.AllocatedCapacity == _allocatedCapacity || _currentBufferInfo.IsSmallBuffer)
@@ -1090,6 +1087,8 @@ internal sealed class SegmentMemoryStreamSlim : MemoryStreamSlim
                 break;
         }
         int bytesToCopy = (int)LengthInternal;
+        if (bytesToCopy > Array.MaxLength)
+            ThrowHelper.ThrowInvalidOperationException_TooLargeToCopyToArray();
 
         // If we have a small buffer, then we can just copy the data from the small buffer
         byte[] returnArray = GC.AllocateUninitializedArray<byte>(bytesToCopy);

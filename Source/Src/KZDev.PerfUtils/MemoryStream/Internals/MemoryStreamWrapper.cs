@@ -57,6 +57,7 @@ internal sealed class MemoryStreamWrapper : MemoryStreamSlim
         new MemoryStreamSlimOptions { ZeroBufferBehavior = MemoryStreamSlimZeroBufferOption.OnRelease })
     {
         _wrappedStream = stream;
+        IsOpen = true;
         UtilsEventSource.Log.MemoryStreamSlimCreated(Id, stream.Capacity, MemoryStreamSlimMode.Fixed, Settings);
     }
     //--------------------------------------------------------------------------------
@@ -223,6 +224,7 @@ internal sealed class MemoryStreamWrapper : MemoryStreamSlim
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public override byte[] ToArray ()
     {
+        EnsureNotClosed();
         byte[] returnArray = _wrappedStream.ToArray();
         if (0 == returnArray.Length) return returnArray;
         // Report the ToArray operation
@@ -280,6 +282,8 @@ internal sealed class MemoryStreamWrapper : MemoryStreamSlim
 
         UtilsEventSource.Log.MemoryStreamSlimDisposed(Id);
         GC.SuppressFinalize(this);
+        IsDisposed = true;
+        IsOpen = false;
         _wrappedStream.Dispose();
     }
     //--------------------------------------------------------------------------------

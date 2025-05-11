@@ -43,7 +43,6 @@ public abstract class MemoryStreamSlim : MemoryStream
     /// <summary>
     /// The maximum size of an individual standard buffer we will use.
     /// </summary>
-    /// <exclude />
     protected const int StandardBufferSegmentSize = MemorySegmentedBufferGroup.StandardBufferSegmentSize;
 
     /// <summary>
@@ -56,14 +55,12 @@ public abstract class MemoryStreamSlim : MemoryStream
     /// <summary>
     /// The maximum length allowed for a <see cref="MemoryStreamSlim"/> instance.
     /// </summary>
-    /// <exclude />
     protected internal static readonly long MaxMemoryStreamLength = 
         Environment.Is64BitProcess ? Math.Max(Math.Min(0x8_0000_0000, GC.GetGCMemoryInfo().TotalAvailableMemoryBytes), int.MaxValue) : int.MaxValue;
 
     /// <summary>
     /// The absolute maximum capacity we will allow a stream instance to get to.
     /// </summary>
-    /// <exclude />
     protected internal static readonly long AbsoluteMaxCapacity = MaxMemoryStreamLength;
 
     /// <summary>
@@ -219,32 +216,26 @@ public abstract class MemoryStreamSlim : MemoryStream
     /// <summary>
     /// True when this instance has been disposed
     /// </summary>
-    /// <exclude />
     protected bool IsDisposed { [DebuggerStepThrough] get; [DebuggerStepThrough] set; }
 
     /// <summary>
     /// <c>true</c> when the stream is open.
     /// </summary>
-    /// <exclude />
     protected bool IsOpen { [DebuggerStepThrough] get; [DebuggerStepThrough] set; }
 
     /// <summary>
     /// <c>true</c> when the stream can be written to.
     /// </summary>
-    /// <exclude />
-    /// <exclude />
     protected bool CanWriteInternal { [DebuggerStepThrough] get; [DebuggerStepThrough] set; }
 
     /// <summary>
     /// The current length of this stream.
     /// </summary>
-    /// <exclude />
     protected long LengthInternal { [DebuggerStepThrough] get; [DebuggerStepThrough] set; } = 0;
 
     /// <summary>
     /// The current file position in this stream.
     /// </summary>
-    /// <exclude />
     protected long PositionInternal { [DebuggerStepThrough] get; [DebuggerStepThrough] set; } = 0;
 
     /// <summary>
@@ -252,7 +243,6 @@ public abstract class MemoryStreamSlim : MemoryStream
     /// allocated capacity, which can be larger. This is also the capacity that can be
     /// explicitly set by the user. So, we will always have at least this much space.
     /// </summary>
-    /// <exclude />
     protected long CapacityInternal
     {
         [DebuggerStepThrough]
@@ -342,7 +332,6 @@ public abstract class MemoryStreamSlim : MemoryStream
     /// <paramref name="count"/> was negative, or the range specified by the combination of
     /// <paramref name="offset"/> and <paramref name="count"/> exceed the length of <paramref name="buffer"/>.
     /// </exception>
-    /// <exclude />
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     protected new static void ValidateBufferArguments (byte[] buffer, int offset, int count)
     {
@@ -363,7 +352,6 @@ public abstract class MemoryStreamSlim : MemoryStream
     /// <returns>
     /// <c>true</c> if the length is valid; otherwise, <c>false</c>.
     /// </returns>
-    /// <exclude />
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     protected static void ValidateLength (long length)
     {
@@ -394,7 +382,6 @@ public abstract class MemoryStreamSlim : MemoryStream
     /// <param name="options">
     /// The options used for configuring the stream instance settings.
     /// </param>
-    /// <exclude />
     protected MemoryStreamSlim (long maximumCapacity, MemoryStreamSlimMode mode, MemoryStreamSlimOptions? options)
     {
         MaximumCapacity = maximumCapacity;
@@ -415,7 +402,6 @@ public abstract class MemoryStreamSlim : MemoryStream
     /// <param name="settings">
     /// The stream instance settings.
     /// </param>
-    /// <exclude />
     protected MemoryStreamSlim (long maximumCapacity, MemoryStreamSlimMode mode, in MemoryStreamSlimSettings settings)
     {
         MaximumCapacity = maximumCapacity;
@@ -463,19 +449,17 @@ public abstract class MemoryStreamSlim : MemoryStream
     /// <param name="capacityValue">
     /// The new capacity value to set.
     /// </param>
-    /// <exclude />
     protected abstract void SetCapacity (long capacityValue);
     //--------------------------------------------------------------------------------
     /// <summary>
     /// Verifies that the stream is not closed and throws an exception if it is.
     /// </summary>
-    /// <exclude />
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     protected void EnsureNotClosed ()
     {
         if (IsOpen) return;
         if (IsDisposed)
-            ThrowHelper.ThrowObjectDisposedException_StreamClosed();
+            ThrowHelper.ThrowObjectDisposedException_StreamClosed(nameof(MemoryStreamSlim));
         else
             ThrowHelper.ThrowInvalidOperationException_StreamClosed();
     }
@@ -483,7 +467,6 @@ public abstract class MemoryStreamSlim : MemoryStream
     /// <summary>
     /// Verifies that the stream is not closed and is writable and throws an exception if it is.
     /// </summary>
-    /// <exclude />
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     protected void EnsureWriteable ()
     {

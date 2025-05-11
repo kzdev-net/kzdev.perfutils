@@ -167,11 +167,14 @@ internal static class ThrowHelper
     /// <summary>
     /// Throws an object disposed exception with the message for a closed stream.
     /// </summary>
+    /// <param name="objectName">
+    /// The name of the object that was disposed.
+    /// </param>
     /// <exception cref="ObjectDisposedException">
     /// </exception>
     [DoesNotReturn]
-    internal static void ThrowObjectDisposedException_StreamClosed () =>
-        throw new ObjectDisposedException(Strings.InvalidOperation_StreamClosed);
+    internal static void ThrowObjectDisposedException_StreamClosed (string objectName) =>
+        throw new ObjectDisposedException(objectName, Strings.InvalidOperation_StreamClosed);
     //--------------------------------------------------------------------------------
     /// <summary>
     /// Throws a not supported exception with the message for an unwritable stream.
@@ -227,6 +230,16 @@ internal static class ThrowHelper
         throw new ArgumentOutOfRangeException(argumentName, Strings.Arg_OutOfRangeStreamLength);
     //--------------------------------------------------------------------------------
     /// <summary>
+    /// Throws an argument out of range exception with the message indicating that the 
+    /// stream length would be invalid.
+    /// </summary>
+    /// <exception cref="IOException">
+    /// </exception>
+    [DoesNotReturn]
+    internal static void ThrowArgumentOutOfRangeException_TooLargeForArray(string argumentName) =>
+        throw new ArgumentOutOfRangeException(argumentName, Strings.Arg_TooLargeForArray);
+    //--------------------------------------------------------------------------------
+    /// <summary>
     /// Throws an IO exception with the message for the stream being too long.
     /// </summary>
     /// <exception cref="IOException">
@@ -276,7 +289,18 @@ internal static class ThrowHelper
     [DoesNotReturn]
     internal static void ThrowInvalidOperation_GlobalSettingsCantBeUpdated (string classTypeName) =>
         throw new InvalidOperationException(Strings.InvalidOperation_GlobalSettingsCantBeUpdated);
-
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Throws an object disposed exception with the object name.
+    /// </summary>
+    /// <param name="objectName">
+    /// The name of the object that was disposed.
+    /// </param>
+    /// <exception cref="ObjectDisposedException">
+    /// </exception>
+    [DoesNotReturn]
+    internal static void ThrowObjectDisposedException(string objectName) =>
+        throw new ObjectDisposedException(objectName, Strings.InvalidOperation_ObjectDisposed);
     //--------------------------------------------------------------------------------
 }
 //################################################################################

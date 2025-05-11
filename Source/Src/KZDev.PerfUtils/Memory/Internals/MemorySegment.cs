@@ -4,6 +4,7 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+
 using KZDev.PerfUtils.Resources;
 
 namespace KZDev.PerfUtils.Internals;
@@ -327,6 +328,14 @@ internal readonly unsafe struct MemorySegment
         }
         System.Array.Copy(_managedArray!, _offset, destination._managedArray!, destination._offset, _count);
     }
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Copies the contents of this instance into the specified destination <see cref="Memory{Byte}"/> object.
+    /// </summary>
+    /// <param name="destination">
+    /// The destination <see cref="Memory{Byte}"/> object.
+    /// </param>
+    public void CopyTo (in Memory<byte> destination) => AsReadOnlyMemory().CopyTo(destination);
     //--------------------------------------------------------------------------------
     /// <summary>
     /// Forms a slice out of the current memory segment starting at the specified index.

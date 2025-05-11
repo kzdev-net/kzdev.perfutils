@@ -199,6 +199,14 @@ internal readonly struct SegmentBuffer
     public void CopyTo (in Span<byte> destination) => Span.CopyTo(destination);
     //--------------------------------------------------------------------------------
     /// <summary>
+    /// Copies the contents of this <see cref="SegmentBuffer"/> object into a destination <see cref="Memory{Byte}"/> object.
+    /// </summary>
+    /// <param name="destination">
+    /// The destination <see cref="Memory{Byte}"/> object.
+    /// </param>
+    public void CopyTo(in Memory<byte> destination) => MemorySegment.CopyTo(destination);
+    //--------------------------------------------------------------------------------
+    /// <summary>
     /// Creates a new span over a portion of this <see cref="SegmentBuffer"/> from a specified
     /// position for a specified length.
     /// </summary>

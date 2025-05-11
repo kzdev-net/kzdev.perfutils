@@ -41,10 +41,17 @@ internal class MemorySmallBufferPool
         /// </summary>
         private int _clearedBufferFlags;
 
+#if NET9_0_OR_GREATER
+        /// <summary>
+        /// A lock for the buffer set.
+        /// </summary>
+        private readonly Lock _lock = new();
+#else
         /// <summary>
         /// A 0 or 1 lock for the buffer set.
         /// </summary>
         private int _locked;
+#endif
 
         //--------------------------------------------------------------------------------
         /// <summary>
@@ -58,6 +65,7 @@ internal class MemorySmallBufferPool
         /// </param>
         public MemorySmallBufferSizedSet (int bufferSize, int bufferCount)
         {
+            Debug.Assert(bufferCount <= MaxBufferSetCount, "Buffer count is too large for this set.");
             _bufferSize = bufferSize;
             _buffers = new byte[bufferCount][];
         }
@@ -76,6 +84,9 @@ internal class MemorySmallBufferPool
             byte[]? returnBuffer = null;
 
             // Lock this set
+#if NET9_0_OR_GREATER
+            lock (_lock)
+#else
             if (Interlocked.CompareExchange(ref _locked, 1, 0) != 0)
             {
                 SpinWait spinner = new();
@@ -87,6 +98,7 @@ internal class MemorySmallBufferPool
                 }
             }
             try
+#endif
             {
                 // Check if we have a buffer to return.
                 if (_nextStoreIndex > 0)
@@ -100,11 +112,13 @@ internal class MemorySmallBufferPool
                     }
                 }
             }
+#if !NET9_0_OR_GREATER
             finally
             {
                 // Unlock this set
                 Volatile.Write(ref _locked, 0);
             }
+#endif
 
             if (returnBuffer is null)
                 // A newly allocated array will always be cleared, so we don't need to do it here.
@@ -127,7 +141,11 @@ internal class MemorySmallBufferPool
         /// </param>
         public void Return (byte[] array, bool isCleared)
         {
+            Debug.Assert(array.Length == _bufferSize, "Buffer size mismatch");
             // Lock this set
+#if NET9_0_OR_GREATER
+            lock (_lock)
+#else
             if (Interlocked.CompareExchange(ref _locked, 1, 0) != 0)
             {
                 SpinWait spinner = new();
@@ -139,8 +157,10 @@ internal class MemorySmallBufferPool
                 }
             }
             try
+#endif
             {
                 if (_nextStoreIndex >= _buffers.Length)
+                    // There is no more room, so we just let the buffer go and be garbage collected.
                     return;
                 // If the buffer was cleared, we need to set the flag, otherwise we clear it.
                 if (isCleared)
@@ -153,11 +173,13 @@ internal class MemorySmallBufferPool
                 }
                 _buffers[_nextStoreIndex++] = array;
             }
+#if !NET9_0_OR_GREATER
             finally
             {
                 // Unlock this set
                 Volatile.Write(ref _locked, 0);
             }
+#endif
         }
         //--------------------------------------------------------------------------------
     }
@@ -192,11 +214,6 @@ internal class MemorySmallBufferPool
     /// </summary>
     private readonly MemorySmallBufferSizedSet?[] _bufferSets;
 
-    /// <summary>
-    /// A 0 or 1 lock for the buffer set.
-    /// </summary>
-    private int _locked;
-
     //--------------------------------------------------------------------------------
     /// <summary>
     /// Gets the index of the buffer size that will hold the given buffer size.
@@ -222,39 +239,44 @@ internal class MemorySmallBufferPool
     /// Returns to this pool the specified buffer that was previously acquired by
     /// a call to <see cref="Rent(int, bool)"/>.
     /// </summary>
+    /// <param name="poolIndex">
+    /// The index into the buffer size array that we want to return to.
+    /// </param>
     /// <param name="array">
     /// The raw buffer array being returned.
     /// </param>
     /// <param name="isCleared">
     /// Indicates if the buffer was cleared before being returned.
     /// </param>
-    public void Return (byte[] array, bool isCleared)
+    public void ReturnToIndex(int poolIndex, byte[] array, bool isCleared)
     {
-        int poolIndex = GetBufferSizeIndex(array.Length);
-        MemorySmallBufferSizedSet bufferSet;
-
-        // Lock this pool
-        if (Interlocked.CompareExchange(ref _locked, 1, 0) != 0)
-        {
-            SpinWait spinner = new();
-            // We are actually OK with this loop and spinning because the operation
-            // we perform once we have the lock is very fast.
-            while (Interlocked.CompareExchange(ref _locked, 1, 0) != 0)
-            {
-                spinner.SpinOnce();
-            }
+        Debug.Assert(poolIndex >= 0 && poolIndex < _bufferSizes.Length, "poolIndex out of range");
+        MemorySmallBufferSizedSet? bufferSet = Volatile.Read(ref _bufferSets[poolIndex]);
+        if (bufferSet is not null) {
+            // We have a buffer set, so we can return the buffer to it.
+            bufferSet.Return(array, isCleared);
+            return;
         }
-        try
-        {
-            bufferSet = (_bufferSets[poolIndex] ??= new MemorySmallBufferSizedSet(_bufferSizes[poolIndex], MaxBufferSetCount));
-        }
-        finally
-        {
-            // Unlock this set
-            Volatile.Write(ref _locked, 0);
-        }
-        bufferSet.Return(array, isCleared);
+        // We need to create a new buffer set.
+        MemorySmallBufferSizedSet newBufferSet = new(_bufferSizes[poolIndex], MaxBufferSetCount);
+        // Try to set the buffer set in the array.
+        bufferSet = (Interlocked.CompareExchange(ref _bufferSets[poolIndex], newBufferSet, null) is null) ?
+            newBufferSet : _bufferSets[poolIndex];
+        bufferSet!.Return(array, isCleared);
     }
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Returns to this pool the specified buffer that was previously acquired by
+    /// a call to <see cref="Rent(int, bool)"/>.
+    /// </summary>
+    /// <param name="array">
+    /// The raw buffer array being returned.
+    /// </param>
+    /// <param name="isCleared">
+    /// Indicates if the buffer was cleared before being returned.
+    /// </param>
+    public void Return (byte[] array, bool isCleared) => 
+        ReturnToIndex(GetBufferSizeIndex(array.Length), array, isCleared);
     //--------------------------------------------------------------------------------
     /// <summary>
     /// Returns a buffer from the pool that is at least the specified length.
@@ -270,29 +292,17 @@ internal class MemorySmallBufferPool
     /// </returns>
     public byte[] Rent (int sizeIndex, bool clearArray)
     {
-        MemorySmallBufferSizedSet? bufferSet;
-
-        // Lock this pool
-        if (Interlocked.CompareExchange(ref _locked, 1, 0) != 0)
-        {
-            SpinWait spinner = new();
-            // We are actually OK with this loop and spinning because the operation
-            // we perform once we have the lock is very fast.
-            while (Interlocked.CompareExchange(ref _locked, 1, 0) != 0)
-            {
-                spinner.SpinOnce();
-            }
-        }
-        try
-        {
-            bufferSet = _bufferSets[sizeIndex];
-        }
-        finally
-        {
-            // Unlock this set
-            Volatile.Write(ref _locked, 0);
-        }
-        return bufferSet?.Rent(clearArray) ?? new byte[_bufferSizes[sizeIndex]];
+        MemorySmallBufferSizedSet? bufferSet = Volatile.Read(ref _bufferSets[sizeIndex]);
+        byte[]? returnBuffer = bufferSet?.Rent(clearArray);
+        // If we don't have a buffer, then we need to create a new one.
+        if (returnBuffer is not null)
+            return returnBuffer;
+        // We need to create a new buffer
+        returnBuffer = GC.AllocateUninitializedArray<byte>(_bufferSizes[sizeIndex]);
+        // If we need to clear the buffer, then we need to do that here.
+        if (clearArray)
+            Array.Clear(returnBuffer, 0, returnBuffer.Length);
+        return returnBuffer;
     }
     //--------------------------------------------------------------------------------
 }

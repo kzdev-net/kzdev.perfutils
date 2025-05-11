@@ -238,7 +238,7 @@ internal class MemorySegmentedBufferPool : IDisposable
          *    just get copied over to the new generation.
          *  Therefore, there is no real race condition.
          *
-         * In the case of two threads processing a Return operation at the same time, they may both
+         * In the case of two threads processing a RentFromGeneration operation at the same time, they may both
          * find the need to create a new generation, but that is not a problem we really need to worry
          * about. The only thing that would happen is that we would have two (or more, if there are more
          * than two threads doing this processing at the same time) new generations created, and
@@ -248,10 +248,8 @@ internal class MemorySegmentedBufferPool : IDisposable
          * the buffer that was stored in it, instead of caching it for reuse, but we can live with that
          * while gaining the benefit of not having to lock the entire array group while processing for
          * the more likely use case of this race condition not happening.
-         *
          */
-        MemorySegmentedGroupGenerationArray newGeneration =
-            new MemorySegmentedGroupGenerationArray(currentGeneration, neededBufferSize, _useNativeMemory);
+        MemorySegmentedGroupGenerationArray newGeneration = new(currentGeneration, neededBufferSize, _useNativeMemory);
         // Now, try to set the new generation as the current generation, and just to minimize the
         // chance of missing a new generation, we will confirm that the current generation is still
         // what we expect it to be, and otherwise assume that the current generation has been updated,
@@ -380,7 +378,7 @@ internal class MemorySegmentedBufferPool : IDisposable
                     continue;
             }
 
-            // Reset the locked loop count because we are going to expand the array group.
+            // Reset the locked loop count because we are going to expand the array group and try again.
             lockedLoops = 0;
 
             // We will try to expand the array group if we didn't find a buffer.

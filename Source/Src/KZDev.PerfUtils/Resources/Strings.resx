@@ -186,4 +186,12 @@
     <value>Source stream must be seekable.</value>
     <comment>This is an error when a stream provided as the source of an operation is required to be seekable.</comment>
   </data>
+  <data name="Arg_TooLargeForArray" xml:space="preserve">
+    <value>The requested size is too large for an array.</value>
+    <comment>Error when an operation that has an array result would create data too large for an array.</comment>
+  </data>
+  <data name="InvalidOperation_ObjectDisposed" xml:space="preserve">
+    <value>The object instance has been disposed.</value>
+    <comment>For throwing ObjectDisposed exceptions when an object is used after being disposed.</comment>
+  </data>
 </root>
