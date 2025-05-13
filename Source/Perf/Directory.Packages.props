@@ -9,6 +9,7 @@
     <ItemGroup Label="PerfPackageVersions">
         <PackageVersion Include="BenchmarkDotNet" Version="0.14.0" />
         <PackageVersion Include="JetBrains.Profiler.Api" Version="1.4.8" />
+        <PackageVersion Include="Microsoft.Diagnostics.Runtime" Version="3.1.512801" />
         <PackageVersion Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.1" />
     </ItemGroup>	
 </Project>

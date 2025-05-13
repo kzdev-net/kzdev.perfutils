@@ -2,9 +2,6 @@
 	<ItemGroup>
 		<PackageReference Include="Bogus" />
 		<PackageReference Include="FluentAssertions" />
-		<PackageReference Include="Microsoft.Extensions.Configuration" />
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection" />
-		<PackageReference Include="Microsoft.Extensions.Hosting" />
 		<PackageReference Include="Moq" />
 		<PackageReference Include="xunit.v3.extensibility.core" />
 		<PackageReference Include="XunitXml.TestLogger" />
