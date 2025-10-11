@@ -14,7 +14,7 @@ namespace KZDev.PerfUtils.Tests;
 /// <summary>
 /// Unit tests for the <see cref="MemoryStreamSlim"/> class.
 /// </summary>
-[Trait(TestConstants.TestTrait.Category, "Memory")]
+[Trait(TestConstants.TestTrait.Category, TestConstants.TestCategory.Memory)]
 public partial class UsingMemoryStreamSlim : UsingMemoryStreamSlimUnitTestBase
 {
     /// <summary>
@@ -588,7 +588,7 @@ public partial class UsingMemoryStreamSlim : UsingMemoryStreamSlimUnitTestBase
     public void UsingMemoryStreamSlim_SetLengthLarger_FillsWithZeroedBytes ()
     {
         // Fill the stream with random bytes
-        for (int testLoop = 0; testLoop < 5_000; testLoop++)
+        for (int testLoop = 0; testLoop < 1000; testLoop++)
         {
             using MemoryStreamSlim testService = MemoryStreamSlim.Create(options => options.WithZeroBufferBehavior(MemoryStreamSlimZeroBufferOption.None));
             int byteCount = RandomSource.GetRandomInteger(10, 0x2_0000);

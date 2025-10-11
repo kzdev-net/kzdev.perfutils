@@ -10,7 +10,7 @@ namespace KZDev.PerfUtils.Tests;
 /// Unit tests for the <see cref="MemoryStreamSlim"/> class for cases when the stream
 /// is created with a buffer that is already allocated.
 /// </summary>
-[Trait(TestConstants.TestTrait.Category, "Memory")]
+[Trait(TestConstants.TestTrait.Category, TestConstants.TestCategory.Memory)]
 public partial class UsingMemoryStreamSlim : UsingMemoryStreamSlimUnitTestBase
 {
     //--------------------------------------------------------------------------------
@@ -53,11 +53,25 @@ public partial class UsingMemoryStreamSlim : UsingMemoryStreamSlimUnitTestBase
     /// </param>
     public UsingMemoryStreamSlim (ITestOutputHelper xUnitTestOutputHelper) : base(xUnitTestOutputHelper)
     {
-        CreateTestService = streamSize =>
+        SetTestStreamFactory (streamSize =>
         {
             byte[] sourceBuffer = GetSourceBuffer(streamSize);
             return MemoryStreamSlim.Create(sourceBuffer);
-        };
+        });
+    }
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Sets up the test stream factory to create a <see cref="MemoryStreamSlim"/> 
+    /// instance with a specified size and a buffer that is already allocated and
+    /// is publicly visible.
+    /// </summary>
+    partial void SetupToMemoryAccessStreamFactory()
+    {
+        SetTestStreamFactory(streamSize =>
+        {
+            byte[] sourceBuffer = GetSourceBuffer(streamSize);
+            return MemoryStreamSlim.Create(sourceBuffer, 0, streamSize, true, true);
+        });
     }
     //--------------------------------------------------------------------------------
 

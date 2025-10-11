@@ -11,7 +11,7 @@ namespace KZDev.PerfUtils.Tests;
 /// <summary>
 /// Unit tests for the <see cref="MemorySegmentedBufferGroup"/> class.
 /// </summary>
-[Trait(TestConstants.TestTrait.Category, "Memory")]
+[Trait(TestConstants.TestTrait.Category, TestConstants.TestCategory.Memory)]
 public class UsingMemorySegmentedBufferGroup : MemorySegmentedBufferGroupUnitTestBase
 {
     //--------------------------------------------------------------------------------

@@ -145,6 +145,31 @@ public abstract partial class TestData
         GetTestIntegerSet(RandomSource, setSize, minNumber, maxNumber);
     //--------------------------------------------------------------------------------
     /// <summary>
+    /// Gets a set of unique test integers in the range of [0...maxNumber) that
+    /// are in a sequence of adjacent integers.
+    /// </summary>
+    /// <param name="setSize">The size of the set of integers to get.</param>
+    /// <param name="maxNumber">The maximum number value to include in the set.</param>
+    /// <returns>
+    /// An immutable array of unique integers.
+    /// </returns>
+    public ImmutableArray<int> GetTestIntegerSequenceSet(int setSize, int maxNumber) =>
+        GetTestIntegerSet(setSize, 0, maxNumber);
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Gets a set of unique test integers in the range of [minNumber...maxNumber) that
+    /// are in a sequence of adjacent integers.
+    /// </summary>
+    /// <param name="setSize">The size of the set of integers to get.</param>
+    /// <param name="maxNumber">The maximum number value to include in the set.</param>
+    /// <param name="minNumber">The minimum number value to include in the set.</param>
+    /// <returns>
+    /// An immutable array of unique integers.
+    /// </returns>
+    public ImmutableArray<int> GetTestIntegerSequenceSet(int setSize, int? minNumber = null, int? maxNumber = null) =>
+        GetTestIntegerSequenceSet(RandomSource, setSize, minNumber, maxNumber);
+    //--------------------------------------------------------------------------------
+    /// <summary>
     /// Gets a mutable set of unique test integers in the range of [0...maxNumber)
     /// </summary>
     /// <param name="setSize">The size of the set of integers to get.</param>
@@ -167,6 +192,38 @@ public abstract partial class TestData
     public int[] GetTestIntegerMutableSet (int setSize, int? minNumber = null, int? maxNumber = null) =>
         GetTestIntegerMutableSet(RandomSource, setSize, minNumber, maxNumber);
     //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Gets a mutable set of unique test integers in the range of [0...maxNumber) that
+    /// are in a sequence of adjacent integers.
+    /// </summary>
+    /// <remarks>
+    /// For example, for each index in the array, n, the value at [n + 1] will be equal to
+    /// [n] + 1.
+    /// </remarks>
+    /// <param name="setSize">The size of the set of integers to get.</param>
+    /// <param name="maxNumber">The maximum number value to include in the set.</param>
+    /// <returns>
+    /// An immutable array of unique integers.
+    /// </returns>
+    public int[] GetTestIntegerSequenceMutableSet(int setSize, int maxNumber) =>
+        GetTestIntegerSequenceMutableSet(setSize, 0, maxNumber);
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Gets a mutable set of unique test integers in the range of [minNumber...maxNumber) that
+    /// are in a sequence of adjacent integers.
+    /// </summary>
+    /// <remarks>
+    /// For example, for each index in the array, n, the value at [n + 1] will be equal to
+    /// [n] + 1.
+    /// </remarks>
+    /// <param name="setSize">The size of the set of integers to get.</param>
+    /// <param name="maxNumber">The maximum number value to include in the set.</param>
+    /// <param name="minNumber">The minimum number value to include in the set.</param>
+    /// <returns>
+    /// An immutable array of unique integers.
+    /// </returns>
+    public int[] GetTestIntegerSequenceMutableSet(int setSize, int? minNumber = null, int? maxNumber = null) =>
+        GetTestIntegerSequenceMutableSet(RandomSource, setSize, minNumber, maxNumber);
 
     #endregion Integer Methods
 
@@ -275,6 +332,39 @@ public abstract partial class TestData
         GetTestUnsignedIntegerSet(RandomSource, setSize, minNumber, maxNumber);
     //--------------------------------------------------------------------------------
     /// <summary>
+    /// Gets a set of unique test integers in the range of [0...maxNumber) that
+    /// are in a sequence of adjacent integers.
+    /// </summary>
+    /// <remarks>
+    /// For example, for each index in the array, n, the value at [n + 1] will be equal to
+    /// [n] + 1.
+    /// </remarks>
+    /// <param name="setSize">The size of the set of integers to get.</param>
+    /// <param name="maxNumber">The maximum number value to include in the set.</param>
+    /// <returns>
+    /// An immutable array of unique integers.
+    /// </returns>
+    public ImmutableArray<uint> GetTestUnsignedIntegerSequenceSet(int setSize, uint maxNumber) =>
+        GetTestUnsignedIntegerSequenceSet(setSize, 0, maxNumber);
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Gets a set of unique test integers in the range of [minNumber...maxNumber) that
+    /// are in a sequence of adjacent integers.
+    /// </summary>
+    /// <remarks>
+    /// For example, for each index in the array, n, the value at [n + 1] will be equal to
+    /// [n] + 1.
+    /// </remarks>
+    /// <param name="setSize">The size of the set of integers to get.</param>
+    /// <param name="maxNumber">The maximum number value to include in the set.</param>
+    /// <param name="minNumber">The minimum number value to include in the set.</param>
+    /// <returns>
+    /// An immutable array of unique integers.
+    /// </returns>
+    public ImmutableArray<uint> GetTestUnsignedIntegerSequenceSet(int setSize, uint? minNumber = null, uint? maxNumber = null) =>
+        GetTestUnsignedIntegerSequenceSet(RandomSource, setSize, minNumber, maxNumber);
+    //--------------------------------------------------------------------------------
+    /// <summary>
     /// Gets a mutable set of unique test integers in the range of [0...maxNumber)
     /// </summary>
     /// <param name="setSize">The size of the set of integers to get.</param>
@@ -296,6 +386,39 @@ public abstract partial class TestData
     /// </returns>
     public uint[] GetTestUnsignedIntegerMutableSet (int setSize, uint? minNumber = null, uint? maxNumber = null) =>
         GetTestUnsignedIntegerMutableSet(RandomSource, setSize, minNumber, maxNumber);
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Gets a mutable set of unique test integers in the range of [0...maxNumber) that
+    /// are in a sequence of adjacent integers.
+    /// </summary>
+    /// <remarks>
+    /// For example, for each index in the array, n, the value at [n + 1] will be equal to
+    /// [n] + 1.
+    /// </remarks>
+    /// <param name="setSize">The size of the set of integers to get.</param>
+    /// <param name="maxNumber">The maximum number value to include in the set.</param>
+    /// <returns>
+    /// An immutable array of unique integers.
+    /// </returns>
+    public uint[] GetTestUnsignedIntegerSequenceMutableSet(int setSize, uint maxNumber) =>
+        GetTestUnsignedIntegerSequenceMutableSet(setSize, 0, maxNumber);
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Gets a mutable set of unique test integers in the range of [minNumber...maxNumber) that
+    /// are in a sequence of adjacent integers.
+    /// </summary>
+    /// <remarks>
+    /// For example, for each index in the array, n, the value at [n + 1] will be equal to
+    /// [n] + 1.
+    /// </remarks>
+    /// <param name="setSize">The size of the set of integers to get.</param>
+    /// <param name="maxNumber">The maximum number value to include in the set.</param>
+    /// <param name="minNumber">The minimum number value to include in the set.</param>
+    /// <returns>
+    /// An immutable array of unique integers.
+    /// </returns>
+    public uint[] GetTestUnsignedIntegerSequenceMutableSet(int setSize, uint? minNumber = null, uint? maxNumber = null) =>
+        GetTestUnsignedIntegerSequenceMutableSet(RandomSource, setSize, minNumber, maxNumber);
     //--------------------------------------------------------------------------------
 
     #endregion Unsigned Integer Methods
@@ -404,6 +527,39 @@ public abstract partial class TestData
         GetTestLongIntegerSet(RandomSource, setSize, minNumber, maxNumber);
     //--------------------------------------------------------------------------------
     /// <summary>
+    /// Gets a set of unique test long integers in the range of [0...maxNumber) that
+    /// are in a sequence of adjacent integers.
+    /// </summary>
+    /// <remarks>
+    /// For example, for each index in the array, n, the value at [n + 1] will be equal to
+    /// [n] + 1.
+    /// </remarks>
+    /// <param name="setSize">The size of the set of long integers to get.</param>
+    /// <param name="maxNumber">The maximum number value to include in the set.</param>
+    /// <returns>
+    /// An immutable array of unique long integers.
+    /// </returns>
+    public ImmutableArray<long> GetTestLongIntegerSequenceSet(int setSize, long maxNumber) =>
+        GetTestLongIntegerSequenceSet(setSize, 0, maxNumber);
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Gets a set of unique test long integers in the range of [minNumber...maxNumber) that
+    /// are in a sequence of adjacent integers.
+    /// </summary>
+    /// <remarks>
+    /// For example, for each index in the array, n, the value at [n + 1] will be equal to
+    /// [n] + 1.
+    /// </remarks>
+    /// <param name="setSize">The size of the set of long integers to get.</param>
+    /// <param name="maxNumber">The maximum number value to include in the set.</param>
+    /// <param name="minNumber">The minimum number value to include in the set.</param>
+    /// <returns>
+    /// An immutable array of unique long integers.
+    /// </returns>
+    public ImmutableArray<long> GetTestLongIntegerSequenceSet(int setSize, long? minNumber = null, long? maxNumber = null) =>
+        GetTestLongIntegerSequenceSet(RandomSource, setSize, minNumber, maxNumber);
+    //--------------------------------------------------------------------------------
+    /// <summary>
     /// Gets a set of unique test long integers in the range of [0...maxNumber)
     /// </summary>
     /// <param name="setSize">The size of the set of long integers to get.</param>
@@ -425,6 +581,39 @@ public abstract partial class TestData
     /// </returns>
     public long[] GetTestLongIntegerMutableSet (int setSize, long? minNumber = null, long? maxNumber = null) =>
         GetTestLongIntegerMutableSet(RandomSource, setSize, minNumber, maxNumber);
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Gets a set of unique test long integers in the range of [0...maxNumber) that
+    /// are in a sequence of adjacent integers.
+    /// </summary>
+    /// <remarks>
+    /// For example, for each index in the array, n, the value at [n + 1] will be equal to
+    /// [n] + 1.
+    /// </remarks>
+    /// <param name="setSize">The size of the set of long integers to get.</param>
+    /// <param name="maxNumber">The maximum number value to include in the set.</param>
+    /// <returns>
+    /// An immutable array of unique long integers.
+    /// </returns>
+    public long[] GetTestLongIntegerSequenceMutableSet(int setSize, long maxNumber) =>
+        GetTestLongIntegerSequenceMutableSet(setSize, 0, maxNumber);
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Gets a set of unique test long integers in the range of [minNumber...maxNumber) that
+    /// are in a sequence of adjacent integers.
+    /// </summary>
+    /// <remarks>
+    /// For example, for each index in the array, n, the value at [n + 1] will be equal to
+    /// [n] + 1.
+    /// </remarks>
+    /// <param name="setSize">The size of the set of long integers to get.</param>
+    /// <param name="maxNumber">The maximum number value to include in the set.</param>
+    /// <param name="minNumber">The minimum number value to include in the set.</param>
+    /// <returns>
+    /// An immutable array of unique long integers.
+    /// </returns>
+    public long[] GetTestLongIntegerSequenceMutableSet(int setSize, long? minNumber = null, long? maxNumber = null) =>
+        GetTestLongIntegerSequenceMutableSet(RandomSource, setSize, minNumber, maxNumber);
     //--------------------------------------------------------------------------------
 
     #endregion Long Integer Methods
@@ -534,6 +723,39 @@ public abstract partial class TestData
         GetTestUnsignedLongIntegerSet(RandomSource, setSize, minNumber, maxNumber);
     //--------------------------------------------------------------------------------
     /// <summary>
+    /// Gets a set of unique test integers in the range of [0...maxNumber) that
+    /// are in a sequence of adjacent integers.
+    /// </summary>
+    /// <remarks>
+    /// For example, for each index in the array, n, the value at [n + 1] will be equal to
+    /// [n] + 1.
+    /// </remarks>
+    /// <param name="setSize">The size of the set of integers to get.</param>
+    /// <param name="maxNumber">The maximum number value to include in the set.</param>
+    /// <returns>
+    /// An immutable array of unique integers.
+    /// </returns>
+    public ImmutableArray<ulong> GetTestUnsignedLongIntegerSequenceSet(int setSize, ulong maxNumber) =>
+        GetTestUnsignedLongIntegerSequenceSet(setSize, 0, maxNumber);
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Gets a set of unique test integers in the range of [minNumber...maxNumber) that
+    /// are in a sequence of adjacent integers.
+    /// </summary>
+    /// <remarks>
+    /// For example, for each index in the array, n, the value at [n + 1] will be equal to
+    /// [n] + 1.
+    /// </remarks>
+    /// <param name="setSize">The size of the set of integers to get.</param>
+    /// <param name="maxNumber">The maximum number value to include in the set.</param>
+    /// <param name="minNumber">The minimum number value to include in the set.</param>
+    /// <returns>
+    /// An immutable array of unique integers.
+    /// </returns>
+    public ImmutableArray<ulong> GetTestUnsignedLongIntegerSequenceSet(int setSize, ulong? minNumber = null, ulong? maxNumber = null) =>
+        GetTestUnsignedLongIntegerSequenceSet(RandomSource, setSize, minNumber, maxNumber);
+    //--------------------------------------------------------------------------------
+    /// <summary>
     /// Gets a mutable set of unique test integers in the range of [0...maxNumber)
     /// </summary>
     /// <param name="setSize">The size of the set of integers to get.</param>
@@ -554,6 +776,39 @@ public abstract partial class TestData
     /// An immutable array of unique integers.
     /// </returns>
     public ulong[] GetTestUnsignedLongIntegerMutableSet (int setSize, ulong? minNumber = null, ulong? maxNumber = null) =>
+        GetTestUnsignedLongIntegerMutableSet(RandomSource, setSize, minNumber, maxNumber);
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Gets a mutable set of unique test integers in the range of [0...maxNumber) that
+    /// are in a sequence of adjacent integers.
+    /// </summary>
+    /// <remarks>
+    /// For example, for each index in the array, n, the value at [n + 1] will be equal to
+    /// [n] + 1.
+    /// </remarks>
+    /// <param name="setSize">The size of the set of integers to get.</param>
+    /// <param name="maxNumber">The maximum number value to include in the set.</param>
+    /// <returns>
+    /// An immutable array of unique integers.
+    /// </returns>
+    public ulong[] GetTestUnsignedLongIntegerSequenceMutableSet(int setSize, ulong maxNumber) =>
+        GetTestUnsignedLongIntegerMutableSet(setSize, 0, maxNumber);
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Gets a mutable set of unique test integers in the range of [minNumber...maxNumber) that
+    /// are in a sequence of adjacent integers.
+    /// </summary>
+    /// <remarks>
+    /// For example, for each index in the array, n, the value at [n + 1] will be equal to
+    /// [n] + 1.
+    /// </remarks>
+    /// <param name="setSize">The size of the set of integers to get.</param>
+    /// <param name="maxNumber">The maximum number value to include in the set.</param>
+    /// <param name="minNumber">The minimum number value to include in the set.</param>
+    /// <returns>
+    /// An immutable array of unique integers.
+    /// </returns>
+    public ulong[] GetTestUnsignedLongIntegerSequenceMutableSet(int setSize, ulong? minNumber = null, ulong? maxNumber = null) =>
         GetTestUnsignedLongIntegerMutableSet(RandomSource, setSize, minNumber, maxNumber);
     //--------------------------------------------------------------------------------
 
@@ -675,7 +930,7 @@ public abstract partial class TestData
     public char[] GetRandomChars (int minSize, int maxSize) =>
         Enumerable
             .Range(0, GetTestInteger(RandomSource, minSize, maxSize))
-            .Select(i => GetRandomChar(RandomSource))
+            .Select(_ => GetRandomChar(RandomSource))
             .ToArray();
     //--------------------------------------------------------------------------------
     /// <summary>
@@ -696,5 +951,25 @@ public abstract partial class TestData
     //--------------------------------------------------------------------------------
 
     #endregion Char Methods
+
+    #region Prime Number Methods
+
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Gets a random prime number that is larger than 1,000
+    /// </summary>
+    /// <param name="minNumber">
+    /// Optionally, the minimum number for which to find the next prime number.
+    /// </param>
+    /// <returns>
+    /// A random prime number that is larger than 1,000
+    /// </returns>
+    /// <exception cref="OverflowException">
+    /// Thrown when the next prime number is too large to be represented by an integer.
+    /// </exception>
+    public int PickAPrime (int minNumber = 2) => PickAPrime(RandomSource, minNumber);
+    //--------------------------------------------------------------------------------
+
+    #endregion Prime Number Methods
 }
 //################################################################################

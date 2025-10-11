@@ -179,7 +179,7 @@ public class UsingMemorySegmentedBufferGroupWithUsedPatterns : MemorySegmentedBu
 
     //--------------------------------------------------------------------------------    
     /// <summary>
-    /// Tests the <see cref="MemorySegmentedBufferGroup.GetBuffer(int, bool, MemorySegmentedBufferPool)"/> 
+    /// Tests the <see cref="MemorySegmentedBufferGroup.GetBuffer(long, bool, MemorySegmentedBufferPool)"/> 
     /// method to get a single segment zeroed buffer when the current used pattern is 
     /// every other segment is in use (1-0) starting with the first segment.
     /// This should return a buffer from the second segment in the group that is zeroed.
@@ -205,7 +205,7 @@ public class UsingMemorySegmentedBufferGroupWithUsedPatterns : MemorySegmentedBu
     }
     //--------------------------------------------------------------------------------    
     /// <summary>
-    /// Tests the <see cref="MemorySegmentedBufferGroup.GetBuffer(int, bool, MemorySegmentedBufferPool)"/> 
+    /// Tests the <see cref="MemorySegmentedBufferGroup.GetBuffer(long, bool, MemorySegmentedBufferPool)"/> 
     /// method to get a single segment zeroed buffer when the current used pattern is 
     /// every other segment is in use (1-0) starting with the first segment.
     /// This should return a buffer from the second segment in the group that is zeroed.
@@ -231,7 +231,7 @@ public class UsingMemorySegmentedBufferGroupWithUsedPatterns : MemorySegmentedBu
     }
     //--------------------------------------------------------------------------------    
     /// <summary>
-    /// Tests the <see cref="MemorySegmentedBufferGroup.GetBuffer(int, bool, MemorySegmentedBufferPool)"/> 
+    /// Tests the <see cref="MemorySegmentedBufferGroup.GetBuffer(long, bool, MemorySegmentedBufferPool)"/> 
     /// method to get a single segment zeroed buffer when the current used pattern is 
     /// every other segment is in use (1-0) starting with the second segment.
     /// This should return a buffer from the first segment in the group that is zeroed.
@@ -257,7 +257,7 @@ public class UsingMemorySegmentedBufferGroupWithUsedPatterns : MemorySegmentedBu
     }
     //--------------------------------------------------------------------------------    
     /// <summary>
-    /// Tests the <see cref="MemorySegmentedBufferGroup.GetBuffer(int, bool, MemorySegmentedBufferPool)"/> 
+    /// Tests the <see cref="MemorySegmentedBufferGroup.GetBuffer(long, bool, MemorySegmentedBufferPool)"/> 
     /// method to get a single segment zeroed buffer when the current used pattern is 
     /// every other segment is in use (1-0) starting with the second segment.
     /// This should return a buffer from the first segment in the group that is zeroed.
@@ -287,7 +287,7 @@ public class UsingMemorySegmentedBufferGroupWithUsedPatterns : MemorySegmentedBu
 
     //--------------------------------------------------------------------------------    
     /// <summary>
-    /// Tests the <see cref="MemorySegmentedBufferGroup.GetBuffer(int, bool, MemorySegmentedBufferPool)"/> 
+    /// Tests the <see cref="MemorySegmentedBufferGroup.GetBuffer(long, bool, MemorySegmentedBufferPool)"/> 
     /// method to get the available buffers when the current used pattern is 
     /// every other segment is in use (1-0) starting with the first segment.
     /// This should return a series of single segment buffers from every other segment in the group that are zeroed.
@@ -331,7 +331,7 @@ public class UsingMemorySegmentedBufferGroupWithUsedPatterns : MemorySegmentedBu
     }
     //--------------------------------------------------------------------------------    
     /// <summary>
-    /// Tests the <see cref="MemorySegmentedBufferGroup.GetBuffer(int, bool, MemorySegmentedBufferPool)"/> 
+    /// Tests the <see cref="MemorySegmentedBufferGroup.GetBuffer(long, bool, MemorySegmentedBufferPool)"/> 
     /// method to get the available buffers when the current used pattern is 
     /// every other segment is in use (1-0) starting with the first segment.
     /// This should return a series of single segment buffers from every other segment in the group that are zeroed.
@@ -375,7 +375,7 @@ public class UsingMemorySegmentedBufferGroupWithUsedPatterns : MemorySegmentedBu
     }
     //--------------------------------------------------------------------------------    
     /// <summary>
-    /// Tests the <see cref="MemorySegmentedBufferGroup.GetBuffer(int, bool, MemorySegmentedBufferPool)"/> 
+    /// Tests the <see cref="MemorySegmentedBufferGroup.GetBuffer(long, bool, MemorySegmentedBufferPool)"/> 
     /// method to get the available buffers when the current used pattern is 
     /// every other segment is in use (0-1) starting with the first segment.
     /// This should return a series of single segment buffers from every other segment in the group that are zeroed.
@@ -419,7 +419,7 @@ public class UsingMemorySegmentedBufferGroupWithUsedPatterns : MemorySegmentedBu
     }
     //--------------------------------------------------------------------------------    
     /// <summary>
-    /// Tests the <see cref="MemorySegmentedBufferGroup.GetBuffer(int, bool, MemorySegmentedBufferPool)"/> 
+    /// Tests the <see cref="MemorySegmentedBufferGroup.GetBuffer(long, bool, MemorySegmentedBufferPool)"/> 
     /// method to get the available buffers when the current used pattern is 
     /// every other segment is in use (0-1) starting with the first segment.
     /// This should return a series of single segment buffers from every other segment in the group that are zeroed.
@@ -463,7 +463,7 @@ public class UsingMemorySegmentedBufferGroupWithUsedPatterns : MemorySegmentedBu
     }
     //--------------------------------------------------------------------------------    
     /// <summary>
-    /// Tests the <see cref="MemorySegmentedBufferGroup.GetBuffer(int, bool, MemorySegmentedBufferPool)"/> 
+    /// Tests the <see cref="MemorySegmentedBufferGroup.GetBuffer(long, bool, MemorySegmentedBufferPool)"/> 
     /// method to get the available buffers when the current used pattern is 
     /// (1-0-1-1-0) starting with the first segment.
     /// This should return a series of repeating single segment buffers from the second and fifth segments in the group that are zeroed.
@@ -510,7 +510,7 @@ public class UsingMemorySegmentedBufferGroupWithUsedPatterns : MemorySegmentedBu
     }
     //--------------------------------------------------------------------------------    
     /// <summary>
-    /// Tests the <see cref="MemorySegmentedBufferGroup.GetBuffer(int, bool, MemorySegmentedBufferPool)"/> 
+    /// Tests the <see cref="MemorySegmentedBufferGroup.GetBuffer(long, bool, MemorySegmentedBufferPool)"/> 
     /// method to get the available buffers when the current used pattern is 
     /// (1-0-1-1-0) starting with the second segment.
     /// This should return a series of repeating single segment buffers from the second and fifth segments in the group that are zeroed.
@@ -557,7 +557,7 @@ public class UsingMemorySegmentedBufferGroupWithUsedPatterns : MemorySegmentedBu
     }
     //--------------------------------------------------------------------------------    
     /// <summary>
-    /// Tests the <see cref="MemorySegmentedBufferGroup.GetBuffer(int, bool, MemorySegmentedBufferPool)"/> 
+    /// Tests the <see cref="MemorySegmentedBufferGroup.GetBuffer(long, bool, MemorySegmentedBufferPool)"/> 
     /// method to get the available buffers when the current used pattern is 
     /// (0-1-0-0-1) starting with the first segment.
     /// This should return a series of repeating segment buffers based on the pattern that are zeroed.
@@ -616,7 +616,7 @@ public class UsingMemorySegmentedBufferGroupWithUsedPatterns : MemorySegmentedBu
     }
     //--------------------------------------------------------------------------------    
     /// <summary>
-    /// Tests the <see cref="MemorySegmentedBufferGroup.GetBuffer(int, bool, MemorySegmentedBufferPool)"/> 
+    /// Tests the <see cref="MemorySegmentedBufferGroup.GetBuffer(long, bool, MemorySegmentedBufferPool)"/> 
     /// method to get the available buffers when the current used pattern is 
     /// (0-1-0-0-1) starting with the second segment.
     /// This should return a series of repeating segment buffers based on the pattern that are zeroed.
@@ -675,7 +675,7 @@ public class UsingMemorySegmentedBufferGroupWithUsedPatterns : MemorySegmentedBu
     }
     //--------------------------------------------------------------------------------    
     /// <summary>
-    /// Tests the <see cref="MemorySegmentedBufferGroup.GetBuffer(int, bool, MemorySegmentedBufferPool)"/> 
+    /// Tests the <see cref="MemorySegmentedBufferGroup.GetBuffer(long, bool, MemorySegmentedBufferPool)"/> 
     /// method to get the available buffers when the current used pattern is randomly generated.
     /// This should return a series of repeating segment buffers based on the pattern that are zeroed.
     /// </summary>
@@ -773,7 +773,7 @@ public class UsingMemorySegmentedBufferGroupWithUsedPatterns : MemorySegmentedBu
     }
     //--------------------------------------------------------------------------------    
     /// <summary>
-    /// Tests the <see cref="MemorySegmentedBufferGroup.GetBuffer(int, bool, MemorySegmentedBufferPool)"/> 
+    /// Tests the <see cref="MemorySegmentedBufferGroup.GetBuffer(long, bool, MemorySegmentedBufferPool)"/> 
     /// method to get the available buffers when the current used pattern is randomly generated.
     /// This should return a series of repeating segment buffers based on the pattern that are zeroed.
     /// </summary>
@@ -856,7 +856,7 @@ public class UsingMemorySegmentedBufferGroupWithUsedPatterns : MemorySegmentedBu
 
     //--------------------------------------------------------------------------------    
     /// <summary>
-    /// Tests the <see cref="MemorySegmentedBufferGroup.GetBuffer(int, bool, MemorySegmentedBufferPool)"/> 
+    /// Tests the <see cref="MemorySegmentedBufferGroup.GetBuffer(long, bool, MemorySegmentedBufferPool)"/> 
     /// method to get the available buffers when the current used pattern is 
     /// every other segment is in use (1-0) starting with the first segment.
     /// This should return a series of single segment buffers from every other segment in the group that are zeroed.
@@ -905,7 +905,7 @@ public class UsingMemorySegmentedBufferGroupWithUsedPatterns : MemorySegmentedBu
     }
     //--------------------------------------------------------------------------------    
     /// <summary>
-    /// Tests the <see cref="MemorySegmentedBufferGroup.GetBuffer(int, bool, MemorySegmentedBufferPool)"/> 
+    /// Tests the <see cref="MemorySegmentedBufferGroup.GetBuffer(long, bool, MemorySegmentedBufferPool)"/> 
     /// method to get the available buffers when the current used pattern is 
     /// every other segment is in use (1-0) starting with the first segment.
     /// This should return a series of single segment buffers from every other segment in the group that are zeroed.
@@ -954,7 +954,7 @@ public class UsingMemorySegmentedBufferGroupWithUsedPatterns : MemorySegmentedBu
     }
     //--------------------------------------------------------------------------------    
     /// <summary>
-    /// Tests the <see cref="MemorySegmentedBufferGroup.GetBuffer(int, bool, MemorySegmentedBufferPool)"/> 
+    /// Tests the <see cref="MemorySegmentedBufferGroup.GetBuffer(long, bool, MemorySegmentedBufferPool)"/> 
     /// method to get the available buffers when the current used pattern is 
     /// every other segment is in use (0-1) starting with the first segment.
     /// This should return a series of single segment buffers from every other segment in the group that are zeroed.
@@ -1003,7 +1003,7 @@ public class UsingMemorySegmentedBufferGroupWithUsedPatterns : MemorySegmentedBu
     }
     //--------------------------------------------------------------------------------    
     /// <summary>
-    /// Tests the <see cref="MemorySegmentedBufferGroup.GetBuffer(int, bool, MemorySegmentedBufferPool)"/> 
+    /// Tests the <see cref="MemorySegmentedBufferGroup.GetBuffer(long, bool, MemorySegmentedBufferPool)"/> 
     /// method to get the available buffers when the current used pattern is 
     /// every other segment is in use (0-1) starting with the second segment.
     /// This should return a series of single segment buffers from every other segment in the group that are zeroed.
@@ -1052,7 +1052,7 @@ public class UsingMemorySegmentedBufferGroupWithUsedPatterns : MemorySegmentedBu
     }
     //--------------------------------------------------------------------------------    
     /// <summary>
-    /// Tests the <see cref="MemorySegmentedBufferGroup.GetBuffer(int, bool, MemorySegmentedBufferPool)"/> 
+    /// Tests the <see cref="MemorySegmentedBufferGroup.GetBuffer(long, bool, MemorySegmentedBufferPool)"/> 
     /// method to get the available buffers when the current used pattern is 
     /// (1-0-1-1-0) starting with the first segment.
     /// This should return a series of repeating single segment buffers from the second and fifth segments in the group that are zeroed.
@@ -1104,7 +1104,7 @@ public class UsingMemorySegmentedBufferGroupWithUsedPatterns : MemorySegmentedBu
     }
     //--------------------------------------------------------------------------------    
     /// <summary>
-    /// Tests the <see cref="MemorySegmentedBufferGroup.GetBuffer(int, bool, MemorySegmentedBufferPool)"/> 
+    /// Tests the <see cref="MemorySegmentedBufferGroup.GetBuffer(long, bool, MemorySegmentedBufferPool)"/> 
     /// method to get the available buffers when the current used pattern is 
     /// (1-0-1-1-0) starting with the second segment.
     /// This should return a series of repeating single segment buffers from the second and fifth segments in the group that are zeroed.
@@ -1156,7 +1156,7 @@ public class UsingMemorySegmentedBufferGroupWithUsedPatterns : MemorySegmentedBu
     }
     //--------------------------------------------------------------------------------    
     /// <summary>
-    /// Tests the <see cref="MemorySegmentedBufferGroup.GetBuffer(int, bool, MemorySegmentedBufferPool)"/> 
+    /// Tests the <see cref="MemorySegmentedBufferGroup.GetBuffer(long, bool, MemorySegmentedBufferPool)"/> 
     /// method to get the available buffers when the current used pattern is 
     /// (0-1-0-0-1) starting with the first segment.
     /// This should return a series of repeating segment buffers based on the pattern that are zeroed.
@@ -1220,7 +1220,7 @@ public class UsingMemorySegmentedBufferGroupWithUsedPatterns : MemorySegmentedBu
     }
     //--------------------------------------------------------------------------------    
     /// <summary>
-    /// Tests the <see cref="MemorySegmentedBufferGroup.GetBuffer(int, bool, MemorySegmentedBufferPool)"/> 
+    /// Tests the <see cref="MemorySegmentedBufferGroup.GetBuffer(long, bool, MemorySegmentedBufferPool)"/> 
     /// method to get the available buffers when the current used pattern is 
     /// (0-1-0-0-1) starting with the second segment.
     /// This should return a series of repeating segment buffers based on the pattern that are zeroed.
@@ -1284,7 +1284,7 @@ public class UsingMemorySegmentedBufferGroupWithUsedPatterns : MemorySegmentedBu
     }
     //--------------------------------------------------------------------------------    
     /// <summary>
-    /// Tests the <see cref="MemorySegmentedBufferGroup.GetBuffer(int, bool, MemorySegmentedBufferPool)"/> 
+    /// Tests the <see cref="MemorySegmentedBufferGroup.GetBuffer(long, bool, MemorySegmentedBufferPool)"/> 
     /// method to get the available buffers when the current used pattern is randomly generated.
     /// This should return a series of repeating segment buffers based on the pattern that are zeroed.
     /// </summary>
@@ -1387,7 +1387,7 @@ public class UsingMemorySegmentedBufferGroupWithUsedPatterns : MemorySegmentedBu
     }
     //--------------------------------------------------------------------------------    
     /// <summary>
-    /// Tests the <see cref="MemorySegmentedBufferGroup.GetBuffer(int, bool, MemorySegmentedBufferPool)"/> 
+    /// Tests the <see cref="MemorySegmentedBufferGroup.GetBuffer(long, bool, MemorySegmentedBufferPool)"/> 
     /// method to get the available buffers when the current used pattern is randomly generated.
     /// This should return a series of repeating segment buffers based on the pattern that are zeroed.
     /// </summary>
@@ -1473,7 +1473,7 @@ public class UsingMemorySegmentedBufferGroupWithUsedPatterns : MemorySegmentedBu
 
     //--------------------------------------------------------------------------------    
     /// <summary>
-    /// Tests the <see cref="MemorySegmentedBufferGroup.GetBuffer(int, bool, MemorySegmentedBufferPool)"/> 
+    /// Tests the <see cref="MemorySegmentedBufferGroup.GetBuffer(long, bool, MemorySegmentedBufferPool)"/> 
     /// method to get random buffers when the current used pattern is randomly generated.
     /// </summary>
     [Fact(Explicit = true)]
@@ -1604,7 +1604,7 @@ public class UsingMemorySegmentedBufferGroupWithUsedPatterns : MemorySegmentedBu
     }
     //--------------------------------------------------------------------------------    
     /// <summary>
-    /// Tests the <see cref="MemorySegmentedBufferGroup.GetBuffer(int, bool, MemorySegmentedBufferPool)"/> 
+    /// Tests the <see cref="MemorySegmentedBufferGroup.GetBuffer(long, bool, MemorySegmentedBufferPool)"/> 
     /// method to get random buffers when the current used pattern is randomly generated.
     /// </summary>
     [Fact(Explicit = true)]
