@@ -35,7 +35,7 @@ internal class MemorySegmentedGroupGenerationArray
     /// <summary>
     /// The maximum number of segments for a group that will be added to the array when it grows.
     /// </summary>
-    protected internal const int MaxAllowedGroupSegmentCount = 512;
+    protected internal const int MaxAllowedGroupSegmentCount = 1024;
 
     /// <summary>
     /// The array of buffer groups.

@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+
 using KZDev.PerfUtils.Observability;
 
 namespace KZDev.PerfUtils.Internals;
@@ -44,6 +45,11 @@ internal enum GetBufferResult
 internal unsafe class MemorySegmentedBufferGroup
 {
     /// <summary>
+    /// The maximum size of any full single allocation we will ever use or allow.
+    /// </summary>
+    protected internal const int MaximumFullAllocationSize = 0x7FFF_0000;
+
+    /// <summary>
     /// The maximum size of an individual standard buffer we will use. This allows us
     /// to think of the memory as a series of segments that are all the same size.
     /// </summary>
@@ -53,7 +59,7 @@ internal unsafe class MemorySegmentedBufferGroup
     /// <summary>
     /// Represents a range of segments that are unused.
     /// </summary>
-    private readonly struct UnusedSegmentRange (int segmentIndex, int segmentCount, bool zeroed, int flagIndex, ulong flagMask)
+    private readonly struct UnusedSegmentRange(int segmentIndex, int segmentCount, bool zeroed, int flagIndex, ulong flagMask)
     {
         /// <summary>
         /// The first index in the range.
@@ -103,7 +109,7 @@ internal unsafe class MemorySegmentedBufferGroup
         /// <param name="flagMask">
         /// The mask to use for the flag set.
         /// </param>
-        public void Deconstruct (out int segmentIndex, out int segmentCount, out bool zeroed, out int flagIndex, out ulong flagMask)
+        public void Deconstruct(out int segmentIndex, out int segmentCount, out bool zeroed, out int flagIndex, out ulong flagMask)
         {
             segmentIndex = SegmentIndex;
             segmentCount = SegmentCount;
@@ -234,6 +240,7 @@ internal unsafe class MemorySegmentedBufferGroup
     /// </summary>
     private bool _released;
 
+    //--------------------------------------------------------------------------------
     /// <summary>
     /// Updates the total number of allocated segments. The update amount can be negative.
     /// </summary>
@@ -243,14 +250,14 @@ internal unsafe class MemorySegmentedBufferGroup
     /// <param name="nativeSegments">
     /// If <c>true</c> then the update is for native segments, otherwise it is for GC segments.
     /// </param>
-    private static void UpdateAllocatedSegmentCount (int updateAmount, bool nativeSegments)
+    private static void UpdateAllocatedSegmentCount(int updateAmount, bool nativeSegments)
     {
         if (nativeSegments)
             Interlocked.Add(ref _totalNativeSegmentsAllocated, updateAmount);
         else
             Interlocked.Add(ref _totalGcSegmentsAllocated, updateAmount);
     }
-
+    //--------------------------------------------------------------------------------
     /// <summary>
     /// Indicates if the group is full.
     /// </summary>
@@ -264,12 +271,12 @@ internal unsafe class MemorySegmentedBufferGroup
         [DebuggerStepThrough]
         get => Volatile.Read(ref _segmentsInUse) == _segmentCount;
     }
-
+    //--------------------------------------------------------------------------------
     /// <summary>
     /// Returns whether this buffer group has been marked as released.
     /// </summary>
     internal bool IsReleased => Volatile.Read(ref _released);
-
+    //--------------------------------------------------------------------------------
     /// <summary>
     /// Gets the flag index and mask to use for the specified segment index.
     /// </summary>
@@ -280,9 +287,9 @@ internal unsafe class MemorySegmentedBufferGroup
     /// The index of the flag set instance and the mask to use for the segment index.
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static (int Index, ulong Mask) GetFlagIndexAndMask (int segmentIndex) =>
+    private static (int Index, ulong Mask) GetFlagIndexAndMask(int segmentIndex) =>
         (segmentIndex >> 6  /* segmentIndex / BlockFlagSetSize */, 1UL << (segmentIndex & 0x3F /* segmentIndex % BlockFlagSetSize */));
-
+    //--------------------------------------------------------------------------------
     /// <summary>
     /// Clears the used flag bit for the specified segment index and range.
     /// </summary>
@@ -295,7 +302,7 @@ internal unsafe class MemorySegmentedBufferGroup
     /// <param name="segmentsAreZeroed">
     /// Indicates if the memory space associated with the segments has been zeroed.
     /// </param>
-    private void ReleaseSegments (int segmentIndex, int segmentCount, bool segmentsAreZeroed)
+    private void ReleaseSegments(int segmentIndex, int segmentCount, bool segmentsAreZeroed)
     {
         Debug.Assert(segmentCount > 0, "segmentCount <= 0");
         // Get the index of the flag set and the mask for the segment index.
@@ -351,7 +358,7 @@ internal unsafe class MemorySegmentedBufferGroup
             return;
         Interlocked.Increment(ref _emptiedCount);
     }
-
+    //--------------------------------------------------------------------------------
     /// <summary>
     /// Returns information about the series of segments that are all free
     /// starting at the specified segment index using the flag index and mask.
@@ -360,7 +367,7 @@ internal unsafe class MemorySegmentedBufferGroup
     /// The number of contiguous free segments (up to the maximum) and whether all the segments are zeroed.
     /// </returns>
     private (int SegmentCount, bool AllZeroed)
-        GetAllFreeSegmentSeriesFromIndex (int firstSegmentIndex, int maxSegments, int flagIndex, ulong flagMask)
+        GetAllFreeSegmentSeriesFromIndex(int firstSegmentIndex, int maxSegments, int flagIndex, ulong flagMask)
     {
         Debug.Assert(maxSegments > 1, "maxSegments <= 1");
         Debug.Assert(firstSegmentIndex >= 0, "firstSegmentIndex < 0");
@@ -416,7 +423,7 @@ internal unsafe class MemorySegmentedBufferGroup
         _blockUsedFlags[flagIndex] = flagGroup;
         return (foundSegmentCount, allZeroed);
     }
-
+    //--------------------------------------------------------------------------------
     /// <summary>
     /// Returns information about the series of segments that are all used
     /// starting at the specified segment index using the flag index and mask.
@@ -426,7 +433,7 @@ internal unsafe class MemorySegmentedBufferGroup
     /// index and mask to continuously check for the next similar series of segments.
     /// </returns>
     private (int SegmentCount, int NextFlagIndex, ulong NextFlagMask)
-        GetUsedSegmentSeriesFromIndex (int checkingSegmentIndex, int flagIndex, ulong flagMask)
+        GetUsedSegmentSeriesFromIndex(int checkingSegmentIndex, int flagIndex, ulong flagMask)
     {
         Debug.Assert(checkingSegmentIndex >= 0, "checkingSegmentIndex < 0");
         // Get the flag set for the segment index.
@@ -464,7 +471,7 @@ internal unsafe class MemorySegmentedBufferGroup
         }
         return (foundSegmentCount, flagIndex, flagMask);
     }
-
+    //--------------------------------------------------------------------------------
     /// <summary>
     /// Returns information about the series of segments that are all free 
     /// starting at the specified segment index and using the provided flag index and mask.
@@ -475,7 +482,7 @@ internal unsafe class MemorySegmentedBufferGroup
     /// segments.
     /// </returns>
     private (int SegmentCount, bool Zeroed, int NextFlagIndex, ulong NextFlagMask)
-        GetFreeSegmentSeriesFromIndex (int checkingSegmentIndex, int flagIndex, ulong flagMask, int maxCount)
+        GetFreeSegmentSeriesFromIndex(int checkingSegmentIndex, int flagIndex, ulong flagMask, int maxCount)
     {
         Debug.Assert(checkingSegmentIndex >= 0, "checkingSegmentIndex < 0");
         Debug.Assert(maxCount > 0, "maxCount <= 0");
@@ -520,7 +527,7 @@ internal unsafe class MemorySegmentedBufferGroup
         }
         return (foundSegmentCount, allSegmentsZeroed, flagIndex, flagMask);
     }
-
+    //--------------------------------------------------------------------------------
     /// <summary>
     /// Returns information about the series of segments that are of the same used/free state
     /// starting at the specified segment index and using the provided flag index and mask.
@@ -531,7 +538,7 @@ internal unsafe class MemorySegmentedBufferGroup
     /// similar series of segments.
     /// </returns>
     private (int SegmentCount, bool Used, bool Zeroed, int NextFlagIndex, ulong NextFlagMask)
-        GetSimilarSegmentSeriesFrom (int startingSegmentIndex, int flagIndex, ulong flagMask, int maxFreeSegmentCount)
+        GetSimilarSegmentSeriesFrom(int startingSegmentIndex, int flagIndex, ulong flagMask, int maxFreeSegmentCount)
     {
         Debug.Assert(startingSegmentIndex >= 0, "startingSegmentIndex < 0");
         // Get the flag set for the segment index.
@@ -548,7 +555,7 @@ internal unsafe class MemorySegmentedBufferGroup
             GetFreeSegmentSeriesFromIndex(startingSegmentIndex, flagIndex, flagMask, maxFreeSegmentCount);
         return (freeSegmentCount, false, freeZeroed, freeNextFlagIndex, freeNextFlagMask);
     }
-
+    //--------------------------------------------------------------------------------
     /// <summary>
     /// Looks for the series of segments that are unused together with a size at least as
     /// large as the requested number of segments, or the next largest we can find.
@@ -558,7 +565,7 @@ internal unsafe class MemorySegmentedBufferGroup
     /// whether all the segments are zeroed, as well as the starting flag index and mask 
     /// for the series of segments.
     /// </returns>
-    private UnusedSegmentRange GetFirstUnusedSegmentSeries (int requestedSegments)
+    private UnusedSegmentRange GetFirstUnusedSegmentSeries(int requestedSegments)
     {
         // Get the starting segment index and the flag index and mask for the segment index.
         int flagIndex = 0;
@@ -610,21 +617,34 @@ internal unsafe class MemorySegmentedBufferGroup
         // Return the best match we found.
         return new(segmentIndex: bestMatch.SegmentIndex, segmentCount: Math.Min(requestedSegments, bestMatch.SegmentCount), zeroed: bestMatch.Zeroed, flagIndex: bestMatch.FlagIndex, flagMask: bestMatch.FlagMask);
     }
-
+    //--------------------------------------------------------------------------------
     /// <summary>
     /// Reserves a set of segments for use and returns the segment index that was reserved.
     /// </summary>
+    /// <param name="requestedSegments">
+    /// The number of segments to reserve.
+    /// </param>
+    /// <param name="requireAllSegments">
+    /// If this is <see langword="true"/>, then we will only return a buffer if all the segments
+    /// are available in a contiguous set. If this is <see langword="false"/>, then we will return a buffer
+    /// even if the segments are not all available (return a partial set of segments).
+    /// </param>
     /// <returns>
     /// Values indicating the segment reserved, which includes the first segment index,
     /// the number of contiguous segments reserved, and if the segment is zeroed.
     /// </returns>
-    private (int SegmentIndex, int SegmentCount, bool Zeroed) ReserveSegments (int requestedSegments)
+    private (int SegmentIndex, int SegmentCount, bool Zeroed) ReserveSegments(int requestedSegments, 
+        bool requireAllSegments)
     {
         Debug.Assert(requestedSegments > 1, "requestedSegments <= 1");
         // Find a series of segments that are unused that are closest to the requested number of segments.
         (int startingSegmentIndex, int segmentCount, bool zeroed, int flagIndex, ulong flagMask) =
             GetFirstUnusedSegmentSeries(requestedSegments);
         Debug.Assert(segmentCount > 0, "segmentCount <= 0");
+        // If we need all segments, and we didn't get them, then we are done.
+        if (requireAllSegments && (segmentCount < requestedSegments))
+            return (0, 0, false);
+
         // Get the flag set for the segment index.
         ulong flagGroup = _blockUsedFlags[flagIndex];
 
@@ -661,7 +681,7 @@ internal unsafe class MemorySegmentedBufferGroup
         Interlocked.Add(ref _segmentsInUse, segmentCount);
         return (startingSegmentIndex, segmentCount, zeroed);
     }
-
+    //--------------------------------------------------------------------------------
     /// <summary>
     /// Tries to reserve a set of segments for use starting at a specific index and returns whether
     /// the segments were reserved, the number of segments reserved, and if the segments are zeroed.
@@ -670,7 +690,7 @@ internal unsafe class MemorySegmentedBufferGroup
     /// Values indicating the segment reserved, which includes the first segment index,
     /// the number of contiguous segments reserved, and if the segment is zeroed. 
     /// </returns>
-    private (int SegmentCount, bool Zeroed) TryReserveSegments (int requestedSegments,
+    private (int SegmentCount, bool Zeroed) TryReserveSegments(int requestedSegments,
         int firstSegmentIndex)
     {
         Debug.Assert(requestedSegments > 1, "requestedSegments <= 1");
@@ -697,7 +717,7 @@ internal unsafe class MemorySegmentedBufferGroup
         Interlocked.Add(ref _segmentsInUse, segmentCount);
         return (segmentCount, zeroed);
     }
-
+    //--------------------------------------------------------------------------------
     /// <summary>
     /// Reserves a segment index for use and returns the segment index that was reserved.
     /// and if the segment is zeroed.
@@ -706,7 +726,7 @@ internal unsafe class MemorySegmentedBufferGroup
     /// Values indicating the segment reserved, which includes the first segment index,
     /// the number of contiguous segments reserved, and if the segment is zeroed.
     /// </returns>
-    private (int SegmentIndex, bool Zeroed) ReserveSegment ()
+    private (int SegmentIndex, bool Zeroed) ReserveSegment()
     {
         // Move forward from the start of the block to find the first unused segment.
         int checkSegmentIndex = 0;
@@ -746,7 +766,7 @@ internal unsafe class MemorySegmentedBufferGroup
         Debug.Fail("No free segments found.");
         return (-1, false);
     }
-
+    //--------------------------------------------------------------------------------
     /// <summary>
     /// Tries to reserve a specific segment index for use and returns whether that segment index was reserved.
     /// and if the segment is zeroed.
@@ -757,7 +777,7 @@ internal unsafe class MemorySegmentedBufferGroup
     /// <returns>
     /// Values indicating the segment reserved, and if the segment is zeroed.
     /// </returns>
-    private (bool SegmentReserved, bool Zeroed) TryReserveSegment (int segmentIndex)
+    private (bool SegmentReserved, bool Zeroed) TryReserveSegment(int segmentIndex)
     {
         Debug.Assert(segmentIndex > 0, "segmentIndex <= 0");
         // Check if we can even use this segment.
@@ -780,7 +800,7 @@ internal unsafe class MemorySegmentedBufferGroup
         // Return the index and the zeroed state of the segment.
         return (true, (_blockZeroFlags[flagIndex] & flagMask) != 0);
     }
-
+    //--------------------------------------------------------------------------------
     /// <summary>
     /// Checks if the buffer block has been allocated and allocates it if needed.
     /// </summary>
@@ -788,7 +808,7 @@ internal unsafe class MemorySegmentedBufferGroup
     /// <c>true</c> if the buffer block has been allocated, <c>false</c> if it has not been allocated.
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private bool AllocateHeapBufferIfNeeded ()
+    private bool AllocateHeapBufferIfNeeded()
     {
         if (_bufferBlock is not null) return false;
 
@@ -798,7 +818,7 @@ internal unsafe class MemorySegmentedBufferGroup
         UtilsEventSource.Log.BufferGcMemoryAllocated(allocationSize);
         return true;
     }
-
+    //--------------------------------------------------------------------------------
     /// <summary>
     /// Checks if the native memory buffer block has been allocated and allocates it if needed.
     /// </summary>
@@ -806,7 +826,7 @@ internal unsafe class MemorySegmentedBufferGroup
     /// <c>true</c> if the native memory buffer block has been allocated, <c>false</c> if it has not been allocated.
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private bool AllocateNativeBufferIfNeeded ()
+    private bool AllocateNativeBufferIfNeeded()
     {
         if (_bufferBlockPtr is not null) return false;
 
@@ -816,7 +836,7 @@ internal unsafe class MemorySegmentedBufferGroup
         UtilsEventSource.Log.BufferNativeMemoryAllocated(allocationSize);
         return true;
     }
-
+    //--------------------------------------------------------------------------------
     /// <summary>
     /// Checks if the buffer block has been allocated and allocates it if needed.
     /// </summary>
@@ -824,12 +844,12 @@ internal unsafe class MemorySegmentedBufferGroup
     /// <c>true</c> if the buffer block has been allocated, <c>false</c> if it has not been allocated.
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private bool AllocateBufferIfNeeded () => _useNativeMemory ? AllocateNativeBufferIfNeeded() : AllocateHeapBufferIfNeeded();
-
+    private bool AllocateBufferIfNeeded() => _useNativeMemory ? AllocateNativeBufferIfNeeded() : AllocateHeapBufferIfNeeded();
+    //--------------------------------------------------------------------------------
     /// <summary>
     /// Performs the operation of releasing the internal memory used by the buffer group.
     /// </summary>
-    private void ReleaseInternalMemory ()
+    private void ReleaseInternalMemory()
     {
         if (_bufferBlock is not null)
         {
@@ -848,6 +868,7 @@ internal unsafe class MemorySegmentedBufferGroup
         _bufferBlockPtr = null;
         UtilsEventSource.Log.BufferNativeMemoryReleased(_segmentCount * StandardBufferSegmentSize);
     }
+    //--------------------------------------------------------------------------------
     /// <summary>
     /// Checks if this group is currently available for release and whether the group
     /// is empty, and has been empty for the last two consecutive checks of emptiness.
@@ -861,7 +882,7 @@ internal unsafe class MemorySegmentedBufferGroup
     /// <returns>
     /// <see langword="true"/> if the group is available for release, <see langword="false"/> otherwise.
     /// </returns>
-    private bool ReleaseGroup (bool releaseMemoryOnly)
+    private bool ReleaseGroup(bool releaseMemoryOnly)
     {
         if (Interlocked.CompareExchange(ref _locked, 1, 0) == 1)
             return false;
@@ -903,7 +924,7 @@ internal unsafe class MemorySegmentedBufferGroup
             Volatile.Write(ref _locked, 0);
         }
     }
-
+    //--------------------------------------------------------------------------------
     /// <summary>
     /// Creates and initializes a new instance of the <see cref="MemorySegmentedBufferGroup"/> class
     /// that has the internal memory buffer allocated and ready for use.
@@ -918,115 +939,14 @@ internal unsafe class MemorySegmentedBufferGroup
     /// A new instance of the <see cref="MemorySegmentedBufferGroup"/> class that has 
     /// the internal memory buffer allocated.
     /// </returns>
-    internal static MemorySegmentedBufferGroup 
-        GetMemorySegmentedBufferGroupWithAllocatedBuffer (int bufferSegmentCount, bool useNativeMemory)
+    internal static MemorySegmentedBufferGroup
+        GetMemorySegmentedBufferGroupWithAllocatedBuffer(int bufferSegmentCount, bool useNativeMemory)
     {
         MemorySegmentedBufferGroup returnBufferGroup = new MemorySegmentedBufferGroup(bufferSegmentCount, useNativeMemory);
         returnBufferGroup.AllocateBufferIfNeeded();
         return returnBufferGroup;
     }
-
-    /// <summary>
-    /// Static constructor for the <see cref="MemorySegmentedBufferGroup"/> class.
-    /// </summary>
-    static MemorySegmentedBufferGroup ()
-    {
-        // Create the observable gauges for the total allocated memory.
-#pragma warning disable HAA0601
-        MemoryMeter.Meter.CreateObservableGauge("segment_memory.gc_allocated", static () => _totalGcSegmentsAllocated,
-            unit: "{segments}", description: $"The total number of GC heap segments (of {StandardBufferSegmentSize:N0} bytes) allocated for the segmented memory buffers");
-        MemoryMeter.Meter.CreateObservableGauge("segment_memory.native_allocated", static () => _totalNativeSegmentsAllocated,
-            unit: "{segments}", description: $"The total number of native heap segments (of {StandardBufferSegmentSize:N0} bytes) allocated for the segmented memory buffers");
-#pragma warning restore HAA0601
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="MemorySegmentedBufferGroup"/> class.
-    /// </summary>
-    /// <param name="bufferSegmentCount">
-    /// The number of standard size buffer blocks that will be stored in this group.
-    /// </param>
-    /// <param name="useNativeMemory">
-    /// Indicates if we should use native memory for the buffers instead of GC memory.
-    /// </param>
-    public MemorySegmentedBufferGroup (int bufferSegmentCount, bool useNativeMemory)
-    {
-        _useNativeMemory = useNativeMemory;
-        _segmentCount = bufferSegmentCount;
-        // How many longs do we need to store the flags for the buffers.
-        int flagArraySize = (bufferSegmentCount + BlockFlagSetSize - 1) / BlockFlagSetSize;
-        // Set up the block flags and the buffer block.
-        _blockUsedFlags = new ulong[flagArraySize];
-        _blockZeroFlags = new ulong[flagArraySize];
-    }
-
-    /// <summary>
-    /// Finalizes an instance of the <see cref="MemorySegmentedBufferGroup"/> class.
-    /// </summary>
-    ~MemorySegmentedBufferGroup ()
-    {
-        ReleaseInternalMemory();
-    }
-
-    /// <summary>
-    /// Checks if this group is currently available for release and whether the group
-    /// is empty, and has been empty for the last two consecutive checks of emptiness.
-    /// </summary>
-    /// <returns>
-    /// <see langword="true"/> if the group is available for release, <see langword="false"/> otherwise.
-    /// </returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool ReleaseGroup () => ReleaseGroup(false);
-
-    /// <summary>
-    /// Checks if this group is currently available for release and whether the group
-    /// is empty, and has been empty for the last two consecutive checks of emptiness.
-    /// </summary>
-    /// <returns>
-    /// <see langword="true"/> if the group is available for release, <see langword="false"/> otherwise.
-    /// </returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool ReleaseUnusedMemory () => ReleaseGroup(true);
-
-    /// <summary>
-    /// Attempts to store a buffer in the group.
-    /// </summary>
-    /// <param name="buffer">
-    /// The buffer to be stored in this group.
-    /// </param>
-    /// <param name="segmentIsZeroed">
-    /// Indicates if the memory space associated with the segment has been zeroed.
-    /// </param>
-    /// <returns>
-    /// <c>true</c> if the buffer was stored, <c>false</c> if the group is full or
-    /// if we weren't able to get a lock on the group. This also returns an indicator
-    /// why the buffer was not stored.
-    /// </returns>
-    public void ReleaseBuffer (in SegmentBuffer buffer, bool segmentIsZeroed)
-    {
-        Debug.Assert(buffer.BufferInfo.BlockId == Id, "buffer.Id.BlockId != Id");
-        Debug.Assert(buffer.BufferInfo.SegmentId < _segmentCount && buffer.BufferInfo.SegmentId >= 0, "buffer.Id.SegmentId < 0 OR buffer.Id.SegmentId >= _segmentCount");
-
-        // Lock access to the group.
-        if (Interlocked.CompareExchange(ref _locked, 1, 0) == 1)
-        {
-            SpinWait spinner = new();
-            while (Interlocked.CompareExchange(ref _locked, 1, 0) == 1)
-            {
-                spinner.SpinOnce();
-            }
-        }
-        try
-        {
-            // Release the segments.
-            ReleaseSegments(buffer.BufferInfo.SegmentId, buffer.BufferInfo.SegmentCount, segmentIsZeroed);
-        }
-        finally
-        {
-            Volatile.Write(ref _locked, 0);
-        }
-    }
-
+    //--------------------------------------------------------------------------------
     /// <summary>
     /// Attempts to get a buffer from the group.
     /// </summary>
@@ -1035,6 +955,11 @@ internal unsafe class MemorySegmentedBufferGroup
     /// </param>
     /// <param name="requireZeroed">
     /// Indicates if we need to force the buffer to be zeroed.
+    /// </param>
+    /// <param name="requireAllSegments">
+    /// If this is <see langword="true"/>, then we will only return a buffer if all the segments
+    /// are available in a contiguous set. If this is <see langword="false"/>, then we will return a buffer
+    /// even if the segments are not all available (return a partial set of segments).
     /// </param>
     /// <param name="bufferPool">
     /// The buffer pool that is requesting the buffer.
@@ -1047,7 +972,8 @@ internal unsafe class MemorySegmentedBufferGroup
     /// The buffer to use from this group if available, and a result value for the operation.
     /// </returns>
     public (SegmentBuffer Buffer, GetBufferResult Result, bool SegmentIsPreferred)
-        GetBuffer (long bufferSize, bool requireZeroed, MemorySegmentedBufferPool bufferPool, int preferredFirstSegmentIndex)
+        GetBufferInternal(long bufferSize, bool requireZeroed, bool requireAllSegments,
+            MemorySegmentedBufferPool bufferPool, int preferredFirstSegmentIndex)
     {
         Debug.Assert(0 == (bufferSize % StandardBufferSegmentSize), "bufferSize is not an even multiple of StandardBufferSegmentSize");
         int segmentsNeeded = (int)(bufferSize / StandardBufferSegmentSize);
@@ -1075,11 +1001,16 @@ internal unsafe class MemorySegmentedBufferGroup
             if ((!AllocateBufferIfNeeded()) && IsFull)
                 return (SegmentBuffer.Empty, GetBufferResult.GroupFull, false);
 
+            // If we need all the segments, and we don't even have the number of segments we need,
+            // then we are done.
+            if (requireAllSegments && ((_segmentCount - _segmentsInUse) < segmentsNeeded))
+                return (SegmentBuffer.Empty, GetBufferResult.GroupFull, false);
+
             // Reserve the segments
             if (segmentsNeeded == 1)
             {
                 // Try to get the preferred segment first.
-                if (preferredFirstSegmentIndex >=0)
+                if (preferredFirstSegmentIndex >= 0)
                 {
                     // Since we are asking for a preferred segment, we can assign the returned value
                     // of "SegmentReserved" to the "segmentIsPreferred" variable.
@@ -1098,7 +1029,7 @@ internal unsafe class MemorySegmentedBufferGroup
             {
                 // We need multiple segments
                 // Try to get the series at the preferred segment first.
-                if (preferredFirstSegmentIndex >=0)
+                if (preferredFirstSegmentIndex >= 0)
                 {
                     (reservedSegmentCount, segmentsZeroed) = TryReserveSegments(segmentsNeeded, preferredFirstSegmentIndex);
                     if (reservedSegmentCount > 0)
@@ -1112,7 +1043,12 @@ internal unsafe class MemorySegmentedBufferGroup
                 // If we didn't get segments from the preferred segment, then try to get any series of segments.
                 if (reservedSegmentIndex < 0)
                 {
-                    (reservedSegmentIndex, reservedSegmentCount, segmentsZeroed) = ReserveSegments(segmentsNeeded);
+                    (reservedSegmentIndex, reservedSegmentCount, segmentsZeroed) = ReserveSegments(segmentsNeeded, requireAllSegments);
+                    if (requireAllSegments && (reservedSegmentCount == 0))
+                    {
+                        // We didn't get any segments, so we are done.
+                        return (SegmentBuffer.Empty, GetBufferResult.GroupFull, false);
+                    }
                 }
             }
         }
@@ -1142,7 +1078,132 @@ internal unsafe class MemorySegmentedBufferGroup
         }
         return (new SegmentBuffer(arraySegment, bufferInfo), GetBufferResult.Available, segmentIsPreferred);
     }
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Static constructor for the <see cref="MemorySegmentedBufferGroup"/> class.
+    /// </summary>
+    static MemorySegmentedBufferGroup()
+    {
+        // Create the observable gauges for the total allocated memory.
+#pragma warning disable HAA0601
+        MemoryMeter.Meter.CreateObservableGauge("segment_memory.gc_allocated", static () => _totalGcSegmentsAllocated,
+            unit: "{segments}", description: $"The total number of GC heap segments (of {StandardBufferSegmentSize:N0} bytes) allocated for the segmented memory buffers");
+        MemoryMeter.Meter.CreateObservableGauge("segment_memory.native_allocated", static () => _totalNativeSegmentsAllocated,
+            unit: "{segments}", description: $"The total number of native heap segments (of {StandardBufferSegmentSize:N0} bytes) allocated for the segmented memory buffers");
+#pragma warning restore HAA0601
+    }
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MemorySegmentedBufferGroup"/> class.
+    /// </summary>
+    /// <param name="bufferSegmentCount">
+    /// The number of standard size buffer blocks that will be stored in this group.
+    /// </param>
+    /// <param name="useNativeMemory">
+    /// Indicates if we should use native memory for the buffers instead of GC memory.
+    /// </param>
+    public MemorySegmentedBufferGroup(int bufferSegmentCount, bool useNativeMemory)
+    {
+        _useNativeMemory = useNativeMemory;
+        _segmentCount = bufferSegmentCount;
+        // How many longs do we need to store the flags for the buffers.
+        int flagArraySize = (bufferSegmentCount + BlockFlagSetSize - 1) / BlockFlagSetSize;
+        // Set up the block flags and the buffer block.
+        _blockUsedFlags = new ulong[flagArraySize];
+        _blockZeroFlags = new ulong[flagArraySize];
+    }
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Finalizes an instance of the <see cref="MemorySegmentedBufferGroup"/> class.
+    /// </summary>
+    ~MemorySegmentedBufferGroup()
+    {
+        ReleaseInternalMemory();
+    }
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Checks if this group is currently available for release and whether the group
+    /// is empty, and has been empty for the last two consecutive checks of emptiness.
+    /// </summary>
+    /// <returns>
+    /// <see langword="true"/> if the group is available for release, <see langword="false"/> otherwise.
+    /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool ReleaseGroup() => ReleaseGroup(false);
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Checks if this group is currently available for release and whether the group
+    /// is empty, and has been empty for the last two consecutive checks of emptiness.
+    /// </summary>
+    /// <returns>
+    /// <see langword="true"/> if the group is available for release, <see langword="false"/> otherwise.
+    /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool ReleaseUnusedMemory() => ReleaseGroup(true);
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Attempts to store a buffer in the group.
+    /// </summary>
+    /// <param name="buffer">
+    /// The buffer to be stored in this group.
+    /// </param>
+    /// <param name="segmentIsZeroed">
+    /// Indicates if the memory space associated with the segment has been zeroed.
+    /// </param>
+    /// <returns>
+    /// <c>true</c> if the buffer was stored, <c>false</c> if the group is full or
+    /// if we weren't able to get a lock on the group. This also returns an indicator
+    /// why the buffer was not stored.
+    /// </returns>
+    public void ReleaseBuffer(in SegmentBuffer buffer, bool segmentIsZeroed)
+    {
+        Debug.Assert(buffer.BufferInfo.BlockId == Id, "buffer.Id.BlockId != Id");
+        Debug.Assert(buffer.BufferInfo.SegmentId < _segmentCount && buffer.BufferInfo.SegmentId >= 0, "buffer.Id.SegmentId < 0 OR buffer.Id.SegmentId >= _segmentCount");
 
+        // Lock access to the group.
+        if (Interlocked.CompareExchange(ref _locked, 1, 0) == 1)
+        {
+            SpinWait spinner = new();
+            while (Interlocked.CompareExchange(ref _locked, 1, 0) == 1)
+            {
+                spinner.SpinOnce();
+            }
+        }
+        try
+        {
+            // Release the segments.
+            ReleaseSegments(buffer.BufferInfo.SegmentId, buffer.BufferInfo.SegmentCount, segmentIsZeroed);
+        }
+        finally
+        {
+            Volatile.Write(ref _locked, 0);
+        }
+    }
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Attempts to get a buffer from the group.
+    /// </summary>
+    /// <param name="bufferSize">
+    /// The size of the buffer that we need.
+    /// </param>
+    /// <param name="requireZeroed">
+    /// Indicates if we need to force the buffer to be zeroed.
+    /// </param>
+    /// <param name="bufferPool">
+    /// The buffer pool that is requesting the buffer.
+    /// </param>
+    /// <param name="preferredFirstSegmentIndex">
+    /// The index of the first segment to try and allocate from. If this is -1, then we will
+    /// not try to allocate from a specific segment.
+    /// </param>
+    /// <returns>
+    /// The buffer to use from this group if available, and a result value for the operation.
+    /// </returns>
+    public (SegmentBuffer Buffer, GetBufferResult Result, bool SegmentIsPreferred)
+        GetBuffer(long bufferSize, bool requireZeroed,
+            MemorySegmentedBufferPool bufferPool, int preferredFirstSegmentIndex) =>
+        GetBufferInternal(bufferSize, requireZeroed, false, bufferPool, preferredFirstSegmentIndex);
+    //--------------------------------------------------------------------------------
     /// <summary>
     /// Attempts to get a buffer from the group.
     /// </summary>
@@ -1160,17 +1221,40 @@ internal unsafe class MemorySegmentedBufferGroup
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public (SegmentBuffer Buffer, GetBufferResult Result)
-        GetBuffer (long bufferSize, bool requireZeroed, MemorySegmentedBufferPool bufferPool)
+        GetBuffer(long bufferSize, bool requireZeroed, MemorySegmentedBufferPool bufferPool)
     {
-        (SegmentBuffer buffer, GetBufferResult result, bool _) = GetBuffer(bufferSize, requireZeroed, bufferPool, -1);
+        (SegmentBuffer buffer, GetBufferResult result, bool _) = GetBufferInternal(bufferSize, requireZeroed, false, bufferPool, -1);
         return (buffer, result);
     }
-
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Attempts to get a buffer from the group that is a contiguous set of segments.
+    /// </summary>
+    /// <param name="bufferSize">
+    /// The size of the buffer that we need.
+    /// </param>
+    /// <param name="requireZeroed">
+    /// Indicates if we need to force the buffer to be zeroed.
+    /// </param>
+    /// <param name="bufferPool">
+    /// The buffer pool that is requesting the buffer.
+    /// </param>
+    /// <returns>
+    /// The buffer to use from this group if available, and a result value for the operation.
+    /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public (SegmentBuffer Buffer, GetBufferResult Result)
+        GetContiguousBuffer(long bufferSize, bool requireZeroed, MemorySegmentedBufferPool bufferPool)
+    {
+        (SegmentBuffer buffer, GetBufferResult result, bool _) = GetBufferInternal(bufferSize, requireZeroed, true, bufferPool, -1);
+        return (buffer, result);
+    }
+    //--------------------------------------------------------------------------------
     /// <summary>
     /// The ID for this group instance.
     /// </summary>
     public int Id { [DebuggerStepThrough] get; } = Interlocked.Increment(ref _lastGroupId);
-
+    //--------------------------------------------------------------------------------
     /// <summary>
     /// The number of segments that we have in this block that can be used for buffers.
     /// </summary>
@@ -1179,5 +1263,6 @@ internal unsafe class MemorySegmentedBufferGroup
         [DebuggerStepThrough]
         get => _segmentCount;
     }
+    //--------------------------------------------------------------------------------
 }
 //################################################################################

@@ -12,12 +12,12 @@ namespace KZDev.PerfUtils.Tests;
 /// Unit tests for the <see cref="MemoryStreamSlim"/> class that never run in 
 /// parallel with other tests.
 /// </summary>
-[Trait(TestConstants.TestTrait.Category, "Memory")]
+[Trait(TestConstants.TestTrait.Category, TestConstants.TestCategory.Memory)]
 public class UsingMemoryStreamSlimReleaseBuffers : UsingMemoryStreamSlimUnitTestBase
 {
     //--------------------------------------------------------------------------------
     /// <summary>
-    /// Initializes a new instance of the <see cref="UsingMemoryStreamSlim"/> class.
+    /// Initializes a new instance of the <see cref="UsingMemoryStreamSlimReleaseBuffers"/> class.
     /// </summary>
     /// <param name="xUnitTestOutputHelper">
     /// The Xunit test output helper that can be used to output test messages

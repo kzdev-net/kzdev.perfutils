@@ -572,6 +572,7 @@ internal class MemorySegmentedBufferPool : IDisposable
     public void Dispose ()
     {
         _trimTimer.Dispose();
+        TrimBufferGroups(this);
     }
     //--------------------------------------------------------------------------------
 
