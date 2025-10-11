@@ -10,14 +10,6 @@ namespace KZDev.PerfUtils.Tests;
     /// </summary>
     public class UsingMemoryStreamSlimReleaseBuffersAndRead : UsingMemoryStreamSlimUnitTestBase
     {
-        /// <summary>
-        /// The minimum number of test loops to run for the tests.
-        /// </summary>
-        private const int MinimumTestLoops = 100;
-        /// <summary>
-        /// The maximum number of test loops to run for the tests.
-        /// </summary>
-        private const int MaximumTestLoops = 500;
         //--------------------------------------------------------------------------------
         /// <summary>
         /// Initializes a new instance of the <see cref="UsingMemoryStreamSlimReleaseBuffersAndRead"/> class.
@@ -44,11 +36,10 @@ namespace KZDev.PerfUtils.Tests;
         public async Task UsingMemoryStreamSlim_ReadBySegments_AfterMemoryRelease_ReturnsCorrectData ()
         {
             int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
-            int testLoops = RandomSource.GetRandomInteger(MinimumTestLoops, MaximumTestLoops + 1);
 
             // Fill the stream with random bytes
             foreach (int testSegmentSize in TestSegmentSizes)
-                for (int testLoop = 0; testLoop < testLoops; testLoop++)
+                for (int testLoop = 0; testLoop < 500; testLoop++)
                 {
                     await using MemoryStreamSlim testService = MemoryStreamSlim.Create(options => options.WithZeroBufferBehavior(MemoryStreamSlimZeroBufferOption.OnRelease));
                     int byteCount = testDataSizes[RandomSource.GetRandomInteger(testDataSizes.Length)];
@@ -65,7 +56,7 @@ namespace KZDev.PerfUtils.Tests;
 
             // Run the test loops again.
             foreach (int testSegmentSize in TestSegmentSizes)
-                for (int testLoop = 0; testLoop < testLoops; testLoop++)
+                for (int testLoop = 0; testLoop < 500; testLoop++)
                 {
                     await using MemoryStreamSlim testService = MemoryStreamSlim.Create(options => options.WithZeroBufferBehavior(MemoryStreamSlimZeroBufferOption.OnRelease));
                     int byteCount = testDataSizes[RandomSource.GetRandomInteger(testDataSizes.Length)];

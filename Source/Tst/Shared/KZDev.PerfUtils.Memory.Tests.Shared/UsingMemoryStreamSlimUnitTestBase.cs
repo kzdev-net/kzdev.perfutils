@@ -1,6 +1,10 @@
 ﻿// Copyright (c) Kevin Zehrer
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+using System.Buffers;
+
+using FluentAssertions;
+
 using KZDev.PerfUtils.Internals;
 
 #pragma warning disable HAA0601
@@ -632,6 +636,48 @@ NextCurrentSizeLoop:;
             return;
         Assert.Fail("we should get the exact same byte values back as were written to the stream");
     }
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Verifies the contents of a <see cref="MemoryStreamSlim"/> instance by using the
+    /// <see cref="MemoryStreamSlim.ToArray()"/> method to read the bytes
+    /// </summary>
+    /// <param name="stream">
+    /// The stream instance to verify.
+    /// </param>
+    /// <param name="expectedBytes">
+    /// A copy of the bytes that are expected to be in the stream.
+    /// </param>
+    protected static void VerifyContentsByArray (MemoryStream stream, byte[] expectedBytes)
+    {
+        stream.Position = 0;
+        Assert.True(stream.Position == 0, "Position should be 0 to start");
+
+        // Get the byte array from the stream
+        byte[] loadBuffer = stream.ToArray();
+        loadBuffer.Should().BeEquivalentTo(expectedBytes, "the byte array should be the same as the expected bytes");
+    }
+    //--------------------------------------------------------------------------------
+#if TOMEMORY
+    /// <summary>
+    /// Verifies the contents of a <see cref="MemoryStreamSlim"/> instance by using the
+    /// <see cref="MemoryStreamSlim.ToMemory()"/> method to read the bytes
+    /// </summary>
+    /// <param name="stream">
+    /// The stream instance to verify.
+    /// </param>
+    /// <param name="expectedBytes">
+    /// A copy of the bytes that are expected to be in the stream.
+    /// </param>
+    protected static void VerifyContentsByMemory (MemoryStreamSlim stream, byte[] expectedBytes)
+    {
+        stream.Position = 0;
+        Assert.True(stream.Position == 0, "Position should be 0 to start");
+
+        // Get the byte array from the stream
+        using IMemoryOwner<byte> memoryOwner = stream.ToMemory();
+        memoryOwner.Memory.ToArray().Should().BeEquivalentTo(expectedBytes, "the byte array should be the same as the expected bytes");
+    }
+#endif
     //--------------------------------------------------------------------------------
     /// <summary>
     /// Verifies the contents of a <see cref="MemoryStreamSlim"/> instance.

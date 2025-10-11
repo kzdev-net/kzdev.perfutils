@@ -1,8 +1,8 @@
-<Project>
+﻿<Project>
     <!-- 
-    Define Source-Level properties
+    Define Test-Level properties
    -->
-    <PropertyGroup Label="SourceGlobals">
+    <PropertyGroup Label="TestGlobals">
         <Configurations>Debug;Release</Configurations>
         <TargetFrameworks>net9.0;net8.0;net6.0</TargetFrameworks>
         <IsPackable>false</IsPackable>

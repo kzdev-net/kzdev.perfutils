@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Kevin Zehrer
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using System.Runtime.ExceptionServices;
 
 using FluentAssertions;
@@ -21,14 +22,41 @@ namespace KZDev.PerfUtils.Tests;
 /// </summary>
 public partial class UsingMemoryStreamSlim
 {
+    /// <summary>
+    /// The factory used to create the test subject service.
+    /// </summary>
+    private Func<int, MemoryStreamSlim> _createStreamFactory =
+        _ => MemoryStreamSlim.Create(options => options.WithZeroBufferBehavior(MemoryStreamSlimZeroBufferOption.None));
+
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Helper to set the test stream factory to use a specific implementation of the
+    /// <see cref="MemoryStreamSlim"/> class used for tests that utilize the 
+    /// <see cref="MemoryStreamSlim.ToMemory"/> method.
+    /// </summary>
+    partial void SetupToMemoryAccessStreamFactory ();
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Helper to set the test stream factory to use a specific implementation of the
+    /// <see cref="MemoryStreamSlim"/> class.
+    /// </summary>
+    /// <param name="factory">
+    /// The non-null factory to use to create the test subject service.
+    /// </param>
+    private void SetTestStreamFactory (Func<int, MemoryStreamSlim> factory)
+    {
+        Debug.Assert(factory is not null, "The factory cannot be null");
+        _createStreamFactory = factory;
+    }
     //--------------------------------------------------------------------------------
     /// <summary>
     /// Test helper to instantiate a new <see cref="MemoryStreamSlim"/> object as the test subject service.
     /// </summary>
-    private Func<int, MemoryStreamSlim> CreateTestService { get; } =
-        // By default, we don't zero the buffer on release because we want to capture any possible buffer corruption
-        // between uses
-        _ => MemoryStreamSlim.Create(options => options.WithZeroBufferBehavior(MemoryStreamSlimZeroBufferOption.None));
+    private Func<int, MemoryStreamSlim> CreateTestService
+    {
+        [DebuggerStepThrough]
+        get => _createStreamFactory;
+    }
     //--------------------------------------------------------------------------------
 
     #region Test Methods
@@ -45,10 +73,9 @@ public partial class UsingMemoryStreamSlim
     public void UsingMemoryStreamSlim_ReadByByte_ReturnsCorrectData ()
     {
         int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
-        int testLoops = RandomSource.GetRandomInteger(MinimumTestLoops, MaximumTestLoops + 1);
 
         foreach (int testSegmentSize in TestSegmentSizes)
-            for (int testLoop = 0; testLoop < testLoops; testLoop++)
+            for (int testLoop = 0; testLoop < 100; testLoop++)
             {
                 int byteCount = testDataSizes[RandomSource.GetRandomInteger(testDataSizes.Length)];
                 using MemoryStreamSlim testService = CreateTestService(byteCount);
@@ -69,11 +96,10 @@ public partial class UsingMemoryStreamSlim
     public void UsingMemoryStreamSlim_WriteByByte_ReturnsCorrectData ()
     {
         int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
-        int testLoops = RandomSource.GetRandomInteger(MinimumTestLoops, MaximumTestLoops + 1);
 
         // Fill the stream with random bytes
         foreach (int testSegmentSize in TestSegmentSizes)
-            for (int testLoop = 0; testLoop < testLoops; testLoop++)
+            for (int testLoop = 0; testLoop < 100; testLoop++)
             {
                 int byteCount = testDataSizes[RandomSource.GetRandomInteger(testDataSizes.Length)];
                 using MemoryStreamSlim testService = CreateTestService(byteCount);
@@ -95,10 +121,9 @@ public partial class UsingMemoryStreamSlim
     public void UsingMemoryStreamSlim_ReadBySegments_ReturnsCorrectData ()
     {
         int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
-        int testLoops = RandomSource.GetRandomInteger(MinimumTestLoops, MaximumTestLoops + 1);
 
         foreach (int testSegmentSize in TestSegmentSizes)
-            for (int testLoop = 0; testLoop < testLoops; testLoop++)
+            for (int testLoop = 0; testLoop < 100; testLoop++)
             {
                 int byteCount = testDataSizes[RandomSource.GetRandomInteger(testDataSizes.Length)];
                 using MemoryStreamSlim testService = CreateTestService(byteCount);
@@ -119,7 +144,6 @@ public partial class UsingMemoryStreamSlim
     public async Task UsingMemoryStreamSlim_ReadBySegments_OnManyThreads_ReturnsCorrectData ()
     {
         int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
-        int testLoops = RandomSource.GetRandomInteger(MinimumTestLoops, MaximumTestLoops + 1);
 
         ExceptionDispatchInfo? taskException = null;
 
@@ -128,7 +152,7 @@ public partial class UsingMemoryStreamSlim
             try
             {
                 foreach (int testSegmentSize in TestSegmentSizes)
-                    for (int testLoop = 0; testLoop < testLoops; testLoop++)
+                    for (int testLoop = 0; testLoop < 100; testLoop++)
                     {
                         int byteCount = testDataSizes[RandomSource.GetRandomInteger(testDataSizes.Length)];
                         using MemoryStreamSlim testService = CreateTestService(byteCount);
@@ -158,10 +182,9 @@ public partial class UsingMemoryStreamSlim
     public async Task UsingMemoryStreamSlim_ReadBySegmentsAsync_ReturnsCorrectData ()
     {
         int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
-        int testLoops = RandomSource.GetRandomInteger(MinimumTestLoops, MaximumTestLoops + 1);
 
         foreach (int testSegmentSize in TestSegmentSizes)
-            for (int testLoop = 0; testLoop < testLoops; testLoop++)
+            for (int testLoop = 0; testLoop < 100; testLoop++)
             {
                 int byteCount = testDataSizes[RandomSource.GetRandomInteger(testDataSizes.Length)];
                 await using MemoryStreamSlim testService = CreateTestService(byteCount);
@@ -184,11 +207,10 @@ public partial class UsingMemoryStreamSlim
     [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.MedRun)]
     public void UsingMemoryStreamSlim_RepeatedWriteAndPosition_KeepsDataConsistent ()
     {
-        int[] testDataSizes = GenerateTestDataSizes(MemorySegmentedBufferGroup.StandardBufferSegmentSize, MemorySegmentedBufferGroup.StandardBufferSegmentSize * 20).ToArray();
-        int testLoops = RandomSource.GetRandomInteger(MinimumRandomPositionTestLoops, MaximumRandomPositionTestLoops + 1);
+        int[] testDataSizes = GenerateTestDataSizes(1000, MemorySegmentedBufferGroup.StandardBufferSegmentSize * 20).ToArray();
 
         foreach (int testSegmentSize in TestSegmentSizes)
-            for (int testLoop = 0; testLoop < testLoops; testLoop++)
+            for (int testLoop = 0; testLoop < 500; testLoop++)
             {
                 int byteCount = testDataSizes[RandomSource.GetRandomInteger(testDataSizes.Length)];
                 using MemoryStreamSlim testService = CreateTestService(byteCount);
@@ -224,10 +246,9 @@ public partial class UsingMemoryStreamSlim
     [Fact]
     public void UsingMemoryStreamSlim_WriteInStandardSegmentSizeMultiples_WritesCorrectData ()
     {
-        int[] testDataSizes = GenerateTestDataSizes(MemorySegmentedBufferGroup.StandardBufferSegmentSize, MemorySegmentedBufferGroup.StandardBufferSegmentSize * 20).ToArray();
-        int testLoops = RandomSource.GetRandomInteger(MinimumTestLoops, MaximumTestLoops + 1);
+        int[] testDataSizes = GenerateTestDataSizes(1000, MemorySegmentedBufferGroup.StandardBufferSegmentSize * 20).ToArray();
 
-        for (int testLoop = 0; testLoop < testLoops; testLoop++)
+        for (int testLoop = 0; testLoop < 100; testLoop++)
         {
             int byteCount = testDataSizes[RandomSource.GetRandomInteger(testDataSizes.Length)];
             using MemoryStreamSlim testService = CreateTestService(byteCount);
@@ -256,6 +277,87 @@ public partial class UsingMemoryStreamSlim
     }
     //--------------------------------------------------------------------------------    
     /// <summary>
+    /// Tests repeatedly writing data to the stream in chunks that are multiples (or 1/2) of the
+    /// standard segment size, and then verifying that the data read back is the same as the
+    /// original data written using the ToArray method.
+    /// </summary>
+    [Fact]
+    public void UsingMemoryStreamSlim_WriteInStandardSegmentSizeMultiples_VerifyByArray_WritesCorrectData ()
+    {
+        int[] testDataSizes = GenerateTestDataSizes(1000, MemorySegmentedBufferGroup.StandardBufferSegmentSize * 20).ToArray();
+
+        for (int testLoop = 0; testLoop < 100; testLoop++)
+        {
+            int byteCount = testDataSizes[RandomSource.GetRandomInteger(testDataSizes.Length)];
+            using MemoryStreamSlim testService = CreateTestService(byteCount);
+            TestWriteLine($"Running test loop {testLoop} with byte count of {byteCount}");
+
+            // Get the random test bytes
+            byte[] dataCopy = MemoryTestPrep.GetRandomByteArray(byteCount);
+            int bytesLeft = byteCount;
+            int writeOffset = 0;
+            int loopCount = 0;
+            while (bytesLeft > 0)
+            {
+                int writeCount = Math.Min(bytesLeft, (loopCount++ % 3) switch
+                {
+                    0 => MemorySegmentedBufferGroup.StandardBufferSegmentSize,
+                    1 => MemorySegmentedBufferGroup.StandardBufferSegmentSize * 2,
+                    _ => MemorySegmentedBufferGroup.StandardBufferSegmentSize / 2
+                });
+                testService.Write(dataCopy, writeOffset, writeCount);
+                bytesLeft -= writeCount;
+                writeOffset += writeCount;
+            }
+            // Verify the contents
+            VerifyContentsByArray(testService, dataCopy);
+        }
+    }
+    //--------------------------------------------------------------------------------    
+#if TOMEMORY
+    /// <summary>
+    /// Tests repeatedly writing data to the stream in chunks that are multiples (or 1/2) of the
+    /// standard segment size, and then verifying that the data read back is the same as the
+    /// original data written using the ToMemory method.
+    /// </summary>
+    [Fact]
+    public void UsingMemoryStreamSlim_WriteInStandardSegmentSizeMultiples_VerifyByMemory_WritesCorrectData ()
+    {
+        // Set up the special stream factory to use the ToMemory method
+        SetupToMemoryAccessStreamFactory();
+
+        int[] testDataSizes = GenerateTestDataSizes(1000, MemorySegmentedBufferGroup.StandardBufferSegmentSize * 20).ToArray();
+
+        for (int testLoop = 0; testLoop < 100; testLoop++)
+        {
+            int byteCount = testDataSizes[RandomSource.GetRandomInteger(testDataSizes.Length)];
+            using MemoryStreamSlim testService = CreateTestService(byteCount);
+            TestWriteLine($"Running test loop {testLoop} with byte count of {byteCount}");
+
+            // Get the random test bytes
+            byte[] dataCopy = MemoryTestPrep.GetRandomByteArray(byteCount);
+            int bytesLeft = byteCount;
+            int writeOffset = 0;
+            int loopCount = 0;
+            while (bytesLeft > 0)
+            {
+                int writeCount = Math.Min(bytesLeft, (loopCount++ % 3) switch
+                {
+                    0 => MemorySegmentedBufferGroup.StandardBufferSegmentSize,
+                    1 => MemorySegmentedBufferGroup.StandardBufferSegmentSize * 2,
+                    _ => MemorySegmentedBufferGroup.StandardBufferSegmentSize / 2
+                });
+                testService.Write(dataCopy, writeOffset, writeCount);
+                bytesLeft -= writeCount;
+                writeOffset += writeCount;
+            }
+            // Verify the contents
+            VerifyContentsByMemory(testService, dataCopy);
+        }
+    }
+#endif
+    //--------------------------------------------------------------------------------    
+    /// <summary>
     /// Tests writing data to the stream in chunks and then jumping the position in steps
     /// that are multiples (or 1/2) of the standard segment size, and then verifying that the
     /// resulting data read back is the same as the original data written including with
@@ -264,11 +366,10 @@ public partial class UsingMemoryStreamSlim
     [Fact]
     public void UsingMemoryStreamSlim_WriteWithStandardSegmentSizeMultipleJumps_WritesCorrectData ()
     {
-        int[] testDataSizes = GenerateTestDataSizes(MemorySegmentedBufferGroup.StandardBufferSegmentSize, MemorySegmentedBufferGroup.StandardBufferSegmentSize * 20).ToArray();
-        int testLoops = RandomSource.GetRandomInteger(MinimumRandomPositionTestLoops, MaximumRandomPositionTestLoops + 1);
+        int[] testDataSizes = GenerateTestDataSizes(1000, MemorySegmentedBufferGroup.StandardBufferSegmentSize * 20).ToArray();
 
         foreach (int testSegmentSize in TestSegmentSizes)
-            for (int testLoop = 0; testLoop < testLoops; testLoop++)
+            for (int testLoop = 0; testLoop < 500; testLoop++)
             {
                 int byteCount = testDataSizes[RandomSource.GetRandomInteger(testDataSizes.Length)];
                 using MemoryStreamSlim testService = CreateTestService(byteCount);
@@ -333,11 +434,10 @@ public partial class UsingMemoryStreamSlim
     [Fact]
     public void UsingMemoryStreamSlim_WriteWithRandomJumps_WritesCorrectData ()
     {
-        int[] testDataSizes = GenerateTestDataSizes(MemorySegmentedBufferGroup.StandardBufferSegmentSize, MemorySegmentedBufferGroup.StandardBufferSegmentSize * 20).ToArray();
-        int testLoops = RandomSource.GetRandomInteger(MinimumRandomPositionTestLoops, MaximumRandomPositionTestLoops + 1);
+        int[] testDataSizes = GenerateTestDataSizes(1000, MemorySegmentedBufferGroup.StandardBufferSegmentSize * 20).ToArray();
 
         foreach (int testSegmentSize in TestSegmentSizes)
-            for (int testLoop = 0; testLoop < testLoops; testLoop++)
+            for (int testLoop = 0; testLoop < 500; testLoop++)
             {
                 int byteCount = testDataSizes[RandomSource.GetRandomInteger(testDataSizes.Length)];
                 using MemoryStreamSlim testService = CreateTestService(byteCount);
@@ -411,7 +511,7 @@ public partial class UsingMemoryStreamSlim
                     await MemoryTestPrep.FillStreamAndArrayWithRandomBytesAsync(testService, byteCount, testSegmentSize);
                 // Get the array and verify it
                 byte[] returnedArray = testService.ToArray();
-                dataCopy.Should().BeEquivalentTo(returnedArray);
+                returnedArray.Should().BeEquivalentTo(dataCopy);
             }
     }
     //--------------------------------------------------------------------------------    
@@ -423,10 +523,9 @@ public partial class UsingMemoryStreamSlim
     public void UsingMemoryStreamSlim_CopyFullToStream_CopiesAllData ()
     {
         int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
-        int testLoops = RandomSource.GetRandomInteger(MinimumTestLoops, MaximumTestLoops + 1);
 
         foreach (int testSegmentSize in TestSegmentSizes)
-            for (int testLoop = 0; testLoop < testLoops; testLoop++)
+            for (int testLoop = 0; testLoop < 100; testLoop++)
             {
                 int byteCount = testDataSizes[RandomSource.GetRandomInteger(testDataSizes.Length)];
                 using MemoryStreamSlim testService = CreateTestService(byteCount);
@@ -457,10 +556,9 @@ public partial class UsingMemoryStreamSlim
     public async Task UsingMemoryStreamSlim_CopyFullToStream_CopiesAllDataAsync ()
     {
         int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
-        int testLoops = RandomSource.GetRandomInteger(MinimumTestLoops, MaximumTestLoops + 1);
 
         foreach (int testSegmentSize in TestSegmentSizes)
-            for (int testLoop = 0; testLoop < testLoops; testLoop++)
+            for (int testLoop = 0; testLoop < 100; testLoop++)
             {
                 int byteCount = testDataSizes[RandomSource.GetRandomInteger(testDataSizes.Length)];
                 await using MemoryStreamSlim testService = CreateTestService(byteCount);
@@ -500,7 +598,7 @@ public partial class UsingMemoryStreamSlim
             {
 
                 foreach (int testSegmentSize in TestSegmentSizes)
-                    for (int testLoop = 0; testLoop < MaximumTestLoops; testLoop++)
+                    for (int testLoop = 0; testLoop < 100; testLoop++)
                     {
                         int byteCount = testDataSizes[RandomSource.GetRandomInteger(testDataSizes.Length)];
                         await using MemoryStreamSlim testService = CreateTestService(byteCount);
@@ -542,10 +640,9 @@ public partial class UsingMemoryStreamSlim
     public async Task UsingMemoryStreamSlim_CopyFullToAsyncStream_CopiesAllDataAsync ()
     {
         int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
-        int testLoops = RandomSource.GetRandomInteger(MinimumTestLoops, MaximumTestLoops + 1);
 
         foreach (int testSegmentSize in TestSegmentSizes)
-            for (int testLoop = 0; testLoop < testLoops; testLoop++)
+            for (int testLoop = 0; testLoop < 100; testLoop++)
             {
                 int byteCount = testDataSizes[RandomSource.GetRandomInteger(testDataSizes.Length)];
                 await using MemoryStreamSlim testService = CreateTestService(byteCount);
@@ -586,7 +683,7 @@ public partial class UsingMemoryStreamSlim
             try
             {
                 foreach (int testSegmentSize in TestSegmentSizes)
-                    for (int testLoop = 0; testLoop < MaximumTestLoops; testLoop++)
+                    for (int testLoop = 0; testLoop < 100; testLoop++)
                     {
                         int byteCount = testDataSizes[RandomSource.GetRandomInteger(testDataSizes.Length)];
                         await using MemoryStreamSlim testService = CreateTestService(byteCount);
@@ -631,10 +728,9 @@ public partial class UsingMemoryStreamSlim
     public void UsingMemoryStreamSlim_CopyToLargerStream_CopiesCorrectData ()
     {
         int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
-        int testLoops = RandomSource.GetRandomInteger(MinimumTestLoops, MaximumTestLoops + 1);
 
         foreach (int testSegmentSize in TestSegmentSizes)
-            for (int testLoop = 0; testLoop < testLoops; testLoop++)
+            for (int testLoop = 0; testLoop < 100; testLoop++)
             {
                 int byteCount = testDataSizes[RandomSource.GetRandomInteger(testDataSizes.Length)];
                 using MemoryStreamSlim testService = CreateTestService(byteCount);
@@ -678,10 +774,9 @@ public partial class UsingMemoryStreamSlim
     public async Task UsingMemoryStreamSlim_CopyToLargerStream_CopiesCorrectDataAsync ()
     {
         int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
-        int testLoops = RandomSource.GetRandomInteger(MinimumTestLoops, MaximumTestLoops + 1);
 
         foreach (int testSegmentSize in TestSegmentSizes)
-            for (int testLoop = 0; testLoop < testLoops; testLoop++)
+            for (int testLoop = 0; testLoop < 100; testLoop++)
             {
                 int byteCount = testDataSizes[RandomSource.GetRandomInteger(testDataSizes.Length)];
                 await using MemoryStreamSlim testService = CreateTestService(byteCount);
@@ -735,7 +830,7 @@ public partial class UsingMemoryStreamSlim
             try
             {
                 foreach (int testSegmentSize in TestSegmentSizes)
-                    for (int testLoop = 0; testLoop < MaximumTestLoops; testLoop++)
+                    for (int testLoop = 0; testLoop < 100; testLoop++)
                     {
                         int byteCount = testDataSizes[RandomSource.GetRandomInteger(testDataSizes.Length)];
                         await using MemoryStreamSlim testService = CreateTestService(byteCount);
@@ -791,10 +886,9 @@ public partial class UsingMemoryStreamSlim
     public async Task UsingMemoryStreamSlim_CopyToLargerAsyncStream_CopiesCorrectDataAsync ()
     {
         int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
-        int testLoops = RandomSource.GetRandomInteger(MinimumTestLoops, MaximumTestLoops + 1);
 
         foreach (int testSegmentSize in TestSegmentSizes)
-            for (int testLoop = 0; testLoop < testLoops; testLoop++)
+            for (int testLoop = 0; testLoop < 100; testLoop++)
             {
                 int byteCount = testDataSizes[RandomSource.GetRandomInteger(testDataSizes.Length)];
                 await using MemoryStreamSlim testService = CreateTestService(byteCount);
@@ -854,7 +948,7 @@ public partial class UsingMemoryStreamSlim
             try
             {
                 foreach (int testSegmentSize in TestSegmentSizes)
-                    for (int testLoop = 0; testLoop < MaximumTestLoops; testLoop++)
+                    for (int testLoop = 0; testLoop < 100; testLoop++)
                     {
                         int byteCount = testDataSizes[RandomSource.GetRandomInteger(testDataSizes.Length)];
                         await using MemoryStreamSlim testService = CreateTestService(byteCount);
@@ -916,10 +1010,9 @@ public partial class UsingMemoryStreamSlim
     public void UsingMemoryStreamSlim_CopyToSmallerStream_CopiesCorrectData ()
     {
         int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
-        int testLoops = RandomSource.GetRandomInteger(MinimumTestLoops, MaximumTestLoops + 1);
 
         foreach (int testSegmentSize in TestSegmentSizes)
-            for (int testLoop = 0; testLoop < testLoops; testLoop++)
+            for (int testLoop = 0; testLoop < 100; testLoop++)
             {
                 int byteCount = testDataSizes[RandomSource.GetRandomInteger(testDataSizes.Length)];
                 using MemoryStreamSlim testService = CreateTestService(byteCount);
@@ -962,10 +1055,9 @@ public partial class UsingMemoryStreamSlim
     public async Task UsingMemoryStreamSlim_CopyToSmallerStream_CopiesCorrectDataAsync ()
     {
         int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
-        int testLoops = RandomSource.GetRandomInteger(MinimumTestLoops, MaximumTestLoops + 1);
 
         foreach (int testSegmentSize in TestSegmentSizes)
-            for (int testLoop = 0; testLoop < testLoops; testLoop++)
+            for (int testLoop = 0; testLoop < 100; testLoop++)
             {
                 int byteCount = testDataSizes[RandomSource.GetRandomInteger(testDataSizes.Length)];
                 await using MemoryStreamSlim testService = CreateTestService(byteCount);
@@ -1017,7 +1109,7 @@ public partial class UsingMemoryStreamSlim
             try
             {
                 foreach (int testSegmentSize in TestSegmentSizes)
-                    for (int testLoop = 0; testLoop < MaximumTestLoops; testLoop++)
+                    for (int testLoop = 0; testLoop < 100; testLoop++)
                     {
                         int byteCount = testDataSizes[RandomSource.GetRandomInteger(testDataSizes.Length)];
                         await using MemoryStreamSlim testService = CreateTestService(byteCount);
@@ -1072,10 +1164,9 @@ public partial class UsingMemoryStreamSlim
     public async Task UsingMemoryStreamSlim_CopyToSmallerAsyncStream_CopiesCorrectDataAsync ()
     {
         int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
-        int testLoops = RandomSource.GetRandomInteger(MinimumTestLoops, MaximumTestLoops + 1);
 
         foreach (int testSegmentSize in TestSegmentSizes)
-            for (int testLoop = 0; testLoop < testLoops; testLoop++)
+            for (int testLoop = 0; testLoop < 100; testLoop++)
             {
                 int byteCount = testDataSizes[RandomSource.GetRandomInteger(testDataSizes.Length)];
                 await using MemoryStreamSlim testService = CreateTestService(byteCount);
@@ -1134,7 +1225,7 @@ public partial class UsingMemoryStreamSlim
             try
             {
                 foreach (int testSegmentSize in TestSegmentSizes)
-                    for (int testLoop = 0; testLoop < MaximumTestLoops; testLoop++)
+                    for (int testLoop = 0; testLoop < 100; testLoop++)
                     {
                         int byteCount = testDataSizes[RandomSource.GetRandomInteger(testDataSizes.Length)];
                         await using MemoryStreamSlim testService = CreateTestService(byteCount);
@@ -1196,10 +1287,9 @@ public partial class UsingMemoryStreamSlim
     public void UsingMemoryStreamSlim_WriteToStream_CopiesAllData ()
     {
         int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
-        int testLoops = RandomSource.GetRandomInteger(MinimumTestLoops, MaximumTestLoops + 1);
 
         foreach (int testSegmentSize in TestSegmentSizes)
-            for (int testLoop = 0; testLoop < testLoops; testLoop++)
+            for (int testLoop = 0; testLoop < 100; testLoop++)
             {
                 int byteCount = testDataSizes[RandomSource.GetRandomInteger(testDataSizes.Length)];
                 using MemoryStreamSlim testService = CreateTestService(byteCount);
@@ -1232,10 +1322,9 @@ public partial class UsingMemoryStreamSlim
     public void UsingMemoryStreamSlim_WriteWithChaos_WritesCorrectData ()
     {
         int[] testDataSizes = GenerateTestDataSizes(MemorySegmentedBufferGroup.StandardBufferSegmentSize, MemorySegmentedBufferGroup.StandardBufferSegmentSize * 20).ToArray();
-        int testLoops = RandomSource.GetRandomInteger(MinimumRandomPositionTestLoops, MaximumRandomPositionTestLoops + 1);
 
         foreach (int testSegmentSize in TestSegmentSizes)
-            for (int testLoop = 0; testLoop < testLoops; testLoop++)
+            for (int testLoop = 0; testLoop < 500; testLoop++)
             {
                 int byteCount = testDataSizes[RandomSource.GetRandomInteger(testDataSizes.Length)];
                 using MemoryStreamSlim testService = CreateTestService(byteCount);
@@ -1330,35 +1419,35 @@ public partial class UsingMemoryStreamSlim
             switch (RandomSource.GetRandomInteger(4))
             {
                 case 0:
-                    {
-                        int newPosition = dataCopyArrayPosition = (0 == maxPosition) ? 0 : RandomSource.GetRandomInteger(maxPosition);
-                        stream.Seek(newPosition, SeekOrigin.Begin);
-                    }
-                    break;
+                {
+                    int newPosition = dataCopyArrayPosition = (0 == maxPosition) ? 0 : RandomSource.GetRandomInteger(maxPosition);
+                    stream.Seek(newPosition, SeekOrigin.Begin);
+                }
+                break;
 
                 case 1:
-                    {
-                        int newOffset = (currentPosition == maxPosition) ? 0 : RandomSource.GetRandomInteger(maxPosition - currentPosition);
-                        dataCopyArrayPosition += newOffset;
-                        stream.Seek(newOffset, SeekOrigin.Current);
-                    }
-                    break;
+                {
+                    int newOffset = (currentPosition == maxPosition) ? 0 : RandomSource.GetRandomInteger(maxPosition - currentPosition);
+                    dataCopyArrayPosition += newOffset;
+                    stream.Seek(newOffset, SeekOrigin.Current);
+                }
+                break;
 
                 case 2:
-                    {
-                        int newOffset = (0 == currentPosition) ? 0 : -RandomSource.GetRandomInteger(currentPosition);
-                        dataCopyArrayPosition += newOffset;
-                        stream.Seek(newOffset, SeekOrigin.Current);
-                    }
-                    break;
+                {
+                    int newOffset = (0 == currentPosition) ? 0 : -RandomSource.GetRandomInteger(currentPosition);
+                    dataCopyArrayPosition += newOffset;
+                    stream.Seek(newOffset, SeekOrigin.Current);
+                }
+                break;
 
                 case 3:
-                    {
-                        long newOffset = (0 == stream.Length) ? 0 : -RandomSource.GetRandomLongInteger(stream.Length);
-                        dataCopyArrayPosition = (int)(stream.Length + newOffset);
-                        stream.Seek(newOffset, SeekOrigin.End);
-                    }
-                    break;
+                {
+                    long newOffset = (0 == stream.Length) ? 0 : -RandomSource.GetRandomLongInteger(stream.Length);
+                    dataCopyArrayPosition = (int)(stream.Length + newOffset);
+                    stream.Seek(newOffset, SeekOrigin.End);
+                }
+                break;
             }
         }
 
@@ -1387,7 +1476,6 @@ public partial class UsingMemoryStreamSlim
     public async Task UsingMemoryStreamSlim_WriteWithChaos_OnManyThreads_WritesCorrectData ()
     {
         int[] testDataSizes = GenerateTestDataSizes(MemorySegmentedBufferGroup.StandardBufferSegmentSize, MemorySegmentedBufferGroup.StandardBufferSegmentSize * 20).ToArray();
-        int testLoops = RandomSource.GetRandomInteger(MinimumRandomPositionTestLoops / 8, MaximumRandomPositionTestLoops / 8);
 
         ExceptionDispatchInfo? taskException = null;
 
@@ -1396,7 +1484,7 @@ public partial class UsingMemoryStreamSlim
             try
             {
                 foreach (int testSegmentSize in TestSegmentSizes)
-                    for (int testLoop = 0; testLoop < testLoops; testLoop++)
+                    for (int testLoop = 0; testLoop < 500; testLoop++)
                     {
                         int byteCount = testDataSizes[RandomSource.GetRandomInteger(testDataSizes.Length)];
                         using MemoryStreamSlim testService = CreateTestService(byteCount);
@@ -1495,35 +1583,35 @@ public partial class UsingMemoryStreamSlim
                     switch (RandomSource.GetRandomInteger(4))
                     {
                         case 0:
-                            {
-                                int newPosition = dataCopyArrayPosition = (0 == maxPosition) ? 0 : RandomSource.GetRandomInteger(maxPosition);
-                                stream.Seek(newPosition, SeekOrigin.Begin);
-                            }
-                            break;
+                        {
+                            int newPosition = dataCopyArrayPosition = (0 == maxPosition) ? 0 : RandomSource.GetRandomInteger(maxPosition);
+                            stream.Seek(newPosition, SeekOrigin.Begin);
+                        }
+                        break;
 
                         case 1:
-                            {
-                                int newOffset = (currentPosition == maxPosition) ? 0 : RandomSource.GetRandomInteger(maxPosition - currentPosition);
-                                dataCopyArrayPosition += newOffset;
-                                stream.Seek(newOffset, SeekOrigin.Current);
-                            }
-                            break;
+                        {
+                            int newOffset = (currentPosition == maxPosition) ? 0 : RandomSource.GetRandomInteger(maxPosition - currentPosition);
+                            dataCopyArrayPosition += newOffset;
+                            stream.Seek(newOffset, SeekOrigin.Current);
+                        }
+                        break;
 
                         case 2:
-                            {
-                                int newOffset = (0 == currentPosition) ? 0 : -RandomSource.GetRandomInteger(currentPosition);
-                                dataCopyArrayPosition += newOffset;
-                                stream.Seek(newOffset, SeekOrigin.Current);
-                            }
-                            break;
+                        {
+                            int newOffset = (0 == currentPosition) ? 0 : -RandomSource.GetRandomInteger(currentPosition);
+                            dataCopyArrayPosition += newOffset;
+                            stream.Seek(newOffset, SeekOrigin.Current);
+                        }
+                        break;
 
                         case 3:
-                            {
-                                long newOffset = (0 == stream.Length) ? 0 : -RandomSource.GetRandomLongInteger(stream.Length);
-                                dataCopyArrayPosition = (int)(stream.Length + newOffset);
-                                stream.Seek(newOffset, SeekOrigin.End);
-                            }
-                            break;
+                        {
+                            long newOffset = (0 == stream.Length) ? 0 : -RandomSource.GetRandomLongInteger(stream.Length);
+                            dataCopyArrayPosition = (int)(stream.Length + newOffset);
+                            stream.Seek(newOffset, SeekOrigin.End);
+                        }
+                        break;
                     }
                 }
 
@@ -1553,6 +1641,6 @@ public partial class UsingMemoryStreamSlim
 
     //================================================================================
 
-    #endregion Test Methods
+#endregion Test Methods
 }
 //################################################################################
