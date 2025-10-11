@@ -512,30 +512,30 @@ NextCurrentSizeLoop:;
                 Memory<byte> memory = new(loadBuffer);
                 readCount = await stream.ReadAsync(memory);
                 if (readCount <= 0)
-                    Assert.Fail($"readCount ({readCount}) should be greater than zero");
+                    Assert.Fail($"readCount ({readCount}) should be greater than zero - byteCount:{byteCount}, bytesLeft:{bytesLeft}, blockSize:{blockSize}, expectedBytesLen:{expectedBytes.Length}, loadBufferLen:{loadBuffer.Length}, streamLen:{stream.Length}");
                 if (readCount > bytesLeft)
-                    Assert.Fail($"readCount ({readCount}) should be less than or equal to bytesLeft ({bytesLeft})");
+                    Assert.Fail($"readCount ({readCount}) should be less than or equal to bytesLeft ({bytesLeft}) - byteCount:{byteCount}, blockSize:{blockSize}, expectedBytesLen:{expectedBytes.Length}, loadBufferLen:{loadBuffer.Length}, streamLen:{stream.Length}");
                 if (readCount > loadBuffer.Length)
-                    Assert.Fail($"readCount ({readCount}) should be less than or equal to buffer length ({loadBuffer.Length})");
+                    Assert.Fail($"readCount ({readCount}) should be less than or equal to buffer length ({loadBuffer.Length}) - byteCount:{byteCount}, bytesLeft:{bytesLeft}, blockSize:{blockSize}, expectedBytesLen:{expectedBytes.Length}, streamLen:{stream.Length}");
                 for (int i = 0; i < readCount; i++)
                 {
                     if (loadBuffer[i] != expectedBytes[byteCount - bytesLeft + i])
-                        Assert.Fail($"the byte at index {i} should be the same as the expected byte");
+                        Assert.Fail($"the byte {loadBuffer[i]} at index {i} should be the same as the expected byte {expectedBytes[byteCount - bytesLeft + i]} - readCount:{readCount}, byteCount:{byteCount}, bytesLeft:{bytesLeft}, blockSize:{blockSize}, expectedBytesLen:{expectedBytes.Length}, loadBufferLen:{loadBuffer.Length}, streamLen:{stream.Length}");
                 }
             }
             else
             {
                 readCount = await stream.ReadAsync(loadBuffer, 0, loadBuffer.Length);
                 if (readCount <= 0)
-                    Assert.Fail($"readCount ({readCount}) should be greater than zero");
+                    Assert.Fail($"readCount ({readCount}) should be greater than zero - byteCount:{byteCount}, bytesLeft:{bytesLeft}, blockSize:{blockSize}, expectedBytesLen:{expectedBytes.Length}, loadBufferLen:{loadBuffer.Length}, streamLen:{stream.Length}");
                 if (readCount > bytesLeft)
-                    Assert.Fail($"readCount ({readCount}) should be less than or equal to bytesLeft ({bytesLeft})");
+                    Assert.Fail($"readCount ({readCount}) should be less than or equal to bytesLeft ({bytesLeft}) - byteCount:{byteCount}, blockSize:{blockSize}, expectedBytesLen:{expectedBytes.Length}, loadBufferLen:{loadBuffer.Length}, streamLen:{stream.Length}");
                 if (readCount > loadBuffer.Length)
-                    Assert.Fail($"readCount ({readCount}) should be less than or equal to buffer length ({loadBuffer.Length})");
+                    Assert.Fail($"readCount ({readCount}) should be less than or equal to buffer length ({loadBuffer.Length}) - byteCount:{byteCount}, bytesLeft:{bytesLeft}, blockSize:{blockSize}, expectedBytesLen:{expectedBytes.Length}, streamLen:{stream.Length}");
                 for (int i = 0; i < readCount; i++)
                 {
                     if (loadBuffer[i] != expectedBytes[byteCount - bytesLeft + i])
-                        Assert.Fail($"the byte at index {i} should be the same as the expected byte");
+                        Assert.Fail($"the byte {loadBuffer[i]} at index {i} should be the same as the expected byte {expectedBytes[byteCount - bytesLeft + i]} - readCount:{readCount}, byteCount:{byteCount}, bytesLeft:{bytesLeft}, blockSize:{blockSize}, expectedBytesLen:{expectedBytes.Length}, loadBufferLen:{loadBuffer.Length}, streamLen:{stream.Length}");
                 }
             }
             bytesLeft -= readCount;
