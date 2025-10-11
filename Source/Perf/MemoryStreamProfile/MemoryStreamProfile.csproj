@@ -13,7 +13,6 @@
 
 	<ItemGroup>
 		<PackageReference Include="JetBrains.Profiler.Api"/>
-		<PackageReference Include="Microsoft.Diagnostics.Runtime" />
 	</ItemGroup>
 
 	<ItemGroup>
