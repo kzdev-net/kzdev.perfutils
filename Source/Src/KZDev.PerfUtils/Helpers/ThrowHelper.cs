@@ -149,6 +149,18 @@ internal static class ThrowHelper
     internal static void ThrowArgumentException_SourceStreamMustBeSeekable (string argumentName) =>
         throw new ArgumentException(Strings.Arg_SourceStreamMustBeSeekable, argumentName);
     //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Throws an argument exception with the message for a contained value that is not comparable.
+    /// </summary>
+    /// <param name="argumentName">
+    /// The name of the invalid argument.
+    /// </param>
+    /// <exception cref="ArgumentException">
+    /// </exception>
+    [DoesNotReturn]
+    internal static void ThrowArgumentException_ContainedValueIsNotComparable (string argumentName) =>
+        throw new ArgumentException(Strings.Arg_ContainedValueIsNotComparable, argumentName);
+    //--------------------------------------------------------------------------------
 
     #endregion Argument Errors
 

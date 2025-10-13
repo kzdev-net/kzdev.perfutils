@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Kevin Zehrer
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
+
 namespace KZDev.PerfUtils;
 
 using System;
@@ -21,7 +23,7 @@ public class ValueRef<T> : IComparable<T>, IEquatable<T>
     /// <summary>
     /// The value being wrapped.
     /// </summary>
-    public T Value { get; }
+    public T Value { [DebuggerStepThrough] get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ValueRef{T}"/> class
