@@ -1095,7 +1095,7 @@ public abstract class MemoryStreamSlim : MemoryStream
     /// <summary>
     /// A unique identifier for this stream instance.
     /// </summary>
-    public string Id { get; } = Guid.NewGuid().ToString();
+    public string Id { [DebuggerStepThrough] get; } = Guid.NewGuid().ToString();
     //--------------------------------------------------------------------------------
     /// <summary>
     /// Returns a string that is decoded from the data contained in the current stream 

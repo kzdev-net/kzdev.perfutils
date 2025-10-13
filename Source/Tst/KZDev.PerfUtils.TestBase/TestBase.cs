@@ -35,7 +35,7 @@ public abstract class TestBase : TestData
     /// <summary>
     /// The test output helper that can be used to output test messages
     /// </summary>
-    protected ITestOutputHelper XUnitTestOutputHelper { get; }
+    protected ITestOutputHelper XUnitTestOutputHelper { [DebuggerStepThrough] get; }
     //--------------------------------------------------------------------------------
     /// <summary>
     /// Writes a line of text to the output.

@@ -61,6 +61,15 @@ namespace KZDev.PerfUtils.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The contained value is not comparable..
+        /// </summary>
+        internal static string Arg_ContainedValueIsNotComparable {
+            get {
+                return ResourceManager.GetString("Arg_ContainedValueIsNotComparable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Destination is too short..
         /// </summary>
         internal static string Arg_DestinationTooShort {

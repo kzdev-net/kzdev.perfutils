@@ -1,7 +1,9 @@
 ﻿// Copyright (c) Kevin Zehrer
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using System.Diagnostics.Tracing;
+
 using KZDev.PerfUtils.Internals;
 
 // ReSharper disable InconsistentNaming
@@ -61,20 +63,20 @@ class UtilsEventSource : EventSource
             return;
 
         fixed (char* arg1Bytes = arg1)
-            fixed (char* arg3Bytes = arg3)
-                fixed (char* arg4Bytes = arg4)
-                {
-                    EventData* descriptors = stackalloc EventData[4];
-                    descriptors[0].DataPointer = (IntPtr)arg1Bytes;
-                    descriptors[0].Size = (arg1.Length + 1) * sizeof(char);
-                    descriptors[1].DataPointer = (IntPtr)(&arg2);
-                    descriptors[1].Size = sizeof(long);
-                    descriptors[2].DataPointer = (IntPtr)arg3Bytes;
-                    descriptors[2].Size = (arg3.Length + 1) * sizeof(char);
-                    descriptors[3].DataPointer = (IntPtr)arg4Bytes;
-                    descriptors[3].Size = (arg4.Length + 1) * sizeof(char);
-                    WriteEventCore(eventId, 4, descriptors);
-                }
+        fixed (char* arg3Bytes = arg3)
+        fixed (char* arg4Bytes = arg4)
+        {
+            EventData* descriptors = stackalloc EventData[4];
+            descriptors[0].DataPointer = (IntPtr)arg1Bytes;
+            descriptors[0].Size = (arg1.Length + 1) * sizeof(char);
+            descriptors[1].DataPointer = (IntPtr)(&arg2);
+            descriptors[1].Size = sizeof(long);
+            descriptors[2].DataPointer = (IntPtr)arg3Bytes;
+            descriptors[2].Size = (arg3.Length + 1) * sizeof(char);
+            descriptors[3].DataPointer = (IntPtr)arg4Bytes;
+            descriptors[3].Size = (arg4.Length + 1) * sizeof(char);
+            WriteEventCore(eventId, 4, descriptors);
+        }
     }
     //--------------------------------------------------------------------------------
     /// <summary>
@@ -93,7 +95,7 @@ class UtilsEventSource : EventSource
     /// The second long argument
     /// </param>
     [NonEvent]
-    private unsafe void WriteEventInternal(int eventId, string arg1, long arg2, long arg3)
+    private unsafe void WriteEventInternal (int eventId, string arg1, long arg2, long arg3)
     {
         if (!IsEnabled())
             return;
@@ -127,7 +129,7 @@ class UtilsEventSource : EventSource
     /// The string argument
     /// </param>
     [NonEvent]
-    private unsafe void WriteEventInternal(int eventId, int arg1, int arg2, string arg3)
+    private unsafe void WriteEventInternal (int eventId, int arg1, int arg2, string arg3)
     {
         if (!IsEnabled())
             return;
@@ -269,7 +271,7 @@ class UtilsEventSource : EventSource
     /// <summary>
     /// The singleton instance of the event source.
     /// </summary>
-    public static UtilsEventSource Log { get; } = new();
+    public static UtilsEventSource Log { [DebuggerStepThrough] get; } = new();
 
     //--------------------------------------------------------------------------------
     private const int EventId_MemoryStreamSlimCreated = 1;
@@ -512,7 +514,7 @@ class UtilsEventSource : EventSource
     /// Event to report a ToArray call on a memory stream slim instance.
     /// </summary>
     [NonEvent]
-    public void MemoryStreamSlimToArray(string streamId, int arraySize, bool stringDecode)
+    public void MemoryStreamSlimToArray (string streamId, int arraySize, bool stringDecode)
     {
         if (IsEnabled(EventLevel.Warning, Keywords.Memory))
             MemoryStreamSlimToArray(streamId, arraySize, stringDecode ? 1 : 0);

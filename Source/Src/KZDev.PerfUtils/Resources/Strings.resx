@@ -194,4 +194,7 @@
     <value>The object instance has been disposed.</value>
     <comment>For throwing ObjectDisposed exceptions when an object is used after being disposed.</comment>
   </data>
+  <data name="Arg_ContainedValueIsNotComparable" xml:space="preserve">
+    <value>The contained value is not comparable.</value>
+  </data>
 </root>

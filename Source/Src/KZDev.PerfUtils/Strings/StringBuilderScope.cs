@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Diagnostics;
+using System.Text;
 
 namespace KZDev.PerfUtils;
 
@@ -24,7 +25,7 @@ public readonly struct StringBuilderScope : IDisposable
     /// Gets the <see cref="Builder"/> instance that was retrieved from the
     /// cache for this scope.
     /// </summary>
-    public StringBuilder Builder { get; }
+    public StringBuilder Builder { [DebuggerStepThrough] get; }
     //--------------------------------------------------------------------------------
     /// <inheritdoc />
     public void Dispose ()
