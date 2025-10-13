@@ -1,0 +1,92 @@
+﻿<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+
+<#
+    const int MaxTypeOptionsCount = 10;
+
+    static string GetPositionName(int position)
+    {
+        switch (position)
+        {
+          case 0:
+            return "zeroth";
+          case 1:
+            return "first";
+          case 2:
+            return "second";
+          case 3:
+            return "third";
+          case 4:
+            return "fourth";
+          case 5:
+            return "fifth";
+          case 6:
+            return "sixth";
+          case 7:
+            return "seventh";
+          case 8:
+            return "eighth";
+          case 9:
+            return "ninth";
+          case 10:
+            return "tenth";
+          case 11:
+            return "eleventh";
+          case 12:
+            return "twelfth";
+          case 13:
+            return "thirteenth";
+          case 14:
+            return "fourteenth";
+          case 15:
+            return "fifteenth";
+          case 16:
+            return "sixteenth";
+          case 17:
+            return "seventeenth";
+          case 18:
+            return "eighteenth";
+          case 19:
+            return "nineteenth";
+          case 20:
+            return "twentieth";
+          case 21:
+            return "twenty-first";
+          case 22:
+            return "twenty-second";
+          case 23:
+            return "twenty-third";
+          case 24:
+            return "twenty-fourth";
+          case 25:
+            return "twenty-fifth";
+          case 26:
+            return "twenty-sixth";
+          case 27:
+            return "twenty-seventh";
+          case 28:
+            return "twenty-eighth";
+          case 29:
+            return "twenty-ninth";
+        }
+        return $"{position}";
+    }
+
+    static string CreateGenericTypeArgument(int count)
+    {
+        return string.Join(", ", Enumerable.Range(0, count).Select(x => "T" + x));
+    }
+
+    static string CreateTypeParameters(int count)
+    {
+        return string.Join(", ", Enumerable.Range(0, count).Select(x => "T" + x + " arg" + x));
+    }
+    
+    static string CreateMethodParameterNames(int count)
+    {
+        return string.Join(", ", Enumerable.Range(0, count).Select(x => "arg" + x));
+    }
+
+#>
