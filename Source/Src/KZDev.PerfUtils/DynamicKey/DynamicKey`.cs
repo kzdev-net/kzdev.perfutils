@@ -31,16 +31,30 @@ public static class DynamicKey<T>
             return DynamicKey.Null;
         if (value is DynamicKey dynamicKey)
             return dynamicKey;
-        return value switch
+        switch (value)
         {
-            int intValue => DynamicIntKey.GetKey(intValue),
-            bool boolValue => DynamicBoolKey.GetKey(boolValue),
-            string stringValue => DynamicStringKey.GetKey(stringValue),
-            Guid guidValue => DynamicGuidKey.GetKey(guidValue),
-            Type typeValue => DynamicTypeKey.GetKey(typeValue),
-            _ => typeof(T) == typeof(object) ? DynamicObjectKey.GetKey(value) :
-                value.GetType().IsValueType ? DynamicValKey<T>.GetKey(value) : DynamicRefKey<T>.GetKey(value)
-        };
+            case int intValue:
+                return DynamicIntKey.GetKey (intValue);
+
+            case bool boolValue:
+                return DynamicBoolKey.GetKey (boolValue);
+
+            case string stringValue:
+                return DynamicStringKey.GetKey (stringValue);
+
+            case Guid guidValue:
+                return DynamicGuidKey.GetKey (guidValue);
+
+            case Type typeValue:
+                return DynamicTypeKey.GetKey (typeValue);
+
+            default:
+                return typeof(T) == typeof(object) ?
+                    DynamicObjectKey.GetKey (value) :
+                    value.GetType().IsValueType ?
+                        DynamicValKey<T>.GetKey (value) :
+                        DynamicRefKey<T>.GetKey (value);
+        }
     }
     //--------------------------------------------------------------------------------
 }

@@ -128,10 +128,10 @@ public abstract partial class DynamicKey : IEquatable<DynamicKey>, IComparable<D
     public static DynamicKey GetKey (Type value) => DynamicTypeKey.GetKey(value);
     //--------------------------------------------------------------------------------
     /// <summary>
-    /// Acquires a generic type based dynamic key with the specified value.
+    /// Acquires a generic type based dynamic key with the specified reference type value.
     /// </summary>
     /// <typeparam name="T">
-    /// The type of the value to be used as the key. Must be a non-nullable type.
+    /// The type of the value to be used as the key. Must be a reference type.
     /// </typeparam>
     /// <param name="value">
     /// The <see cref="value"/> value assigned to the returned key instance.
@@ -141,7 +141,23 @@ public abstract partial class DynamicKey : IEquatable<DynamicKey>, IComparable<D
     /// represent the key or partial key.
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static DynamicKey GetKey<T> (T value) where T : notnull => DynamicRefKey<T>.GetKey(value);
+    public static DynamicKey GetKey<T> (T value) where T : class => DynamicRefKey<T>.GetKey(value);
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Acquires a generic type based dynamic key with the specified value type value.
+    /// </summary>
+    /// <typeparam name="T">
+    /// The type of the value to be used as the key. Must be a value type.
+    /// </typeparam>
+    /// <param name="value">
+    /// The <see cref="value"/> value assigned to the returned key instance.
+    /// </param>
+    /// <returns>
+    /// An instance of <see cref="DynamicKey"/> that uses the specified <typeparamref name="T"/> value to
+    /// represent the key or partial key.
+    /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static DynamicKey GetValueKey<T> (T value) where T : struct => DynamicValKey<T>.GetKey(value);
     //--------------------------------------------------------------------------------
     /// <summary>
     /// A helper for the generic templated key overloads when passed an instance of the
