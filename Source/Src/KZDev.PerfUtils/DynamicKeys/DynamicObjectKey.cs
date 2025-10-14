@@ -63,7 +63,11 @@ internal sealed class DynamicObjectKey : DynamicKey, IComparable<DynamicObjectKe
         if (value is null)
             return Null;
         DynamicObjectKey? cachedInstance = _cachedInstance;
-        if ((cachedInstance is not null) && (cachedInstance.Value?.Equals(value) ?? false))
+        // For the cached instance of an object reference type, we use ReferenceEquals just in case the object         
+        // overrides Equals to do a value comparison instead of a reference comparison, and
+        // we want to be sure we are only returning the cached instance if it is actually
+        // the same instance.
+        if ((cachedInstance is not null) && ReferenceEquals(cachedInstance.Value, value))
             return cachedInstance;
         DynamicObjectKey returnInstance = new(value);
         _cachedInstance = returnInstance;

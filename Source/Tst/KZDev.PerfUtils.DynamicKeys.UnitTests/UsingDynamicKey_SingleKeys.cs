@@ -1,501 +1,497 @@
-// Copyright (c) Kevin Zehrer
+﻿// Copyright (c) Kevin Zehrer
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 using FluentAssertions;
 
-using KZDev.PerfUtils;
-using KZDev.PerfUtils.Tests;
-using DynamicKeyClass = KZDev.PerfUtils.DynamicKey;
-
-namespace KZDev.PerfUtils.Tests.DynamicKey;
+namespace KZDev.PerfUtils.Tests;
 
 //################################################################################
 /// <summary>
-/// Unit tests for single DynamicKeyClass types (int, long, uint, ulong, bool, string, Guid, Type, enums, objects)
+/// Unit tests for single DynamicKey types (int, long, uint, ulong, bool, string, Guid, Type, enums, objects)
 /// </summary>
-[Trait(TestConstants.TestTrait.Category, "DynamicKeyClass")]
+[Trait(TestConstants.TestTrait.Category, "DynamicKey")]
 public class UsingDynamicKeyClass_SingleKeys : UnitTestBase
 {
-  //--------------------------------------------------------------------------------
-  /// <summary>
-  /// Initializes a new instance of the <see cref="UsingDynamicKeyClass_SingleKeys"/> class.
-  /// </summary>
-  /// <param name="xUnitTestOutputHelper">
-  /// The Xunit test output helper that can be used to output test messages
-  /// </param>
-  public UsingDynamicKeyClass_SingleKeys(ITestOutputHelper xUnitTestOutputHelper) : base(xUnitTestOutputHelper)
-  {
-  }
-  //--------------------------------------------------------------------------------
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Initializes a new instance of the <see cref="UsingDynamicKeyClass_SingleKeys"/> class.
+    /// </summary>
+    /// <param name="xUnitTestOutputHelper">
+    /// The Xunit test output helper that can be used to output test messages
+    /// </param>
+    public UsingDynamicKeyClass_SingleKeys (ITestOutputHelper xUnitTestOutputHelper) : base(xUnitTestOutputHelper)
+    {
+    }
+    //--------------------------------------------------------------------------------
 
-  #region Integer Key Tests
+    #region Integer Key Tests
 
-  //--------------------------------------------------------------------------------
-  /// <summary>
-  /// Tests creating an integer-based dynamic key.
-  /// </summary>
-  [Fact]
-  public void UsingDynamicKeyClass_GetIntKey_ReturnsCorrectKey()
-  {
-    int testValue = 42;
-    DynamicKeyClass key = DynamicKeyClass.GetKey(testValue);
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Tests creating an integer-based dynamic key.
+    /// </summary>
+    [Fact]
+    public void UsingDynamicKeyClass_GetIntKey_ReturnsCorrectKey ()
+    {
+        int testValue = 42;
+        DynamicKey key = DynamicKey.GetKey(testValue);
 
-    key.Should().NotBeNull();
-    key.Should().BeAssignableTo<DynamicKeyClass>();
-  }
-  //--------------------------------------------------------------------------------
-  /// <summary>
-  /// Tests that the same integer value returns the same key instance (caching).
-  /// </summary>
-  [Fact]
-  public void UsingDynamicKeyClass_GetSameIntKey_ReturnsSameInstance()
-  {
-    int testValue = 100;
-    DynamicKeyClass key1 = DynamicKeyClass.GetKey(testValue);
-    DynamicKeyClass key2 = DynamicKeyClass.GetKey(testValue);
+        key.Should().NotBeNull();
+        key.Should().BeAssignableTo<DynamicKey>();
+    }
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Tests that the same integer value returns the same key instance (caching).
+    /// </summary>
+    [Fact]
+    public void UsingDynamicKeyClass_GetSameIntKey_ReturnsSameInstance ()
+    {
+        int testValue = 100;
+        DynamicKey key1 = DynamicKey.GetKey(testValue);
+        DynamicKey key2 = DynamicKey.GetKey(testValue);
 
-    key1.Should().BeSameAs(key2);
-  }
-  //--------------------------------------------------------------------------------
-  /// <summary>
-  /// Tests integer key equality.
-  /// </summary>
-  [Fact]
-  public void UsingDynamicKeyClass_IntKeyEquality_WorksCorrectly()
-  {
-    int testValue = 200;
-    DynamicKeyClass key1 = DynamicKeyClass.GetKey(testValue);
-    DynamicKeyClass key2 = DynamicKeyClass.GetKey(testValue);
+        key1.Should().BeSameAs(key2);
+    }
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Tests integer key equality.
+    /// </summary>
+    [Fact]
+    public void UsingDynamicKeyClass_IntKeyEquality_WorksCorrectly ()
+    {
+        int testValue = 200;
+        DynamicKey key1 = DynamicKey.GetKey(testValue);
+        DynamicKey key2 = DynamicKey.GetKey(testValue);
 
-    key1.Should().Be(key2);
-    key1.GetHashCode().Should().Be(key2.GetHashCode());
-  }
-  //--------------------------------------------------------------------------------
-  /// <summary>
-  /// Tests integer key comparison.
-  /// </summary>
-  [Fact]
-  public void UsingDynamicKeyClass_IntKeyComparison_WorksCorrectly()
-  {
-    DynamicKeyClass key1 = DynamicKeyClass.GetKey(10);
-    DynamicKeyClass key2 = DynamicKeyClass.GetKey(20);
+        key1.Should().Be(key2);
+        key1.GetHashCode().Should().Be(key2.GetHashCode());
+    }
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Tests integer key comparison.
+    /// </summary>
+    [Fact]
+    public void UsingDynamicKeyClass_IntKeyComparison_WorksCorrectly ()
+    {
+        DynamicKey key1 = DynamicKey.GetKey(10);
+        DynamicKey key2 = DynamicKey.GetKey(20);
 
-    key1.CompareTo(key2).Should().BeNegative();
-    key2.CompareTo(key1).Should().BePositive();
-    key1.CompareTo(key1).Should().Be(0);
-  }
-  //--------------------------------------------------------------------------------
+        key1.CompareTo(key2).Should().BeNegative();
+        key2.CompareTo(key1).Should().BePositive();
+        key1.CompareTo(key1).Should().Be(0);
+    }
+    //--------------------------------------------------------------------------------
 
-  #endregion Integer Key Tests
+    #endregion Integer Key Tests
 
-  #region Long Key Tests
+    #region Long Key Tests
 
-  //--------------------------------------------------------------------------------
-  /// <summary>
-  /// Tests creating a long-based dynamic key.
-  /// </summary>
-  [Fact]
-  public void UsingDynamicKeyClass_GetLongKey_ReturnsCorrectKey()
-  {
-    long testValue = 42L;
-    DynamicKeyClass key = DynamicKeyClass.GetKey(testValue);
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Tests creating a long-based dynamic key.
+    /// </summary>
+    [Fact]
+    public void UsingDynamicKeyClass_GetLongKey_ReturnsCorrectKey ()
+    {
+        long testValue = 42L;
+        DynamicKey key = DynamicKey.GetKey(testValue);
 
-    key.Should().NotBeNull();
-    key.Should().BeAssignableTo<DynamicKeyClass>();
-  }
-  //--------------------------------------------------------------------------------
-  /// <summary>
-  /// Tests long key equality.
-  /// </summary>
-  [Fact]
-  public void UsingDynamicKeyClass_LongKeyEquality_WorksCorrectly()
-  {
-    long testValue = 200L;
-    DynamicKeyClass key1 = DynamicKeyClass.GetKey(testValue);
-    DynamicKeyClass key2 = DynamicKeyClass.GetKey(testValue);
+        key.Should().NotBeNull();
+        key.Should().BeAssignableTo<DynamicKey>();
+    }
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Tests long key equality.
+    /// </summary>
+    [Fact]
+    public void UsingDynamicKeyClass_LongKeyEquality_WorksCorrectly ()
+    {
+        long testValue = 200L;
+        DynamicKey key1 = DynamicKey.GetKey(testValue);
+        DynamicKey key2 = DynamicKey.GetKey(testValue);
 
-    key1.Should().Be(key2);
-    key1.GetHashCode().Should().Be(key2.GetHashCode());
-  }
-  //--------------------------------------------------------------------------------
-  /// <summary>
-  /// Tests long key comparison.
-  /// </summary>
-  [Fact]
-  public void UsingDynamicKeyClass_LongKeyComparison_WorksCorrectly()
-  {
-    DynamicKeyClass key1 = DynamicKeyClass.GetKey(10L);
-    DynamicKeyClass key2 = DynamicKeyClass.GetKey(20L);
+        key1.Should().Be(key2);
+        key1.GetHashCode().Should().Be(key2.GetHashCode());
+    }
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Tests long key comparison.
+    /// </summary>
+    [Fact]
+    public void UsingDynamicKeyClass_LongKeyComparison_WorksCorrectly ()
+    {
+        DynamicKey key1 = DynamicKey.GetKey(10L);
+        DynamicKey key2 = DynamicKey.GetKey(20L);
 
-    key1.CompareTo(key2).Should().BeNegative();
-    key2.CompareTo(key1).Should().BePositive();
-    key1.CompareTo(key1).Should().Be(0);
-  }
-  //--------------------------------------------------------------------------------
+        key1.CompareTo(key2).Should().BeNegative();
+        key2.CompareTo(key1).Should().BePositive();
+        key1.CompareTo(key1).Should().Be(0);
+    }
+    //--------------------------------------------------------------------------------
 
-  #endregion Long Key Tests
+    #endregion Long Key Tests
 
-  #region Unsigned Integer Key Tests
+    #region Unsigned Integer Key Tests
 
-  //--------------------------------------------------------------------------------
-  /// <summary>
-  /// Tests creating an unsigned integer-based dynamic key.
-  /// </summary>
-  [Fact]
-  public void UsingDynamicKeyClass_GetUIntKey_ReturnsCorrectKey()
-  {
-    uint testValue = 42U;
-    DynamicKeyClass key = DynamicKeyClass.GetKey(testValue);
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Tests creating an unsigned integer-based dynamic key.
+    /// </summary>
+    [Fact]
+    public void UsingDynamicKeyClass_GetUIntKey_ReturnsCorrectKey ()
+    {
+        uint testValue = 42U;
+        DynamicKey key = DynamicKey.GetKey(testValue);
 
-    key.Should().NotBeNull();
-    key.Should().BeAssignableTo<DynamicKeyClass>();
-  }
-  //--------------------------------------------------------------------------------
-  /// <summary>
-  /// Tests unsigned integer key equality.
-  /// </summary>
-  [Fact]
-  public void UsingDynamicKeyClass_UIntKeyEquality_WorksCorrectly()
-  {
-    uint testValue = 200U;
-    DynamicKeyClass key1 = DynamicKeyClass.GetKey(testValue);
-    DynamicKeyClass key2 = DynamicKeyClass.GetKey(testValue);
+        key.Should().NotBeNull();
+        key.Should().BeAssignableTo<DynamicKey>();
+    }
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Tests unsigned integer key equality.
+    /// </summary>
+    [Fact]
+    public void UsingDynamicKeyClass_UIntKeyEquality_WorksCorrectly ()
+    {
+        uint testValue = 200U;
+        DynamicKey key1 = DynamicKey.GetKey(testValue);
+        DynamicKey key2 = DynamicKey.GetKey(testValue);
 
-    key1.Should().Be(key2);
-    key1.GetHashCode().Should().Be(key2.GetHashCode());
-  }
-  //--------------------------------------------------------------------------------
-  /// <summary>
-  /// Tests unsigned integer key comparison.
-  /// </summary>
-  [Fact]
-  public void UsingDynamicKeyClass_UIntKeyComparison_WorksCorrectly()
-  {
-    DynamicKeyClass key1 = DynamicKeyClass.GetKey(10U);
-    DynamicKeyClass key2 = DynamicKeyClass.GetKey(20U);
+        key1.Should().Be(key2);
+        key1.GetHashCode().Should().Be(key2.GetHashCode());
+    }
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Tests unsigned integer key comparison.
+    /// </summary>
+    [Fact]
+    public void UsingDynamicKeyClass_UIntKeyComparison_WorksCorrectly ()
+    {
+        DynamicKey key1 = DynamicKey.GetKey(10U);
+        DynamicKey key2 = DynamicKey.GetKey(20U);
 
-    key1.CompareTo(key2).Should().BeNegative();
-    key2.CompareTo(key1).Should().BePositive();
-    key1.CompareTo(key1).Should().Be(0);
-  }
-  //--------------------------------------------------------------------------------
+        key1.CompareTo(key2).Should().BeNegative();
+        key2.CompareTo(key1).Should().BePositive();
+        key1.CompareTo(key1).Should().Be(0);
+    }
+    //--------------------------------------------------------------------------------
 
-  #endregion Unsigned Integer Key Tests
+    #endregion Unsigned Integer Key Tests
 
-  #region Unsigned Long Key Tests
+    #region Unsigned Long Key Tests
 
-  //--------------------------------------------------------------------------------
-  /// <summary>
-  /// Tests creating an unsigned long-based dynamic key.
-  /// </summary>
-  [Fact]
-  public void UsingDynamicKeyClass_GetULongKey_ReturnsCorrectKey()
-  {
-    ulong testValue = 42UL;
-    DynamicKeyClass key = DynamicKeyClass.GetKey(testValue);
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Tests creating an unsigned long-based dynamic key.
+    /// </summary>
+    [Fact]
+    public void UsingDynamicKeyClass_GetULongKey_ReturnsCorrectKey ()
+    {
+        ulong testValue = 42UL;
+        DynamicKey key = DynamicKey.GetKey(testValue);
 
-    key.Should().NotBeNull();
-    key.Should().BeAssignableTo<DynamicKeyClass>();
-  }
-  //--------------------------------------------------------------------------------
-  /// <summary>
-  /// Tests unsigned long key equality.
-  /// </summary>
-  [Fact]
-  public void UsingDynamicKeyClass_ULongKeyEquality_WorksCorrectly()
-  {
-    ulong testValue = 200UL;
-    DynamicKeyClass key1 = DynamicKeyClass.GetKey(testValue);
-    DynamicKeyClass key2 = DynamicKeyClass.GetKey(testValue);
+        key.Should().NotBeNull();
+        key.Should().BeAssignableTo<DynamicKey>();
+    }
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Tests unsigned long key equality.
+    /// </summary>
+    [Fact]
+    public void UsingDynamicKeyClass_ULongKeyEquality_WorksCorrectly ()
+    {
+        ulong testValue = 200UL;
+        DynamicKey key1 = DynamicKey.GetKey(testValue);
+        DynamicKey key2 = DynamicKey.GetKey(testValue);
 
-    key1.Should().Be(key2);
-    key1.GetHashCode().Should().Be(key2.GetHashCode());
-  }
-  //--------------------------------------------------------------------------------
-  /// <summary>
-  /// Tests unsigned long key comparison.
-  /// </summary>
-  [Fact]
-  public void UsingDynamicKeyClass_ULongKeyComparison_WorksCorrectly()
-  {
-    DynamicKeyClass key1 = DynamicKeyClass.GetKey(10UL);
-    DynamicKeyClass key2 = DynamicKeyClass.GetKey(20UL);
+        key1.Should().Be(key2);
+        key1.GetHashCode().Should().Be(key2.GetHashCode());
+    }
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Tests unsigned long key comparison.
+    /// </summary>
+    [Fact]
+    public void UsingDynamicKeyClass_ULongKeyComparison_WorksCorrectly ()
+    {
+        DynamicKey key1 = DynamicKey.GetKey(10UL);
+        DynamicKey key2 = DynamicKey.GetKey(20UL);
 
-    key1.CompareTo(key2).Should().BeNegative();
-    key2.CompareTo(key1).Should().BePositive();
-    key1.CompareTo(key1).Should().Be(0);
-  }
-  //--------------------------------------------------------------------------------
+        key1.CompareTo(key2).Should().BeNegative();
+        key2.CompareTo(key1).Should().BePositive();
+        key1.CompareTo(key1).Should().Be(0);
+    }
+    //--------------------------------------------------------------------------------
 
-  #endregion Unsigned Long Key Tests
+    #endregion Unsigned Long Key Tests
 
-  #region Boolean Key Tests
+    #region Boolean Key Tests
 
-  //--------------------------------------------------------------------------------
-  /// <summary>
-  /// Tests creating boolean-based dynamic keys.
-  /// </summary>
-  [Fact]
-  public void UsingDynamicKeyClass_GetBoolKey_ReturnsCorrectKey()
-  {
-    DynamicKeyClass trueKey = DynamicKeyClass.GetKey(true);
-    DynamicKeyClass falseKey = DynamicKeyClass.GetKey(false);
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Tests creating boolean-based dynamic keys.
+    /// </summary>
+    [Fact]
+    public void UsingDynamicKeyClass_GetBoolKey_ReturnsCorrectKey ()
+    {
+        DynamicKey trueKey = DynamicKey.GetKey(true);
+        DynamicKey falseKey = DynamicKey.GetKey(false);
 
-    trueKey.Should().NotBeNull();
-    falseKey.Should().NotBeNull();
-    trueKey.Should().NotBe(falseKey);
-  }
-  //--------------------------------------------------------------------------------
-  /// <summary>
-  /// Tests that boolean keys use cached instances.
-  /// </summary>
-  [Fact]
-  public void UsingDynamicKeyClass_BoolKeyCaching_WorksCorrectly()
-  {
-    DynamicKeyClass trueKey1 = DynamicKeyClass.GetKey(true);
-    DynamicKeyClass trueKey2 = DynamicKeyClass.GetKey(true);
-    DynamicKeyClass falseKey1 = DynamicKeyClass.GetKey(false);
-    DynamicKeyClass falseKey2 = DynamicKeyClass.GetKey(false);
+        trueKey.Should().NotBeNull();
+        falseKey.Should().NotBeNull();
+        trueKey.Should().NotBe(falseKey);
+    }
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Tests that boolean keys use cached instances.
+    /// </summary>
+    [Fact]
+    public void UsingDynamicKeyClass_BoolKeyCaching_WorksCorrectly ()
+    {
+        DynamicKey trueKey1 = DynamicKey.GetKey(true);
+        DynamicKey trueKey2 = DynamicKey.GetKey(true);
+        DynamicKey falseKey1 = DynamicKey.GetKey(false);
+        DynamicKey falseKey2 = DynamicKey.GetKey(false);
 
-    trueKey1.Should().BeSameAs(trueKey2);
-    falseKey1.Should().BeSameAs(falseKey2);
-  }
-  //--------------------------------------------------------------------------------
+        trueKey1.Should().BeSameAs(trueKey2);
+        falseKey1.Should().BeSameAs(falseKey2);
+    }
+    //--------------------------------------------------------------------------------
 
-  #endregion Boolean Key Tests
+    #endregion Boolean Key Tests
 
-  #region String Key Tests
+    #region String Key Tests
 
-  //--------------------------------------------------------------------------------
-  /// <summary>
-  /// Tests creating string-based dynamic keys.
-  /// </summary>
-  [Fact]
-  public void UsingDynamicKeyClass_GetStringKey_ReturnsCorrectKey()
-  {
-    string testValue = "test";
-    DynamicKeyClass key = DynamicKeyClass.GetKey(testValue);
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Tests creating string-based dynamic keys.
+    /// </summary>
+    [Fact]
+    public void UsingDynamicKeyClass_GetStringKey_ReturnsCorrectKey ()
+    {
+        string testValue = "test";
+        DynamicKey key = DynamicKey.GetKey(testValue);
 
-    key.Should().NotBeNull();
-    key.Should().BeAssignableTo<DynamicKeyClass>();
-  }
-  //--------------------------------------------------------------------------------
-  /// <summary>
-  /// Tests string key equality.
-  /// </summary>
-  [Fact]
-  public void UsingDynamicKeyClass_StringKeyEquality_WorksCorrectly()
-  {
-    string testValue = "test";
-    DynamicKeyClass key1 = DynamicKeyClass.GetKey(testValue);
-    DynamicKeyClass key2 = DynamicKeyClass.GetKey(testValue);
+        key.Should().NotBeNull();
+        key.Should().BeAssignableTo<DynamicKey>();
+    }
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Tests string key equality.
+    /// </summary>
+    [Fact]
+    public void UsingDynamicKeyClass_StringKeyEquality_WorksCorrectly ()
+    {
+        string testValue = "test";
+        DynamicKey key1 = DynamicKey.GetKey(testValue);
+        DynamicKey key2 = DynamicKey.GetKey(testValue);
 
-    key1.Should().Be(key2);
-    key1.GetHashCode().Should().Be(key2.GetHashCode());
-  }
-  //--------------------------------------------------------------------------------
-  /// <summary>
-  /// Tests null string handling.
-  /// </summary>
-  [Fact]
-  public void UsingDynamicKeyClass_NullStringKey_HandledCorrectly()
-  {
-    DynamicKeyClass key = DynamicKeyClass.GetKey((string?)null);
+        key1.Should().Be(key2);
+        key1.GetHashCode().Should().Be(key2.GetHashCode());
+    }
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Tests null string handling.
+    /// </summary>
+    [Fact]
+    public void UsingDynamicKeyClass_NullStringKey_HandledCorrectly ()
+    {
+        DynamicKey key = DynamicKey.GetKey((string?)null);
 
-    key.Should().NotBeNull();
-    key.Should().Be(DynamicKeyClass.EmptyString);
-  }
-  //--------------------------------------------------------------------------------
+        key.Should().NotBeNull();
+        key.Should().Be(DynamicKey.EmptyString);
+    }
+    //--------------------------------------------------------------------------------
 
-  #endregion String Key Tests
+    #endregion String Key Tests
 
-  #region Guid Key Tests
+    #region Guid Key Tests
 
-  //--------------------------------------------------------------------------------
-  /// <summary>
-  /// Tests creating Guid-based dynamic keys.
-  /// </summary>
-  [Fact]
-  public void UsingDynamicKeyClass_GetGuidKey_ReturnsCorrectKey()
-  {
-    Guid testValue = Guid.NewGuid();
-    DynamicKeyClass key = DynamicKeyClass.GetKey(testValue);
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Tests creating Guid-based dynamic keys.
+    /// </summary>
+    [Fact]
+    public void UsingDynamicKeyClass_GetGuidKey_ReturnsCorrectKey ()
+    {
+        Guid testValue = Guid.NewGuid();
+        DynamicKey key = DynamicKey.GetKey(testValue);
 
-    key.Should().NotBeNull();
-    key.Should().BeAssignableTo<DynamicKeyClass>();
-  }
-  //--------------------------------------------------------------------------------
-  /// <summary>
-  /// Tests Guid key equality.
-  /// </summary>
-  [Fact]
-  public void UsingDynamicKeyClass_GuidKeyEquality_WorksCorrectly()
-  {
-    Guid testValue = Guid.NewGuid();
-    DynamicKeyClass key1 = DynamicKeyClass.GetKey(testValue);
-    DynamicKeyClass key2 = DynamicKeyClass.GetKey(testValue);
+        key.Should().NotBeNull();
+        key.Should().BeAssignableTo<DynamicKey>();
+    }
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Tests Guid key equality.
+    /// </summary>
+    [Fact]
+    public void UsingDynamicKeyClass_GuidKeyEquality_WorksCorrectly ()
+    {
+        Guid testValue = Guid.NewGuid();
+        DynamicKey key1 = DynamicKey.GetKey(testValue);
+        DynamicKey key2 = DynamicKey.GetKey(testValue);
 
-    key1.Should().Be(key2);
-    key1.GetHashCode().Should().Be(key2.GetHashCode());
-  }
-  //--------------------------------------------------------------------------------
+        key1.Should().Be(key2);
+        key1.GetHashCode().Should().Be(key2.GetHashCode());
+    }
+    //--------------------------------------------------------------------------------
 
-  #endregion Guid Key Tests
+    #endregion Guid Key Tests
 
-  #region Type Key Tests
+    #region Type Key Tests
 
-  //--------------------------------------------------------------------------------
-  /// <summary>
-  /// Tests creating Type-based dynamic keys.
-  /// </summary>
-  [Fact]
-  public void UsingDynamicKeyClass_GetTypeKey_ReturnsCorrectKey()
-  {
-    Type testValue = typeof(string);
-    DynamicKeyClass key = DynamicKeyClass.GetKey(testValue);
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Tests creating Type-based dynamic keys.
+    /// </summary>
+    [Fact]
+    public void UsingDynamicKeyClass_GetTypeKey_ReturnsCorrectKey ()
+    {
+        Type testValue = typeof(string);
+        DynamicKey key = DynamicKey.GetKey(testValue);
 
-    key.Should().NotBeNull();
-    key.Should().BeAssignableTo<DynamicKeyClass>();
-  }
-  //--------------------------------------------------------------------------------
-  /// <summary>
-  /// Tests Type key equality.
-  /// </summary>
-  [Fact]
-  public void UsingDynamicKeyClass_TypeKeyEquality_WorksCorrectly()
-  {
-    Type testValue = typeof(int);
-    DynamicKeyClass key1 = DynamicKeyClass.GetKey(testValue);
-    DynamicKeyClass key2 = DynamicKeyClass.GetKey(testValue);
+        key.Should().NotBeNull();
+        key.Should().BeAssignableTo<DynamicKey>();
+    }
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Tests Type key equality.
+    /// </summary>
+    [Fact]
+    public void UsingDynamicKeyClass_TypeKeyEquality_WorksCorrectly ()
+    {
+        Type testValue = typeof(int);
+        DynamicKey key1 = DynamicKey.GetKey(testValue);
+        DynamicKey key2 = DynamicKey.GetKey(testValue);
 
-    key1.Should().Be(key2);
-    key1.GetHashCode().Should().Be(key2.GetHashCode());
-  }
-  //--------------------------------------------------------------------------------
+        key1.Should().Be(key2);
+        key1.GetHashCode().Should().Be(key2.GetHashCode());
+    }
+    //--------------------------------------------------------------------------------
 
-  #endregion Type Key Tests
+    #endregion Type Key Tests
 
-  #region Enum Key Tests
+    #region Enum Key Tests
 
-  //--------------------------------------------------------------------------------
-  /// <summary>
-  /// Tests creating enum-based dynamic keys.
-  /// </summary>
-  [Fact]
-  public void UsingDynamicKeyClass_GetEnumKey_ReturnsCorrectKey()
-  {
-    DayOfWeek testValue = DayOfWeek.Monday;
-    DynamicKeyClass key = DynamicKeyClass.GetEnumKey(testValue);
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Tests creating enum-based dynamic keys.
+    /// </summary>
+    [Fact]
+    public void UsingDynamicKeyClass_GetEnumKey_ReturnsCorrectKey ()
+    {
+        DayOfWeek testValue = DayOfWeek.Monday;
+        DynamicKey key = DynamicKey.GetEnumKey(testValue);
 
-    key.Should().NotBeNull();
-    key.Should().BeAssignableTo<DynamicKeyClass>();
-  }
-  //--------------------------------------------------------------------------------
-  /// <summary>
-  /// Tests enum key equality.
-  /// </summary>
-  [Fact]
-  public void UsingDynamicKeyClass_EnumKeyEquality_WorksCorrectly()
-  {
-    DayOfWeek testValue = DayOfWeek.Friday;
-    DynamicKeyClass key1 = DynamicKeyClass.GetEnumKey(testValue);
-    DynamicKeyClass key2 = DynamicKeyClass.GetEnumKey(testValue);
+        key.Should().NotBeNull();
+        key.Should().BeAssignableTo<DynamicKey>();
+    }
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Tests enum key equality.
+    /// </summary>
+    [Fact]
+    public void UsingDynamicKeyClass_EnumKeyEquality_WorksCorrectly ()
+    {
+        DayOfWeek testValue = DayOfWeek.Friday;
+        DynamicKey key1 = DynamicKey.GetEnumKey(testValue);
+        DynamicKey key2 = DynamicKey.GetEnumKey(testValue);
 
-    key1.Should().Be(key2);
-    key1.GetHashCode().Should().Be(key2.GetHashCode());
-  }
-  //--------------------------------------------------------------------------------
-  /// <summary>
-  /// Tests enum key comparison.
-  /// </summary>
-  [Fact]
-  public void UsingDynamicKeyClass_EnumKeyComparison_WorksCorrectly()
-  {
-    DynamicKeyClass key1 = DynamicKeyClass.GetEnumKey(DayOfWeek.Monday);
-    DynamicKeyClass key2 = DynamicKeyClass.GetEnumKey(DayOfWeek.Friday);
+        key1.Should().Be(key2);
+        key1.GetHashCode().Should().Be(key2.GetHashCode());
+    }
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Tests enum key comparison.
+    /// </summary>
+    [Fact]
+    public void UsingDynamicKeyClass_EnumKeyComparison_WorksCorrectly ()
+    {
+        DynamicKey key1 = DynamicKey.GetEnumKey(DayOfWeek.Monday);
+        DynamicKey key2 = DynamicKey.GetEnumKey(DayOfWeek.Friday);
 
-    key1.CompareTo(key2).Should().BeNegative();
-    key2.CompareTo(key1).Should().BePositive();
-    key1.CompareTo(key1).Should().Be(0);
-  }
-  //--------------------------------------------------------------------------------
+        key1.CompareTo(key2).Should().BeNegative();
+        key2.CompareTo(key1).Should().BePositive();
+        key1.CompareTo(key1).Should().Be(0);
+    }
+    //--------------------------------------------------------------------------------
 
-  #endregion Enum Key Tests
+    #endregion Enum Key Tests
 
-  #region Object Key Tests
+    #region Object Key Tests
 
-  //--------------------------------------------------------------------------------
-  /// <summary>
-  /// Tests creating object-based dynamic keys.
-  /// </summary>
-  [Fact]
-  public void UsingDynamicKeyClass_GetObjectKey_ReturnsCorrectKey()
-  {
-    object testValue = new { Name = "test", Value = 42 };
-    DynamicKeyClass key = DynamicKeyClass.GetKey(testValue);
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Tests creating object-based dynamic keys.
+    /// </summary>
+    [Fact]
+    public void UsingDynamicKeyClass_GetObjectKey_ReturnsCorrectKey ()
+    {
+        object testValue = new { Name = "test", Value = 42 };
+        DynamicKey key = DynamicKey.GetKey(testValue);
 
-    key.Should().NotBeNull();
-    key.Should().BeAssignableTo<DynamicKeyClass>();
-  }
-  //--------------------------------------------------------------------------------
-  /// <summary>
-  /// Tests null object handling.
-  /// </summary>
-  [Fact]
-  public void UsingDynamicKeyClass_NullObjectKey_HandledCorrectly()
-  {
-    DynamicKeyClass key = DynamicKeyClass.GetKey((object?)null);
+        key.Should().NotBeNull();
+        key.Should().BeAssignableTo<DynamicKey>();
+    }
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Tests null object handling.
+    /// </summary>
+    [Fact]
+    public void UsingDynamicKeyClass_NullObjectKey_HandledCorrectly ()
+    {
+        DynamicKey key = DynamicKey.GetKey((object?)null);
 
-    key.Should().NotBeNull();
-    key.Should().Be(DynamicKeyClass.Null);
-  }
-  //--------------------------------------------------------------------------------
+        key.Should().NotBeNull();
+        key.Should().Be(DynamicKey.Null);
+    }
+    //--------------------------------------------------------------------------------
 
-  #endregion Object Key Tests
+    #endregion Object Key Tests
 
-  #region Implicit Conversion Tests
+    #region Implicit Conversion Tests
 
-  //--------------------------------------------------------------------------------
-  /// <summary>
-  /// Tests implicit conversion from int to DynamicKeyClass.
-  /// </summary>
-  [Fact]
-  public void UsingDynamicKeyClass_ImplicitIntConversion_WorksCorrectly()
-  {
-    int testValue = 42;
-    DynamicKeyClass key = testValue;
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Tests implicit conversion from int to DynamicKey.
+    /// </summary>
+    [Fact]
+    public void UsingDynamicKeyClass_ImplicitIntConversion_WorksCorrectly ()
+    {
+        int testValue = 42;
+        DynamicKey key = testValue;
 
-    key.Should().NotBeNull();
-    key.Should().Be(DynamicKeyClass.GetKey(testValue));
-  }
-  //--------------------------------------------------------------------------------
-  /// <summary>
-  /// Tests implicit conversion from long to DynamicKeyClass.
-  /// </summary>
-  [Fact]
-  public void UsingDynamicKeyClass_ImplicitLongConversion_WorksCorrectly()
-  {
-    long testValue = 42L;
-    DynamicKeyClass key = testValue;
+        key.Should().NotBeNull();
+        key.Should().Be(DynamicKey.GetKey(testValue));
+    }
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Tests implicit conversion from long to DynamicKey.
+    /// </summary>
+    [Fact]
+    public void UsingDynamicKeyClass_ImplicitLongConversion_WorksCorrectly ()
+    {
+        long testValue = 42L;
+        DynamicKey key = testValue;
 
-    key.Should().NotBeNull();
-    key.Should().Be(DynamicKeyClass.GetKey(testValue));
-  }
-  //--------------------------------------------------------------------------------
-  /// <summary>
-  /// Tests implicit conversion from string to DynamicKeyClass.
-  /// </summary>
-  [Fact]
-  public void UsingDynamicKeyClass_ImplicitStringConversion_WorksCorrectly()
-  {
-    string testValue = "test";
-    DynamicKeyClass key = testValue;
+        key.Should().NotBeNull();
+        key.Should().Be(DynamicKey.GetKey(testValue));
+    }
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Tests implicit conversion from string to DynamicKey.
+    /// </summary>
+    [Fact]
+    public void UsingDynamicKeyClass_ImplicitStringConversion_WorksCorrectly ()
+    {
+        string testValue = "test";
+        DynamicKey key = testValue;
 
-    key.Should().NotBeNull();
-    key.Should().Be(DynamicKeyClass.GetKey(testValue));
-  }
-  //--------------------------------------------------------------------------------
+        key.Should().NotBeNull();
+        key.Should().Be(DynamicKey.GetKey(testValue));
+    }
+    //--------------------------------------------------------------------------------
 
-  #endregion Implicit Conversion Tests
+    #endregion Implicit Conversion Tests
 }
 //################################################################################

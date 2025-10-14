@@ -77,7 +77,7 @@ public static class DynamicKey<T>
             // Get the generic DynamicEnumKey.GetKey method
             MethodInfo getKeyMethod = typeof(DynamicEnumKey<>)
                 .MakeGenericType(enumType)
-                .GetMethod(nameof(DynamicRefKey<object>.GetKey), BindingFlags.Public | BindingFlags.Static)!;
+                .GetMethod(nameof(DynamicEnumKey<BindingFlags>.GetKey), BindingFlags.Public | BindingFlags.Static)!;
 
             // Create lambda: value => DynamicEnumKey<TEnum>.GetKey(value)
             ParameterExpression valueParam = Expression.Parameter(typeof(T), "value");
@@ -102,7 +102,7 @@ public static class DynamicKey<T>
             // Get the generic DynamicValKey.GetKey method
             MethodInfo getKeyMethod = typeof(DynamicValKey<>)
                 .MakeGenericType(valueType)
-                .GetMethod(nameof(DynamicRefKey<object>.GetKey), BindingFlags.Public | BindingFlags.Static)!;
+                .GetMethod(nameof(DynamicValKey<int>.GetKey), BindingFlags.Public | BindingFlags.Static)!;
 
             // Create lambda: value => DynamicValKey<T>.GetKey(value)
             ParameterExpression valueParam = Expression.Parameter(typeof(T), "value");

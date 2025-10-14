@@ -48,11 +48,20 @@ internal sealed class DynamicCompositeKey : DynamicKey, IComparable<DynamicCompo
     /// </param>
     private DynamicCompositeKey (in ReadOnlySpan<DynamicKey> keys)
     {
-#if NET8_0_OR_GREATER
-        Keys = [.. keys];
-#else
-        Keys = ImmutableArray.Create(keys.ToArray());
-#endif
+        ImmutableArray<DynamicKey>.Builder arrayBuilder = 
+            ImmutableArray.CreateBuilder<DynamicKey>(keys.Length);
+        for (int keyIndex = 0; keyIndex < keys.Length; keyIndex++)
+        {
+            DynamicKey key = keys[keyIndex];
+            Debug.Assert(key is not null, "Null key in composite key");
+
+            if (key is DynamicCompositeKey compositeKey)
+                // Flatten nested composites
+                arrayBuilder.AddRange(compositeKey.Keys);
+            else
+                arrayBuilder.Add(key);
+        }
+        Keys = arrayBuilder.ToImmutable();
         Count = keys.Length;
     }
     //--------------------------------------------------------------------------------

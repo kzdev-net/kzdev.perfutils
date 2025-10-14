@@ -11,6 +11,12 @@ namespace KZDev.PerfUtils;
 internal sealed class DynamicValKey<T> : DynamicKey, IComparable<DynamicValKey<T>>
     where T : struct
 {
+    /// <summary>
+    /// When not null, this is a cached instance used to avoid creating multiple
+    /// instances of this class for the same uint value on the same thread.
+    /// </summary>
+    [ThreadStatic] private static DynamicValKey<T>? _cachedInstance;
+
     //--------------------------------------------------------------------------------
     /// <summary>
     /// Gets the debugger display value.
@@ -38,6 +44,26 @@ internal sealed class DynamicValKey<T> : DynamicKey, IComparable<DynamicValKey<T
     }
     //--------------------------------------------------------------------------------
     /// <summary>
+    /// Gets a <see cref="DynamicKey"/> instance for the given integer value.
+    /// </summary>
+    /// <param name="value">
+    /// The integer value to use as a key.
+    /// </param>
+    /// <returns>
+    /// An instance of <see cref="DynamicKey"/> that uses the specified integer value to
+    /// represent the key or partial key.
+    /// </returns>
+    private static DynamicKey GetKeyInternal (in T value)
+    {
+        DynamicValKey<T>? cachedInstance = _cachedInstance;
+        if ((cachedInstance is not null) && (cachedInstance.Value.Equals(value)))
+            return cachedInstance;
+        DynamicValKey<T> returnInstance = new(value);
+        _cachedInstance = returnInstance;
+        return returnInstance;
+    }
+    //--------------------------------------------------------------------------------
+    /// <summary>
     /// Gets a <see cref="DynamicKey"/> instance for the given value.
     /// </summary>
     /// <param name="value">
@@ -57,7 +83,7 @@ internal sealed class DynamicValKey<T> : DynamicKey, IComparable<DynamicValKey<T
             uint uintValue => DynamicUIntKey.GetKey (uintValue),
             ulong ulongValue => DynamicULongKey.GetKey (ulongValue),
             Guid guidValue => DynamicGuidKey.GetKey (guidValue),
-            _ => new DynamicValKey<T> (value)
+            _ => GetKeyInternal(value)
         };
     }
     //--------------------------------------------------------------------------------

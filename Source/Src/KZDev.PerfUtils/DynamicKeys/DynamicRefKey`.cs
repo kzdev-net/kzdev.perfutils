@@ -14,6 +14,12 @@ namespace KZDev.PerfUtils;
 internal sealed class DynamicRefKey<T> : DynamicKey, IComparable<DynamicRefKey<T>>
     where T : class
 {
+    /// <summary>
+    /// When not null, this is a cached instance used to avoid creating multiple
+    /// instances of this class for the same uint value on the same thread.
+    /// </summary>
+    [ThreadStatic] private static DynamicRefKey<T>? _cachedInstance;
+
     //--------------------------------------------------------------------------------
     /// <summary>
     /// Gets the debugger display value.
@@ -41,6 +47,30 @@ internal sealed class DynamicRefKey<T> : DynamicKey, IComparable<DynamicRefKey<T
     }
     //--------------------------------------------------------------------------------
     /// <summary>
+    /// Gets a <see cref="DynamicKey"/> instance for the given integer value.
+    /// </summary>
+    /// <param name="value">
+    /// The integer value to use as a key.
+    /// </param>
+    /// <returns>
+    /// An instance of <see cref="DynamicKey"/> that uses the specified integer value to
+    /// represent the key or partial key.
+    /// </returns>
+    private static DynamicKey GetKeyInternal (T value)
+    {
+        DynamicRefKey<T>? cachedInstance = _cachedInstance;
+        // For the cached instance of a reference type, we use ReferenceEquals just in case the object         
+        // overrides Equals to do a value comparison instead of a reference comparison, and
+        // we want to be sure we are only returning the cached instance if it is actually
+        // the same instance.
+        if ((cachedInstance is not null) && ReferenceEquals(cachedInstance.Value, value))
+            return cachedInstance;
+        DynamicRefKey<T> returnInstance = new(value);
+        _cachedInstance = returnInstance;
+        return returnInstance;
+    }
+    //--------------------------------------------------------------------------------
+    /// <summary>
     /// Gets a <see cref="DynamicKey"/> instance for the given value.
     /// </summary>
     /// <param name="value">
@@ -58,7 +88,7 @@ internal sealed class DynamicRefKey<T> : DynamicKey, IComparable<DynamicRefKey<T
         {
             string stringValue => DynamicStringKey.GetKey(stringValue),
             Type typeValue => DynamicTypeKey.GetKey(typeValue),
-            _ => value is DynamicKey dynamicKey ? dynamicKey : new DynamicRefKey<T>(value)
+            _ => value is DynamicKey dynamicKey ? dynamicKey : GetKeyInternal(value)
         };
     }
     //--------------------------------------------------------------------------------
