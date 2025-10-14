@@ -8,7 +8,7 @@ namespace KZDev.PerfUtils;
 /// as the key
 /// </summary>
 [DebuggerDisplay("{" + nameof(DisplayValue) + "}")]
-internal class DynamicValKey<T> : DynamicKey, IComparable<DynamicValKey<T>>
+internal sealed class DynamicValKey<T> : DynamicKey, IComparable<DynamicValKey<T>>
     where T : struct
 {
     //--------------------------------------------------------------------------------

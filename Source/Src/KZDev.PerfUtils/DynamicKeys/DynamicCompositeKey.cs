@@ -13,7 +13,7 @@ namespace KZDev.PerfUtils;
 /// A type of <see cref="DynamicKey"/> that combines multiple DynamicKey instances into a single composite key
 /// </summary>
 [DebuggerDisplay("{" + nameof(DisplayValue) + "}")]
-internal class DynamicCompositeKey : DynamicKey, IComparable<DynamicCompositeKey>
+internal sealed class DynamicCompositeKey : DynamicKey, IComparable<DynamicCompositeKey>
 {
     /// <summary>
     /// When not null, this is a cached instance used to avoid creating multiple

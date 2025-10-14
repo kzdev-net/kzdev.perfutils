@@ -11,7 +11,7 @@ namespace KZDev.PerfUtils;
 /// A type of <see cref="DynamicKey"/> that uses a string as the key
 /// </summary>
 [DebuggerDisplay("{" + nameof(DisplayValue) + "}")]
-internal class DynamicStringKey : DynamicKey, IComparable<DynamicStringKey>
+internal sealed class DynamicStringKey : DynamicKey, IComparable<DynamicStringKey>
 {
     /// <summary>
     /// When not null, this is a cached instance used to avoid creating multiple

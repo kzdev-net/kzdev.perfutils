@@ -10,7 +10,7 @@ namespace KZDev.PerfUtils;
 /// instance as the key
 /// </summary>
 [DebuggerDisplay("{" + nameof(DisplayValue) + "}")]
-internal class DynamicObjectKey : DynamicKey, IComparable<DynamicObjectKey>
+internal sealed class DynamicObjectKey : DynamicKey, IComparable<DynamicObjectKey>
 {
     /// <summary>
     /// When not null, this is a cached instance used to avoid creating multiple

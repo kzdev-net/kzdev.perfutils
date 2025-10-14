@@ -11,7 +11,7 @@ namespace KZDev.PerfUtils;
 /// as the key
 /// </summary>
 [DebuggerDisplay("{" + nameof(DisplayValue) + "}")]
-internal class DynamicRefKey<T> : DynamicKey, IComparable<DynamicRefKey<T>>
+internal sealed class DynamicRefKey<T> : DynamicKey, IComparable<DynamicRefKey<T>>
     where T : class
 {
     //--------------------------------------------------------------------------------

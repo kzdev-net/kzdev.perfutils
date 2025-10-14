@@ -10,7 +10,7 @@ namespace KZDev.PerfUtils;
 /// A type of <see cref="DynamicKey"/> that uses a Guid as the key.
 /// </summary>
 [DebuggerDisplay("{" + nameof(DisplayValue) + "}")]
-internal class DynamicGuidKey : DynamicKey, IComparable<DynamicGuidKey>
+internal sealed class DynamicGuidKey : DynamicKey, IComparable<DynamicGuidKey>
 {
     /// <summary>
     /// When not null, this is a cached instance used to avoid creating multiple

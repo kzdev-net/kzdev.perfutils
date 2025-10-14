@@ -1,4 +1,4 @@
-// Copyright (c) Kevin Zehrer
+﻿// Copyright (c) Kevin Zehrer
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 using System.Diagnostics;
@@ -10,7 +10,7 @@ namespace KZDev.PerfUtils;
 /// A type of <see cref="DynamicKey"/> that uses an enum value as the key
 /// </summary>
 [DebuggerDisplay("{" + nameof(DisplayValue) + "}")]
-internal class DynamicEnumKey<TEnum> : DynamicKey, IComparable<DynamicEnumKey<TEnum>>
+internal sealed class DynamicEnumKey<TEnum> : DynamicKey, IComparable<DynamicEnumKey<TEnum>>
     where TEnum : struct, Enum
 {
     /// <summary>

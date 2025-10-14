@@ -10,7 +10,7 @@ namespace KZDev.PerfUtils;
 /// A type of <see cref="DynamicKey"/> that uses a single unsigned 32-bit integer as the key
 /// </summary>
 [DebuggerDisplay("{" + nameof(DisplayValue) + "}")]
-internal class DynamicUIntKey : DynamicKey, IComparable<DynamicUIntKey>
+internal sealed class DynamicUIntKey : DynamicKey, IComparable<DynamicUIntKey>
 {
     /// <summary>
     /// When not null, this is a cached instance used to avoid creating multiple

@@ -10,7 +10,7 @@ namespace KZDev.PerfUtils;
 /// A type of <see cref="DynamicKey"/> that uses a boolean value as a key.
 /// </summary>
 [DebuggerDisplay("{" + nameof(DisplayValue) + "}")]
-internal class DynamicBoolKey : DynamicKey, IComparable<DynamicBoolKey>
+internal sealed class DynamicBoolKey : DynamicKey, IComparable<DynamicBoolKey>
 {
     /// <summary>
     /// Gets the debugger display value.
