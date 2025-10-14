@@ -12,9 +12,6 @@ namespace KZDev.PerfUtils;
 /// type of keys are needed, such as caching scenarios, where one of the existing
 /// <see cref="DynamicKey"/> types is not sufficient.
 /// </summary>
-/// <remarks>
-/// Each derived class should implement <see cref="object.GetHashCode"/>
-/// </remarks>
 public static class DynamicKey<T>
 {
     /// <summary>

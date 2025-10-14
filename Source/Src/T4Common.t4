@@ -4,7 +4,7 @@
 <#@ import namespace="System.Collections.Generic" #>
 
 <#
-    const int MaxTypeOptionsCount = 10;
+    const int MaxTypeOptionsCount = 16;
 
     static string GetPositionName(int position)
     {

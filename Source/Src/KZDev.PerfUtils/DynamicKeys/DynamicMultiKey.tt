@@ -1,0 +1,46 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>
+<#@ include file="..\..\T4Common.t4" once="true" #>
+<#
+    static string CreateGetKeyCalls(int count)
+    {
+        return string.Join(", ", Enumerable.Range(0, count).Select(x => "DynamicKey<T" + x + ">.GetKey(arg" + x + ")"));
+    }
+#>
+
+using System.Runtime.CompilerServices;
+
+#pragma warning disable CS0659, CS0660, CS0661
+namespace KZDev.PerfUtils;
+
+//################################################################################
+/// <summary>
+/// A general type that can be used as a key for scenarios where a dynamic number and
+/// type of keys are needed, such as caching scenarios.
+/// </summary>
+public partial class DynamicKey 
+{
+<# for(int i = 2; i <= MaxTypeOptionsCount; i++) { #>	
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Gets an aggregate dynamic key instance from the passed constituent key values.
+    /// </summary><#for(int j = 0; j < i; j++) {
+    /// #>
+
+    /// <typeparam name="T<#=j#>">The type of the <#= GetPositionName(j + 1) #> key value.</typeparam><#}#>
+<#for(int j = 0; j < i; j++) {
+    /// #>
+
+    /// <param name="arg<#=j#>">The <#= GetPositionName(j + 1) #> key value.</param><#}#>  
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static DynamicKey 
+        GetKey<<#= CreateGenericTypeArgument(i) #>> (<#= CreateTypeParameters(i) #>) =>
+            Combine(<#= CreateGetKeyCalls(i) #>);
+    <# } #>//--------------------------------------------------------------------------------
+}
+//################################################################################
+#pragma warning restore CS0659, CS0660, CS0661

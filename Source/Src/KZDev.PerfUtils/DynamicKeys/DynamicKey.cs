@@ -10,16 +10,6 @@ namespace KZDev.PerfUtils;
 /// A general type that can be used as a key for scenarios where a dynamic number and
 /// type of keys are needed, such as caching scenarios.
 /// </summary>
-/// <remarks>
-/// <para>
-/// Derived types of this class handle specific types of keys, such as
-/// <see cref="DynamicBoolKey"/>, <see cref="DynamicIntKey"/>, 
-/// <see cref="DynamicStringKey"/>, <see cref="DynamicGuidKey"/>, etc.
-/// </para>
-/// <para>
-/// Each derived class should implement <see cref="object.GetHashCode"/>
-/// </para>
-/// </remarks>
 #pragma warning disable CS0659, CS0660, CS0661
 public abstract partial class DynamicKey : IEquatable<DynamicKey>, IComparable<DynamicKey>, IComparable
 {
