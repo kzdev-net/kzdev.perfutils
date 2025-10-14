@@ -272,7 +272,7 @@ public abstract partial class DynamicKey : IEquatable<DynamicKey>, IComparable<D
     /// <exception cref="ArgumentException">
     /// Thrown when no keys are provided.
     /// </exception>
-    public static DynamicKey Combine (params DynamicKey[] keys) => DynamicCompositeKey.GetKey(keys);
+    public static DynamicKey Combine (params ReadOnlySpan<DynamicKey> keys) => DynamicCompositeKey.GetKey(keys);
     //--------------------------------------------------------------------------------
     /// <summary>
     /// Handles comparing two <see cref="DynamicKey"/> instances of (potentially) different types.

@@ -161,6 +161,17 @@ internal static class ThrowHelper
     internal static void ThrowArgumentException_ContainedValueIsNotComparable (string argumentName) =>
         throw new ArgumentException(Strings.Arg_ContainedValueIsNotComparable, argumentName);
     //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Throws an argument exception with the message for at least one key being required.
+    /// </summary>
+    /// <param name="argumentName">
+    /// The name of the invalid argument.
+    /// </param>
+    /// <exception cref="ArgumentException">
+    /// </exception>
+    internal static void ThrowArgumentException_AtLeastOneKeyRequired (string argumentName) =>
+        throw new ArgumentException(Strings.Arg_AtLeastOneKeyRequired, argumentName);
+    //--------------------------------------------------------------------------------
 
     #endregion Argument Errors
 

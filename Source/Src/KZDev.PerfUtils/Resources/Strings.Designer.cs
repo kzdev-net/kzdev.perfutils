@@ -61,6 +61,15 @@ namespace KZDev.PerfUtils.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to At least one key must be provided..
+        /// </summary>
+        internal static string Arg_AtLeastOneKeyRequired {
+            get {
+                return ResourceManager.GetString("Arg_AtLeastOneKeyRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The contained value is not comparable..
         /// </summary>
         internal static string Arg_ContainedValueIsNotComparable {

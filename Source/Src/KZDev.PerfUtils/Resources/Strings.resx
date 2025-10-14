@@ -197,4 +197,7 @@
   <data name="Arg_ContainedValueIsNotComparable" xml:space="preserve">
     <value>The contained value is not comparable.</value>
   </data>
+  <data name="Arg_AtLeastOneKeyRequired" xml:space="preserve">
+    <value>At least one key must be provided.</value>
+  </data>
 </root>

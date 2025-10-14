@@ -9,6 +9,9 @@ namespace KZDev.PerfUtils;
 /// </summary>
 public sealed class DynamicKeyBuilder
 {
+    /// <summary>
+    /// The list of DynamicKey instances added to the builder.
+    /// </summary>
     private readonly List<DynamicKey> _keys = [];
 
     //--------------------------------------------------------------------------------

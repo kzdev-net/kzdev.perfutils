@@ -1,7 +1,10 @@
 ﻿// Copyright (c) Kevin Zehrer
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+using System.Collections.Immutable;
 using System.Diagnostics;
+
+using KZDev.PerfUtils.Helpers;
 
 namespace KZDev.PerfUtils;
 
@@ -27,9 +30,9 @@ internal class DynamicCompositeKey : DynamicKey, IComparable<DynamicCompositeKey
     private string DisplayValue => ToString();
 
     /// <summary>
-    /// The array of DynamicKey instances that make up this composite key.
+    /// The immutable array of DynamicKey instances that make up this composite key.
     /// </summary>
-    public DynamicKey[] Keys { [DebuggerStepThrough] get; }
+    public ImmutableArray<DynamicKey> Keys { [DebuggerStepThrough] get; }
 
     /// <summary>
     /// The number of keys in this composite.
@@ -41,28 +44,31 @@ internal class DynamicCompositeKey : DynamicKey, IComparable<DynamicCompositeKey
     /// Initializes a new instance of the <see cref="DynamicCompositeKey"/> class.
     /// </summary>
     /// <param name="keys">
-    /// The array of DynamicKey instances to combine. This array will be copied.
+    /// The span of DynamicKey instances to combine. This span of elements will be copied.
     /// </param>
-    private DynamicCompositeKey (DynamicKey[] keys)
+    private DynamicCompositeKey (in ReadOnlySpan<DynamicKey> keys)
     {
-        Keys = new DynamicKey[keys.Length];
-        Array.Copy(keys, Keys, keys.Length);
+#if NET8_0_OR_GREATER
+        Keys = [.. keys];
+#else
+        Keys = ImmutableArray.Create(keys.ToArray());
+#endif
         Count = keys.Length;
     }
     //--------------------------------------------------------------------------------
     /// <summary>
-    /// Gets a <see cref="DynamicKey"/> instance for the given array of keys.
+    /// Gets a <see cref="DynamicKey"/> instance for the given span of keys.
     /// </summary>
     /// <param name="keys">
-    /// The array of DynamicKey instances to combine.
+    /// The span of DynamicKey instances to combine.
     /// </param>
     /// <returns>
     /// An instance of <see cref="DynamicKey"/> that combines the specified keys.
     /// </returns>
-    public static DynamicKey GetKey (params DynamicKey[] keys)
+    public static DynamicKey GetKey (params ReadOnlySpan<DynamicKey> keys)
     {
         if (keys.Length == 0)
-            throw new ArgumentException("At least one key must be provided", nameof(keys));
+            ThrowHelper.ThrowArgumentException_AtLeastOneKeyRequired(nameof(keys));
         if (keys.Length == 1)
             return keys[0];
 
@@ -70,31 +76,50 @@ internal class DynamicCompositeKey : DynamicKey, IComparable<DynamicCompositeKey
         if (keys.Length <= 3)
         {
             DynamicCompositeKey? cachedInstance = _cachedInstance;
-            if ((cachedInstance is not null) && (cachedInstance.Count == keys.Length) && 
+            if ((cachedInstance is not null) && (cachedInstance.Count == keys.Length) &&
                 AreKeysEqual(cachedInstance.Keys, keys))
                 return cachedInstance;
         }
 
         DynamicCompositeKey returnInstance = new(keys);
-        
+
         // Cache only 2-3 element composites
         if (keys.Length <= 3)
             _cachedInstance = returnInstance;
-            
+
         return returnInstance;
     }
     //--------------------------------------------------------------------------------
     /// <summary>
-    /// Helper method to compare two arrays of keys for equality.
+    /// Helper method to compare two collections of keys for equality.
     /// </summary>
-    /// <param name="keys1">First array of keys</param>
-    /// <param name="keys2">Second array of keys</param>
-    /// <returns>True if arrays are equal, false otherwise</returns>
-    private static bool AreKeysEqual (DynamicKey[] keys1, DynamicKey[] keys2)
+    /// <param name="keys1">First immutable array of keys</param>
+    /// <param name="keys2">Second span of keys</param>
+    /// <returns>True if collections are equal, false otherwise</returns>
+    private static bool AreKeysEqual (ImmutableArray<DynamicKey> keys1, ReadOnlySpan<DynamicKey> keys2)
     {
         if (keys1.Length != keys2.Length)
             return false;
-        
+
+        for (int keyIndex = 0; keyIndex < keys1.Length; keyIndex++)
+        {
+            if (!keys1[keyIndex].Equals(keys2[keyIndex]))
+                return false;
+        }
+        return true;
+    }
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Helper method to compare two immutable arrays of keys for equality.
+    /// </summary>
+    /// <param name="keys1">First immutable array of keys</param>
+    /// <param name="keys2">Second immutable array of keys</param>
+    /// <returns>True if arrays are equal, false otherwise</returns>
+    private static bool AreKeysEqual (ImmutableArray<DynamicKey> keys1, ImmutableArray<DynamicKey> keys2)
+    {
+        if (keys1.Length != keys2.Length)
+            return false;
+
         for (int keyIndex = 0; keyIndex < keys1.Length; keyIndex++)
         {
             if (!keys1[keyIndex].Equals(keys2[keyIndex]))
@@ -110,6 +135,9 @@ internal class DynamicCompositeKey : DynamicKey, IComparable<DynamicCompositeKey
     /// <inheritdoc />
     public override int GetHashCode ()
     {
+        // We optimize for the common case of 1-5 elements, and we don't need to include 
+        // all elements in the hash code for larger composites; this is a trade-off between
+        // hash code quality and performance.
         return Count switch
         {
             1 => Keys[0].GetHashCode(),
@@ -117,22 +145,13 @@ internal class DynamicCompositeKey : DynamicKey, IComparable<DynamicCompositeKey
             3 => HashCode.Combine(Keys[0].GetHashCode(), Keys[1].GetHashCode(), Keys[2].GetHashCode()),
             4 => HashCode.Combine(Keys[0].GetHashCode(), Keys[1].GetHashCode(), Keys[2].GetHashCode(), Keys[3].GetHashCode()),
             5 => HashCode.Combine(Keys[0].GetHashCode(), Keys[1].GetHashCode(), Keys[2].GetHashCode(), Keys[3].GetHashCode(), Keys[4].GetHashCode()),
-            _ => GetHashCodeForMany()
+            _ => (Count / 2) switch
+            {
+                3 => HashCode.Combine(Keys[0].GetHashCode(), Keys[1].GetHashCode(), Keys[2].GetHashCode(), Keys[3].GetHashCode()),
+                4 => HashCode.Combine(Keys[0].GetHashCode(), Keys[1].GetHashCode(), Keys[2].GetHashCode(), Keys[3].GetHashCode()),
+                _ => HashCode.Combine(Keys[0].GetHashCode(), Keys[1].GetHashCode(), Keys[2].GetHashCode(), Keys[3].GetHashCode(), Keys[4].GetHashCode())
+            }
         };
-    }
-    //--------------------------------------------------------------------------------
-    /// <summary>
-    /// Calculates hash code for composites with more than 5 elements.
-    /// </summary>
-    /// <returns>Combined hash code</returns>
-    private int GetHashCodeForMany ()
-    {
-        HashCode hashCode = new();
-        foreach (DynamicKey key in Keys)
-        {
-            hashCode.Add(key.GetHashCode());
-        }
-        return hashCode.ToHashCode();
     }
     //--------------------------------------------------------------------------------
     /// <inheritdoc />
