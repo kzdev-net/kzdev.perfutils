@@ -22,7 +22,7 @@ public static class DynamicKey<T>
     /// This factory is created once per type T using reflection and compiled lambda expressions,
     /// then reused for all subsequent calls to avoid both boxing and reflection overhead.
     /// </summary>
-    private static readonly Func<T, DynamicKey> _keyFactory = CreateKeyFactory();
+    private static readonly Func<T, DynamicKey> KeyFactory = CreateKeyFactory();
 
     //--------------------------------------------------------------------------------
     /// <summary>
@@ -159,7 +159,7 @@ public static class DynamicKey<T>
         if (value is DynamicKey dynamicKey)
             return dynamicKey;
 
-        return _keyFactory(value);
+        return KeyFactory(value);
     }
     //--------------------------------------------------------------------------------
 }

@@ -32,6 +32,7 @@ public sealed class DynamicKeyBuilder
     //--------------------------------------------------------------------------------
     /// <summary>
     /// Adds a DynamicKey to the builder.
+    /// If the key is a DynamicCompositeKey, its individual keys will be flattened and added separately.
     /// </summary>
     /// <param name="key">
     /// The DynamicKey to add.
@@ -45,12 +46,26 @@ public sealed class DynamicKeyBuilder
     public DynamicKeyBuilder Add (DynamicKey key)
     {
         ArgumentNullException.ThrowIfNull(key);
-        _keys.Add(key);
+
+        // If the key is a DynamicCompositeKey, flatten it by adding its individual keys
+        if (key is DynamicCompositeKey compositeKey)
+        {
+            foreach (DynamicKey individualKey in compositeKey.Keys)
+            {
+                _keys.Add(individualKey);
+            }
+        }
+        else
+        {
+            _keys.Add(key);
+        }
+
         return this;
     }
     //--------------------------------------------------------------------------------
     /// <summary>
     /// Adds a value as a DynamicKey to the builder.
+    /// If the resulting key is a DynamicCompositeKey, its individual keys will be flattened and added separately.
     /// </summary>
     /// <typeparam name="T">
     /// The type of the value to add.
@@ -61,11 +76,7 @@ public sealed class DynamicKeyBuilder
     /// <returns>
     /// This builder instance for method chaining.
     /// </returns>
-    public DynamicKeyBuilder Add<T> (T value)
-    {
-        _keys.Add(DynamicKey<T>.GetKey(value));
-        return this;
-    }
+    public DynamicKeyBuilder Add<T> (T value) => Add(DynamicKey<T>.GetKey(value));
     //--------------------------------------------------------------------------------
     /// <summary>
     /// Adds an integer value to the builder.
