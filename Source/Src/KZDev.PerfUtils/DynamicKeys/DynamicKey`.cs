@@ -36,6 +36,15 @@ public static class DynamicKey<T>
             case int intValue:
                 return DynamicIntKey.GetKey (intValue);
 
+            case long longValue:
+                return DynamicLongKey.GetKey (longValue);
+
+            case uint uintValue:
+                return DynamicUIntKey.GetKey (uintValue);
+
+            case ulong ulongValue:
+                return DynamicULongKey.GetKey (ulongValue);
+
             case bool boolValue:
                 return DynamicBoolKey.GetKey (boolValue);
 
@@ -49,11 +58,7 @@ public static class DynamicKey<T>
                 return DynamicTypeKey.GetKey (typeValue);
 
             default:
-                return typeof(T) == typeof(object) ?
-                    DynamicObjectKey.GetKey (value) :
-                    value.GetType().IsValueType ?
-                        DynamicValKey<T>.GetKey (value) :
-                        DynamicRefKey<T>.GetKey (value);
+                return DynamicObjectKey.GetKey (value);
         }
     }
     //--------------------------------------------------------------------------------

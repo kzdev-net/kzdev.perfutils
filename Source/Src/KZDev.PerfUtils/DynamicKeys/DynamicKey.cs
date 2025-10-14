@@ -42,6 +42,21 @@ public abstract partial class DynamicKey : IEquatable<DynamicKey>, IComparable<D
     public static DynamicKey Zero => DynamicIntKey.Zero;
     //--------------------------------------------------------------------------------
     /// <summary>
+    /// Returns a common instance used for <c>zero</c> long values
+    /// </summary>
+    public static DynamicKey ZeroLong => DynamicLongKey.Zero;
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Returns a common instance used for <c>zero</c> unsigned integer values
+    /// </summary>
+    public static DynamicKey ZeroUInt => DynamicUIntKey.Zero;
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Returns a common instance used for <c>zero</c> unsigned long values
+    /// </summary>
+    public static DynamicKey ZeroULong => DynamicULongKey.Zero;
+    //--------------------------------------------------------------------------------
+    /// <summary>
     /// Returns a common instance used for <c>empty</c> string values
     /// </summary>
     public static DynamicKey EmptyString => DynamicStringKey.Empty;
@@ -74,6 +89,45 @@ public abstract partial class DynamicKey : IEquatable<DynamicKey>, IComparable<D
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static DynamicKey GetKey (int value) => DynamicIntKey.GetKey(value);
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Acquires a long based dynamic key with the specified value.
+    /// </summary>
+    /// <param name="value">
+    /// The long value assigned to the returned key instance.
+    /// </param>
+    /// <returns>
+    /// An instance of <see cref="DynamicKey"/> that uses the specified long value to
+    /// represent the key or partial key.
+    /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static DynamicKey GetKey (long value) => DynamicLongKey.GetKey(value);
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Acquires an unsigned integer based dynamic key with the specified value.
+    /// </summary>
+    /// <param name="value">
+    /// The unsigned integer value assigned to the returned key instance.
+    /// </param>
+    /// <returns>
+    /// An instance of <see cref="DynamicKey"/> that uses the specified unsigned integer value to
+    /// represent the key or partial key.
+    /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static DynamicKey GetKey (uint value) => DynamicUIntKey.GetKey(value);
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Acquires an unsigned long based dynamic key with the specified value.
+    /// </summary>
+    /// <param name="value">
+    /// The unsigned long value assigned to the returned key instance.
+    /// </param>
+    /// <returns>
+    /// An instance of <see cref="DynamicKey"/> that uses the specified unsigned long value to
+    /// represent the key or partial key.
+    /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static DynamicKey GetKey (ulong value) => DynamicULongKey.GetKey(value);
     //--------------------------------------------------------------------------------
     /// <summary>
     /// Acquires a boolean based dynamic key with the specified value.
@@ -134,7 +188,7 @@ public abstract partial class DynamicKey : IEquatable<DynamicKey>, IComparable<D
     /// The type of the value to be used as the key. Must be a reference type.
     /// </typeparam>
     /// <param name="value">
-    /// The <see cref="value"/> value assigned to the returned key instance.
+    /// The value assigned to the returned key instance.
     /// </param>
     /// <returns>
     /// An instance of <see cref="DynamicKey"/> that uses the specified <typeparamref name="T"/> value to
@@ -150,7 +204,7 @@ public abstract partial class DynamicKey : IEquatable<DynamicKey>, IComparable<D
     /// The type of the value to be used as the key. Must be a value type.
     /// </typeparam>
     /// <param name="value">
-    /// The <see cref="value"/> value assigned to the returned key instance.
+    /// The value assigned to the returned key instance.
     /// </param>
     /// <returns>
     /// An instance of <see cref="DynamicKey"/> that uses the specified <typeparamref name="T"/> value to
@@ -158,6 +212,22 @@ public abstract partial class DynamicKey : IEquatable<DynamicKey>, IComparable<D
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static DynamicKey GetValueKey<T> (T value) where T : struct => DynamicValKey<T>.GetKey(value);
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Acquires an enum based dynamic key with the specified value.
+    /// </summary>
+    /// <typeparam name="TEnum">
+    /// The enum type to be used as the key.
+    /// </typeparam>
+    /// <param name="value">
+    /// The enum value assigned to the returned key instance.
+    /// </param>
+    /// <returns>
+    /// An instance of <see cref="DynamicKey"/> that uses the specified enum value to
+    /// represent the key or partial key.
+    /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static DynamicKey GetEnumKey<TEnum> (TEnum value) where TEnum : struct, Enum => DynamicEnumKey<TEnum>.GetKey(value);
     //--------------------------------------------------------------------------------
     /// <summary>
     /// A helper for the generic templated key overloads when passed an instance of the
@@ -189,6 +259,20 @@ public abstract partial class DynamicKey : IEquatable<DynamicKey>, IComparable<D
         value is DynamicKey dynamicKey
             ? dynamicKey
             : DynamicObjectKey.GetKey(value);
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Combines multiple DynamicKey instances into a single composite key.
+    /// </summary>
+    /// <param name="keys">
+    /// The DynamicKey instances to combine.
+    /// </param>
+    /// <returns>
+    /// A composite key containing all the specified keys.
+    /// </returns>
+    /// <exception cref="ArgumentException">
+    /// Thrown when no keys are provided.
+    /// </exception>
+    public static DynamicKey Combine (params DynamicKey[] keys) => DynamicCompositeKey.GetKey(keys);
     //--------------------------------------------------------------------------------
     /// <summary>
     /// Handles comparing two <see cref="DynamicKey"/> instances of (potentially) different types.
@@ -296,6 +380,27 @@ public abstract partial class DynamicKey : IEquatable<DynamicKey>, IComparable<D
         return !left.Equals(right);
     }
     //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Addition operator for combining two <see cref="DynamicKey"/> instances into a composite key
+    /// </summary>
+    /// <param name="left">
+    /// The left side of the addition operator.
+    /// </param>
+    /// <param name="right">
+    /// The right side of the addition operator.
+    /// </param>
+    /// <returns>
+    /// A composite key containing both keys.
+    /// </returns>
+    public static DynamicKey operator + (DynamicKey? left, DynamicKey? right)
+    {
+        if (left is null)
+            throw new ArgumentNullException(nameof(left));
+        if (right is null)
+            throw new ArgumentNullException(nameof(right));
+        return DynamicCompositeKey.GetKey(left, right);
+    }
+    //--------------------------------------------------------------------------------
 
     #endregion
 
@@ -306,6 +411,24 @@ public abstract partial class DynamicKey : IEquatable<DynamicKey>, IComparable<D
     /// </summary>
     /// <param name="value"></param>
     public static implicit operator DynamicKey (int value) => GetKey(value);
+
+    /// <summary>
+    /// Implicit conversion operator for <see cref="long"/> to <see cref="DynamicKey"/>
+    /// </summary>
+    /// <param name="value"></param>
+    public static implicit operator DynamicKey (long value) => GetKey(value);
+
+    /// <summary>
+    /// Implicit conversion operator for <see cref="uint"/> to <see cref="DynamicKey"/>
+    /// </summary>
+    /// <param name="value"></param>
+    public static implicit operator DynamicKey (uint value) => GetKey(value);
+
+    /// <summary>
+    /// Implicit conversion operator for <see cref="ulong"/> to <see cref="DynamicKey"/>
+    /// </summary>
+    /// <param name="value"></param>
+    public static implicit operator DynamicKey (ulong value) => GetKey(value);
 
     /// <summary>
     /// Implicit conversion operator for <see cref="bool"/> to <see cref="DynamicKey"/>

@@ -53,6 +53,9 @@ internal class DynamicValKey<T> : DynamicKey, IComparable<DynamicValKey<T>>
         {
             bool boolValue => DynamicBoolKey.GetKey(boolValue),
             int intValue => DynamicIntKey.GetKey (intValue),
+            long longValue => DynamicLongKey.GetKey (longValue),
+            uint uintValue => DynamicUIntKey.GetKey (uintValue),
+            ulong ulongValue => DynamicULongKey.GetKey (ulongValue),
             Guid guidValue => DynamicGuidKey.GetKey (guidValue),
             _ => new DynamicValKey<T> (value)
         };
