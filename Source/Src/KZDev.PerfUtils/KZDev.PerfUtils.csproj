@@ -45,11 +45,6 @@
 		<PackageReference Include="System.Diagnostics.DiagnosticSource" />
 	</ItemGroup>
 	<ItemGroup>
-		<Compile Update="DynamicKey\DynamicMultiKey.cs">
-		  <DesignTime>True</DesignTime>
-		  <AutoGen>True</AutoGen>
-		  <DependentUpon>DynamicMultiKey.tt</DependentUpon>
-		</Compile>
 		<Compile Update="Resources\Strings.Designer.cs">
 			<DesignTime>True</DesignTime>
 			<AutoGen>True</AutoGen>
@@ -65,12 +60,6 @@
 	<ItemGroup>
 		<None Include="Package\nuget.readme.md" Pack="true" Visible="false" PackagePath="docs\README.md" />
 		<None Include="Package\nuget.icon.png" Pack="true" Visible="false" PackagePath="images\icon.png" />
-	</ItemGroup>
-	<ItemGroup>
-	  <None Update="DynamicKey\DynamicMultiKey.tt">
-	    <Generator>TextTemplatingFileGenerator</Generator>
-	    <LastGenOutput>DynamicMultiKey.cs</LastGenOutput>
-	  </None>
 	</ItemGroup>
 	<ItemGroup>
 	  <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
