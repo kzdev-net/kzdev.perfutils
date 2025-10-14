@@ -453,7 +453,7 @@ public class UsingDynamicKey_EdgeCaseTests : UnitTestBase
                     List<DynamicKey> keyList = threadResults.GetOrAdd(Environment.CurrentManagedThreadId, _ => []);
                     keyList.Add(key);
 
-                    // Make this truly asynchronous to test thread pool behavior
+                    // Make this truly asynchronous to test multi-thread behavior
                     await Task.Yield();
                 }
             }));
