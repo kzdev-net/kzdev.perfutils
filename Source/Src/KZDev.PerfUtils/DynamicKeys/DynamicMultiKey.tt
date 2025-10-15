@@ -19,16 +19,51 @@ namespace KZDev.PerfUtils;
 
 //################################################################################
 /// <summary>
-/// A general type that can be used as a key for scenarios where a dynamic number and
-/// type of keys are needed, such as caching scenarios.
+///   Multi-key generation methods for creating composite dynamic keys from multiple
+///   values of different types. These methods provide a convenient way to create
+///   complex keys without manually combining individual keys.
 /// </summary>
+/// <remarks>
+///   <para>
+///     This partial class extension provides overloaded <see cref="GetKey{T0, T1}"/> methods
+///     that accept 2 to 12 parameters of different types and automatically combine them
+///     into a single <see cref="DynamicKey"/> instance.
+///   </para>
+///   <para>
+///     Each method uses <see cref="MethodImplOptions.AggressiveInlining"/> for optimal
+///     performance and delegates to the appropriate <see cref="DynamicKey{T}.GetKey(T)"/>
+///     methods before combining the results using <see cref="DynamicKey.Combine(ReadOnlySpan{DynamicKey})"/>.
+///   </para>
+///   <para>
+///     These methods are particularly useful for caching scenarios where you need to
+///     create keys from multiple parameters, such as method parameters, database
+///     query parameters, or any combination of values that uniquely identify a result.
+///   </para>
+/// </remarks>
+/// <example>
+///   <code>
+///     // Create a key from two values
+///     DynamicKey key2 = DynamicKey.GetKey(userId, sessionId);
+///     
+///     // Create a key from multiple values of different types
+///     DynamicKey key5 = DynamicKey.GetKey(userId, "admin", DateTime.Now.Date, true, queryParams);
+///     
+///     // Use in caching scenarios
+///     DynamicKey cacheKey = DynamicKey.GetKey(methodName, parameters, userId, timestamp);
+///   </code>
+/// </example>
 public partial class DynamicKey 
 {
 <# for(int i = 2; i <= MaxTypeOptionsCount; i++) { #>	
     //--------------------------------------------------------------------------------
     /// <summary>
-    /// Gets an aggregate dynamic key instance from the passed constituent key values.
-    /// </summary><#for(int j = 0; j < i; j++) {
+    ///   Creates a composite dynamic key from <#= GetCountName(i) #> values of different types.
+    /// </summary>
+    /// <remarks>
+    ///   This method creates individual keys for each parameter and combines them into
+    ///   a single composite key. The resulting key can be used for caching, dictionary
+    ///   lookups, or any scenario requiring a unique identifier based on multiple values.
+    /// </remarks><#for(int j = 0; j < i; j++) {
     /// #>
 
     /// <typeparam name="T<#=j#>">The type of the <#= GetPositionName(j + 1) #> key value.</typeparam><#}#>
