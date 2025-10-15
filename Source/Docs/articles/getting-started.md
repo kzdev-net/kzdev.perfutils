@@ -1,6 +1,6 @@
 # PerfUtils Documentation
 
-This article introduces the `KZDev.PerfUtils` library package, which includes **MemoryStreamSlim**, **StringBuilderCache**, **InterlockedOps**, and a series of compression helper classes. The following sections provide insights into usage, class operations, and performance benchmarks. For a full API reference, see the [API Reference](xref:KZDev.PerfUtils).
+This article introduces the `KZDev.PerfUtils` library package, which includes **MemoryStreamSlim**, **StringBuilderCache**, **InterlockedOps**, **DynamicKey**, and a series of compression helper classes. The following sections provide insights into usage, class operations, and performance benchmarks. For a full API reference, see the [API Reference](xref:KZDev.PerfUtils).
 
 ## MemoryStreamSlim
 
@@ -48,6 +48,23 @@ The [`InterlockedOps`](xref:KZDev.PerfUtils.InterlockedOps) class extends the fu
 - **ConditionSetBits**: Conditionally sets bits.
 
 For more details, see the [`Interlocked Operations`](./interlockedops.md) topic.
+
+## DynamicKey
+
+The **DynamicKey** class provides a high-performance alternative to string-based keys for scenarios where keys are composed of multiple elements that may not be known at compile time. Instead of concatenating strings (which is expensive), DynamicKey creates efficient composite keys that can be compared, hashed, and used in dictionaries with superior performance.
+
+Key features of **DynamicKey** include:
+
+- **Type-specific key classes** for optimal performance
+- **Efficient composite key creation** from multiple values
+- **Optimized hash codes** and comparison operations
+- **Thread-safe caching** for frequently used keys
+- **Multiple composition approaches** for different scenarios
+
+Key topics for **DynamicKey** include:
+
+- The [`DynamicKey`](./dynamickey.md) topic, which explains the concept, usage, and benefits of DynamicKey.
+- The [`DynamicKey Benchmarks`](./dynamickey-benchmarks.md) topic, which provides comprehensive performance benchmarks comparing DynamicKey against string-based approaches.
 
 ## Future Features
 

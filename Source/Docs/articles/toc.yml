@@ -81,5 +81,12 @@
               href: StringsBenchmarks.StringBuilderMultipleThreadThroughputBenchmarks-report.html
 - name: Interlocked Operations
   href: interlockedops.md
+- name: DynamicKey
+  href: dynamickey.md
+  items:
+    - name: Examples
+      href: dynamickey-examples.md
+    - name: Benchmarks
+      href: dynamickey-benchmarks.md
 - name: NuGet Package (KZDev.PerfUtils)
   href: https://www.nuget.org/packages/KZDev.PerfUtils
