@@ -7,8 +7,38 @@ namespace KZDev.PerfUtils;
 
 //################################################################################
 /// <summary>
-/// A type of <see cref="DynamicKey"/> that uses a single unsigned 64-bit integer as the key
+///   A type of <see cref="DynamicKey"/> that uses a single unsigned 64-bit integer as the key.
 /// </summary>
+/// <remarks>
+///   <para>
+///     <see cref="DynamicULongKey"/> provides an optimized implementation for unsigned 64-bit integer-based keys
+///     with thread-static caching for improved performance. It uses the ulong value directly
+///     for hash code generation and comparison operations.
+///   </para>
+///   <para>
+///     Key features include:
+///   </para>
+///   <list type="bullet">
+///     <item>
+///       <description>Thread-static caching for frequently used ulong values</description>
+///     </item>
+///     <item>
+///       <description>Direct ulong value for hash codes (no computation overhead)</description>
+///     </item>
+///     <item>
+///       <description>Optimized equality and comparison operations</description>
+///     </item>
+///     <item>
+///       <description>Special handling for zero values with cached instance</description>
+///     </item>
+///   </list>
+///   <para>
+///     This class is used internally by the <see cref="DynamicKey"/> system and is not
+///     typically instantiated directly by user code. Instead, use <see cref="DynamicKey.GetKey(ulong)"/>
+///     to create ulong-based keys.
+///   </para>
+/// </remarks>
+/// <seealso cref="DynamicKey"/>
 [DebuggerDisplay("{" + nameof(DisplayValue) + "}")]
 internal sealed class DynamicULongKey : DynamicKey, IComparable<DynamicULongKey>
 {

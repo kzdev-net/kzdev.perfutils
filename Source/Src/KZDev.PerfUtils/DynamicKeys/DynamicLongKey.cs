@@ -7,8 +7,38 @@ namespace KZDev.PerfUtils;
 
 //################################################################################
 /// <summary>
-/// A type of <see cref="DynamicKey"/> that uses a single 64-bit integer as the key
+///   A type of <see cref="DynamicKey"/> that uses a single 64-bit signed integer as the key.
 /// </summary>
+/// <remarks>
+///   <para>
+///     <see cref="DynamicLongKey"/> provides an optimized implementation for 64-bit integer-based keys
+///     with thread-static caching for improved performance. It uses the long value directly
+///     for hash code generation and comparison operations.
+///   </para>
+///   <para>
+///     Key features include:
+///   </para>
+///   <list type="bullet">
+///     <item>
+///       <description>Thread-static caching for frequently used long values</description>
+///     </item>
+///     <item>
+///       <description>Direct long value for hash codes (no computation overhead)</description>
+///     </item>
+///     <item>
+///       <description>Optimized equality and comparison operations</description>
+///     </item>
+///     <item>
+///       <description>Special handling for zero values with cached instance</description>
+///     </item>
+///   </list>
+///   <para>
+///     This class is used internally by the <see cref="DynamicKey"/> system and is not
+///     typically instantiated directly by user code. Instead, use <see cref="DynamicKey.GetKey(long)"/>
+///     to create long-based keys.
+///   </para>
+/// </remarks>
+/// <seealso cref="DynamicKey"/>
 [DebuggerDisplay("{" + nameof(DisplayValue) + "}")]
 internal sealed class DynamicLongKey : DynamicKey, IComparable<DynamicLongKey>
 {

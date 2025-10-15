@@ -7,8 +7,41 @@ namespace KZDev.PerfUtils;
 
 //################################################################################
 /// <summary>
-/// A type of <see cref="DynamicKey"/> that uses an enum value as the key
+///   A type of <see cref="DynamicKey"/> that uses an enum value as the key.
 /// </summary>
+/// <typeparam name="TEnum">
+///   The enum type to be used as the key. Must be a value type that implements <see cref="Enum"/>.
+/// </typeparam>
+/// <remarks>
+///   <para>
+///     <see cref="DynamicEnumKey{TEnum}"/> provides an optimized implementation for enum-based keys
+///     with thread-static caching for improved performance. It uses the enum's underlying value
+///     for hash code generation and comparison operations, avoiding boxing overhead.
+///   </para>
+///   <para>
+///     Key features include:
+///   </para>
+///   <list type="bullet">
+///     <item>
+///       <description>Thread-static caching for frequently used enum values</description>
+///     </item>
+///     <item>
+///       <description>Zero-boxing performance using underlying enum values</description>
+///     </item>
+///     <item>
+///       <description>Optimized equality and comparison operations</description>
+///     </item>
+///     <item>
+///       <description>Special handling for default enum values with cached instance</description>
+///     </item>
+///   </list>
+///   <para>
+///     This class is used internally by the <see cref="DynamicKey"/> system and is not
+///     typically instantiated directly by user code. Instead, use <see cref="DynamicKey.GetEnumKey{TEnum}(TEnum)"/>
+///     to create enum-based keys.
+///   </para>
+/// </remarks>
+/// <seealso cref="DynamicKey"/>
 [DebuggerDisplay("{" + nameof(DisplayValue) + "}")]
 internal sealed class DynamicEnumKey<TEnum> : DynamicKey, IComparable<DynamicEnumKey<TEnum>>
     where TEnum : struct, Enum

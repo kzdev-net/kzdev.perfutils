@@ -10,8 +10,42 @@ namespace KZDev.PerfUtils;
 
 //################################################################################
 /// <summary>
-/// A type of <see cref="DynamicKey"/> that combines multiple DynamicKey instances into a single composite key
+///   A type of <see cref="DynamicKey"/> that combines multiple <see cref="DynamicKey"/> instances
+///   into a single composite key with optimized performance characteristics.
 /// </summary>
+/// <remarks>
+///   <para>
+///     <see cref="DynamicCompositeKey"/> represents a composite key that contains multiple
+///     individual keys. It provides efficient hash code generation, equality comparison,
+///     and ordering operations while maintaining the order of constituent keys.
+///   </para>
+///   <para>
+///     Key features include:
+///   </para>
+///   <list type="bullet">
+///     <item>
+///       <description>Immutable key collection using <see cref="ImmutableArray{T}"/></description>
+///     </item>
+///     <item>
+///       <description>Thread-static caching for 2-3 element composites</description>
+///     </item>
+///     <item>
+///       <description>Automatic flattening of nested composite keys</description>
+///     </item>
+///     <item>
+///       <description>Optimized hash code generation for up to 5 elements</description>
+///     </item>
+///     <item>
+///       <description>Efficient comparison operations</description>
+///     </item>
+///   </list>
+///   <para>
+///     This class is used internally by the <see cref="DynamicKey"/> system and is not
+///     typically instantiated directly by user code. Instead, use <see cref="DynamicKey.Combine(ReadOnlySpan{DynamicKey})"/>
+///     or the <c>+</c> operator to create composite keys.
+///   </para>
+/// </remarks>
+/// <seealso cref="DynamicKey"/>
 [DebuggerDisplay("{" + nameof(DisplayValue) + "}")]
 internal sealed class DynamicCompositeKey : DynamicKey, IComparable<DynamicCompositeKey>
 {
@@ -30,13 +64,28 @@ internal sealed class DynamicCompositeKey : DynamicKey, IComparable<DynamicCompo
     private string DisplayValue => ToString();
 
     /// <summary>
-    /// The immutable array of DynamicKey instances that make up this composite key.
+    ///   Gets the immutable array of <see cref="DynamicKey"/> instances that make up this composite key.
     /// </summary>
+    /// <value>
+    ///   An <see cref="ImmutableArray{T}"/> containing the individual keys that comprise this composite key.
+    ///   The keys are maintained in the order they were added.
+    /// </value>
+    /// <remarks>
+    ///   This property provides access to the constituent keys of the composite. The array is
+    ///   immutable, ensuring that the composite key cannot be modified after creation.
+    /// </remarks>
     public ImmutableArray<DynamicKey> Keys { [DebuggerStepThrough] get; }
 
     /// <summary>
-    /// The number of keys in this composite.
+    ///   Gets the number of keys in this composite.
     /// </summary>
+    /// <value>
+    ///   The number of individual keys that make up this composite key.
+    /// </value>
+    /// <remarks>
+    ///   This property provides a quick way to determine how many keys are contained in
+    ///   the composite without accessing the <see cref="Keys"/> collection.
+    /// </remarks>
     public int Count { [DebuggerStepThrough] get; }
 
     //--------------------------------------------------------------------------------
@@ -48,7 +97,7 @@ internal sealed class DynamicCompositeKey : DynamicKey, IComparable<DynamicCompo
     /// </param>
     private DynamicCompositeKey (in ReadOnlySpan<DynamicKey> keys)
     {
-        ImmutableArray<DynamicKey>.Builder arrayBuilder = 
+        ImmutableArray<DynamicKey>.Builder arrayBuilder =
             ImmutableArray.CreateBuilder<DynamicKey>(keys.Length);
         for (int keyIndex = 0; keyIndex < keys.Length; keyIndex++)
         {
@@ -66,14 +115,39 @@ internal sealed class DynamicCompositeKey : DynamicKey, IComparable<DynamicCompo
     }
     //--------------------------------------------------------------------------------
     /// <summary>
-    /// Gets a <see cref="DynamicKey"/> instance for the given span of keys.
+    ///   Creates a <see cref="DynamicKey"/> instance that combines the specified keys.
     /// </summary>
     /// <param name="keys">
-    /// The span of DynamicKey instances to combine.
+    ///   The span of <see cref="DynamicKey"/> instances to combine. Must contain at least one key.
     /// </param>
     /// <returns>
-    /// An instance of <see cref="DynamicKey"/> that combines the specified keys.
+    ///   A <see cref="DynamicKey"/> instance that combines the specified keys.
+    ///   If only one key is provided, that key is returned unchanged.
+    ///   If multiple keys are provided, a <see cref="DynamicCompositeKey"/> is returned.
     /// </returns>
+    /// <exception cref="ArgumentException">
+    ///   Thrown when no keys are provided (empty span).
+    /// </exception>
+    /// <remarks>
+    ///   <para>
+    ///     This method creates a composite key from the specified keys with the following optimizations:
+    ///   </para>
+    ///   <list type="bullet">
+    ///     <item>
+    ///       <description>Single keys are returned unchanged to avoid unnecessary wrapping</description>
+    ///     </item>
+    ///     <item>
+    ///       <description>Thread-static caching is used for 2-3 element composites</description>
+    ///     </item>
+    ///     <item>
+    ///       <description>Nested composite keys are automatically flattened</description>
+    ///     </item>
+    ///   </list>
+    ///   <para>
+    ///     The method maintains the order of the constituent keys and provides optimized
+    ///     hash code generation and comparison operations.
+    ///   </para>
+    /// </remarks>
     public static DynamicKey GetKey (params ReadOnlySpan<DynamicKey> keys)
     {
         if (keys.Length == 0)

@@ -7,8 +7,38 @@ namespace KZDev.PerfUtils;
 
 //################################################################################
 /// <summary>
-/// A type of <see cref="DynamicKey"/> that uses a Guid as the key.
+///   A type of <see cref="DynamicKey"/> that uses a <see cref="Guid"/> as the key.
 /// </summary>
+/// <remarks>
+///   <para>
+///     <see cref="DynamicGuidKey"/> provides an optimized implementation for GUID-based keys
+///     with thread-static caching for improved performance. It uses the GUID value directly
+///     for hash code generation and comparison operations.
+///   </para>
+///   <para>
+///     Key features include:
+///   </para>
+///   <list type="bullet">
+///     <item>
+///       <description>Thread-static caching for frequently used GUID values</description>
+///     </item>
+///     <item>
+///       <description>Direct GUID value for hash codes (no computation overhead)</description>
+///     </item>
+///     <item>
+///       <description>Optimized equality and comparison operations</description>
+///     </item>
+///     <item>
+///       <description>Special handling for empty GUID values with cached instance</description>
+///     </item>
+///   </list>
+///   <para>
+///     This class is used internally by the <see cref="DynamicKey"/> system and is not
+///     typically instantiated directly by user code. Instead, use <see cref="DynamicKey.GetKey(Guid)"/>
+///     to create GUID-based keys.
+///   </para>
+/// </remarks>
+/// <seealso cref="DynamicKey"/>
 [DebuggerDisplay("{" + nameof(DisplayValue) + "}")]
 internal sealed class DynamicGuidKey : DynamicKey, IComparable<DynamicGuidKey>
 {

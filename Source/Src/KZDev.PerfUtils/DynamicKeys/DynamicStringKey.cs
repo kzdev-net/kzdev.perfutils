@@ -8,8 +8,38 @@ namespace KZDev.PerfUtils;
 
 //################################################################################
 /// <summary>
-/// A type of <see cref="DynamicKey"/> that uses a string as the key
+///   A type of <see cref="DynamicKey"/> that uses a string as the key.
 /// </summary>
+/// <remarks>
+///   <para>
+///     <see cref="DynamicStringKey"/> provides an optimized implementation for string-based keys
+///     with thread-static caching for improved performance. It handles null strings by treating
+///     them as empty strings for consistent behavior.
+///   </para>
+///   <para>
+///     Key features include:
+///   </para>
+///   <list type="bullet">
+///     <item>
+///       <description>Thread-static caching for frequently used strings</description>
+///     </item>
+///     <item>
+///       <description>Automatic null-to-empty string conversion</description>
+///     </item>
+///     <item>
+///       <description>Optimized equality and comparison operations</description>
+///     </item>
+///     <item>
+///       <description>Special handling for empty strings with cached instance</description>
+///     </item>
+///   </list>
+///   <para>
+///     This class is used internally by the <see cref="DynamicKey"/> system and is not
+///     typically instantiated directly by user code. Instead, use <see cref="DynamicKey.GetKey(string)"/>
+///     to create string-based keys.
+///   </para>
+/// </remarks>
+/// <seealso cref="DynamicKey"/>
 [DebuggerDisplay("{" + nameof(DisplayValue) + "}")]
 internal sealed class DynamicStringKey : DynamicKey, IComparable<DynamicStringKey>
 {

@@ -7,8 +7,38 @@ namespace KZDev.PerfUtils;
 
 //################################################################################
 /// <summary>
-/// A type of <see cref="DynamicKey"/> that uses a boolean value as a key.
+///   A type of <see cref="DynamicKey"/> that uses a boolean value as the key.
 /// </summary>
+/// <remarks>
+///   <para>
+///     <see cref="DynamicBoolKey"/> provides an optimized implementation for boolean-based keys
+///     with thread-static caching for improved performance. It uses the boolean value directly
+///     for hash code generation and comparison operations.
+///   </para>
+///   <para>
+///     Key features include:
+///   </para>
+///   <list type="bullet">
+///     <item>
+///       <description>Thread-static caching for frequently used boolean values</description>
+///     </item>
+///     <item>
+///       <description>Direct boolean value for hash codes (no computation overhead)</description>
+///     </item>
+///     <item>
+///       <description>Optimized equality and comparison operations</description>
+///     </item>
+///     <item>
+///       <description>Special handling for true/false values with cached instances</description>
+///     </item>
+///   </list>
+///   <para>
+///     This class is used internally by the <see cref="DynamicKey"/> system and is not
+///     typically instantiated directly by user code. Instead, use <see cref="DynamicKey.GetKey(bool)"/>
+///     to create boolean-based keys.
+///   </para>
+/// </remarks>
+/// <seealso cref="DynamicKey"/>
 [DebuggerDisplay("{" + nameof(DisplayValue) + "}")]
 internal sealed class DynamicBoolKey : DynamicKey, IComparable<DynamicBoolKey>
 {

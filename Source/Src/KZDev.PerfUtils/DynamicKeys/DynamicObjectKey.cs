@@ -6,9 +6,43 @@ namespace KZDev.PerfUtils;
 
 //################################################################################
 /// <summary>
-/// A type of <see cref="DynamicKey"/> that uses an <see cref="object"/>
-/// instance as the key
+///   A type of <see cref="DynamicKey"/> that uses an <see cref="object"/> instance as the key.
 /// </summary>
+/// <remarks>
+///   <para>
+///     <see cref="DynamicObjectKey"/> provides a general-purpose implementation for object-based keys
+///     with thread-static caching for improved performance. It handles null objects and uses
+///     the object's <see cref="object.Equals(object)"/> and <see cref="object.GetHashCode"/> methods
+///     for comparison operations.
+///   </para>
+///   <para>
+///     Key features include:
+///   </para>
+///   <list type="bullet">
+///     <item>
+///       <description>Thread-static caching for frequently used object references</description>
+///     </item>
+///     <item>
+///       <description>Support for null object references</description>
+///     </item>
+///     <item>
+///       <description>Uses object's equality and hash code methods</description>
+///     </item>
+///     <item>
+///       <description>Special handling for null objects with cached instance</description>
+///     </item>
+///   </list>
+///   <para>
+///     This class is used internally by the <see cref="DynamicKey"/> system as a fallback
+///     for types that don't have specialized implementations. It's also used when creating
+///     keys from generic object references.
+///   </para>
+///   <para>
+///     For better performance with known types, consider using the specific
+///     <see cref="DynamicKey.GetKey(int)"/>, <see cref="DynamicKey.GetKey(string)"/>, etc. methods.
+///   </para>
+/// </remarks>
+/// <seealso cref="DynamicKey"/>
 [DebuggerDisplay("{" + nameof(DisplayValue) + "}")]
 internal sealed class DynamicObjectKey : DynamicKey, IComparable<DynamicObjectKey>
 {
@@ -123,8 +157,9 @@ internal sealed class DynamicObjectKey : DynamicKey, IComparable<DynamicObjectKe
                 return -1;
 
             case IComparable comparable when (other?.Value is IComparable otherComparable):
-                return comparable.CompareTo (otherComparable);
-        };
+                return comparable.CompareTo(otherComparable);
+        }
+        ;
         ThrowHelper.ThrowArgumentException_ContainedValueIsNotComparable(nameof(other));
         return 0; // Will never get here
     }
