@@ -64,6 +64,11 @@ internal sealed class DynamicCompositeKey : DynamicKey, IComparable<DynamicCompo
     private string DisplayValue => ToString();
 
     /// <summary>
+    /// The cached hash code for this composite key, or null if not yet computed.
+    /// </summary>
+    private int? _hashCode;
+
+    /// <summary>
     ///   Gets the immutable array of <see cref="DynamicKey"/> instances that make up this composite key.
     /// </summary>
     /// <value>
@@ -221,7 +226,8 @@ internal sealed class DynamicCompositeKey : DynamicKey, IComparable<DynamicCompo
         // We optimize for the common case of 1-5 elements, and we don't need to include 
         // all elements in the hash code for larger composites; this is a trade-off between
         // hash code quality and performance.
-        return Count switch
+        // ReSharper disable once NonReadonlyMemberInGetHashCode
+        return _hashCode ??= Count switch
         {
             1 => Keys[0].GetHashCode(),
             2 => HashCode.Combine(Keys[0].GetHashCode(), Keys[1].GetHashCode()),
@@ -232,7 +238,8 @@ internal sealed class DynamicCompositeKey : DynamicKey, IComparable<DynamicCompo
             {
                 3 => HashCode.Combine(Keys[0].GetHashCode(), Keys[1].GetHashCode(), Keys[2].GetHashCode(), Keys[3].GetHashCode()),
                 4 => HashCode.Combine(Keys[0].GetHashCode(), Keys[1].GetHashCode(), Keys[2].GetHashCode(), Keys[3].GetHashCode()),
-                _ => HashCode.Combine(Keys[0].GetHashCode(), Keys[1].GetHashCode(), Keys[2].GetHashCode(), Keys[3].GetHashCode(), Keys[4].GetHashCode())
+                5 => HashCode.Combine(Keys[0].GetHashCode(), Keys[1].GetHashCode(), Keys[2].GetHashCode(), Keys[3].GetHashCode(), Keys[4].GetHashCode()),
+                _ => HashCode.Combine(Keys[0].GetHashCode(), Keys[1].GetHashCode(), Keys[2].GetHashCode(), Keys[3].GetHashCode(), Keys[4].GetHashCode(), Keys[5].GetHashCode())
             }
         };
     }
