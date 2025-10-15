@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TieredCompilation>false</TieredCompilation>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="BenchmarkDotNet" />
+		<PackageReference Include="Microsoft.IO.RecyclableMemoryStream" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\Src\KZDev.PerfUtils\KZDev.PerfUtils.csproj" />
+		<ProjectReference Include="..\..\Tst\KZDev.PerfUtils.TestData\KZDev.PerfUtils.TestData.csproj" />
+	</ItemGroup>
+
+	<Import Project="..\..\Tst\Shared\KZDev.PerfUtils.TestMocks.Shared\KZDev.PerfUtils.TestMocks.Shared.projitems" Label="Shared" />
+
+</Project>

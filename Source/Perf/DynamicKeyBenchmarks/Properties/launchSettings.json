@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "DynamicKeyBenchmarks": {
+      "commandName": "Project",
+      "commandLineArgs": "--filter *"
+    }
+  }
+}
