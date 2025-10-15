@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using FluentAssertions;
 
 namespace KZDev.PerfUtils.Tests;
@@ -633,7 +634,7 @@ public class UsingDynamicKey_MultiKeyTests : UnitTestBase
     }
 
     // Measure
-    var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+    Stopwatch stopwatch = Stopwatch.StartNew();
     for (int i = 0; i < iterations; i++)
     {
       DynamicKey key = DynamicKey.GetKey(i, $"test_{i}", i % 2 == 0);

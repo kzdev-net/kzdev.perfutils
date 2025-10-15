@@ -339,7 +339,7 @@ public class UsingDynamicKey_BuilderFlatteningTests : UnitTestBase
             DynamicKey.GetKey(3));
 
         // Measure time for flattening
-        Stopwatch stopwatch = System.Diagnostics.Stopwatch.StartNew();
+        Stopwatch stopwatch = Stopwatch.StartNew();
 
         for (int i = 0; i < iterations; i++)
         {
