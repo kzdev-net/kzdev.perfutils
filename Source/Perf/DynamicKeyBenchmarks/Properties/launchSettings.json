@@ -1,8 +1,8 @@
-{
+﻿{
   "profiles": {
     "DynamicKeyBenchmarks": {
       "commandName": "Project",
-      "commandLineArgs": "--filter *"
+      "commandLineArgs": "--filter *CompositeKey*"
     }
   }
 }

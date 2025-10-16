@@ -11,10 +11,7 @@ namespace DynamicKeyBenchmarks.ThroughputBenchmarks;
 /// Benchmarks comparing single DynamicKey instances against string conversion
 /// for dictionary lookup performance across different dictionary sizes.
 /// </summary>
-[SimpleJob(RuntimeMoniker.Net80)]
-[SimpleJob(RuntimeMoniker.Net90)]
 [MemoryDiagnoser]
-[MarkdownExporterAttribute.GitHub]
 public class SingleKeyBenchmarks
 {
   private Dictionary<DynamicKey, string> _dynamicKeyDictionary100 = null!;

@@ -3,6 +3,7 @@
 
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Jobs;
+
 using KZDev.PerfUtils;
 
 namespace DynamicKeyBenchmarks.ThroughputBenchmarks;
@@ -11,242 +12,256 @@ namespace DynamicKeyBenchmarks.ThroughputBenchmarks;
 /// Benchmarks comparing DynamicKey composite key approaches against string concatenation
 /// for dictionary lookup performance.
 /// </summary>
-[SimpleJob(RuntimeMoniker.Net80)]
-[SimpleJob(RuntimeMoniker.Net90)]
 [MemoryDiagnoser]
-[MarkdownExporterAttribute.GitHub]
 public class CompositeKeyLookupBenchmarks
 {
-  private Dictionary<DynamicKey, string> _dynamicKeyDictionary = null!;
-  private Dictionary<string, string> _stringDictionary = null!;
+    private Dictionary<DynamicKey, string> _dynamicKeyDictionary = null!;
+    private Dictionary<string, string> _stringDictionary = null!;
 
-  // Test data
-  private const int UserId = 12345;
-  private const string SessionId = "session-abc-123";
-  private const long Timestamp = 1704067200000L;
-  private const bool IsAdmin = true;
-  private const string QueryParams = "page=1&size=10&sort=name";
-  private const uint TenantId = 999u;
-  private const ulong RequestId = 9876543210UL;
-  private const string UserAgent = "Mozilla/5.0";
-  private const string IpAddress = "192.168.1.100";
-  private const string Feature = "advanced-search";
-  private const int PageSize = 25;
-  private const string SortOrder = "desc";
+    // Test data
+    private const int NumEntries = 1000;
+    private const int UserId = 12345;
+    private const string SessionId = "session-abc-123";
+    private const long Timestamp = 1704067200000L;
+    private const bool IsAdmin = true;
+    private const string QueryParams = "page=1&size=10&sort=name";
+    private const uint TenantId = 999u;
+    private const ulong RequestId = 9876543210UL;
+    private const string UserAgent = "Mozilla/5.0";
+    private const string IpAddress = "192.168.1.100";
+    private const string Feature = "advanced-search";
+    private const int PageSize = 25;
+    private const string SortOrder = "desc";
 
-  [GlobalSetup]
-  public void Setup()
-  {
-    // Create dictionaries with test data
-    _dynamicKeyDictionary = new Dictionary<DynamicKey, string>();
-    _stringDictionary = new Dictionary<string, string>();
+    private static readonly int[] UserIds = new int[NumEntries];
+    private static readonly string[] SessionIds = new string[NumEntries];
+    private static readonly long[] Timestamps = new long[NumEntries];
 
-    // Populate with 1000 entries
-    for (int i = 0; i < 1000; i++)
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Common global setup for all benchmarks.
+    /// </summary>
+    [GlobalSetup]
+    public void GlobalSetup ()
     {
-      int userId = UserId + i;
-      string sessionId = $"{SessionId}-{i}";
-      long timestamp = Timestamp + i;
-      string value = $"value-{i}";
+        // Create dictionaries with test data
+        _dynamicKeyDictionary = new Dictionary<DynamicKey, string>();
+        _stringDictionary = new Dictionary<string, string>();
 
-      // DynamicKey entries
-      DynamicKey key2 = DynamicKey.GetKey(userId, sessionId);
-      DynamicKey key3 = DynamicKey.GetKey(userId, sessionId, timestamp);
-      DynamicKey key5 = DynamicKey.GetKey(userId, sessionId, timestamp, IsAdmin, QueryParams);
-      DynamicKey key12 = DynamicKey.GetKey(userId, sessionId, timestamp, IsAdmin, QueryParams,
-          TenantId, RequestId, UserAgent, IpAddress, Feature, PageSize, SortOrder);
+        // Populate with NumEntries entries
+        for (int i = 0; i < NumEntries; i++)
+        {
+            int userId = UserId + i;
+            string sessionId = $"{SessionId}-{i}";
+            long timestamp = Timestamp + i;
+            string value = $"value-{i}";
 
-      _dynamicKeyDictionary[key2] = value;
-      _dynamicKeyDictionary[key3] = value;
-      _dynamicKeyDictionary[key5] = value;
-      _dynamicKeyDictionary[key12] = value;
+            // Store for lookup benchmarks
+            UserIds[i] = userId;
+            SessionIds[i] = sessionId;
+            Timestamps[i] = timestamp;
 
-      // String entries
-      string str2 = $"{userId}|{sessionId}";
-      string str3 = $"{userId}|{sessionId}|{timestamp}";
-      string str5 = $"{userId}|{sessionId}|{timestamp}|{IsAdmin}|{QueryParams}";
-      string str12 = $"{userId}|{sessionId}|{timestamp}|{IsAdmin}|{QueryParams}|{TenantId}|{RequestId}|{UserAgent}|{IpAddress}|{Feature}|{PageSize}|{SortOrder}";
+            // DynamicKey entries
+            DynamicKey key2 = DynamicKey.GetKey(userId, sessionId);
+            DynamicKey key3 = DynamicKey.GetKey(userId, sessionId, timestamp);
+            DynamicKey key5 = DynamicKey.GetKey(userId, sessionId, timestamp, IsAdmin, QueryParams);
+            DynamicKey key12 = DynamicKey.GetKey(userId, sessionId, timestamp, IsAdmin, QueryParams,
+                TenantId, RequestId, UserAgent, IpAddress, Feature, PageSize, SortOrder);
 
-      _stringDictionary[str2] = value;
-      _stringDictionary[str3] = value;
-      _stringDictionary[str5] = value;
-      _stringDictionary[str12] = value;
+            _dynamicKeyDictionary[key2] = value;
+            _dynamicKeyDictionary[key3] = value;
+            _dynamicKeyDictionary[key5] = value;
+            _dynamicKeyDictionary[key12] = value;
+
+            // String entries
+            string str2 = $"{userId}|{sessionId}";
+            string str3 = $"{userId}|{sessionId}|{timestamp}";
+            string str5 = $"{userId}|{sessionId}|{timestamp}|{IsAdmin}|{QueryParams}";
+            string str12 = $"{userId}|{sessionId}|{timestamp}|{IsAdmin}|{QueryParams}|{TenantId}|{RequestId}|{UserAgent}|{IpAddress}|{Feature}|{PageSize}|{SortOrder}";
+
+            _stringDictionary[str2] = value;
+            _stringDictionary[str3] = value;
+            _stringDictionary[str5] = value;
+            _stringDictionary[str12] = value;
+        }
     }
-  }
+    //--------------------------------------------------------------------------------
 
-  #region Multi-Parameter GetKey Benchmarks
+    #region Multi-Parameter GetKey Benchmarks
 
-  [Benchmark(Baseline = true)]
-  [Arguments(500)]
-  public string MultiParameterGetKey_2Params(int index)
-  {
-    int userId = UserId + index;
-    string sessionId = $"{SessionId}-{index}";
-    DynamicKey key = DynamicKey.GetKey(userId, sessionId);
-    return _dynamicKeyDictionary[key];
-  }
+    ////--------------------------------------------------------------------------------
+    //[Benchmark(Baseline = true)]
+    //[Arguments(NumEntries / 2)]
+    //public string MultiParameterGetKey_2Params (int index)
+    //{
+    //    int userId = UserIds[index];
+    //    string sessionId = SessionIds[index];
+    //    DynamicKey key = DynamicKey.GetKey(userId, sessionId);
+    //    return _dynamicKeyDictionary[key];
+    //}
+    ////--------------------------------------------------------------------------------
+    //[Benchmark]
+    //[Arguments(NumEntries / 2)]
+    //public string StringConcatenation_2Params (int index)
+    //{
+    //    int userId = UserIds[index];
+    //    string sessionId = SessionIds[index];
+    //    string key = $"{userId}|{sessionId}";
+    //    return _stringDictionary[key];
+    //}
+    ////--------------------------------------------------------------------------------
+    //[Benchmark]
+    //[Arguments(NumEntries / 2)]
+    //public string MultiParameterGetKey_3Params (int index)
+    //{
+    //    int userId = UserIds[index];
+    //    string sessionId = SessionIds[index];
+    //    long timestamp = Timestamps[index];
+    //    DynamicKey key = DynamicKey.GetKey(userId, sessionId, timestamp);
+    //    return _dynamicKeyDictionary[key];
+    //}
+    ////--------------------------------------------------------------------------------
+    //[Benchmark]
+    //[Arguments(NumEntries / 2)]
+    //public string StringConcatenation_3Params (int index)
+    //{
+    //    int userId = UserIds[index];
+    //    string sessionId = SessionIds[index];
+    //    long timestamp = Timestamps[index];
+    //    string key = $"{userId}|{sessionId}|{timestamp}";
+    //    return _stringDictionary[key];
+    //}
+    ////--------------------------------------------------------------------------------
+    //[Benchmark]
+    //[Arguments(NumEntries / 2)]
+    //public string MultiParameterGetKey_5Params (int index)
+    //{
+    //    int userId = UserIds[index];
+    //    string sessionId = SessionIds[index];
+    //    long timestamp = Timestamps[index];
+    //    DynamicKey key = DynamicKey.GetKey(userId, sessionId, timestamp, IsAdmin, QueryParams);
+    //    return _dynamicKeyDictionary[key];
+    //}
+    ////--------------------------------------------------------------------------------
+    //[Benchmark]
+    //[Arguments(NumEntries / 2)]
+    //public string StringConcatenation_5Params (int index)
+    //{
+    //    int userId = UserIds[index];
+    //    string sessionId = SessionIds[index];
+    //    long timestamp = Timestamps[index];
+    //    string key = $"{userId}|{sessionId}|{timestamp}|{IsAdmin}|{QueryParams}";
+    //    return _stringDictionary[key];
+    //}
+    ////--------------------------------------------------------------------------------
+    //[Benchmark]
+    //[Arguments(NumEntries / 2)]
+    //public string MultiParameterGetKey_12Params (int index)
+    //{
+    //    int userId = UserIds[index];
+    //    string sessionId = SessionIds[index];
+    //    long timestamp = Timestamps[index];
+    //    DynamicKey key = DynamicKey.GetKey(userId, sessionId, timestamp, IsAdmin, QueryParams,
+    //        TenantId, RequestId, UserAgent, IpAddress, Feature, PageSize, SortOrder);
+    //    return _dynamicKeyDictionary[key];
+    //}
+    ////--------------------------------------------------------------------------------
+    //[Benchmark]
+    //[Arguments(NumEntries / 2)]
+    //public string StringConcatenation_12Params (int index)
+    //{
+    //    int userId = UserIds[index];
+    //    string sessionId = SessionIds[index];
+    //    long timestamp = Timestamps[index];
+    //    string key = $"{userId}|{sessionId}|{timestamp}|{IsAdmin}|{QueryParams}|{TenantId}|{RequestId}|{UserAgent}|{IpAddress}|{Feature}|{PageSize}|{SortOrder}";
+    //    return _stringDictionary[key];
+    //}
+    ////--------------------------------------------------------------------------------
 
-  [Benchmark]
-  [Arguments(500)]
-  public string StringConcatenation_2Params(int index)
-  {
-    int userId = UserId + index;
-    string sessionId = $"{SessionId}-{index}";
-    string key = $"{userId}|{sessionId}";
-    return _stringDictionary[key];
-  }
+    #endregion
 
-  [Benchmark]
-  [Arguments(500)]
-  public string MultiParameterGetKey_3Params(int index)
-  {
-    int userId = UserId + index;
-    string sessionId = $"{SessionId}-{index}";
-    long timestamp = Timestamp + index;
-    DynamicKey key = DynamicKey.GetKey(userId, sessionId, timestamp);
-    return _dynamicKeyDictionary[key];
-  }
+    #region Operator+ Benchmarks
 
-  [Benchmark]
-  [Arguments(500)]
-  public string StringConcatenation_3Params(int index)
-  {
-    int userId = UserId + index;
-    string sessionId = $"{SessionId}-{index}";
-    long timestamp = Timestamp + index;
-    string key = $"{userId}|{sessionId}|{timestamp}";
-    return _stringDictionary[key];
-  }
+    //[Benchmark]
+    //[Arguments(NumEntries / 2)]
+    //public string OperatorPlus_2Keys (int index)
+    //{
+    //    int userId = UserIds[index];
+    //    string sessionId = SessionIds[index];
+    //    DynamicKey key = DynamicKey.GetKey(userId) + DynamicKey.GetKey(sessionId);
+    //    return _dynamicKeyDictionary[key];
+    //}
 
-  [Benchmark]
-  [Arguments(500)]
-  public string MultiParameterGetKey_5Params(int index)
-  {
-    int userId = UserId + index;
-    string sessionId = $"{SessionId}-{index}";
-    long timestamp = Timestamp + index;
-    DynamicKey key = DynamicKey.GetKey(userId, sessionId, timestamp, IsAdmin, QueryParams);
-    return _dynamicKeyDictionary[key];
-  }
+    [Benchmark]
+    [Arguments(NumEntries / 2)]
+    public string OperatorPlus_3Keys (int index)
+    {
+        int userId = UserIds[index];
+        string sessionId = SessionIds[index];
+        long timestamp = Timestamps[index];
+        DynamicKey key = DynamicKey.GetKey(userId) + DynamicKey.GetKey(sessionId) + DynamicKey.GetKey(timestamp);
+        return _dynamicKeyDictionary[key];
+    }
 
-  [Benchmark]
-  [Arguments(500)]
-  public string StringConcatenation_5Params(int index)
-  {
-    int userId = UserId + index;
-    string sessionId = $"{SessionId}-{index}";
-    long timestamp = Timestamp + index;
-    string key = $"{userId}|{sessionId}|{timestamp}|{IsAdmin}|{QueryParams}";
-    return _stringDictionary[key];
-  }
+    #endregion
 
-  [Benchmark]
-  [Arguments(500)]
-  public string MultiParameterGetKey_12Params(int index)
-  {
-    int userId = UserId + index;
-    string sessionId = $"{SessionId}-{index}";
-    long timestamp = Timestamp + index;
-    DynamicKey key = DynamicKey.GetKey(userId, sessionId, timestamp, IsAdmin, QueryParams,
-        TenantId, RequestId, UserAgent, IpAddress, Feature, PageSize, SortOrder);
-    return _dynamicKeyDictionary[key];
-  }
+    //#region Combine Method Benchmarks
 
-  [Benchmark]
-  [Arguments(500)]
-  public string StringConcatenation_12Params(int index)
-  {
-    int userId = UserId + index;
-    string sessionId = $"{SessionId}-{index}";
-    long timestamp = Timestamp + index;
-    string key = $"{userId}|{sessionId}|{timestamp}|{IsAdmin}|{QueryParams}|{TenantId}|{RequestId}|{UserAgent}|{IpAddress}|{Feature}|{PageSize}|{SortOrder}";
-    return _stringDictionary[key];
-  }
+    //[Benchmark]
+    //[Arguments(500)]
+    //public string Combine_2Keys (int index)
+    //{
+    //    int userId = UserIds[index];
+    //    string sessionId = SessionIds[index];
+    //    DynamicKey key = DynamicKey.Combine(DynamicKey.GetKey(userId), DynamicKey.GetKey(sessionId));
+    //    return _dynamicKeyDictionary[key];
+    //}
 
-  #endregion
+    //[Benchmark]
+    //[Arguments(500)]
+    //public string Combine_3Keys (int index)
+    //{
+    //    int userId = UserIds[index];
+    //    string sessionId = SessionIds[index];
+    //    long timestamp = Timestamps[index];
+    //    DynamicKey key = DynamicKey.Combine(
+    //        DynamicKey.GetKey(userId),
+    //        DynamicKey.GetKey(sessionId),
+    //        DynamicKey.GetKey(timestamp));
+    //    return _dynamicKeyDictionary[key];
+    //}
 
-  #region Operator+ Benchmarks
+    //#endregion
 
-  [Benchmark]
-  [Arguments(500)]
-  public string OperatorPlus_2Keys(int index)
-  {
-    int userId = UserId + index;
-    string sessionId = $"{SessionId}-{index}";
-    DynamicKey key = DynamicKey.GetKey(userId) + DynamicKey.GetKey(sessionId);
-    return _dynamicKeyDictionary[key];
-  }
+    //#region Builder Pattern Benchmarks
 
-  [Benchmark]
-  [Arguments(500)]
-  public string OperatorPlus_3Keys(int index)
-  {
-    int userId = UserId + index;
-    string sessionId = $"{SessionId}-{index}";
-    long timestamp = Timestamp + index;
-    DynamicKey key = DynamicKey.GetKey(userId) + DynamicKey.GetKey(sessionId) + DynamicKey.GetKey(timestamp);
-    return _dynamicKeyDictionary[key];
-  }
+    //[Benchmark]
+    //[Arguments(500)]
+    //public string Builder_2Keys (int index)
+    //{
+    //    int userId = UserIds[index];
+    //    string sessionId = SessionIds[index];
+    //    DynamicKey key = DynamicKeyBuilder.Create()
+    //        .Add(userId)
+    //        .Add(sessionId)
+    //        .Build();
+    //    return _dynamicKeyDictionary[key];
+    //}
 
-  #endregion
+    //[Benchmark]
+    //[Arguments(500)]
+    //public string Builder_3Keys (int index)
+    //{
+    //    int userId = UserIds[index];
+    //    string sessionId = SessionIds[index];
+    //    long timestamp = Timestamps[index];
+    //    DynamicKey key = DynamicKeyBuilder.Create()
+    //        .Add(userId)
+    //        .Add(sessionId)
+    //        .Add(timestamp)
+    //        .Build();
+    //    return _dynamicKeyDictionary[key];
+    //}
 
-  #region Combine Method Benchmarks
-
-  [Benchmark]
-  [Arguments(500)]
-  public string Combine_2Keys(int index)
-  {
-    int userId = UserId + index;
-    string sessionId = $"{SessionId}-{index}";
-    DynamicKey key = DynamicKey.Combine(DynamicKey.GetKey(userId), DynamicKey.GetKey(sessionId));
-    return _dynamicKeyDictionary[key];
-  }
-
-  [Benchmark]
-  [Arguments(500)]
-  public string Combine_3Keys(int index)
-  {
-    int userId = UserId + index;
-    string sessionId = $"{SessionId}-{index}";
-    long timestamp = Timestamp + index;
-    DynamicKey key = DynamicKey.Combine(
-        DynamicKey.GetKey(userId),
-        DynamicKey.GetKey(sessionId),
-        DynamicKey.GetKey(timestamp));
-    return _dynamicKeyDictionary[key];
-  }
-
-  #endregion
-
-  #region Builder Pattern Benchmarks
-
-  [Benchmark]
-  [Arguments(500)]
-  public string Builder_2Keys(int index)
-  {
-    int userId = UserId + index;
-    string sessionId = $"{SessionId}-{index}";
-    DynamicKey key = DynamicKeyBuilder.Create()
-        .Add(userId)
-        .Add(sessionId)
-        .Build();
-    return _dynamicKeyDictionary[key];
-  }
-
-  [Benchmark]
-  [Arguments(500)]
-  public string Builder_3Keys(int index)
-  {
-    int userId = UserId + index;
-    string sessionId = $"{SessionId}-{index}";
-    long timestamp = Timestamp + index;
-    DynamicKey key = DynamicKeyBuilder.Create()
-        .Add(userId)
-        .Add(sessionId)
-        .Add(timestamp)
-        .Build();
-    return _dynamicKeyDictionary[key];
-  }
-
-  #endregion
+    //#endregion
 }
