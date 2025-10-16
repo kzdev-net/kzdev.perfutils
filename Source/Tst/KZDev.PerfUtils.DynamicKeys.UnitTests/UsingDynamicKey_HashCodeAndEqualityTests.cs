@@ -87,7 +87,7 @@ public class UsingDynamicKey_HashCodeAndEqualityTests : UnitTestBase
   public void UsingDynamicKey_HashCodeDistribution_Integers()
   {
     const int count = 1000;
-    HashSet<int> hashCodes = new();
+    HashSet<int> hashCodes = [];
 
     for (int i = 0; i < count; i++)
     {
@@ -108,7 +108,7 @@ public class UsingDynamicKey_HashCodeAndEqualityTests : UnitTestBase
   public void UsingDynamicKey_HashCodeDistribution_Strings()
   {
     const int count = 1000;
-    HashSet<int> hashCodes = new();
+    HashSet<int> hashCodes = [];
 
     for (int i = 0; i < count; i++)
     {
@@ -129,7 +129,7 @@ public class UsingDynamicKey_HashCodeAndEqualityTests : UnitTestBase
   public void UsingDynamicKey_HashCodeDistribution_Guids()
   {
     const int count = 1000;
-    HashSet<int> hashCodes = new();
+    HashSet<int> hashCodes = [];
 
     for (int i = 0; i < count; i++)
     {
@@ -315,7 +315,7 @@ public class UsingDynamicKey_HashCodeAndEqualityTests : UnitTestBase
   public void UsingDynamicKey_CompositeKeyHashCode_Distribution()
   {
     const int count = 100;
-    HashSet<int> hashCodes = new();
+    HashSet<int> hashCodes = [];
 
     for (int i = 0; i < count; i++)
     {
@@ -456,7 +456,7 @@ public class UsingDynamicKey_HashCodeAndEqualityTests : UnitTestBase
   [Fact]
   public void UsingDynamicKey_InHashSet_WorksCorrectly()
   {
-    HashSet<DynamicKey> hashSet = new();
+    HashSet<DynamicKey> hashSet = [];
 
     DynamicKey key1 = DynamicKey.GetKey(42);
     DynamicKey key2 = DynamicKey.GetKey(42); // Same value, should be same key
@@ -475,7 +475,7 @@ public class UsingDynamicKey_HashCodeAndEqualityTests : UnitTestBase
   [Fact]
   public void UsingDynamicKey_DifferentKeysInHashSet_WorksCorrectly()
   {
-    HashSet<DynamicKey> hashSet = new();
+    HashSet<DynamicKey> hashSet = [];
 
     DynamicKey key1 = DynamicKey.GetKey(42);
     DynamicKey key2 = DynamicKey.GetKey(43);
@@ -501,8 +501,8 @@ public class UsingDynamicKey_HashCodeAndEqualityTests : UnitTestBase
   public void UsingDynamicKey_HashCodeCollisions_HandledCorrectly()
   {
     // Create keys that might have hash code collisions
-    List<DynamicKey> keys = new();
-    HashSet<int> hashCodes = new();
+    List<DynamicKey> keys = [];
+    HashSet<int> hashCodes = [];
 
     // Test with various values that might collide
     for (int i = 0; i < 1000; i++)

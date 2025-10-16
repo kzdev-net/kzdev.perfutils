@@ -564,7 +564,7 @@ public class UsingDynamicKey_MultiKeyTests : UnitTestBase
   [Fact]
   public void UsingDynamicKey_GetKey_MultiKeys_InHashSet ()
   {
-    HashSet<DynamicKey> hashSet = new();
+    HashSet<DynamicKey> hashSet = [];
 
     DynamicKey key1 = DynamicKey.GetKey(42, "test", true);
     DynamicKey key2 = DynamicKey.GetKey(42, "test", true); // Same values
