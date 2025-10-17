@@ -116,7 +116,7 @@ internal sealed class DynamicCompositeKey : DynamicKey, IComparable<DynamicCompo
                 arrayBuilder.Add(key);
         }
         Keys = arrayBuilder.ToImmutable();
-        Count = keys.Length;
+        Count = Keys.Length;
     }
     //--------------------------------------------------------------------------------
     /// <summary>
@@ -221,25 +221,30 @@ internal sealed class DynamicCompositeKey : DynamicKey, IComparable<DynamicCompo
 
     //--------------------------------------------------------------------------------
     /// <inheritdoc />
+    public override bool Equals (object? obj) =>
+        ((obj is DynamicCompositeKey compositeKey) &&
+         (ReferenceEquals(this, compositeKey) || AreKeysEqual(Keys, compositeKey.Keys))) ||
+        ((obj is DynamicKey dynamicKey) && Equals(dynamicKey));
+    //--------------------------------------------------------------------------------
+    /// <inheritdoc />
     public override int GetHashCode ()
     {
         // We optimize for the common case of 1-5 elements, and we don't need to include 
         // all elements in the hash code for larger composites; this is a trade-off between
         // hash code quality and performance.
         // ReSharper disable once NonReadonlyMemberInGetHashCode
+        Debug.WriteLineIf(!_hashCode.HasValue, $"HashCodes = {string.Join(',',Keys.Select(key => key.GetHashCode()))}");
         return _hashCode ??= Count switch
         {
             1 => Keys[0].GetHashCode(),
-            2 => HashCode.Combine(Keys[0].GetHashCode(), Keys[1].GetHashCode()),
-            3 => HashCode.Combine(Keys[0].GetHashCode(), Keys[1].GetHashCode(), Keys[2].GetHashCode()),
-            4 => HashCode.Combine(Keys[0].GetHashCode(), Keys[1].GetHashCode(), Keys[2].GetHashCode(), Keys[3].GetHashCode()),
-            5 => HashCode.Combine(Keys[0].GetHashCode(), Keys[1].GetHashCode(), Keys[2].GetHashCode(), Keys[3].GetHashCode(), Keys[4].GetHashCode()),
+            2 => HashCode.Combine(Keys[0], Keys[1]),
+            3 => HashCode.Combine(Keys[0], Keys[1], Keys[2]),
+            4 => HashCode.Combine(Keys[0], Keys[1], Keys[2], Keys[3]),
+            5 => HashCode.Combine(Keys[0], Keys[1], Keys[2], Keys[3], Keys[4]),
             _ => (Count / 2) switch
             {
-                3 => HashCode.Combine(Keys[0].GetHashCode(), Keys[1].GetHashCode(), Keys[2].GetHashCode(), Keys[3].GetHashCode()),
-                4 => HashCode.Combine(Keys[0].GetHashCode(), Keys[1].GetHashCode(), Keys[2].GetHashCode(), Keys[3].GetHashCode()),
-                5 => HashCode.Combine(Keys[0].GetHashCode(), Keys[1].GetHashCode(), Keys[2].GetHashCode(), Keys[3].GetHashCode(), Keys[4].GetHashCode()),
-                _ => HashCode.Combine(Keys[0].GetHashCode(), Keys[1].GetHashCode(), Keys[2].GetHashCode(), Keys[3].GetHashCode(), Keys[4].GetHashCode(), Keys[5].GetHashCode())
+                < 6 => HashCode.Combine(Keys[0], Keys[1], Keys[2], Keys[3], Keys[4]),
+                _ => HashCode.Combine(Keys[0], Keys[1], Keys[2], Keys[3], Keys[4], Keys[5])
             }
         };
     }
@@ -258,8 +263,10 @@ internal sealed class DynamicCompositeKey : DynamicKey, IComparable<DynamicCompo
     //--------------------------------------------------------------------------------
     /// <inheritdoc />
     public override bool Equals (DynamicKey? other) =>
-        (other is DynamicCompositeKey compositeKey) &&
-        (ReferenceEquals(this, compositeKey) || AreKeysEqual(Keys, compositeKey.Keys));
+        ((other is DynamicCompositeKey compositeKey) &&
+         (ReferenceEquals(this, compositeKey) || AreKeysEqual(Keys, compositeKey.Keys))) ||
+        ((Count == 1) && Keys[0].Equals(other)) ||
+        ((other?.ObjectValue is DynamicCompositeKey otherCompositeKey) && AreKeysEqual(Keys, otherCompositeKey.Keys));
     //--------------------------------------------------------------------------------
     /// <inheritdoc />
     public override int CompareTo (DynamicKey? other) =>
@@ -302,5 +309,14 @@ internal sealed class DynamicCompositeKey : DynamicKey, IComparable<DynamicCompo
     //--------------------------------------------------------------------------------
 
     #endregion IComparable<DynamicCompositeKey> Members
+
+    #region Overrides of DynamicRefKey
+
+    //--------------------------------------------------------------------------------
+    /// <inheritdoc />
+    protected internal override object ObjectValue { [DebuggerStepThrough] get => this; }
+    //--------------------------------------------------------------------------------
+
+    #endregion
 }
 //################################################################################

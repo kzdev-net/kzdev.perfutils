@@ -111,17 +111,34 @@ internal sealed class DynamicTypeKey : DynamicKey, IComparable<DynamicTypeKey>
     //--------------------------------------------------------------------------------
     /// <inheritdoc />
     public override bool Equals (DynamicKey? other) =>
-        (other is DynamicTypeKey typeDynamicKey) &&
-        (ReferenceEquals(typeDynamicKey.Value, Value) || (typeDynamicKey.Value == Value));
+        ((other is DynamicTypeKey typeDynamicKey) &&
+         (ReferenceEquals(typeDynamicKey.Value, Value) || (typeDynamicKey.Value == Value))) ||
+        Equals(other?.ObjectValue, Value);
     //--------------------------------------------------------------------------------
     /// <inheritdoc />
-    public override int CompareTo (DynamicKey? other) =>
-        other switch
+    public override int CompareTo (DynamicKey? other)
+    {
+        if (ReferenceEquals(null, other))
+            return 1;
+        if (ReferenceEquals(this, other))
+            return 0;
+        if (ReferenceEquals(other.ObjectValue, Value))
+            return 0;
+        if (other is DynamicTypeKey typeKey)
+            return CompareTo(typeKey);
+        if (other.ObjectValue is null)
+            return 1;
+        return Value switch
         {
-            null => 1,
-            DynamicTypeKey typeDynamicKey => CompareTo(typeDynamicKey),
-            _ => CompareKey(other)
+            null => -1,
+            _ => other.ObjectValue switch
+            {
+                Type otherType => string.Compare(Value.FullName, otherType.FullName, StringComparison.Ordinal),
+                IComparable otherComparable => (otherComparable.CompareTo(Value) * (-1)),
+                _ => CompareKey(other)
+            }
         };
+    }
     //--------------------------------------------------------------------------------
 
     #endregion
@@ -136,5 +153,14 @@ internal sealed class DynamicTypeKey : DynamicKey, IComparable<DynamicTypeKey>
     //--------------------------------------------------------------------------------
 
     #endregion IComparable<DynamicTypeKey> Members
+
+    #region Overrides of DynamicRefKey
+
+    //--------------------------------------------------------------------------------
+    /// <inheritdoc />
+    protected internal override object ObjectValue { [DebuggerStepThrough] get => Value; }
+    //--------------------------------------------------------------------------------
+
+    #endregion
 }
 //################################################################################

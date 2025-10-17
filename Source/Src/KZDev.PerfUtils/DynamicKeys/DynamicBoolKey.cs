@@ -51,6 +51,11 @@ internal sealed class DynamicBoolKey : DynamicKey, IComparable<DynamicBoolKey>
     private string DisplayValue => ToString();
 
     /// <summary>
+    /// The object representation of the boolean value used as the key value for this instance.
+    /// </summary>
+    private object? _objValue;
+
+    /// <summary>
     /// The boolean value used as the key value for this instance.
     /// </summary>
     public bool Value { [DebuggerStepThrough] get; }
@@ -107,8 +112,11 @@ internal sealed class DynamicBoolKey : DynamicKey, IComparable<DynamicBoolKey>
     //--------------------------------------------------------------------------------
     /// <inheritdoc />
     public override bool Equals (DynamicKey? other) =>
-        (other is DynamicBoolKey boolDynamicKey) &&
-        (ReferenceEquals(this, boolDynamicKey) || (boolDynamicKey.Value == Value));
+        ((other is DynamicBoolKey boolDynamicKey) &&
+         (ReferenceEquals(this, boolDynamicKey) || (boolDynamicKey.Value == Value))) ||
+        ((other is DynamicCompositeKey compositeKey) && compositeKey.Equals(this)) ||
+        ((other?.ObjectValue is DynamicCompositeKey otherCompositeKey) && otherCompositeKey.Equals(this)) ||
+        Equals(other?.ObjectValue, ObjectValue);
     //--------------------------------------------------------------------------------
     /// <inheritdoc />
     public override int CompareTo (DynamicKey? other) =>
@@ -131,5 +139,14 @@ internal sealed class DynamicBoolKey : DynamicKey, IComparable<DynamicBoolKey>
     //--------------------------------------------------------------------------------
 
     #endregion IComparable<DynamicBoolKey> Members
+
+    #region Overrides of DynamicRefKey
+
+    //--------------------------------------------------------------------------------
+    /// <inheritdoc />
+    protected internal override object ObjectValue { [DebuggerStepThrough] get => _objValue ??= Value; }
+    //--------------------------------------------------------------------------------
+
+    #endregion
 }
 //################################################################################

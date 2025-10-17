@@ -57,6 +57,11 @@ internal sealed class DynamicULongKey : DynamicKey, IComparable<DynamicULongKey>
     private string DisplayValue => ToString();
 
     /// <summary>
+    /// The object representation of the unsigned 64-bit integer value used for this instance.
+    /// </summary>
+    private object? _objValue;
+
+    /// <summary>
     /// The single unsigned 64-bit integer value used as the key value for this instance.
     /// </summary>
     public ulong Value { [DebuggerStepThrough] get; }
@@ -118,8 +123,11 @@ internal sealed class DynamicULongKey : DynamicKey, IComparable<DynamicULongKey>
     //--------------------------------------------------------------------------------
     /// <inheritdoc />
     public override bool Equals (DynamicKey? other) =>
-        (other is DynamicULongKey ulongDynamicKey) &&
-        (ReferenceEquals(this, ulongDynamicKey) || (ulongDynamicKey.Value == Value));
+        ((other is DynamicULongKey ulongDynamicKey) &&
+         (ReferenceEquals(this, ulongDynamicKey) || (ulongDynamicKey.Value == Value))) ||
+        ((other is DynamicCompositeKey compositeKey) && compositeKey.Equals(this)) ||
+        ((other?.ObjectValue is DynamicCompositeKey otherCompositeKey) && otherCompositeKey.Equals(this)) ||
+        Equals(other?.ObjectValue, ObjectValue);
     //--------------------------------------------------------------------------------
     /// <inheritdoc />
     public override int CompareTo (DynamicKey? other) =>
@@ -142,5 +150,14 @@ internal sealed class DynamicULongKey : DynamicKey, IComparable<DynamicULongKey>
     //--------------------------------------------------------------------------------
 
     #endregion IComparable<DynamicULongKey> Members
+
+    #region Overrides of DynamicRefKey
+
+    //--------------------------------------------------------------------------------
+    /// <inheritdoc />
+    protected internal override object ObjectValue { [DebuggerStepThrough] get => _objValue ??= Value; }
+    //--------------------------------------------------------------------------------
+
+    #endregion
 }
 //################################################################################

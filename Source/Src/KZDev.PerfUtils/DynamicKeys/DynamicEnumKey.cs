@@ -61,6 +61,11 @@ internal sealed class DynamicEnumKey<TEnum> : DynamicKey, IComparable<DynamicEnu
     private string DisplayValue => ToString();
 
     /// <summary>
+    /// The object representation of the enum value used for this instance.
+    /// </summary>
+    private object? _objValue;
+
+    /// <summary>
     /// The enum value used as the key value for this instance.
     /// </summary>
     public TEnum Value { [DebuggerStepThrough] get; }
@@ -122,8 +127,11 @@ internal sealed class DynamicEnumKey<TEnum> : DynamicKey, IComparable<DynamicEnu
     //--------------------------------------------------------------------------------
     /// <inheritdoc />
     public override bool Equals (DynamicKey? other) =>
-        (other is DynamicEnumKey<TEnum> enumDynamicKey) &&
-        (ReferenceEquals(this, enumDynamicKey) || (EqualityComparer<TEnum>.Default.Equals(enumDynamicKey.Value, Value)));
+        ((other is DynamicEnumKey<TEnum> enumDynamicKey) &&
+         (ReferenceEquals(this, enumDynamicKey) || EqualityComparer<TEnum>.Default.Equals(enumDynamicKey.Value, Value))) ||
+        ((other is DynamicCompositeKey compositeKey) && compositeKey.Equals(this)) ||
+        ((other?.ObjectValue is DynamicCompositeKey otherCompositeKey) && otherCompositeKey.Equals(this)) ||
+        Equals(other?.ObjectValue, ObjectValue);
     //--------------------------------------------------------------------------------
     /// <inheritdoc />
     public override int CompareTo (DynamicKey? other) =>
@@ -146,5 +154,14 @@ internal sealed class DynamicEnumKey<TEnum> : DynamicKey, IComparable<DynamicEnu
     //--------------------------------------------------------------------------------
 
     #endregion IComparable<DynamicEnumKey<TEnum>> Members
+
+    #region Overrides of DynamicRefKey
+
+    //--------------------------------------------------------------------------------
+    /// <inheritdoc />
+    protected internal override object ObjectValue { [DebuggerStepThrough] get => _objValue ??= Value; }
+    //--------------------------------------------------------------------------------
+
+    #endregion
 }
 //################################################################################

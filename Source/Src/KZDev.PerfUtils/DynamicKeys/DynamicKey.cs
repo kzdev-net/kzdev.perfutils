@@ -60,6 +60,13 @@ namespace KZDev.PerfUtils;
 #pragma warning disable CS0659, CS0660, CS0661
 public abstract partial class DynamicKey : IEquatable<DynamicKey>, IComparable<DynamicKey>, IComparable
 {
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Gets the underlying object value used for this key.
+    /// </summary>
+    protected internal abstract object? ObjectValue { get; }
+    //--------------------------------------------------------------------------------
+
     #region Helper Properties
 
     //--------------------------------------------------------------------------------
@@ -529,15 +536,41 @@ public abstract partial class DynamicKey : IEquatable<DynamicKey>, IComparable<D
     ///   <para>
     ///     Derived types should override <see cref="CompareTo(DynamicKey?)"/> to handle
     ///     comparison with instances of the same type, and call this method only for
-    ///     cross-type comparisons.
+    ///     cross-type comparisons when other means are not available.
     ///   </para>
     /// </remarks>
     protected int CompareKey (DynamicKey other)
     {
+        if (ReferenceEquals(other?.ObjectValue, ObjectValue))
+            return 0;
+        if (other?.ObjectValue is null)
+            return 1;
+        switch (ObjectValue)
+        {
+            case null:
+                return -1;
+
+            case DynamicCompositeKey compositeKey:
+                if (other is DynamicCompositeKey otherComposite)
+                    return compositeKey.CompareTo(otherComposite);
+                break;
+
+            case string strValue when other.ObjectValue is string stringKey:
+                return string.CompareOrdinal(strValue, stringKey);
+
+            case IComparable comparable when ObjectValue.GetType() == other.ObjectValue.GetType():
+                return comparable.CompareTo(other.ObjectValue);
+        }
+
+        Type type = GetType();
+        Type otherType = other.GetType();
+        if (type == otherType)
+            throw new InvalidOperationException($"Cannot compare two instances of the same type: {type.FullName} -- derived types of {nameof(DynamicKey)} should handle IComparable operations for keys of the same type.");
         // In lieu of using any specific ordering, we will just use the type name to
-        // provide a consistent ordering.
-        string typeName = GetType().Name;
-        string otherTypeName = other.GetType().Name;
+        // provide a consistent ordering, but it won't have any real meaning, and
+        // we will throw if two instances of the same type (simple name) are being compared.
+        string typeName = type.Name;
+        string otherTypeName = otherType.Name;
         if (typeName == otherTypeName)
             throw new InvalidOperationException($"Cannot compare two instances of the same type: {typeName} -- derived types of {nameof(DynamicKey)} should handle IComparable operations for keys of the same type.");
         return string.Compare(typeName, otherTypeName, StringComparison.Ordinal);

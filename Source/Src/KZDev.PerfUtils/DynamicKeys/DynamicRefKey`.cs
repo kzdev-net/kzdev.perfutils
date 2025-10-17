@@ -7,6 +7,13 @@ namespace KZDev.PerfUtils;
 
 //################################################################################
 /// <summary>
+///   A base class for reference type dynamic keys - used as a type marker.
+/// </summary>
+internal abstract class DynamicRefKey : DynamicKey
+{
+}
+//################################################################################
+/// <summary>
 ///   A specialized <see cref="DynamicKey"/> implementation for reference types that provides
 ///   efficient key generation and comparison for class types.
 /// </summary>
@@ -42,7 +49,7 @@ namespace KZDev.PerfUtils;
 ///   </code>
 /// </example>
 [DebuggerDisplay("{" + nameof(DisplayValue) + "}")]
-internal sealed class DynamicRefKey<T> : DynamicKey, IComparable<DynamicRefKey<T>>
+internal sealed class DynamicRefKey<T> : DynamicRefKey, IComparable<DynamicRefKey<T>>
     where T : class
 {
     /// <summary>
@@ -202,8 +209,11 @@ internal sealed class DynamicRefKey<T> : DynamicKey, IComparable<DynamicRefKey<T
     ///   comparer for type <typeparamref name="T"/>.
     /// </remarks>
     public override bool Equals (DynamicKey? other) =>
-        (other is DynamicRefKey<T> objectCacheKey) &&
-        EqualityComparer<T>.Default.Equals(Value!, objectCacheKey.Value!);
+        ((other is DynamicRefKey<T> objectCacheKey) &&
+         (ReferenceEquals(objectCacheKey.Value, Value) || Equals(objectCacheKey.Value, Value))) ||
+        ((other is DynamicCompositeKey compositeKey) && compositeKey.Equals(Value)) ||
+        ((other?.ObjectValue is DynamicCompositeKey otherCompositeKey) && otherCompositeKey.Equals(Value)) ||
+        Equals(other?.ObjectValue, Value);
     //--------------------------------------------------------------------------------
     /// <summary>
     ///   Compares this reference type key with another dynamic key.
@@ -237,13 +247,24 @@ internal sealed class DynamicRefKey<T> : DynamicKey, IComparable<DynamicRefKey<T
     ///   If the other key is also a <see cref="DynamicRefKey{T}"/>, the references are compared
     ///   directly. Otherwise, the base class comparison logic is used.
     /// </remarks>
-    public override int CompareTo (DynamicKey? other) =>
-        other switch
+    public override int CompareTo (DynamicKey? other)
+    {
+        if (ReferenceEquals(null, other))
+            return 1;
+        if (ReferenceEquals(this, other))
+            return 0;
+        if (ReferenceEquals(other?.ObjectValue, Value))
+            return 0;
+        if (other?.ObjectValue is null)
+            return 1;
+        return Value switch
         {
-            null => 1,
-            DynamicRefKey<T> otherKey => CompareTo(otherKey),
-            _ => CompareKey(other)
+            null => -1,
+            string strValue when (other?.ObjectValue is string refStringValue) => string.CompareOrdinal(strValue, refStringValue),
+            IComparable comparable => comparable.CompareTo(other?.ObjectValue),
+            _ => other.ObjectValue is IComparable otherComparable ?  otherComparable.CompareTo(Value) * (-1) : CompareKey(other)
         };
+    }
     //--------------------------------------------------------------------------------
 
     #endregion
@@ -291,21 +312,36 @@ internal sealed class DynamicRefKey<T> : DynamicKey, IComparable<DynamicRefKey<T
     ///     <item><description>Throws <see cref="InvalidOperationException"/> if neither is available</description></item>
     ///   </list>
     /// </remarks>
-    public int CompareTo (DynamicRefKey<T>? other) =>
-        Value switch
+    public int CompareTo (DynamicRefKey<T>? other)
+    {
+        if (ReferenceEquals(other?.Value, Value))
+            return 0;
+        if (other?.Value is null)
+            return 1;
+        return Value switch
         {
-            IComparable<T> comparableT => comparableT.CompareTo(other?.Value),
-            IComparable comparable => comparable.CompareTo(other?.Value),
-            _ => other?.Value switch
+            string stringValue when (other.Value is string otherStringValue) => string.CompareOrdinal(stringValue, otherStringValue),
+            IComparable<T> comparableT => comparableT.CompareTo(other.Value),
+            IComparable comparable => comparable.CompareTo(other.Value),
+            _ => other.Value switch
             {
                 IComparable<T> otherComparableT => (otherComparableT.CompareTo(Value) * (-1)),
                 IComparable otherComparable => (otherComparable.CompareTo(Value) * (-1)),
-                _ => throw new InvalidOperationException(
-                    $"DynamicRefKey<{typeof(T)}> can't be compared because the generic type {typeof(T)} is not comparable")
+                _ => CompareKey(other)
             }
         };
+    }
     //--------------------------------------------------------------------------------
 
     #endregion IComparable<DynamicRefKey<T>> Members
+
+    #region Overrides of DynamicRefKey
+
+    //--------------------------------------------------------------------------------
+    /// <inheritdoc />
+    protected internal override object ObjectValue { [DebuggerStepThrough] get => Value; }
+    //--------------------------------------------------------------------------------
+
+    #endregion
 }
 //################################################################################

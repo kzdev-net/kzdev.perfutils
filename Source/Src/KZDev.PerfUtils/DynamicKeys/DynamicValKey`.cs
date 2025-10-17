@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 
 namespace KZDev.PerfUtils;
 
@@ -57,6 +58,11 @@ internal sealed class DynamicValKey<T> : DynamicKey, IComparable<DynamicValKey<T
     ///   A string representation of the key value, suitable for debugging display.
     /// </value>
     private string DisplayValue => ToString();
+
+    /// <summary>
+    /// The object representation of the value type used for this instance.
+    /// </summary>
+    private object? _objValue;
 
     /// <summary>
     ///   Gets the value used as the key for this instance.
@@ -170,56 +176,15 @@ internal sealed class DynamicValKey<T> : DynamicKey, IComparable<DynamicValKey<T
     #region Overrides of DynamicKey
 
     //--------------------------------------------------------------------------------
-    /// <summary>
-    ///   Determines whether this value type key is equal to another dynamic key.
-    /// </summary>
-    /// <param name="other">
-    ///   The other dynamic key to compare with this instance.
-    /// </param>
-    /// <returns>
-    ///   <see langword="true"/> if the other key is a <see cref="DynamicValKey{T}"/>
-    ///   with the same value; otherwise, <see langword="false"/>.
-    /// </returns>
-    /// <remarks>
-    ///   Equality is determined by comparing the values using the default equality
-    ///   comparer for type <typeparamref name="T"/>.
-    /// </remarks>
+    /// <inheritdoc />
     public override bool Equals (DynamicKey? other) =>
-        (other is DynamicValKey<T> objectCacheKey) &&
-        EqualityComparer<T>.Default.Equals(Value, objectCacheKey.Value!);
+        ((other is DynamicValKey<T> valDynamicKey) &&
+         (ReferenceEquals(this, valDynamicKey) || EqualityComparer<T>.Default.Equals(valDynamicKey.Value, Value))) ||
+        ((other is DynamicCompositeKey compositeKey) && compositeKey.Equals(this)) ||
+        ((other?.ObjectValue is DynamicCompositeKey otherCompositeKey) && otherCompositeKey.Equals(this)) ||
+        Equals(other?.ObjectValue, ObjectValue);
     //--------------------------------------------------------------------------------
-    /// <summary>
-    ///   Compares this value type key with another dynamic key.
-    /// </summary>
-    /// <param name="other">
-    ///   The other dynamic key to compare with this instance.
-    /// </param>
-    /// <returns>
-    ///   A value indicating the relative order of the keys being compared.
-    ///   The return value has these meanings:
-    ///   <list type="table">
-    ///     <listheader>
-    ///       <term>Value</term>
-    ///       <description>Meaning</description>
-    ///     </listheader>
-    ///     <item>
-    ///       <term>Less than zero</term>
-    ///       <description>This instance precedes <paramref name="other"/> in the sort order.</description>
-    ///     </item>
-    ///     <item>
-    ///       <term>Zero</term>
-    ///       <description>This instance occurs in the same position in the sort order as <paramref name="other"/>.</description>
-    ///     </item>
-    ///     <item>
-    ///       <term>Greater than zero</term>
-    ///       <description>This instance follows <paramref name="other"/> in the sort order.</description>
-    ///     </item>
-    ///   </list>
-    /// </returns>
-    /// <remarks>
-    ///   If the other key is also a <see cref="DynamicValKey{T}"/>, the values are compared
-    ///   directly. Otherwise, the base class comparison logic is used.
-    /// </remarks>
+    /// <inheritdoc />
     public override int CompareTo (DynamicKey? other) =>
         other switch
         {
@@ -290,5 +255,14 @@ internal sealed class DynamicValKey<T> : DynamicKey, IComparable<DynamicValKey<T
     //--------------------------------------------------------------------------------
 
     #endregion IComparable<DynamicValKey<T>> Members
+
+    #region Overrides of DynamicRefKey
+
+    //--------------------------------------------------------------------------------
+    /// <inheritdoc />
+    protected internal override object ObjectValue { [DebuggerStepThrough] get => _objValue ??= Value; }
+    //--------------------------------------------------------------------------------
+
+    #endregion
 }
 //################################################################################

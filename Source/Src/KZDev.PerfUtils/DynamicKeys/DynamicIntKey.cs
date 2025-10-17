@@ -57,6 +57,11 @@ internal sealed class DynamicIntKey : DynamicKey, IComparable<DynamicIntKey>
     private string DisplayValue => ToString();
 
     /// <summary>
+    /// The object representation of the integer value used for this instance.
+    /// </summary>
+    private object? _objValue;
+
+    /// <summary>
     /// The single integer value used as the key value for this instance.
     /// </summary>
     public int Value { [DebuggerStepThrough] get; }
@@ -118,8 +123,11 @@ internal sealed class DynamicIntKey : DynamicKey, IComparable<DynamicIntKey>
     //--------------------------------------------------------------------------------
     /// <inheritdoc />
     public override bool Equals (DynamicKey? other) =>
-        (other is DynamicIntKey intDynamicKey) &&
-        (ReferenceEquals(this, intDynamicKey) || (intDynamicKey.Value == Value));
+        ((other is DynamicIntKey intDynamicKey) &&
+         (ReferenceEquals(this, intDynamicKey) || (intDynamicKey.Value == Value))) ||
+        ((other is DynamicCompositeKey compositeKey) && compositeKey.Equals(this)) ||
+        ((other?.ObjectValue is DynamicCompositeKey otherCompositeKey) && otherCompositeKey.Equals(this)) ||
+        Equals(other?.ObjectValue, ObjectValue);
     //--------------------------------------------------------------------------------
     /// <inheritdoc />
     public override int CompareTo (DynamicKey? other) =>
@@ -142,5 +150,14 @@ internal sealed class DynamicIntKey : DynamicKey, IComparable<DynamicIntKey>
     //--------------------------------------------------------------------------------
 
     #endregion IComparable<DynamicIntKey> Members
+
+    #region Overrides of DynamicRefKey
+
+    //--------------------------------------------------------------------------------
+    /// <inheritdoc />
+    protected internal override object ObjectValue { [DebuggerStepThrough] get => _objValue ??= Value; }
+    //--------------------------------------------------------------------------------
+
+    #endregion
 }
 //################################################################################

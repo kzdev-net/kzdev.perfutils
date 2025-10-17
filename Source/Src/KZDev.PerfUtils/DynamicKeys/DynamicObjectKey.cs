@@ -1,4 +1,7 @@
-﻿using System.Diagnostics;
+﻿// Copyright (c) Kevin Zehrer
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
+using System.Diagnostics;
 
 using KZDev.PerfUtils.Helpers;
 
@@ -126,17 +129,31 @@ internal sealed class DynamicObjectKey : DynamicKey, IComparable<DynamicObjectKe
     //--------------------------------------------------------------------------------
     /// <inheritdoc />
     public override bool Equals (DynamicKey? other) =>
-        (other is DynamicObjectKey objectCacheKey) &&
-        (ReferenceEquals(objectCacheKey.Value, Value) || Equals(objectCacheKey.Value, Value));
+        ((other is DynamicObjectKey objectCacheKey) &&
+         (ReferenceEquals(objectCacheKey.Value, Value) || Equals(objectCacheKey.Value, Value))) ||
+        ((other is DynamicCompositeKey compositeKey) && compositeKey.Equals(Value)) ||
+        ((other?.ObjectValue is DynamicCompositeKey otherCompositeKey) && otherCompositeKey.Equals(Value)) ||
+        Equals (other?.ObjectValue, Value);
     //--------------------------------------------------------------------------------
     /// <inheritdoc />
-    public override int CompareTo (DynamicKey? other) =>
-        other switch
+    public override int CompareTo (DynamicKey? other)
+    {
+        if (ReferenceEquals(null, other))
+            return 1;
+        if (ReferenceEquals(this, other))
+            return 0;
+        if (ReferenceEquals(other.ObjectValue, Value))
+            return 0;
+        if (other.ObjectValue is null)
+            return 1;
+        return Value switch
         {
-            null => 1,
-            DynamicObjectKey boolCacheKey => CompareTo(boolCacheKey),
-            _ => CompareKey(other)
+            null => -1,
+            string strValue when (other?.ObjectValue is string refStringValue) => string.CompareOrdinal (strValue, refStringValue),
+            IComparable comparable => comparable.CompareTo (other?.ObjectValue),
+            _ => other.ObjectValue is IComparable otherComparable ?  otherComparable.CompareTo(Value) * (-1) : CompareKey (other)
         };
+    }
     //--------------------------------------------------------------------------------
 
     #endregion
@@ -156,15 +173,28 @@ internal sealed class DynamicObjectKey : DynamicKey, IComparable<DynamicObjectKe
             case null:
                 return -1;
 
-            case IComparable comparable when (other?.Value is IComparable otherComparable):
-                return comparable.CompareTo(otherComparable);
+            case string stringValue when (other.Value is string otherStringValue):
+                return string.CompareOrdinal(stringValue, otherStringValue);
+
+            case IComparable comparable:
+                return comparable.CompareTo(other.Value);
         }
-        ;
+        if (other.Value is IComparable otherComparable)
+            return otherComparable.CompareTo(Value) * (-1);
         ThrowHelper.ThrowArgumentException_ContainedValueIsNotComparable(nameof(other));
         return 0; // Will never get here
     }
     //--------------------------------------------------------------------------------
 
     #endregion IComparable<DynamicObjectKey> Members
+
+    #region Overrides of DynamicRefKey
+
+    //--------------------------------------------------------------------------------
+    /// <inheritdoc />
+    protected internal override object ObjectValue { [DebuggerStepThrough] get => Value; }
+    //--------------------------------------------------------------------------------
+
+    #endregion
 }
 //################################################################################

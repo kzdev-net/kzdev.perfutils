@@ -55,12 +55,12 @@ internal sealed class DynamicStringKey : DynamicKey, IComparable<DynamicStringKe
     /// <value>
     /// The debugger display value.
     /// </value>
-    private string DisplayValue => StringKey;
+    private string DisplayValue => Value;
 
     /// <summary>
     /// The string value used as the key value for this instance.
     /// </summary>
-    public string StringKey { [DebuggerStepThrough] get; }
+    public string Value { [DebuggerStepThrough] get; }
 
     //--------------------------------------------------------------------------------
     /// <summary>
@@ -90,7 +90,7 @@ internal sealed class DynamicStringKey : DynamicKey, IComparable<DynamicStringKe
     private DynamicStringKey (string key)
     {
         ArgumentNullException.ThrowIfNull(key);
-        StringKey = key;
+        Value = key;
     }
     //--------------------------------------------------------------------------------
     /// <summary>
@@ -107,7 +107,7 @@ internal sealed class DynamicStringKey : DynamicKey, IComparable<DynamicStringKe
         if (useKey == string.Empty)
             return Empty;
         DynamicStringKey? cachedInstance = _cachedInstance;
-        if ((cachedInstance is not null) && (cachedInstance.StringKey == useKey))
+        if ((cachedInstance is not null) && (cachedInstance.Value == useKey))
             return cachedInstance;
         DynamicStringKey returnInstance = new(useKey);
         _cachedInstance = returnInstance;
@@ -119,10 +119,10 @@ internal sealed class DynamicStringKey : DynamicKey, IComparable<DynamicStringKe
 
     //--------------------------------------------------------------------------------
     /// <inheritdoc />
-    public override int GetHashCode () => StringKey.GetHashCode();
+    public override int GetHashCode () => Value.GetHashCode();
     //--------------------------------------------------------------------------------
     /// <inheritdoc />
-    public override string ToString () => StringKey;
+    public override string ToString () => Value;
     //--------------------------------------------------------------------------------
 
     #endregion Overrides of Object
@@ -132,17 +132,32 @@ internal sealed class DynamicStringKey : DynamicKey, IComparable<DynamicStringKe
     //--------------------------------------------------------------------------------
     /// <inheritdoc />
     public override bool Equals (DynamicKey? other) =>
-        (other is DynamicStringKey stringCacheKey) &&
-        (ReferenceEquals(this, stringCacheKey) || (stringCacheKey.StringKey == StringKey));
+        ((other is DynamicStringKey stringCacheKey) &&
+         (ReferenceEquals(this, stringCacheKey) || (stringCacheKey.Value == Value))) ||
+        Equals(other?.ObjectValue, Value);
     //--------------------------------------------------------------------------------
     /// <inheritdoc />
     public override int CompareTo (DynamicKey? other)
     {
-        return other switch
+        if (ReferenceEquals(null, other))
+            return 1;
+        if (ReferenceEquals(this, other))
+            return 0;
+        if (ReferenceEquals(other.ObjectValue, Value))
+            return 0;
+        if (other is DynamicStringKey stringKey)
+            return CompareTo(stringKey);
+        if (other.ObjectValue is null)
+            return 1;
+        return Value switch
         {
-            null => 1,
-            DynamicStringKey stringCacheKey => CompareTo(stringCacheKey),
-            _ => CompareKey(other)
+            null => -1,
+            _ => other.ObjectValue switch
+            {
+                string otherString => string.CompareOrdinal(Value, otherString),
+                IComparable otherComparable when ObjectValue.GetType() == other.ObjectValue.GetType() => (otherComparable.CompareTo(Value) * (-1)),
+                _ => CompareKey(other)
+            }
         };
     }
     //--------------------------------------------------------------------------------
@@ -154,10 +169,19 @@ internal sealed class DynamicStringKey : DynamicKey, IComparable<DynamicStringKe
     //--------------------------------------------------------------------------------
     /// <inheritdoc />
     public int CompareTo (DynamicStringKey? other) => other is null ? 1 :
-        ReferenceEquals(StringKey, other.StringKey) ? 0 :
-        string.Compare(StringKey, other.StringKey, StringComparison.Ordinal);
+        ReferenceEquals(Value, other.Value) ? 0 :
+        string.Compare(Value, other.Value, StringComparison.Ordinal);
     //--------------------------------------------------------------------------------
 
     #endregion IComparable<DynamicStringKey> Members
+
+    #region Overrides of DynamicRefKey
+
+    //--------------------------------------------------------------------------------
+    /// <inheritdoc />
+    protected internal override object ObjectValue { [DebuggerStepThrough] get => Value; }
+    //--------------------------------------------------------------------------------
+
+    #endregion
 }
 //################################################################################
