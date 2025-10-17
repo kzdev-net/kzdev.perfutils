@@ -25,7 +25,7 @@ public class StreamUtility
     /// <param name="dataLength">
     /// The length of the data to fill and read back
     /// </param>
-    public async Task BulkFillCopyToAsync (Stream stream, Stream destinationStream, byte[] fillData, 
+    public async Task BulkFillCopyToAsync (Stream stream, Stream destinationStream, byte[] fillData,
         int dataLength)
     {
         stream.Position = 0;
@@ -38,7 +38,7 @@ public class StreamUtility
         // Reset the position to the start of the stream for copying
         stream.Position = 0;
         // Copy asynchronously to the destination stream
-        await stream.CopyToAsync(destinationStream);
+        await stream.CopyToAsync(destinationStream).ConfigureAwait(false);
     }
     //--------------------------------------------------------------------------------
     /// <summary>
@@ -79,7 +79,7 @@ public class StreamUtility
         // Reset the position to the start of the stream for copying
         stream.Position = 0;
         // Copy asynchronously to the destination stream
-        await stream.CopyToAsync(destinationStream);
+        await stream.CopyToAsync(destinationStream).ConfigureAwait(false);
     }
     //--------------------------------------------------------------------------------
     /// <summary>

@@ -1840,7 +1840,7 @@ internal sealed class SegmentMemoryStreamSlim : MemoryStreamSlim
         if (destination is MemoryStreamSlim or MemoryStream)
         {
             // We can optimize the copy operation by copying synchronously instead of asynchronously
-            await CopyToSyncAsAsync(destination, bufferSize, cancellationToken);
+            await CopyToSyncAsAsync(destination, bufferSize, cancellationToken).ConfigureAwait(false);
             return;
         }
 

@@ -27,7 +27,7 @@ public static class MemoryStreamGZip
     /// <param name="compressionOptions">
     /// The options to use for the compression operation.
     /// </param>
-    private static void Compress(byte[] source, MemoryStreamSlim destination,
+    private static void Compress (byte[] source, MemoryStreamSlim destination,
         MemoryStreamGZipOptions? compressionOptions)
     {
         // Create the compression stream and write the source data to it.
@@ -60,7 +60,7 @@ public static class MemoryStreamGZip
     /// <param name="compressionOptions">
     /// The options to use for the compression operation.
     /// </param>
-    private static void Compress(in ReadOnlySpan<byte> source, MemoryStreamSlim destination,
+    private static void Compress (in ReadOnlySpan<byte> source, MemoryStreamSlim destination,
         MemoryStreamGZipOptions? compressionOptions)
     {
         // Create the compression stream and write the source data to it.
@@ -93,7 +93,7 @@ public static class MemoryStreamGZip
     /// <param name="compressionOptions">
     /// The options to use for the compression operation.
     /// </param>
-    private static void Compress(string source, MemoryStreamSlim destination,
+    private static void Compress (string source, MemoryStreamSlim destination,
         MemoryStreamGZipOptions? compressionOptions)
     {
         Compress(MemoryStreamCompression.DefaultEncoding.GetBytes(source), destination, compressionOptions);
@@ -114,7 +114,7 @@ public static class MemoryStreamGZip
     /// <param name="compressionOptions">
     /// The options to use for the compression operation.
     /// </param>
-    private static void Compress(string source, Encoding encoding, MemoryStreamSlim destination,
+    private static void Compress (string source, Encoding encoding, MemoryStreamSlim destination,
         MemoryStreamGZipOptions? compressionOptions)
     {
         Compress(encoding.GetBytes(source), destination, compressionOptions);
@@ -132,7 +132,7 @@ public static class MemoryStreamGZip
     /// <param name="compressionOptions">
     /// The options to use for the compression operation.
     /// </param>
-    private static void Compress(Stream source, MemoryStreamSlim destination,
+    private static void Compress (Stream source, MemoryStreamSlim destination,
         MemoryStreamGZipOptions? compressionOptions)
     {
         long startPosition = source.Position;
@@ -171,7 +171,7 @@ public static class MemoryStreamGZip
     /// <param name="cancellationToken">
     /// The cancellation token to use for the operation.
     /// </param>
-    private static async Task CompressAsync(Stream source, MemoryStreamSlim destination,
+    private static async Task CompressAsync (Stream source, MemoryStreamSlim destination,
         MemoryStreamGZipOptions? compressionOptions, CancellationToken cancellationToken)
     {
         long startPosition = source.Position;
@@ -211,7 +211,7 @@ public static class MemoryStreamGZip
     /// <param name="destination">
     /// The destination stream to write the compressed data to. This stream must be writable and seekable.
     /// </param>
-    private static void Decompress(Stream source, MemoryStreamSlim destination)
+    private static void Decompress (Stream source, MemoryStreamSlim destination)
     {
         long startPosition = source.Position;
         destination.Position = 0;
@@ -239,7 +239,7 @@ public static class MemoryStreamGZip
     /// <param name="cancellationToken">
     /// The cancellation token to use for the operation.
     /// </param>
-    private static async Task DecompressAsync(Stream source, MemoryStreamSlim destination,
+    private static async Task DecompressAsync (Stream source, MemoryStreamSlim destination,
         CancellationToken cancellationToken)
     {
         long startPosition = source.Position;
@@ -273,7 +273,7 @@ public static class MemoryStreamGZip
     /// source array using the specified compression type. If the source array is empty,
     /// an empty <see cref="MemoryStreamSlim"/> instance is returned.
     /// </returns>
-    public static MemoryStreamSlim Compress(byte[] source)
+    public static MemoryStreamSlim Compress (byte[] source)
     {
         ArgumentNullException.ThrowIfNull(source, nameof(source));
         if (source.Length == 0)
@@ -301,7 +301,7 @@ public static class MemoryStreamGZip
     /// source array using the specified compression type. If the source array is empty,
     /// an empty <see cref="MemoryStreamSlim"/> instance is returned.
     /// </returns>
-    public static MemoryStreamSlim Compress(byte[] source,
+    public static MemoryStreamSlim Compress (byte[] source,
         MemoryStreamGZipOptions compressionOptions)
     {
         ArgumentNullException.ThrowIfNull(source, nameof(source));
@@ -328,7 +328,7 @@ public static class MemoryStreamGZip
     /// source array using the specified compression type. If the source array is empty,
     /// an empty <see cref="MemoryStreamSlim"/> instance is returned.
     /// </returns>
-    public static MemoryStreamSlim Compress(byte[] source,
+    public static MemoryStreamSlim Compress (byte[] source,
         Func<MemoryStreamGZipOptions, MemoryStreamGZipOptions> optionsSetup)
     {
         ArgumentNullException.ThrowIfNull(source, nameof(source));
@@ -361,7 +361,7 @@ public static class MemoryStreamGZip
     /// source array using the specified compression type. If the source array is empty,
     /// an empty <see cref="MemoryStreamSlim"/> instance is returned.
     /// </returns>
-    public static MemoryStreamSlim Compress<TState>(byte[] source,
+    public static MemoryStreamSlim Compress<TState> (byte[] source,
         Func<MemoryStreamGZipOptions, TState, MemoryStreamGZipOptions> optionsSetup, TState setupState)
     {
         ArgumentNullException.ThrowIfNull(source, nameof(source));
@@ -389,7 +389,7 @@ public static class MemoryStreamGZip
     /// source span using the specified compression type. If the source span is empty,
     /// an empty <see cref="MemoryStreamSlim"/> instance is returned.
     /// </returns>
-    public static MemoryStreamSlim Compress(in ReadOnlySpan<byte> source)
+    public static MemoryStreamSlim Compress (in ReadOnlySpan<byte> source)
     {
         if (source.Length == 0)
             return MemoryStreamSlim.Create();
@@ -416,7 +416,7 @@ public static class MemoryStreamGZip
     /// source span using the specified compression type. If the source span is empty,
     /// an empty <see cref="MemoryStreamSlim"/> instance is returned.
     /// </returns>
-    public static MemoryStreamSlim Compress(in ReadOnlySpan<byte> source,
+    public static MemoryStreamSlim Compress (in ReadOnlySpan<byte> source,
         MemoryStreamGZipOptions compressionOptions)
     {
         if (source.Length == 0)
@@ -442,7 +442,7 @@ public static class MemoryStreamGZip
     /// source span using the specified compression type. If the source span is empty,
     /// an empty <see cref="MemoryStreamSlim"/> instance is returned.
     /// </returns>
-    public static MemoryStreamSlim Compress(in ReadOnlySpan<byte> source,
+    public static MemoryStreamSlim Compress (in ReadOnlySpan<byte> source,
         Func<MemoryStreamGZipOptions, MemoryStreamGZipOptions> optionsSetup)
     {
         ArgumentNullException.ThrowIfNull(optionsSetup, nameof(optionsSetup));
@@ -474,7 +474,7 @@ public static class MemoryStreamGZip
     /// span stream using the specified compression type. If the span stream is empty,
     /// an empty <see cref="MemoryStreamSlim"/> instance is returned.
     /// </returns>
-    public static MemoryStreamSlim Compress<TState>(in ReadOnlySpan<byte> source,
+    public static MemoryStreamSlim Compress<TState> (in ReadOnlySpan<byte> source,
         Func<MemoryStreamGZipOptions, TState, MemoryStreamGZipOptions> optionsSetup, TState setupState)
     {
         ArgumentNullException.ThrowIfNull(optionsSetup, nameof(optionsSetup));
@@ -501,7 +501,7 @@ public static class MemoryStreamGZip
     /// span stream using the specified compression type. If the span stream is empty,
     /// an empty <see cref="MemoryStreamSlim"/> instance is returned.
     /// </returns>
-    public static MemoryStreamSlim Compress(string source)
+    public static MemoryStreamSlim Compress (string source)
     {
         ArgumentNullException.ThrowIfNull(source, nameof(source));
         if (source.Length == 0)
@@ -529,7 +529,7 @@ public static class MemoryStreamGZip
     /// source string using the specified compression type. If the source string is empty,
     /// an empty <see cref="MemoryStreamSlim"/> instance is returned.
     /// </returns>
-    public static MemoryStreamSlim Compress(string source,
+    public static MemoryStreamSlim Compress (string source,
         MemoryStreamGZipOptions compressionOptions)
     {
         ArgumentNullException.ThrowIfNull(source, nameof(source));
@@ -556,7 +556,7 @@ public static class MemoryStreamGZip
     /// source string using the specified compression type. If the source string is empty,
     /// an empty <see cref="MemoryStreamSlim"/> instance is returned.
     /// </returns>
-    public static MemoryStreamSlim Compress(string source,
+    public static MemoryStreamSlim Compress (string source,
         Func<MemoryStreamGZipOptions, MemoryStreamGZipOptions> optionsSetup)
     {
         ArgumentNullException.ThrowIfNull(source, nameof(source));
@@ -589,7 +589,7 @@ public static class MemoryStreamGZip
     /// source string using the specified compression type. If the source string is empty,
     /// an empty <see cref="MemoryStreamSlim"/> instance is returned.
     /// </returns>
-    public static MemoryStreamSlim Compress<TState>(string source,
+    public static MemoryStreamSlim Compress<TState> (string source,
         Func<MemoryStreamGZipOptions, TState, MemoryStreamGZipOptions> optionsSetup, TState setupState)
     {
         ArgumentNullException.ThrowIfNull(source, nameof(source));
@@ -618,7 +618,7 @@ public static class MemoryStreamGZip
     /// source string using the specified compression type. If the source string is empty,
     /// an empty <see cref="MemoryStreamSlim"/> instance is returned.
     /// </returns>
-    public static MemoryStreamSlim Compress(string source, Encoding encoding)
+    public static MemoryStreamSlim Compress (string source, Encoding encoding)
     {
         ArgumentNullException.ThrowIfNull(source, nameof(source));
         if (source.Length == 0)
@@ -649,7 +649,7 @@ public static class MemoryStreamGZip
     /// source string using the specified compression type. If the source string is empty,
     /// an empty <see cref="MemoryStreamSlim"/> instance is returned.
     /// </returns>
-    public static MemoryStreamSlim Compress(string source, Encoding encoding,
+    public static MemoryStreamSlim Compress (string source, Encoding encoding,
         MemoryStreamGZipOptions compressionOptions)
     {
         ArgumentNullException.ThrowIfNull(source, nameof(source));
@@ -679,7 +679,7 @@ public static class MemoryStreamGZip
     /// source string using the specified compression type. If the source string is empty,
     /// an empty <see cref="MemoryStreamSlim"/> instance is returned.
     /// </returns>
-    public static MemoryStreamSlim Compress(string source, Encoding encoding,
+    public static MemoryStreamSlim Compress (string source, Encoding encoding,
         Func<MemoryStreamGZipOptions, MemoryStreamGZipOptions> optionsSetup)
     {
         ArgumentNullException.ThrowIfNull(source, nameof(source));
@@ -715,7 +715,7 @@ public static class MemoryStreamGZip
     /// source string using the specified compression type. If the source string is empty,
     /// an empty <see cref="MemoryStreamSlim"/> instance is returned.
     /// </returns>
-    public static MemoryStreamSlim Compress<TState>(string source, Encoding encoding,
+    public static MemoryStreamSlim Compress<TState> (string source, Encoding encoding,
         Func<MemoryStreamGZipOptions, TState, MemoryStreamGZipOptions> optionsSetup, TState setupState)
     {
         ArgumentNullException.ThrowIfNull(source, nameof(source));
@@ -743,7 +743,7 @@ public static class MemoryStreamGZip
     /// source stream using the specified compression type. If the source stream is empty,
     /// an empty <see cref="MemoryStreamSlim"/> instance is returned.
     /// </returns>
-    public static MemoryStreamSlim Compress(Stream source)
+    public static MemoryStreamSlim Compress (Stream source)
     {
         MemoryStreamCompression.ValidateCompression(source);
         if (source.Length == 0)
@@ -771,7 +771,7 @@ public static class MemoryStreamGZip
     /// source stream using the specified compression type. If the source stream is empty,
     /// an empty <see cref="MemoryStreamSlim"/> instance is returned.
     /// </returns>
-    public static MemoryStreamSlim Compress(Stream source,
+    public static MemoryStreamSlim Compress (Stream source,
         MemoryStreamGZipOptions compressionOptions)
     {
         MemoryStreamCompression.ValidateCompression(source);
@@ -798,7 +798,7 @@ public static class MemoryStreamGZip
     /// source stream using the specified compression type. If the source stream is empty,
     /// an empty <see cref="MemoryStreamSlim"/> instance is returned.
     /// </returns>
-    public static MemoryStreamSlim Compress(Stream source,
+    public static MemoryStreamSlim Compress (Stream source,
         Func<MemoryStreamGZipOptions, MemoryStreamGZipOptions> optionsSetup)
     {
         ArgumentNullException.ThrowIfNull(optionsSetup, nameof(optionsSetup));
@@ -831,7 +831,7 @@ public static class MemoryStreamGZip
     /// source stream using the specified compression type. If the source stream is empty,
     /// an empty <see cref="MemoryStreamSlim"/> instance is returned.
     /// </returns>
-    public static MemoryStreamSlim Compress<TState>(Stream source,
+    public static MemoryStreamSlim Compress<TState> (Stream source,
         Func<MemoryStreamGZipOptions, TState, MemoryStreamGZipOptions> optionsSetup, TState setupState)
     {
         ArgumentNullException.ThrowIfNull(optionsSetup, nameof(optionsSetup));
@@ -863,7 +863,7 @@ public static class MemoryStreamGZip
     /// source stream using the specified compression type. If the source stream is empty,
     /// an empty <see cref="MemoryStreamSlim"/> instance is returned.
     /// </returns>
-    public static async Task<MemoryStreamSlim> CompressAsync(Stream source, CancellationToken cancellationToken)
+    public static async Task<MemoryStreamSlim> CompressAsync (Stream source, CancellationToken cancellationToken)
     {
         MemoryStreamCompression.ValidateCompression(source);
         if (source.Length == 0)
@@ -895,7 +895,7 @@ public static class MemoryStreamGZip
     /// source stream using the specified compression type. If the source stream is empty,
     /// an empty <see cref="MemoryStreamSlim"/> instance is returned.
     /// </returns>
-    public static async Task<MemoryStreamSlim> CompressAsync(Stream source,
+    public static async Task<MemoryStreamSlim> CompressAsync (Stream source,
         MemoryStreamGZipOptions compressionOptions, CancellationToken cancellationToken)
     {
         MemoryStreamCompression.ValidateCompression(source);
@@ -926,7 +926,7 @@ public static class MemoryStreamGZip
     /// source stream using the specified compression type. If the source stream is empty,
     /// an empty <see cref="MemoryStreamSlim"/> instance is returned.
     /// </returns>
-    public static async Task<MemoryStreamSlim> CompressAsync(Stream source,
+    public static async Task<MemoryStreamSlim> CompressAsync (Stream source,
         Func<MemoryStreamGZipOptions, MemoryStreamGZipOptions> optionsSetup, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(optionsSetup, nameof(optionsSetup));
@@ -963,7 +963,7 @@ public static class MemoryStreamGZip
     /// source stream using the specified compression type. If the source stream is empty,
     /// an empty <see cref="MemoryStreamSlim"/> instance is returned.
     /// </returns>
-    public static async Task<MemoryStreamSlim> CompressAsync<TState>(Stream source,
+    public static async Task<MemoryStreamSlim> CompressAsync<TState> (Stream source,
         Func<MemoryStreamGZipOptions, TState, MemoryStreamGZipOptions> optionsSetup, TState setupState,
         CancellationToken cancellationToken)
     {
@@ -996,7 +996,7 @@ public static class MemoryStreamGZip
     /// source stream using the specified decompression type. If the source stream is empty,
     /// an empty <see cref="MemoryStreamSlim"/> instance is returned.
     /// </returns>
-    public static MemoryStreamSlim Decompress(Stream source)
+    public static MemoryStreamSlim Decompress (Stream source)
     {
         MemoryStreamCompression.ValidateCompression(source);
         if (source.Length == 0)
@@ -1022,7 +1022,7 @@ public static class MemoryStreamGZip
     /// source stream using the specified decompression type. If the source stream is empty,
     /// an empty <see cref="MemoryStreamSlim"/> instance is returned.
     /// </returns>
-    public static MemoryStreamSlim Decompress(Stream source,
+    public static MemoryStreamSlim Decompress (Stream source,
         MemoryStreamSlimOptions decompressionStreamOptions)
     {
         MemoryStreamCompression.ValidateCompression(source);
@@ -1049,7 +1049,7 @@ public static class MemoryStreamGZip
     /// source stream using the specified decompression type. If the source stream is empty,
     /// an empty <see cref="MemoryStreamSlim"/> instance is returned.
     /// </returns>
-    public static MemoryStreamSlim Decompress(Stream source,
+    public static MemoryStreamSlim Decompress (Stream source,
         Func<MemoryStreamSlimOptions, MemoryStreamSlimOptions> optionsSetup)
     {
         ArgumentNullException.ThrowIfNull(optionsSetup, nameof(optionsSetup));
@@ -1082,7 +1082,7 @@ public static class MemoryStreamGZip
     /// source stream using the specified decompression type. If the source stream is empty,
     /// an empty <see cref="MemoryStreamSlim"/> instance is returned.
     /// </returns>
-    public static MemoryStreamSlim Decompress<TState>(Stream source,
+    public static MemoryStreamSlim Decompress<TState> (Stream source,
         Func<MemoryStreamSlimOptions, TState, MemoryStreamSlimOptions> optionsSetup, TState setupState)
     {
         ArgumentNullException.ThrowIfNull(optionsSetup, nameof(optionsSetup));
@@ -1110,7 +1110,7 @@ public static class MemoryStreamGZip
     /// source stream using the specified decompression type. If the source stream is empty,
     /// an empty <see cref="MemoryStreamSlim"/> instance is returned.
     /// </returns>
-    public static string DecompressToString(Stream source) => DecompressToString(source, MemoryStreamCompression.DefaultEncoding);
+    public static string DecompressToString (Stream source) => DecompressToString(source, MemoryStreamCompression.DefaultEncoding);
     //--------------------------------------------------------------------------------
     /// <summary>
     /// Decompresses the data in the source stream and returns a new 
@@ -1127,7 +1127,7 @@ public static class MemoryStreamGZip
     /// source stream using the specified decompression type. If the source stream is empty,
     /// an empty <see cref="MemoryStreamSlim"/> instance is returned.
     /// </returns>
-    public static string DecompressToString(Stream source, Encoding encoding)
+    public static string DecompressToString (Stream source, Encoding encoding)
     {
         MemoryStreamSlim decompressedStream = Decompress(source);
         return decompressedStream.Decode(encoding);
@@ -1148,7 +1148,7 @@ public static class MemoryStreamGZip
     /// source stream using the specified decompression type. If the source stream is empty,
     /// an empty <see cref="MemoryStreamSlim"/> instance is returned.
     /// </returns>
-    public static string DecompressToString(Stream source,
+    public static string DecompressToString (Stream source,
         MemoryStreamSlimOptions decompressionStreamOptions) =>
         DecompressToString(source, MemoryStreamCompression.DefaultEncoding, decompressionStreamOptions);
     //--------------------------------------------------------------------------------
@@ -1172,7 +1172,7 @@ public static class MemoryStreamGZip
     /// source stream using the specified decompression type. If the source stream is empty,
     /// an empty <see cref="MemoryStreamSlim"/> instance is returned.
     /// </returns>
-    public static string DecompressToString(Stream source, Encoding encoding,
+    public static string DecompressToString (Stream source, Encoding encoding,
         MemoryStreamSlimOptions decompressionStreamOptions)
     {
         MemoryStreamSlim decompressedStream = Decompress(source, decompressionStreamOptions);
@@ -1194,7 +1194,7 @@ public static class MemoryStreamGZip
     /// source stream using the specified decompression type. If the source stream is empty,
     /// an empty <see cref="MemoryStreamSlim"/> instance is returned.
     /// </returns>
-    public static string DecompressToString(Stream source,
+    public static string DecompressToString (Stream source,
         Func<MemoryStreamSlimOptions, MemoryStreamSlimOptions> optionsSetup) =>
         DecompressToString(source, MemoryStreamCompression.DefaultEncoding, optionsSetup);
     //--------------------------------------------------------------------------------
@@ -1216,7 +1216,7 @@ public static class MemoryStreamGZip
     /// source stream using the specified decompression type. If the source stream is empty,
     /// an empty <see cref="MemoryStreamSlim"/> instance is returned.
     /// </returns>
-    public static string DecompressToString(Stream source, Encoding encoding,
+    public static string DecompressToString (Stream source, Encoding encoding,
         Func<MemoryStreamSlimOptions, MemoryStreamSlimOptions> optionsSetup)
     {
         MemoryStreamSlim decompressedStream = Decompress(source, optionsSetup);
@@ -1242,7 +1242,7 @@ public static class MemoryStreamGZip
     /// source stream using the specified decompression type. If the source stream is empty,
     /// an empty <see cref="MemoryStreamSlim"/> instance is returned.
     /// </returns>
-    public static string DecompressToString<TState>(Stream source,
+    public static string DecompressToString<TState> (Stream source,
         Func<MemoryStreamSlimOptions, TState, MemoryStreamSlimOptions> optionsSetup, TState setupState) =>
         DecompressToString(source, MemoryStreamCompression.DefaultEncoding, optionsSetup, setupState);
     //--------------------------------------------------------------------------------
@@ -1268,7 +1268,7 @@ public static class MemoryStreamGZip
     /// source stream using the specified decompression type. If the source stream is empty,
     /// an empty <see cref="MemoryStreamSlim"/> instance is returned.
     /// </returns>
-    public static string DecompressToString<TState>(Stream source, Encoding encoding,
+    public static string DecompressToString<TState> (Stream source, Encoding encoding,
         Func<MemoryStreamSlimOptions, TState, MemoryStreamSlimOptions> optionsSetup, TState setupState)
     {
         MemoryStreamSlim decompressedStream = Decompress(source, optionsSetup, setupState);
@@ -1293,7 +1293,7 @@ public static class MemoryStreamGZip
     /// source stream using the specified decompression type. If the source stream is empty,
     /// an empty <see cref="MemoryStreamSlim"/> instance is returned.
     /// </returns>
-    public static async Task<MemoryStreamSlim> DecompressAsync(Stream source, CancellationToken cancellationToken)
+    public static async Task<MemoryStreamSlim> DecompressAsync (Stream source, CancellationToken cancellationToken)
     {
         MemoryStreamCompression.ValidateCompression(source);
         if (source.Length == 0)
@@ -1323,7 +1323,7 @@ public static class MemoryStreamGZip
     /// source stream using the specified decompression type. If the source stream is empty,
     /// an empty <see cref="MemoryStreamSlim"/> instance is returned.
     /// </returns>
-    public static async Task<MemoryStreamSlim> DecompressAsync(Stream source,
+    public static async Task<MemoryStreamSlim> DecompressAsync (Stream source,
         MemoryStreamSlimOptions decompressionStreamOptions, CancellationToken cancellationToken)
     {
         MemoryStreamCompression.ValidateCompression(source);
@@ -1354,7 +1354,7 @@ public static class MemoryStreamGZip
     /// source stream using the specified decompression type. If the source stream is empty,
     /// an empty <see cref="MemoryStreamSlim"/> instance is returned.
     /// </returns>
-    public static async Task<MemoryStreamSlim> DecompressAsync(Stream source,
+    public static async Task<MemoryStreamSlim> DecompressAsync (Stream source,
         Func<MemoryStreamSlimOptions, MemoryStreamSlimOptions> optionsSetup, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(optionsSetup, nameof(optionsSetup));
@@ -1391,7 +1391,7 @@ public static class MemoryStreamGZip
     /// source stream using the specified decompression type. If the source stream is empty,
     /// an empty <see cref="MemoryStreamSlim"/> instance is returned.
     /// </returns>
-    public static async Task<MemoryStreamSlim> DecompressAsync<TState>(Stream source,
+    public static async Task<MemoryStreamSlim> DecompressAsync<TState> (Stream source,
         Func<MemoryStreamSlimOptions, TState, MemoryStreamSlimOptions> optionsSetup, TState setupState,
         CancellationToken cancellationToken)
     {
@@ -1424,7 +1424,7 @@ public static class MemoryStreamGZip
     /// source stream using the specified decompression type. If the source stream is empty,
     /// an empty <see cref="MemoryStreamSlim"/> instance is returned.
     /// </returns>
-    public static Task<string> DecompressToStringAsync(Stream source, CancellationToken cancellationToken) =>
+    public static Task<string> DecompressToStringAsync (Stream source, CancellationToken cancellationToken) =>
         DecompressToStringAsync(source, MemoryStreamCompression.DefaultEncoding, cancellationToken);
     //--------------------------------------------------------------------------------
     /// <summary>
@@ -1446,10 +1446,10 @@ public static class MemoryStreamGZip
     /// source stream using the specified decompression type. If the source stream is empty,
     /// an empty <see cref="MemoryStreamSlim"/> instance is returned.
     /// </returns>
-    public static async Task<string> DecompressToStringAsync(Stream source,
+    public static async Task<string> DecompressToStringAsync (Stream source,
         Encoding encoding, CancellationToken cancellationToken)
     {
-        MemoryStreamSlim decompressedStream = await DecompressAsync(source, cancellationToken);
+        MemoryStreamSlim decompressedStream = await DecompressAsync(source, cancellationToken).ConfigureAwait(false);
         return decompressedStream.Decode(encoding);
     }
     //--------------------------------------------------------------------------------
@@ -1474,7 +1474,7 @@ public static class MemoryStreamGZip
     /// source stream using the specified decompression type. If the source stream is empty,
     /// an empty <see cref="MemoryStreamSlim"/> instance is returned.
     /// </returns>
-    public static Task<string> DecompressToStringAsync(Stream source,
+    public static Task<string> DecompressToStringAsync (Stream source,
         MemoryStreamSlimOptions decompressionStreamOptions, CancellationToken cancellationToken) =>
         DecompressToStringAsync(source, MemoryStreamCompression.DefaultEncoding, decompressionStreamOptions, cancellationToken);
     //--------------------------------------------------------------------------------
@@ -1502,10 +1502,10 @@ public static class MemoryStreamGZip
     /// source stream using the specified decompression type. If the source stream is empty,
     /// an empty <see cref="MemoryStreamSlim"/> instance is returned.
     /// </returns>
-    public static async Task<string> DecompressToStringAsync(Stream source, Encoding encoding,
+    public static async Task<string> DecompressToStringAsync (Stream source, Encoding encoding,
         MemoryStreamSlimOptions decompressionStreamOptions, CancellationToken cancellationToken)
     {
-        MemoryStreamSlim decompressedStream = await DecompressAsync(source, decompressionStreamOptions, cancellationToken);
+        MemoryStreamSlim decompressedStream = await DecompressAsync(source, decompressionStreamOptions, cancellationToken).ConfigureAwait(false);
         return decompressedStream.Decode(encoding);
     }
     //--------------------------------------------------------------------------------
@@ -1528,7 +1528,7 @@ public static class MemoryStreamGZip
     /// source stream using the specified decompression type. If the source stream is empty,
     /// an empty <see cref="MemoryStreamSlim"/> instance is returned.
     /// </returns>
-    public static Task<string> DecompressToStringAsync(Stream source,
+    public static Task<string> DecompressToStringAsync (Stream source,
         Func<MemoryStreamSlimOptions, MemoryStreamSlimOptions> optionsSetup, CancellationToken cancellationToken) =>
         DecompressToStringAsync(source, MemoryStreamCompression.DefaultEncoding, optionsSetup, cancellationToken);
     //--------------------------------------------------------------------------------
@@ -1554,10 +1554,10 @@ public static class MemoryStreamGZip
     /// source stream using the specified decompression type. If the source stream is empty,
     /// an empty <see cref="MemoryStreamSlim"/> instance is returned.
     /// </returns>
-    public static async Task<string> DecompressToStringAsync(Stream source, Encoding encoding,
+    public static async Task<string> DecompressToStringAsync (Stream source, Encoding encoding,
         Func<MemoryStreamSlimOptions, MemoryStreamSlimOptions> optionsSetup, CancellationToken cancellationToken)
     {
-        MemoryStreamSlim decompressedStream = await DecompressAsync(source, optionsSetup, cancellationToken);
+        MemoryStreamSlim decompressedStream = await DecompressAsync(source, optionsSetup, cancellationToken).ConfigureAwait(false);
         return decompressedStream.Decode(encoding);
     }
     //--------------------------------------------------------------------------------
@@ -1584,7 +1584,7 @@ public static class MemoryStreamGZip
     /// source stream using the specified decompression type. If the source stream is empty,
     /// an empty <see cref="MemoryStreamSlim"/> instance is returned.
     /// </returns>
-    public static Task<string> DecompressToStringAsync<TState>(Stream source,
+    public static Task<string> DecompressToStringAsync<TState> (Stream source,
         Func<MemoryStreamSlimOptions, TState, MemoryStreamSlimOptions> optionsSetup, TState setupState,
         CancellationToken cancellationToken) =>
         DecompressToStringAsync(source, MemoryStreamCompression.DefaultEncoding, optionsSetup, setupState, cancellationToken);
@@ -1615,11 +1615,11 @@ public static class MemoryStreamGZip
     /// source stream using the specified decompression type. If the source stream is empty,
     /// an empty <see cref="MemoryStreamSlim"/> instance is returned.
     /// </returns>
-    public static async Task<string> DecompressToStringAsync<TState>(Stream source, Encoding encoding,
+    public static async Task<string> DecompressToStringAsync<TState> (Stream source, Encoding encoding,
         Func<MemoryStreamSlimOptions, TState, MemoryStreamSlimOptions> optionsSetup, TState setupState,
         CancellationToken cancellationToken)
     {
-        MemoryStreamSlim decompressedStream = await DecompressAsync(source, optionsSetup, setupState, cancellationToken);
+        MemoryStreamSlim decompressedStream = await DecompressAsync(source, optionsSetup, setupState, cancellationToken).ConfigureAwait(false);
         return decompressedStream.Decode(encoding);
     }
     //--------------------------------------------------------------------------------
