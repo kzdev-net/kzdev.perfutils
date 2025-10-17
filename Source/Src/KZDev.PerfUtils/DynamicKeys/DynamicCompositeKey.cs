@@ -50,10 +50,15 @@ namespace KZDev.PerfUtils;
 internal sealed class DynamicCompositeKey : DynamicKey, IComparable<DynamicCompositeKey>
 {
     /// <summary>
+    /// The maximum size of the cache for composite keys.
+    /// </summary>
+    private const int CacheSizeLimit = 12;
+
+    /// <summary>
     /// When not null, this is a cached instance used to avoid creating multiple
     /// instances of this class for the same composite pattern on the same thread.
     /// </summary>
-    [ThreadStatic] private static DynamicCompositeKey? _cachedInstance;
+    [ThreadStatic] private static DynamicCompositeKey?[]? _cachedInstances;
 
     /// <summary>
     /// Gets the debugger display value.
@@ -79,7 +84,7 @@ internal sealed class DynamicCompositeKey : DynamicKey, IComparable<DynamicCompo
     ///   This property provides access to the constituent keys of the composite. The array is
     ///   immutable, ensuring that the composite key cannot be modified after creation.
     /// </remarks>
-    public ImmutableArray<DynamicKey> Keys { [DebuggerStepThrough] get; }
+    public IReadOnlyList<DynamicKey> Keys { [DebuggerStepThrough] get; }
 
     /// <summary>
     ///   Gets the number of keys in this composite.
@@ -102,8 +107,7 @@ internal sealed class DynamicCompositeKey : DynamicKey, IComparable<DynamicCompo
     /// </param>
     private DynamicCompositeKey (in ReadOnlySpan<DynamicKey> keys)
     {
-        ImmutableArray<DynamicKey>.Builder arrayBuilder =
-            ImmutableArray.CreateBuilder<DynamicKey>(keys.Length);
+        List<DynamicKey> keyList = new(keys.Length);
         for (int keyIndex = 0; keyIndex < keys.Length; keyIndex++)
         {
             DynamicKey key = keys[keyIndex];
@@ -111,12 +115,12 @@ internal sealed class DynamicCompositeKey : DynamicKey, IComparable<DynamicCompo
 
             if (key is DynamicCompositeKey compositeKey)
                 // Flatten nested composites
-                arrayBuilder.AddRange(compositeKey.Keys);
+                keyList.AddRange(compositeKey.Keys);
             else
-                arrayBuilder.Add(key);
+                keyList.Add(key);
         }
-        Keys = arrayBuilder.ToImmutable();
-        Count = Keys.Length;
+        Keys = keyList;
+        Count = Keys.Count;
     }
     //--------------------------------------------------------------------------------
     /// <summary>
@@ -160,10 +164,10 @@ internal sealed class DynamicCompositeKey : DynamicKey, IComparable<DynamicCompo
         if (keys.Length == 1)
             return keys[0];
 
-        // Check for cached instance (only for 2-3 element composites for performance)
-        if (keys.Length <= 3)
+        // Check for cached instance
+        if ((_cachedInstances is not null) && (keys.Length <= CacheSizeLimit))
         {
-            DynamicCompositeKey? cachedInstance = _cachedInstance;
+            DynamicCompositeKey? cachedInstance = _cachedInstances[keys.Length - 1];
             if ((cachedInstance is not null) && (cachedInstance.Count == keys.Length) &&
                 AreKeysEqual(cachedInstance.Keys, keys))
                 return cachedInstance;
@@ -171,9 +175,12 @@ internal sealed class DynamicCompositeKey : DynamicKey, IComparable<DynamicCompo
 
         DynamicCompositeKey returnInstance = new(keys);
 
-        // Cache only 2-3 element composites
         if (keys.Length <= 3)
-            _cachedInstance = returnInstance;
+        {
+            // Cache instance for future use
+            _cachedInstances ??= new DynamicCompositeKey?[CacheSizeLimit];
+            _cachedInstances[keys.Length - 1] = returnInstance;
+        }
 
         return returnInstance;
     }
@@ -184,12 +191,12 @@ internal sealed class DynamicCompositeKey : DynamicKey, IComparable<DynamicCompo
     /// <param name="keys1">First immutable array of keys</param>
     /// <param name="keys2">Second span of keys</param>
     /// <returns>True if collections are equal, false otherwise</returns>
-    private static bool AreKeysEqual (ImmutableArray<DynamicKey> keys1, ReadOnlySpan<DynamicKey> keys2)
+    private static bool AreKeysEqual (IReadOnlyList<DynamicKey> keys1, ReadOnlySpan<DynamicKey> keys2)
     {
-        if (keys1.Length != keys2.Length)
+        if (keys1.Count != keys2.Length)
             return false;
 
-        for (int keyIndex = 0; keyIndex < keys1.Length; keyIndex++)
+        for (int keyIndex = 0; keyIndex < keys1.Count; keyIndex++)
         {
             if (!keys1[keyIndex].Equals(keys2[keyIndex]))
                 return false;
@@ -203,12 +210,12 @@ internal sealed class DynamicCompositeKey : DynamicKey, IComparable<DynamicCompo
     /// <param name="keys1">First immutable array of keys</param>
     /// <param name="keys2">Second immutable array of keys</param>
     /// <returns>True if arrays are equal, false otherwise</returns>
-    private static bool AreKeysEqual (ImmutableArray<DynamicKey> keys1, ImmutableArray<DynamicKey> keys2)
+    private static bool AreKeysEqual (IReadOnlyList<DynamicKey> keys1, IReadOnlyList<DynamicKey> keys2)
     {
-        if (keys1.Length != keys2.Length)
+        if (keys1.Count != keys2.Count)
             return false;
 
-        for (int keyIndex = 0; keyIndex < keys1.Length; keyIndex++)
+        for (int keyIndex = 0; keyIndex < keys1.Count; keyIndex++)
         {
             if (!keys1[keyIndex].Equals(keys2[keyIndex]))
                 return false;
@@ -230,10 +237,9 @@ internal sealed class DynamicCompositeKey : DynamicKey, IComparable<DynamicCompo
     public override int GetHashCode ()
     {
         // We optimize for the common case of 1-5 elements, and we don't need to include 
-        // all elements in the hash code for larger composites; this is a trade-off between
+        // all elements in the hash code for very large composites; this is a trade-off between
         // hash code quality and performance.
         // ReSharper disable once NonReadonlyMemberInGetHashCode
-        Debug.WriteLineIf(!_hashCode.HasValue, $"HashCodes = {string.Join(',',Keys.Select(key => key.GetHashCode()))}");
         return _hashCode ??= Count switch
         {
             1 => Keys[0].GetHashCode(),

@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Jobs;
 
 using KZDev.PerfUtils;
 
@@ -95,93 +94,61 @@ public class CompositeKeyLookupBenchmarks
 
     //--------------------------------------------------------------------------------
     [Benchmark(Baseline = true)]
-    [Arguments(NumEntries / 2)]
-    public string MultiParameterGetKey_2Params (int index)
+    public void MultiParameterGetKey_2Params ()
     {
-        int userId = UserIds[index];
-        string sessionId = SessionIds[index];
-        DynamicKey key = DynamicKey.GetKey(userId, sessionId);
-        return _dynamicKeyDictionary[key];
+        for (int index = 0; index < NumEntries; index += 10)
+        {
+            int userId = UserIds[index];
+            string sessionId = SessionIds[index];
+            DynamicKey key = DynamicKey.GetKey(userId, sessionId);
+            string value = _dynamicKeyDictionary[key];
+            GC.KeepAlive(value);
+        }
     }
     //--------------------------------------------------------------------------------
     [Benchmark]
-    [Arguments(NumEntries / 2)]
-    public string StringConcatenation_2Params (int index)
+    public void StringConcatenation_2Params ()
     {
-        int userId = UserIds[index];
-        string sessionId = SessionIds[index];
-        string key = $"{userId}|{sessionId}";
-        return _stringDictionary[key];
+        for (int index = 0; index < NumEntries; index += 10)
+        {
+            int userId = UserIds[index];
+            string sessionId = SessionIds[index];
+            string key = $"{userId}|{sessionId}";
+            string value = _stringDictionary[key];
+            GC.KeepAlive(value);
+        }
     }
     //--------------------------------------------------------------------------------
     [Benchmark]
-    [Arguments(NumEntries / 2)]
-    public string MultiParameterGetKey_3Params (int index)
+    public void MultiParameterGetKey_3Params ()
     {
-        int userId = UserIds[index];
-        string sessionId = SessionIds[index];
-        long timestamp = Timestamps[index];
-        DynamicKey key = DynamicKey.GetKey(userId, sessionId, timestamp);
-        return _dynamicKeyDictionary[key];
+        for (int index = 0; index < NumEntries; index += 10)
+        {
+            int userId = UserIds[index];
+            string sessionId = SessionIds[index];
+            long timestamp = Timestamps[index];
+            DynamicKey key = DynamicKey.GetKey(userId, sessionId, timestamp);
+            string value = _dynamicKeyDictionary[key];
+            GC.KeepAlive(value);
+        }
     }
     //--------------------------------------------------------------------------------
     [Benchmark]
-    [Arguments(NumEntries / 2)]
-    public string StringConcatenation_3Params (int index)
+    public void StringConcatenation_3Params ()
     {
-        int userId = UserIds[index];
-        string sessionId = SessionIds[index];
-        long timestamp = Timestamps[index];
-        string key = $"{userId}|{sessionId}|{timestamp}";
-        return _stringDictionary[key];
+        for (int index = 0; index < NumEntries; index += 10)
+        {
+            int userId = UserIds[index];
+            string sessionId = SessionIds[index];
+            long timestamp = Timestamps[index];
+            string key = $"{userId}|{sessionId}|{timestamp}";
+            string value = _stringDictionary[key];
+            GC.KeepAlive(value);
+        }
     }
     //--------------------------------------------------------------------------------
     [Benchmark]
-    [Arguments(NumEntries / 2)]
-    public string MultiParameterGetKey_4Params (int index)
-    {
-        int userId = UserIds[index];
-        string sessionId = SessionIds[index];
-        long timestamp = Timestamps[index];
-        DynamicKey key = DynamicKey.GetKey(userId, sessionId, timestamp, IsAdmin);
-        return _dynamicKeyDictionary[key];
-    }
-    //--------------------------------------------------------------------------------
-    [Benchmark]
-    [Arguments(NumEntries / 2)]
-    public string StringConcatenation_4Params (int index)
-    {
-        int userId = UserIds[index];
-        string sessionId = SessionIds[index];
-        long timestamp = Timestamps[index];
-        string key = $"{userId}|{sessionId}|{timestamp}|{IsAdmin}";
-        return _stringDictionary[key];
-    }
-    //--------------------------------------------------------------------------------
-    [Benchmark]
-    [Arguments(NumEntries / 2)]
-    public string MultiParameterGetKey_5Params (int index)
-    {
-        int userId = UserIds[index];
-        string sessionId = SessionIds[index];
-        long timestamp = Timestamps[index];
-        DynamicKey key = DynamicKey.GetKey(userId, sessionId, timestamp, IsAdmin, QueryParams);
-        return _dynamicKeyDictionary[key];
-    }
-    //--------------------------------------------------------------------------------
-    [Benchmark]
-    [Arguments(NumEntries / 2)]
-    public string StringConcatenation_5Params (int index)
-    {
-        int userId = UserIds[index];
-        string sessionId = SessionIds[index];
-        long timestamp = Timestamps[index];
-        string key = $"{userId}|{sessionId}|{timestamp}|{IsAdmin}|{QueryParams}";
-        return _stringDictionary[key];
-    }
-    //--------------------------------------------------------------------------------
-    [Benchmark]
-    public void MultiParameterGetKey_4Params_WithLoop ()
+    public void MultiParameterGetKey_4Params ()
     {
         for (int index = 0; index < NumEntries; index += 10)
         {
@@ -189,12 +156,13 @@ public class CompositeKeyLookupBenchmarks
             string sessionId = SessionIds[index];
             long timestamp = Timestamps[index];
             DynamicKey key = DynamicKey.GetKey(userId, sessionId, timestamp, IsAdmin);
-            _ = _dynamicKeyDictionary[key];
+            string value = _dynamicKeyDictionary[key];
+            GC.KeepAlive(value);
         }
     }
     //--------------------------------------------------------------------------------
     [Benchmark]
-    public void StringConcatenation_4Params_WithLoop ()
+    public void StringConcatenation_4Params ()
     {
         for (int index = 0; index < NumEntries; index += 10)
         {
@@ -202,33 +170,68 @@ public class CompositeKeyLookupBenchmarks
             string sessionId = SessionIds[index];
             long timestamp = Timestamps[index];
             string key = $"{userId}|{sessionId}|{timestamp}|{IsAdmin}";
-            _ = _stringDictionary[key];
+            string value = _stringDictionary[key];
+            GC.KeepAlive(value);
         }
     }
     //--------------------------------------------------------------------------------
-    //[Benchmark]
-    //[Arguments(NumEntries / 2)]
-    //public string MultiParameterGetKey_12Params (int index)
-    //{
-    //    int userId = UserIds[index];
-    //    string sessionId = SessionIds[index];
-    //    long timestamp = Timestamps[index];
-    //    DynamicKey key = DynamicKey.GetKey(userId, sessionId, timestamp, IsAdmin, QueryParams,
-    //        TenantId, RequestId, UserAgent, IpAddress, Feature, PageSize, SortOrder);
-    //    return _dynamicKeyDictionary[key];
-    //}
-    ////--------------------------------------------------------------------------------
-    //[Benchmark]
-    //[Arguments(NumEntries / 2)]
-    //public string StringConcatenation_12Params (int index)
-    //{
-    //    int userId = UserIds[index];
-    //    string sessionId = SessionIds[index];
-    //    long timestamp = Timestamps[index];
-    //    string key = $"{userId}|{sessionId}|{timestamp}|{IsAdmin}|{QueryParams}|{TenantId}|{RequestId}|{UserAgent}|{IpAddress}|{Feature}|{PageSize}|{SortOrder}";
-    //    return _stringDictionary[key];
-    //}
-    ////--------------------------------------------------------------------------------
+    [Benchmark]
+    public void MultiParameterGetKey_5Params ()
+    {
+        for (int index = 0; index < NumEntries; index += 10)
+        {
+            int userId = UserIds[index];
+            string sessionId = SessionIds[index];
+            long timestamp = Timestamps[index];
+            DynamicKey key = DynamicKey.GetKey(userId, sessionId, timestamp, IsAdmin, QueryParams);
+            string value = _dynamicKeyDictionary[key];
+            GC.KeepAlive(value);
+        }
+    }
+    //--------------------------------------------------------------------------------
+    [Benchmark]
+    public void StringConcatenation_5Params ()
+    {
+        for (int index = 0; index < NumEntries; index += 10)
+        {
+            int userId = UserIds[index];
+            string sessionId = SessionIds[index];
+            long timestamp = Timestamps[index];
+            string key = $"{userId}|{sessionId}|{timestamp}|{IsAdmin}|{QueryParams}";
+            string value = _stringDictionary[key];
+            GC.KeepAlive(value);
+        }
+    }
+    //--------------------------------------------------------------------------------
+    [Benchmark]
+    public void MultiParameterGetKey_12Params ()
+    {
+        for (int index = 0; index < NumEntries; index += 10)
+        {
+            int userId = UserIds[index];
+            string sessionId = SessionIds[index];
+            long timestamp = Timestamps[index];
+            DynamicKey key = DynamicKey.GetKey(userId, sessionId, timestamp, IsAdmin, QueryParams,
+                TenantId, RequestId, UserAgent, IpAddress, Feature, PageSize, SortOrder);
+            string value = _dynamicKeyDictionary[key];
+            GC.KeepAlive(value);
+        }
+    }
+    //--------------------------------------------------------------------------------
+    [Benchmark]
+    public void StringConcatenation_12Params ()
+    {
+        for (int index = 0; index < NumEntries; index += 10)
+        {
+            int userId = UserIds[index];
+            string sessionId = SessionIds[index];
+            long timestamp = Timestamps[index];
+            string key = $"{userId}|{sessionId}|{timestamp}|{IsAdmin}|{QueryParams}|{TenantId}|{RequestId}|{UserAgent}|{IpAddress}|{Feature}|{PageSize}|{SortOrder}";
+            string value = _stringDictionary[key];
+            GC.KeepAlive(value);
+        }
+    }
+    //--------------------------------------------------------------------------------
 
     #endregion
 
