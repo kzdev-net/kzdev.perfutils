@@ -1946,16 +1946,25 @@ internal sealed class SegmentMemoryStreamSlim : MemoryStreamSlim
     public override long Length
     {
         [DebuggerStepThrough]
-        get => LengthInternal;
+        get
+        {
+            EnsureNotClosed();
+            return LengthInternal;
+        }
     }
     //--------------------------------------------------------------------------------
     /// <inheritdoc />
     public override long Position
     {
         [DebuggerStepThrough]
-        get => VirtualPosition;
+        get
+        {
+            EnsureNotClosed();
+            return VirtualPosition;
+        }
         set
         {
+            EnsureNotClosed();
             if (value < 0)
                 ThrowHelper.ThrowArgumentOutOfRangeException_NeedNonNegNum(nameof(value));
             if (value > MaximumCapacity)

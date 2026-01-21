@@ -1219,6 +1219,7 @@ public abstract class MemoryStreamSlim : MemoryStream
     {
         get
         {
+            EnsureNotClosed();
             long returnValue = CapacityInternal;
             if (returnValue > int.MaxValue)
                 ThrowHelper.ThrowInvalidOperationException_IntOverflowCapacity();
@@ -1226,6 +1227,7 @@ public abstract class MemoryStreamSlim : MemoryStream
         }
         set
         {
+            EnsureNotClosed();
             if (CapacityInternal == value)
                 return;
             CapacityLong = value;
@@ -1315,9 +1317,14 @@ public abstract class MemoryStreamSlim : MemoryStream
     /// </exception>
     public virtual long CapacityLong
     {
-        get => CapacityInternal;
+        get
+        {
+            EnsureNotClosed();
+            return CapacityInternal;
+        }
         set
         {
+            EnsureNotClosed();
             if (CapacityInternal == value)
                 return;
             if (value < 0)

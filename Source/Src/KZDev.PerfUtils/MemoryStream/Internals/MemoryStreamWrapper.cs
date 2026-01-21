@@ -224,7 +224,7 @@ internal sealed class MemoryStreamWrapper : MemoryStreamSlim
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public override byte[] ToArray ()
     {
-        EnsureNotClosed();
+        // BCL MemoryStream allows ToArray() after disposal, so we don't check IsOpen here
         byte[] returnArray = _wrappedStream.ToArray();
         if (0 == returnArray.Length) return returnArray;
         // Report the ToArray operation
