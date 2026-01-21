@@ -1,4 +1,4 @@
-<Project>
+﻿<Project>
     <!-- 
     Import the next higher level Directory.Build.props file. 
    -->
@@ -18,7 +18,7 @@
     <PropertyGroup>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
     </PropertyGroup>
-    <PropertyGroup Condition=" '$(Configuration)'=='Package' ">
+    <PropertyGroup Condition=" '$(Configuration)'=='Package' OR '$(Target)' == 'Pack' ">
         <IsPacking>true</IsPacking>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(IsPacking)'=='' AND '$(Configuration)'!='Package' ">
