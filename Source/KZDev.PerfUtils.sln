@@ -183,6 +183,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "images", "images", "{3ECAE7
 		Src\KZDev.PerfUtils\Package\v2.0\images\stringbuilder_sample.jpg = Src\KZDev.PerfUtils\Package\v2.0\images\stringbuilder_sample.jpg
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Notes", "Notes", "{D24A7A13-9A66-41A1-9BE6-DB24ADF99D61}"
+	ProjectSection(SolutionItems) = preProject
+		Notes\ReleaseNotes.md = Notes\ReleaseNotes.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
