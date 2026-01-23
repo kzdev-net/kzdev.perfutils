@@ -1,4 +1,4 @@
-# MemoryStreamSlim
+﻿# MemoryStreamSlim
 
 The .NET class library provides a **MemoryStream** class representing a stream of bytes stored in memory. It operates in one of two implied modes: expandable (dynamic) or fixed, determined by how you instantiate the **MemoryStream** instance. In expandable mode, the **MemoryStream** class uses a single byte array to store the data, resizing the array as needed to accommodate changes in length and capacity. In fixed mode, the **MemoryStream** class uses a fixed-size byte array provided during instantiation.
 
@@ -22,7 +22,7 @@ When a **MemoryStreamSlim** instance is created with an existing byte array, it 
 
 To create a `MemoryStreamSlim` instance, use one of the [`Create`](xref:KZDev.PerfUtils.MemoryStreamSlim.Create) static overload methods. These methods allow you to specify an initial capacity, configure options for the stream instance, or provide an existing byte array to wrap.
 
-Once created, **MemoryStreamSlim** can be used as a drop-in replacement for the standard **MemoryStream** class. It implements all current methods and properties of **MemoryStream**, except for deprecated or outdated ones.
+Once created, **MemoryStreamSlim** can be used as a drop-in replacement for the standard **MemoryStream** class in most scenarios. It implements all current methods and properties of **MemoryStream**, except for deprecated or outdated ones. For information about behavioral differences, particularly regarding disposed instances, see the [Disposed Behavior Compatibility](#disposed-behavior-compatibility) section below.
 
 ```csharp
 using KZDev.PerfUtils;
@@ -34,14 +34,68 @@ using (Stream stream = MemoryStreamSlim.Create(1024, options => options.WithZero
 }
 ```
 
+## Decoding Stream Contents
+
+The [`Decode`](xref:KZDev.PerfUtils.MemoryStreamSlim.Decode(System.Text.Encoding)) method provides a convenient way to decode the entire stream contents to a string using a specific encoding:
+
+```csharp
+using KZDev.PerfUtils;
+using System.Text;
+
+using (MemoryStreamSlim stream = MemoryStreamSlim.Create())
+{
+    // Write some data to the stream
+    byte[] data = Encoding.UTF8.GetBytes("Hello, World!");
+    stream.Write(data, 0, data.Length);
+    
+    // Decode the stream contents back to a string
+    stream.Position = 0;
+    string result = stream.Decode(Encoding.UTF8);
+    Console.WriteLine(result); // Output: "Hello, World!"
+}
+```
+
+> **Note:** The `Decode` method reads the entire stream regardless of the current position and may allocate a temporary buffer for large streams.
+
 ## Key Difference: GetBuffer Method
 
 The primary behavioral difference between **MemoryStreamSlim** and **MemoryStream** is the implementation of the [GetBuffer](xref:KZDev.PerfUtils.MemoryStreamSlim.GetBuffer*) method:
 
-- In fixed mode, `GetBuffer` behaves like **MemoryStream**, returning the underlying byte array if the instance was created with the publiclyVisible parameter set to true. Otherwise, it throws an exception.
+- In fixed mode, `GetBuffer` behaves like **MemoryStream**, returning the underlying byte array if the instance was created with the `publiclyVisible` parameter set to `true` (using the `Create(byte[] buffer, int index, int count, bool writable, bool publiclyVisible)` overload). Otherwise, it throws an exception.
 - In expandable mode, `GetBuffer` always throws a `NotSupportedException`. This design prevents misuse in scenarios where the underlying buffer is not guaranteed to be contiguous in memory. Safer and more efficient methods are available for accessing stream data.
 
 In contrast, **RecyclableMemoryStream** supports `GetBuffer` and recommends it over `ToArray` for performance reasons. However, its documentation warns about potential performance implications and the need for careful use. Additionally, the initial call to `GetBuffer` can significantly degrade the performance of the **RecyclableMemoryStream** instance from that point on.
+
+## Disposed Behavior Compatibility
+
+**MemoryStreamSlim** maintains compatibility with **MemoryStream** for most operations after disposal, with one important exception related to memory efficiency:
+
+### Properties That Throw After Disposal
+
+The following properties throw `ObjectDisposedException` when accessed after disposal, matching **MemoryStream** behavior:
+
+- [`Length`](xref:System.IO.MemoryStream.Length) - Throws when accessed after disposal
+- [`Position`](xref:System.IO.MemoryStream.Position) - Throws when accessed after disposal
+- [`Capacity`](xref:KZDev.PerfUtils.MemoryStreamSlim.Capacity) - Throws when accessed after disposal
+- [`CapacityLong`](xref:KZDev.PerfUtils.MemoryStreamSlim.CapacityLong) - Throws when accessed after disposal
+
+### ToArray Method Behavior
+
+The behavior of the [`ToArray`](xref:System.IO.MemoryStream.ToArray) method after disposal differs based on the stream mode:
+
+- **Fixed Mode**: `ToArray()` works after disposal, matching **MemoryStream** behavior. This is because fixed mode streams wrap a standard **MemoryStream** instance, which keeps its buffer after disposal.
+
+- **Dynamic Mode**: `ToArray()` throws `ObjectDisposedException` after disposal. This is an intentional design difference necessary for memory efficiency. Unlike **MemoryStream**, which keeps its buffer after disposal, **MemoryStreamSlim** releases buffers back to the pool during disposal to minimize memory usage. Once buffers are released, the data is no longer available, so `ToArray()` cannot work.
+
+This difference ensures that **MemoryStreamSlim** can efficiently manage memory by releasing buffers when they are no longer needed, rather than keeping them allocated indefinitely like **MemoryStream** does.
+
+### GetBuffer and TryGetBuffer Methods
+
+The behavior of [`GetBuffer`](xref:KZDev.PerfUtils.MemoryStreamSlim.GetBuffer*) and [`TryGetBuffer`](xref:System.IO.MemoryStream.TryGetBuffer*) after disposal matches **MemoryStream**:
+
+- **Fixed Mode with publiclyVisible=true**: Both methods work after disposal, returning the underlying buffer.
+- **Fixed Mode with publiclyVisible=false**: `GetBuffer()` throws `UnauthorizedAccessException`, and `TryGetBuffer()` returns `false`.
+- **Dynamic Mode**: `GetBuffer()` throws `NotSupportedException` (regardless of disposal state), and `TryGetBuffer()` returns `false`.
 
 ## How MemoryStreamSlim Works
 

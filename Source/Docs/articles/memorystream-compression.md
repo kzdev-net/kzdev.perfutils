@@ -51,4 +51,66 @@ public class CompressionExample
 }
 ```
 
-All the different compression classes have overloads to compress source data provided in a `byte[]`, `ReadOnlySpan<byte>`, `string`, or `Stream`.
+## Simple Data Decompression
+
+Here's an example of how to use `MemoryStreamDeflate` to decompress data:
+
+```csharp
+using KZDev.PerfUtils;
+
+public class CompressionExample
+{
+    public MemoryStreamSlim DecompressData(Stream compressedData)
+    {
+        return MemoryStreamDeflate.Decompress(compressedData);
+    }
+}
+```
+
+## Decompression to String
+
+Here's an example of how to decompress data directly to a string:
+
+```csharp
+using KZDev.PerfUtils;
+
+public class CompressionExample
+{
+    public string DecompressToString(Stream compressedData)
+    {
+        return MemoryStreamDeflate.DecompressToString(compressedData);
+    }
+}
+```
+
+## Async Compression and Decompression
+
+All compression helper classes support asynchronous operations:
+
+```csharp
+using KZDev.PerfUtils;
+
+public class CompressionExample
+{
+    public async Task<MemoryStreamSlim> CompressDataAsync(Stream source, CancellationToken cancellationToken)
+    {
+        return await MemoryStreamDeflate.CompressAsync(source, cancellationToken);
+    }
+    
+    public async Task<MemoryStreamSlim> DecompressDataAsync(Stream source, CancellationToken cancellationToken)
+    {
+        return await MemoryStreamDeflate.DecompressAsync(source, cancellationToken);
+    }
+    
+    public async Task<string> DecompressToStringAsync(Stream source, CancellationToken cancellationToken)
+    {
+        return await MemoryStreamDeflate.DecompressToStringAsync(source, cancellationToken);
+    }
+}
+```
+
+All the different compression classes support:
+- **Compression** from `byte[]`, `ReadOnlySpan<byte>`, `string`, or `Stream` sources
+- **Decompression** from `Stream` sources, returning either a `MemoryStreamSlim` or a `string`
+- **Asynchronous** variants of both compression and decompression operations (`CompressAsync`, `DecompressAsync`, `DecompressToStringAsync`)
+- **Options configuration** via direct options objects or setup delegates for fine-grained control

@@ -6,7 +6,7 @@ The [`InterlockedOps`](xref:KZDev.PerfUtils.InterlockedOps) class extends the fu
 
 ## Variable Exclusive OR Operations
 
-The `InterlockedOps` class provides the [`Xor`](xref:KZDev.PerfUtils.InterlockedOps.Xor*) method, which performs an atomic XOR operation on a variable. The result of the operation is stored in the provided variable, and the method returns the variable's original value. This method is particularly useful for toggling a bit in an integer variable between 1 and 0 in a thread-safe manner.
+The `InterlockedOps` class provides the [`Xor`](xref:KZDev.PerfUtils.InterlockedOps.Xor*) method, which performs an atomic XOR operation on a variable. The result of the operation is stored in the provided variable, and the method returns the variable's original value (unlike `ClearBits` and `SetBits` which return value tuples). This method is particularly useful for toggling a bit in an integer variable between 1 and 0 in a thread-safe manner.
 
 The Xor operation supports all integer types, including **int**, **long**, **uint**, and **ulong**.
 

@@ -10,7 +10,7 @@ The [`StringBuilderCache`](xref:KZDev.PerfUtils.StringBuilderCache) class in thi
 
 ## Usage
 
-Using **StringBuilderCache** is very simple. The class provides a static method, [`Acquire`](xref:KZDev.PerfUtils.StringBuilderCache.Acquire(System.Int32)), that returns a **StringBuilder** instance from the pool. When you are done with the StringBuilder instance, you return the instance to the pool either directly with a call to the [`Release`](xref:KZDev.PerfUtils.StringBuilderCache.Release(System.Text.StringBuilder)) method on the **StringBuilderCache** class, or you can get the built string and return the **StringBuilder** instance to the pool in one step with the [`GetStringAndRelease`](xref:KZDev.PerfUtils.StringBuilderCache.GetStringAndRelease(System.Text.StringBuilder)) method.
+Using **StringBuilderCache** is very simple. The class provides a static method, [`Acquire`](xref:KZDev.PerfUtils.StringBuilderCache.Acquire(System.Int32)), that returns a **StringBuilder** instance from the pool. The `Acquire` method accepts an optional `capacity` parameter (defaults to 16 if not specified). When you are done with the StringBuilder instance, you return the instance to the pool either directly with a call to the [`Release`](xref:KZDev.PerfUtils.StringBuilderCache.Release(System.Text.StringBuilder)) method on the **StringBuilderCache** class, or you can get the built string and return the **StringBuilder** instance to the pool in one step with the [`GetStringAndRelease`](xref:KZDev.PerfUtils.StringBuilderCache.GetStringAndRelease(System.Text.StringBuilder)) method.
 
 ```csharp
 using KZDev.PerfUtils;
@@ -42,6 +42,24 @@ class Program
 		stringBuilder.Append("World!");
 		Console.WriteLine(StringBuilderCache.GetStringAndRelease(stringBuilder));
 	}
+}
+```
+
+Alternatively, you can get a substring from the **StringBuilder** instance and return it to the pool:
+
+```csharp
+using KZDev.PerfUtils;
+
+class Program
+{
+    static void Main()
+    {
+        StringBuilder stringBuilder = StringBuilderCache.Acquire();
+        stringBuilder.Append("Hello, ");
+        stringBuilder.Append("World!");
+        // Get substring starting at index 0 with length 5
+        Console.WriteLine(StringBuilderCache.GetStringAndRelease(stringBuilder, 0, 5));
+    }
 }
 ```
 

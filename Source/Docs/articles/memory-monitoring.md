@@ -100,7 +100,7 @@ The following table shows the event information.
 
 | Event | Event ID | Raised when |
 | --- | --- | --- |
-MemoryStreamSlimDisposed | 2 | A MemoryStreamSlim instance is diposed. |
+MemoryStreamSlimDisposed | 2 | A MemoryStreamSlim instance is disposed. |
 
 The following table shows the event data.
 
