@@ -1,9 +1,5 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 	<ItemGroup>
 		<ProjectReference Include="..\KZDev.PerfUtils.TestData\KZDev.PerfUtils.TestData.csproj" />
-	</ItemGroup>
-
-	<ItemGroup Condition="'$(TargetFramework)'=='net6.0'">
-		<PackageReference Include="System.Collections.Immutable" />
 	</ItemGroup>
 </Project>
