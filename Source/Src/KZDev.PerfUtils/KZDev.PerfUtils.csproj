@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -40,9 +40,6 @@
 		<InternalsVisibleTo Include="KZDev.PerfUtils.Strings.UnitTests" />
 		<InternalsVisibleTo Include="MemoryStreamBenchmarks" />
 		<InternalsVisibleTo Include="StringsBenchmarks" />
-	</ItemGroup>
-	<ItemGroup Condition="'$(TargetFramework)'=='net6.0'">
-		<PackageReference Include="System.Diagnostics.DiagnosticSource" />
 	</ItemGroup>
 	<ItemGroup>
 		<Compile Update="Resources\Strings.Designer.cs">
