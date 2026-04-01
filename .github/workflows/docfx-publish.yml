@@ -28,7 +28,7 @@ jobs:
       - name: Dotnet Setup
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 9.x
+          dotnet-version: 10.x
 
       - run: dotnet restore Source/KZDev.PerfUtils.sln
       - run: dotnet build -c Release Source/Src/KZDev.PerfUtils/KZDev.PerfUtils.csproj
