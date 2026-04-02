@@ -61,10 +61,10 @@ internal sealed class PooledMemoryStreamSlimMemoryOwner : IMemoryOwner<byte>
     /// Synchronizes <see cref="Memory"/> and <see cref="Dispose"/> so the inner owner is not disposed while a
     /// <see cref="Memory{T}"/> view is being created.
     /// </summary>
-#if NET8
-    private readonly object _gate = new object();
+#if NET9_0_OR_GREATER
+    private readonly Lock _gate = new();
 #else
-    private readonly Lock _gate = new Lock();
+    private readonly object _gate = new object();
 #endif
 
     /// <summary>

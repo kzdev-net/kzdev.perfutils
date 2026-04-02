@@ -1,6 +1,7 @@
-﻿// Copyright (c) Kevin Zehrer
+// Copyright (c) Kevin Zehrer
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+using System.Buffers;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
@@ -1064,6 +1065,59 @@ internal sealed class SegmentMemoryStreamSlim : MemoryStreamSlim
 
     //--------------------------------------------------------------------------------
     /// <summary>
+    /// Returns the number of bytes to materialize into a contiguous buffer, or throws if the length
+    /// cannot be represented for array or pooled materialization.
+    /// </summary>
+    /// <returns>
+    /// Zero when <see cref="MemoryStreamSlim.LengthInternal"/> is zero; otherwise the validated byte count.
+    /// </returns>
+    private int GetContiguousMaterializationByteCountOrThrow ()
+    {
+        switch (LengthInternal)
+        {
+            case 0:
+                return 0;
+            case > int.MaxValue:
+                ThrowHelper.ThrowInvalidOperationException_TooLargeToCopyToArray();
+                break;
+        }
+        int bytesToCopy = (int)LengthInternal;
+        if (bytesToCopy > Array.MaxLength)
+            ThrowHelper.ThrowInvalidOperationException_TooLargeToCopyToArray();
+        return bytesToCopy;
+    }
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Copies <see cref="MemoryStreamSlim.LengthInternal"/> bytes (already validated as
+    /// <paramref name="destination"/>.Length) from the stream into <paramref name="destination"/>.
+    /// </summary>
+    /// <param name="destination">
+    /// The destination span; its length must match the stream length to copy.
+    /// </param>
+    private void CopyContiguousStreamContentsToSpan (Span<byte> destination)
+    {
+        int bytesToCopy = destination.Length;
+        Debug.Assert(bytesToCopy == (int)LengthInternal,
+            $"Expected destination.Length ({bytesToCopy}) to equal LengthInternal ({(int)LengthInternal}).");
+        if (_currentBufferInfo.IsSmallBuffer)
+        {
+            _currentBufferInfo.Buffer[..bytesToCopy].CopyTo(destination);
+            return;
+        }
+        int bufferOffset = 0;
+        int bufferIndex = 0;
+        int remaining = bytesToCopy;
+        while (remaining > 0)
+        {
+            SegmentBuffer currentBuffer = _bufferList![bufferIndex++].SegmentBuffer;
+            int copyLength = Math.Min(currentBuffer.Length, remaining);
+            currentBuffer[..copyLength].CopyTo(destination.Slice(bufferOffset, copyLength));
+            bufferOffset += copyLength;
+            remaining -= copyLength;
+        }
+    }
+    //--------------------------------------------------------------------------------
+    /// <summary>
     /// Performs the operations needed for converting the stream to an array.
     /// </summary>
     /// <param name="forStringDecode">
@@ -1072,46 +1126,16 @@ internal sealed class SegmentMemoryStreamSlim : MemoryStreamSlim
     /// <returns>
     /// The array that contains all the of bytes from the stream in a contiguous array.
     /// </returns>
-    private byte[] ToArrayInternal(bool forStringDecode)
+    private byte[] ToArrayInternal (bool forStringDecode)
     {
         EnsureNotClosed();
-        switch (LengthInternal)
-        {
-            // If we have no data, then return an empty array
-            case 0:
-                return [];
-
-            // If the length of the stream is greater than int.MaxValue, then we cannot copy it to an array
-            case > int.MaxValue:
-                ThrowHelper.ThrowInvalidOperationException_TooLargeToCopyToArray();
-                break;
-        }
-        int bytesToCopy = (int)LengthInternal;
-        if (bytesToCopy > Array.MaxLength)
-            ThrowHelper.ThrowInvalidOperationException_TooLargeToCopyToArray();
-
-        // If we have a small buffer, then we can just copy the data from the small buffer
+        int bytesToCopy = GetContiguousMaterializationByteCountOrThrow();
+        if (bytesToCopy == 0)
+            return [];
         byte[] returnArray = GC.AllocateUninitializedArray<byte>(bytesToCopy);
-        // Report the ToArray operation
         UtilsEventSource.Log.MemoryStreamSlimToArray(Id, bytesToCopy, forStringDecode);
         Debug.Assert(returnArray.Length == bytesToCopy, "returnArray.Length != bytesToCopy");
-        if (_currentBufferInfo.IsSmallBuffer)
-        {
-            _currentBufferInfo.Buffer[..bytesToCopy].CopyTo(returnArray);
-            return returnArray;
-        }
-        // If we have a buffer list, then we need to copy the data from the buffers
-        int bufferOffset = 0;
-        int bufferIndex = 0;
-        // We are not using a small buffer and length is not zero, so we must have a buffer list
-        while (bytesToCopy > 0)
-        {
-            SegmentBuffer currentBuffer = _bufferList![bufferIndex++].SegmentBuffer;
-            int copyLength = Math.Min(currentBuffer.Length, bytesToCopy);
-            currentBuffer[..copyLength].CopyTo(returnArray.AsSpan(bufferOffset, copyLength));
-            bufferOffset += copyLength;
-            bytesToCopy -= copyLength;
-        }
+        CopyContiguousStreamContentsToSpan(returnArray.AsSpan(0, bytesToCopy));
         return returnArray;
     }
     //--------------------------------------------------------------------------------
@@ -2192,7 +2216,38 @@ internal sealed class SegmentMemoryStreamSlim : MemoryStreamSlim
     }
     //--------------------------------------------------------------------------------
     /// <inheritdoc />
-    public override byte[] ToArray() => ToArrayInternal(false);
+    public override byte[] ToArray () => ToArrayInternal(false);
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Materializes the dynamic stream into a contiguous <see cref="IMemoryOwner{T}"/> backed by
+    /// <paramref name="memoryPool"/> when non-empty.
+    /// </summary>
+    /// <param name="memoryPool">
+    /// The pool to rent from for non-empty streams.
+    /// </param>
+    /// <returns>
+    /// The shared empty owner or a pooled copy of the stream bytes.
+    /// </returns>
+    protected override IMemoryOwner<byte> ToMemoryInternal (MemoryPool<byte> memoryPool)
+    {
+        EnsureNotClosed();
+        int bytesToCopy = GetContiguousMaterializationByteCountOrThrow();
+        if (bytesToCopy == 0)
+            return EmptyMemoryStreamSlimMemoryOwner.Instance;
+        IMemoryOwner<byte> rental = memoryPool.Rent(bytesToCopy);
+        try
+        {
+            UtilsEventSource.Log.MemoryStreamSlimToMemory(Id, bytesToCopy);
+            CopyContiguousStreamContentsToSpan(rental.Memory.Span[..bytesToCopy]);
+        }
+        catch
+        {
+            rental.Dispose();
+            throw;
+        }
+
+        return new PooledMemoryStreamSlimMemoryOwner(rental, bytesToCopy);
+    }
     //--------------------------------------------------------------------------------
     /// <inheritdoc />
     public override unsafe void Write (byte[] buffer, int offset, int count)

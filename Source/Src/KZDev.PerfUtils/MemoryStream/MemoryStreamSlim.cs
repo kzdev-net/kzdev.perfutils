@@ -1,6 +1,7 @@
-﻿// Copyright (c) Kevin Zehrer
+// Copyright (c) Kevin Zehrer
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+using System.Buffers;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.Versioning;
@@ -1339,5 +1340,91 @@ public abstract class MemoryStreamSlim : MemoryStream
     //--------------------------------------------------------------------------------
 
     #endregion MemoryStream Support
+
+    #region ToMemory
+
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Creates a pooled copy of the stream contents as an <see cref="IMemoryOwner{T}"/> of <see cref="byte"/>.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This overload uses <see cref="MemoryPool{T}.Shared"/>. Use
+    /// <see cref="ToMemory(MemoryPool{byte})"/> when you need to account rentals against a specific pool.
+    /// </para>
+    /// <para>
+    /// The returned owner materializes a contiguous copy of the stream from the beginning through
+    /// <see cref="Stream.Length"/>, independent of <see cref="Stream.Position"/>, matching
+    /// <see cref="MemoryStream.ToArray"/> behavior for content and observable size limits.
+    /// </para>
+    /// <para>
+    /// When <see cref="Stream.Length"/> is zero, the returned owner is a shared singleton with
+    /// zero-length <see cref="IMemoryOwner{T}.Memory"/>; its <see cref="IDisposable.Dispose"/> is a
+    /// no-op and does not rent from any pool.
+    /// </para>
+    /// <para>
+    /// When the payload is non-empty, you must dispose the owner to return the rented buffer to the
+    /// pool it came from. The owner's <see cref="IMemoryOwner{T}.Memory"/> exposes exactly the stream
+    /// length (there is no visible trailing pool slack in that view).
+    /// </para>
+    /// </remarks>
+    /// <returns>
+    /// An <see cref="IMemoryOwner{T}"/> whose <see cref="IMemoryOwner{T}.Memory"/> spans the stream bytes.
+    /// </returns>
+    public virtual IMemoryOwner<byte> ToMemory () => ToMemory(MemoryPool<byte>.Shared);
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Creates a pooled copy of the stream contents using the specified <see cref="MemoryPool{T}"/>.
+    /// </summary>
+    /// <param name="memoryPool">
+    /// The pool used to rent the contiguous backing buffer (when <see cref="Stream.Length"/> is non-zero).
+    /// </param>
+    /// <remarks>
+    /// <para>
+    /// The returned owner materializes a contiguous copy of the stream from the beginning through
+    /// <see cref="Stream.Length"/>, independent of <see cref="Stream.Position"/>, matching
+    /// <see cref="MemoryStream.ToArray"/> behavior for content and observable size limits.
+    /// </para>
+    /// <para>
+    /// When <see cref="Stream.Length"/> is zero, the returned owner is a shared singleton with
+    /// zero-length <see cref="IMemoryOwner{T}.Memory"/>; its <see cref="IDisposable.Dispose"/> is a
+    /// no-op and does not rent from any pool.
+    /// </para>
+    /// <para>
+    /// When the payload is non-empty, you must dispose the owner to return the rented buffer to the
+    /// pool it came from. The owner's <see cref="IMemoryOwner{T}.Memory"/> exposes exactly the stream
+    /// length (there is no visible trailing pool slack in that view).
+    /// </para>
+    /// </remarks>
+    /// <returns>
+    /// An <see cref="IMemoryOwner{T}"/> whose <see cref="IMemoryOwner{T}.Memory"/> spans the stream bytes.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">
+    /// <paramref name="memoryPool"/> is <c>null</c>.
+    /// </exception>
+    public virtual IMemoryOwner<byte> ToMemory (MemoryPool<byte> memoryPool)
+    {
+        ArgumentNullException.ThrowIfNull(memoryPool);
+        return ToMemoryInternal(memoryPool);
+    }
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Produces an <see cref="IMemoryOwner{T}"/> for this stream's materialized bytes using
+    /// <paramref name="memoryPool"/> for non-empty payloads.
+    /// </summary>
+    /// <param name="memoryPool">
+    /// The pool to rent from when the stream length is non-zero; never <c>null</c> (validated by callers).
+    /// </param>
+    /// <returns>
+    /// The materialized owner for this stream implementation.
+    /// </returns>
+    protected virtual IMemoryOwner<byte> ToMemoryInternal (MemoryPool<byte> memoryPool)
+    {
+        ThrowHelper.ThrowNotSupportedException_FeatureNotSupported();
+        return null!;
+    }
+    //--------------------------------------------------------------------------------
+
+    #endregion ToMemory
 }
 //################################################################################
