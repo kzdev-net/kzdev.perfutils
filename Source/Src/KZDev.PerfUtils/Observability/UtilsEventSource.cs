@@ -1,4 +1,4 @@
-﻿// Copyright (c) Kevin Zehrer
+// Copyright (c) Kevin Zehrer
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 using System.Diagnostics;
@@ -252,6 +252,11 @@ class UtilsEventSource : EventSource
         public const EventOpcode ArrayAllocate = (EventOpcode)18;
 
         /// <summary>
+        /// OpCode for memory pool rent events
+        /// </summary>
+        public const EventOpcode MemoryPoolRent = (EventOpcode)19;
+
+        /// <summary>
         /// OpCode for a request for a StringBuilder that could not be 
         /// satisfied by the cache.
         /// </summary>
@@ -394,6 +399,21 @@ class UtilsEventSource : EventSource
             WriteEvent(EventId_MemoryStreamSlimToArray, streamId, arraySize, stringDecode);
     }
     //--------------------------------------------------------------------------------
+    private const int EventId_MemoryStreamSlimToMemory = 9;
+    /// <summary>
+    /// Event to report a ToMemory call on a memory stream slim instance that materializes a non-zero length buffer.
+    /// </summary>
+    [Event(EventId_MemoryStreamSlimToMemory,
+        Keywords = Keywords.Memory,
+        Task = Tasks.MemoryStreamSlim,
+        Opcode = Opcodes.MemoryPoolRent,
+        Level = EventLevel.Informational)]
+    private void MemoryStreamSlimToMemory (string streamId, int byteCount, int reserved)
+    {
+        if (IsEnabled(EventLevel.Informational, Keywords.Memory))
+            WriteEvent(EventId_MemoryStreamSlimToMemory, streamId, byteCount, reserved);
+    }
+    //--------------------------------------------------------------------------------
     private const int EventId_StringBuilderCreate = 21;
     /// <summary>
     /// Event to report a StringBuilder instance being created to satisfy a 
@@ -518,6 +538,16 @@ class UtilsEventSource : EventSource
     {
         if (IsEnabled(EventLevel.Warning, Keywords.Memory))
             MemoryStreamSlimToArray(streamId, arraySize, stringDecode ? 1 : 0);
+    }
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Event to report a ToMemory call on a memory stream slim instance that produces a non-zero length payload.
+    /// </summary>
+    [NonEvent]
+    public void MemoryStreamSlimToMemory (string streamId, int byteCount)
+    {
+        if (IsEnabled(EventLevel.Informational, Keywords.Memory))
+            MemoryStreamSlimToMemory(streamId, byteCount, 0);
     }
     //--------------------------------------------------------------------------------
     /// <summary>
