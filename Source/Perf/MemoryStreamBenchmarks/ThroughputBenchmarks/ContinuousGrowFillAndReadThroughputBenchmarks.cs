@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Kevin Zehrer
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+using System.Buffers;
 using System.Diagnostics;
 
 using BenchmarkDotNet.Attributes;
@@ -115,6 +116,7 @@ public class ContinuousGrowFillAndReadThroughputBenchmarks
             if (segmentLoop++ != GetArrayWriteSegmentIteration)
                 continue;
             captureArray = getArrayCallback(stream);
+            GC.KeepAlive(captureArray);
         }
 
         // Reset the position to the start of the stream for reading
@@ -128,7 +130,50 @@ public class ContinuousGrowFillAndReadThroughputBenchmarks
                 throw new Exception("Failed to read all data back");
             readSizeLeft -= readInSize;
         }
-        GC.KeepAlive(captureArray);
+    }
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Processes the bulk fill and read operation on a <see cref="MemoryStreamSlim"/>, capturing
+    /// via <see cref="MemoryStreamSlim.ToMemory()"/> (or pool overload) and disposing the owner in
+    /// the same segment iteration as the existing <see cref="MemoryStreamSlim.ToArray"/> benchmark.
+    /// </summary>
+    /// <param name="stream">
+    /// The stream instance being used.
+    /// </param>
+    /// <param name="dataLength">
+    /// The length of the data to fill and read back
+    /// </param>
+    /// <param name="getMemoryCallback">
+    /// The callback to rent contiguous content from the stream; the returned owner is disposed before writes continue.
+    /// </param>
+    private void ProcessStream (MemoryStreamSlim stream, int dataLength,
+        Func<MemoryStreamSlim, IMemoryOwner<byte>> getMemoryCallback)
+    {
+        stream.Position = 0;
+
+        int writeSizeLeft = dataLength;
+        int segmentLoop = 0;
+        while (writeSizeLeft > 0)
+        {
+            int writeSize = Math.Min(writeSizeLeft, SegmentSize);
+            stream.Write(_fillData!, 0, writeSize);
+            writeSizeLeft -= writeSize;
+            if (segmentLoop++ != GetArrayWriteSegmentIteration)
+                continue;
+            using IMemoryOwner<byte> owner = getMemoryCallback(stream);
+            _ = owner.Memory.Length;
+        }
+
+        stream.Position = 0;
+        int readSizeLeft = dataLength;
+        while (readSizeLeft > 0)
+        {
+            int readSize = Math.Min(readSizeLeft, SegmentSize);
+            int readInSize = stream.Read(_readBuffer!, 0, readSize);
+            if (readInSize < readSize)
+                throw new Exception("Failed to read all data back");
+            readSizeLeft -= readInSize;
+        }
     }
     //--------------------------------------------------------------------------------
     /// <summary>
@@ -204,6 +249,23 @@ public class ContinuousGrowFillAndReadThroughputBenchmarks
             using MemoryStreamSlim stream =
                 MemoryStreamSlim.Create(MemoryStreamSlimOptions);
             ProcessStream(stream, processDataLength, workingStream => workingStream.ToArray());
+            processDataLength += LoopGrowAmount;
+        }
+    }
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Benchmark using MemoryStreamSlim with <see cref="MemoryStreamSlim.ToMemory()"/> and immediate
+    /// disposal at the same capture point as <see cref="UseMemoryStreamSlim"/> uses for <see cref="MemoryStreamSlim.ToArray"/>.
+    /// </summary>
+    [Benchmark(Description = "MemoryStreamSlim growth fill and read (ToMemory)")]
+    public void UseMemoryStreamSlimToMemory ()
+    {
+        int processDataLength = StartDataSize;
+        for (int loopIndex = 0; loopIndex < LoopCount; loopIndex++)
+        {
+            using MemoryStreamSlim stream =
+                MemoryStreamSlim.Create(MemoryStreamSlimOptions);
+            ProcessStream(stream, processDataLength, workingStream => workingStream.ToMemory());
             processDataLength += LoopGrowAmount;
         }
     }
