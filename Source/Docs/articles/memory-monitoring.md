@@ -263,6 +263,32 @@ The following table shows the event data.
 
 ---
 
+### MemoryStreamSlimToMemory event
+
+This event is raised when a `ToMemory()` overload on a **MemoryStreamSlim** instance materializes a **non-zero** length payload (a buffer is rented from a `MemoryPool<byte>` and filled). It is **separate** from **MemoryStreamSlimToArray** (event 8): use **ToArray** events to track heap `byte[]` allocations from `ToArray`/`Decode` contiguous materialization; use **ToMemory** events to track pool rentals and copies produced by `ToMemory`. Empty streams use the shared zero-length owner and do **not** emit this event.
+
+The following table shows the task, keyword, level, and opcode.
+
+| Task | Keyword | Level | Opcode |
+| --- | --- | --- | --- |
+| MemoryStreamSlim (0x0001) | Memory (0x0008) | Informational (4) | MemoryPoolRent (19) |
+
+The following table shows the event information.
+
+| Event | Event ID | Raised when |
+| --- | --- | --- |
+MemoryStreamSlimToMemory | 9 | `ToMemory()` is called on a **MemoryStreamSlim** instance and the materialized payload length is greater than zero. |
+
+The following table shows the event data.
+
+| Name | Type | Description |
+| --- | --- | --- |
+| StreamId | UnicodeString | The unique identifier for the **MemoryStreamSlim** instance (same representation as other stream identity fields on this event source). |
+| ByteCount | Int32 | The number of stream bytes copied into the rented buffer (equals the stream’s `Length` at the time of the call). |
+| Reserved | Int32 | Reserved for future use; currently always 0. |
+
+---
+
 ### PerfView example
 
 To capture all the events in [PerfView](https://github.com/microsoft/perfview) from the `KZDev.PerfUtils` library, you can use the string `*KZDev.PerfUtils` as an argument to the `-providers` option of the `perfview` command line tool. To also capture stack traces for the events, you can use the `StacksEnabled` command (`*KZDev.PerfUtils:@StacksEnabled=true`). See the [`perfview`](https://github.com/microsoft/perfview) documentation for more information on how to use the tool.

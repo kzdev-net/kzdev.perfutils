@@ -1367,6 +1367,11 @@ public abstract class MemoryStreamSlim : MemoryStream
     /// pool it came from. The owner's <see cref="IMemoryOwner{T}.Memory"/> exposes exactly the stream
     /// length (there is no visible trailing pool slack in that view).
     /// </para>
+    /// <para>
+    /// After disposal, behavior matches <c>ToArray()</c> for the same stream mode: fixed-mode streams can still
+    /// produce an owner when the underlying buffer remains available; dynamic-mode streams throw
+    /// <see cref="ObjectDisposedException"/>.
+    /// </para>
     /// </remarks>
     /// <returns>
     /// An <see cref="IMemoryOwner{T}"/> whose <see cref="IMemoryOwner{T}.Memory"/> spans the stream bytes.
@@ -1394,6 +1399,11 @@ public abstract class MemoryStreamSlim : MemoryStream
     /// When the payload is non-empty, you must dispose the owner to return the rented buffer to the
     /// pool it came from. The owner's <see cref="IMemoryOwner{T}.Memory"/> exposes exactly the stream
     /// length (there is no visible trailing pool slack in that view).
+    /// </para>
+    /// <para>
+    /// After disposal, behavior matches <c>ToArray()</c> for the same stream mode: fixed-mode streams can still
+    /// produce an owner when the underlying buffer remains available; dynamic-mode streams throw
+    /// <see cref="ObjectDisposedException"/>.
     /// </para>
     /// </remarks>
     /// <returns>

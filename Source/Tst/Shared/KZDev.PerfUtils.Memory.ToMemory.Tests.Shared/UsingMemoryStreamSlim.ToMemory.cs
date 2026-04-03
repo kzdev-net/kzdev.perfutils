@@ -50,7 +50,7 @@ public partial class UsingMemoryStreamSlim
         using MemoryStreamSlim streamA = MemoryStreamSlim.Create(bufferA);
         using MemoryStreamSlim streamB = MemoryStreamSlim.Create(bufferB);
 
-        RentReturnCountingPool pool = new RentReturnCountingPool();
+        RentReturnCountingPool pool = new();
         using IMemoryOwner<byte> ownerA = streamA.ToMemory(pool);
         using IMemoryOwner<byte> ownerB = streamB.ToMemory(pool);
 
@@ -66,7 +66,7 @@ public partial class UsingMemoryStreamSlim
     public void UsingMemoryStreamSlim_EmptyDynamic_ToMemoryWithRecordingPool_DoesNotRent ()
     {
         using MemoryStreamSlim stream = MemoryStreamSlim.Create();
-        RentReturnCountingPool pool = new RentReturnCountingPool();
+        RentReturnCountingPool pool = new();
 
         using (stream.ToMemory(pool))
         {
@@ -102,7 +102,7 @@ public partial class UsingMemoryStreamSlim
         GetRandomBytes(payload, payload.Length);
         stream.Write(payload, 0, payload.Length);
 
-        RentReturnCountingPool pool = new RentReturnCountingPool();
+        RentReturnCountingPool pool = new();
         IMemoryOwner<byte> owner = stream.ToMemory(pool);
         pool.RentCount.Should().Be(1);
         pool.ReturnCount.Should().Be(0);
@@ -242,7 +242,7 @@ public partial class UsingMemoryStreamSlim
         using IMemoryOwner<byte> ownerDefault = stream.ToMemory();
         ownerDefault.Memory.ToArray().Should().BeEquivalentTo(fromArray);
 
-        RentReturnCountingPool pool = new RentReturnCountingPool();
+        RentReturnCountingPool pool = new();
         using IMemoryOwner<byte> ownerPooled = stream.ToMemory(pool);
         ownerPooled.Memory.ToArray().Should().BeEquivalentTo(fromArray);
         if (fromArray.Length > 0)
