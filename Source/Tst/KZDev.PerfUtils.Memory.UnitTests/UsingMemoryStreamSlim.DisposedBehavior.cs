@@ -1,5 +1,7 @@
-﻿// Copyright (c) Kevin Zehrer
+// Copyright (c) Kevin Zehrer
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
+using System.Buffers;
 
 using FluentAssertions;
 
@@ -69,6 +71,77 @@ public partial class UsingMemoryStreamSlim
     //--------------------------------------------------------------------------------
 
     #endregion Disposed Behavior Tests - ToArray
+
+    #region Disposed Behavior Tests - ToMemory
+
+    //================================================================================
+
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Tests that calling <see cref="MemoryStreamSlim.ToMemory()"/> on a disposed dynamic mode stream
+    /// throws an <see cref="ObjectDisposedException"/>.
+    /// </summary>
+    [Fact]
+    public void UsingMemoryStreamSlim_DisposedDynamicMode_ToMemory_ThrowsObjectDisposedException ()
+    {
+        MemoryStreamSlim stream = MemoryStreamSlim.Create();
+        byte[] testData = new byte[100];
+        GetRandomBytes(testData, testData.Length);
+        stream.Write(testData, 0, testData.Length);
+
+        stream.Dispose();
+
+        stream.Invoking(s =>
+            {
+                using IMemoryOwner<byte> _ = s.ToMemory();
+            })
+            .Should()
+            .Throw<ObjectDisposedException>();
+    }
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Tests that calling <see cref="MemoryStreamSlim.ToMemory(MemoryPool{byte})"/> on a disposed dynamic mode stream
+    /// throws an <see cref="ObjectDisposedException"/>.
+    /// </summary>
+    [Fact]
+    public void UsingMemoryStreamSlim_DisposedDynamicMode_ToMemoryWithPool_ThrowsObjectDisposedException ()
+    {
+        MemoryStreamSlim stream = MemoryStreamSlim.Create();
+        byte[] testData = new byte[100];
+        GetRandomBytes(testData, testData.Length);
+        stream.Write(testData, 0, testData.Length);
+
+        stream.Dispose();
+
+        stream.Invoking(s =>
+            {
+                using IMemoryOwner<byte> _ = s.ToMemory(MemoryPool<byte>.Shared);
+            })
+            .Should()
+            .Throw<ObjectDisposedException>();
+    }
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Tests that calling <see cref="MemoryStreamSlim.ToMemory()"/> on a disposed fixed mode stream works,
+    /// matching <see cref="MemoryStreamSlim.ToArray()"/> after disposal.
+    /// </summary>
+    [Fact]
+    public void UsingMemoryStreamSlim_DisposedFixedMode_ToMemory_ReturnsExpectedMemory ()
+    {
+        byte[] sourceBuffer = new byte[100];
+        GetRandomBytes(sourceBuffer, sourceBuffer.Length);
+        MemoryStreamSlim stream = MemoryStreamSlim.Create(sourceBuffer);
+        long expectedLength = stream.Length;
+
+        stream.Dispose();
+
+        using IMemoryOwner<byte> owner = stream.ToMemory();
+        owner.Memory.Length.Should().Be((int)expectedLength);
+        owner.Memory.ToArray().Should().BeEquivalentTo(sourceBuffer);
+    }
+    //--------------------------------------------------------------------------------
+
+    #endregion Disposed Behavior Tests - ToMemory
 
     #region Disposed Behavior Tests - Length Property
 

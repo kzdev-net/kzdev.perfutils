@@ -1,4 +1,4 @@
-﻿// Copyright (c) Kevin Zehrer
+// Copyright (c) Kevin Zehrer
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 using System.Diagnostics;
@@ -314,7 +314,6 @@ public partial class UsingMemoryStreamSlim
         }
     }
     //--------------------------------------------------------------------------------    
-#if TOMEMORY
     /// <summary>
     /// Tests repeatedly writing data to the stream in chunks that are multiples (or 1/2) of the
     /// standard segment size, and then verifying that the data read back is the same as the
@@ -323,10 +322,10 @@ public partial class UsingMemoryStreamSlim
     [Fact]
     public void UsingMemoryStreamSlim_WriteInStandardSegmentSizeMultiples_VerifyByMemory_WritesCorrectData ()
     {
-        // Set up the special stream factory to use the ToMemory method
         SetupToMemoryAccessStreamFactory();
 
-        int[] testDataSizes = GenerateTestDataSizes(1000, MemorySegmentedBufferGroup.StandardBufferSegmentSize * 20).ToArray();
+        int[] testDataSizes = GenerateTestDataSizes(1000,
+            MemorySegmentedBufferGroup.StandardBufferSegmentSize * 20).ToArray();
 
         for (int testLoop = 0; testLoop < 100; testLoop++)
         {
@@ -334,7 +333,6 @@ public partial class UsingMemoryStreamSlim
             using MemoryStreamSlim testService = CreateTestService(byteCount);
             TestWriteLine($"Running test loop {testLoop} with byte count of {byteCount}");
 
-            // Get the random test bytes
             byte[] dataCopy = MemoryTestPrep.GetRandomByteArray(byteCount);
             int bytesLeft = byteCount;
             int writeOffset = 0;
@@ -351,11 +349,10 @@ public partial class UsingMemoryStreamSlim
                 bytesLeft -= writeCount;
                 writeOffset += writeCount;
             }
-            // Verify the contents
+
             VerifyContentsByMemory(testService, dataCopy);
         }
     }
-#endif
     //--------------------------------------------------------------------------------    
     /// <summary>
     /// Tests writing data to the stream in chunks and then jumping the position in steps

@@ -3,12 +3,12 @@
   <PropertyGroup>
     <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
     <HasSharedItems>true</HasSharedItems>
-    <SharedGUID>cba74df8-c294-4bc4-a0e5-bad1582da56a</SharedGUID>
+    <SharedGUID>a1b2c3d4-e5f6-7890-abcd-ef1234567890</SharedGUID>
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
     <Import_RootNamespace>KZDev.PerfUtils.Tests</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)UsingMemoryStreamSlimUnitTestBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UsingMemoryStreamSlim.ToMemory.cs" />
   </ItemGroup>
 </Project>
