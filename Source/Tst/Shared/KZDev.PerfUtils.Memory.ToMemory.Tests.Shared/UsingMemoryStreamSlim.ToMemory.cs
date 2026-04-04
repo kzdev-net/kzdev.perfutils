@@ -38,13 +38,13 @@ public partial class UsingMemoryStreamSlim
         public int ReturnCount => Volatile.Read(ref _returnCount);
 
         /// <inheritdoc />
-        public override int MaxBufferSize => MemoryPool<byte>.Shared.MaxBufferSize;
+        public override int MaxBufferSize => Shared.MaxBufferSize;
 
         /// <inheritdoc />
         public override IMemoryOwner<byte> Rent (int minBufferSize = -1)
         {
             Interlocked.Increment(ref _rentCount);
-            IMemoryOwner<byte> inner = MemoryPool<byte>.Shared.Rent(minBufferSize);
+            IMemoryOwner<byte> inner = Shared.Rent(minBufferSize);
             return new CountingDisposeOwner(inner, () => Interlocked.Increment(ref _returnCount));
         }
 

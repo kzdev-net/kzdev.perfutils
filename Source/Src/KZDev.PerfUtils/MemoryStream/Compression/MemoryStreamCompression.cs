@@ -53,9 +53,9 @@ internal static class MemoryStreamCompression
     {
         if (source is null)
             throw new ArgumentNullException(nameof(source));
-        if (source.CanRead is false)
+        if (!source.CanRead)
             ThrowHelper.ThrowArgumentException_SourceStreamMustBeReadable(nameof(source));
-        if (source.CanSeek is false)
+        if (!source.CanSeek)
             ThrowHelper.ThrowArgumentException_SourceStreamMustBeSeekable(nameof(source));
     }
     //--------------------------------------------------------------------------------

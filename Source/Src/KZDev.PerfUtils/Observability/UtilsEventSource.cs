@@ -15,7 +15,7 @@ namespace KZDev.PerfUtils.Observability;
 /// The event source log for the performance utilities library.
 /// </summary>
 [EventSource(Name = "KZDev.PerfUtils")]
-class UtilsEventSource : EventSource
+internal class UtilsEventSource : EventSource
 {
     /// <summary>
     /// The name to use for the GC Heap memory type.

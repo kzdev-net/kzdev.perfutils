@@ -567,7 +567,7 @@ public abstract class MemoryStreamSlim : MemoryStream
     internal static MemoryStreamSlim Create (string sourceString, Encoding encoding,
         Func<MemoryStreamSlimOptions, MemoryStreamSlimOptions> optionsSetup)
     {
-        ArgumentNullException.ThrowIfNull(optionsSetup, nameof(optionsSetup));
+        ArgumentNullException.ThrowIfNull(optionsSetup);
         byte[] bytes = encoding.GetBytes(sourceString);
         MemoryStreamSlim returnStream = Create(bytes.Length, optionsSetup);
         returnStream.Write(bytes, 0, bytes.Length);
@@ -602,7 +602,7 @@ public abstract class MemoryStreamSlim : MemoryStream
         Func<MemoryStreamSlimOptions, TState, MemoryStreamSlimOptions> optionsSetup,
         TState state)
     {
-        ArgumentNullException.ThrowIfNull(optionsSetup, nameof(optionsSetup));
+        ArgumentNullException.ThrowIfNull(optionsSetup);
         byte[] bytes = encoding.GetBytes(sourceString);
         MemoryStreamSlim returnStream = Create(bytes.Length, optionsSetup, state);
         returnStream.Write(bytes, 0, bytes.Length);
@@ -713,7 +713,7 @@ public abstract class MemoryStreamSlim : MemoryStream
     /// </returns>
     public static MemoryStreamSlim Create (Func<MemoryStreamSlimOptions, MemoryStreamSlimOptions> optionsSetup)
     {
-        ArgumentNullException.ThrowIfNull(optionsSetup, nameof(optionsSetup));
+        ArgumentNullException.ThrowIfNull(optionsSetup);
 
         LockGlobalSettings();
 
@@ -744,7 +744,7 @@ public abstract class MemoryStreamSlim : MemoryStream
     /// </returns>
     public static MemoryStreamSlim Create (long capacity, Func<MemoryStreamSlimOptions, MemoryStreamSlimOptions> optionsSetup)
     {
-        ArgumentNullException.ThrowIfNull(optionsSetup, nameof(optionsSetup));
+        ArgumentNullException.ThrowIfNull(optionsSetup);
 
         LockGlobalSettings();
 
@@ -779,7 +779,7 @@ public abstract class MemoryStreamSlim : MemoryStream
     public static MemoryStreamSlim Create<TState> (Func<MemoryStreamSlimOptions, TState, MemoryStreamSlimOptions> optionsSetup,
         TState state)
     {
-        ArgumentNullException.ThrowIfNull(optionsSetup, nameof(optionsSetup));
+        ArgumentNullException.ThrowIfNull(optionsSetup);
 
         LockGlobalSettings();
 
@@ -817,7 +817,7 @@ public abstract class MemoryStreamSlim : MemoryStream
     public static MemoryStreamSlim Create<TState> (long capacity, Func<MemoryStreamSlimOptions, TState, MemoryStreamSlimOptions> optionsSetup,
         TState state)
     {
-        ArgumentNullException.ThrowIfNull(optionsSetup, nameof(optionsSetup));
+        ArgumentNullException.ThrowIfNull(optionsSetup);
 
         LockGlobalSettings();
 
@@ -1056,7 +1056,7 @@ public abstract class MemoryStreamSlim : MemoryStream
     /// </param>
     public static void SetGlobalDefaultSettings (Func<MemoryStreamSlimOptions, MemoryStreamSlimOptions> optionsSetup)
     {
-        ArgumentNullException.ThrowIfNull(optionsSetup, nameof(optionsSetup));
+        ArgumentNullException.ThrowIfNull(optionsSetup);
 
         CheckGlobalSettings();
 
@@ -1088,7 +1088,7 @@ public abstract class MemoryStreamSlim : MemoryStream
     public static void SetGlobalDefaultSettings<TState> (Func<MemoryStreamSlimOptions, TState, MemoryStreamSlimOptions> optionsSetup,
         TState state)
     {
-        ArgumentNullException.ThrowIfNull(optionsSetup, nameof(optionsSetup));
+        ArgumentNullException.ThrowIfNull(optionsSetup);
         CheckGlobalSettings();
 
         MemoryStreamSlimOptions options;
@@ -1255,7 +1255,7 @@ public abstract class MemoryStreamSlim : MemoryStream
     /// <inheritdoc />
     public override Task CopyToAsync (Stream destination, int bufferSize, CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(destination, nameof(destination));
+        ArgumentNullException.ThrowIfNull(destination);
         if (bufferSize <= 0)
             ThrowHelper.ThrowArgumentOutOfRangeException_NeedNonNegNum(nameof(bufferSize));
 

@@ -275,7 +275,7 @@ public static class MemoryStreamGZip
     /// </returns>
     public static MemoryStreamSlim Compress (byte[] source)
     {
-        ArgumentNullException.ThrowIfNull(source, nameof(source));
+        ArgumentNullException.ThrowIfNull(source);
         if (source.Length == 0)
             return MemoryStreamSlim.Create();
 
@@ -304,7 +304,7 @@ public static class MemoryStreamGZip
     public static MemoryStreamSlim Compress (byte[] source,
         MemoryStreamGZipOptions compressionOptions)
     {
-        ArgumentNullException.ThrowIfNull(source, nameof(source));
+        ArgumentNullException.ThrowIfNull(source);
         if (source.Length == 0)
             return MemoryStreamSlim.Create(compressionOptions.NewStreamOptions);
 
@@ -331,8 +331,8 @@ public static class MemoryStreamGZip
     public static MemoryStreamSlim Compress (byte[] source,
         Func<MemoryStreamGZipOptions, MemoryStreamGZipOptions> optionsSetup)
     {
-        ArgumentNullException.ThrowIfNull(source, nameof(source));
-        ArgumentNullException.ThrowIfNull(optionsSetup, nameof(optionsSetup));
+        ArgumentNullException.ThrowIfNull(source);
+        ArgumentNullException.ThrowIfNull(optionsSetup);
         MemoryStreamGZipOptions compressionOptions = optionsSetup(new());
         if (source.Length == 0)
             return MemoryStreamSlim.Create(compressionOptions.NewStreamOptions);
@@ -364,8 +364,8 @@ public static class MemoryStreamGZip
     public static MemoryStreamSlim Compress<TState> (byte[] source,
         Func<MemoryStreamGZipOptions, TState, MemoryStreamGZipOptions> optionsSetup, TState setupState)
     {
-        ArgumentNullException.ThrowIfNull(source, nameof(source));
-        ArgumentNullException.ThrowIfNull(optionsSetup, nameof(optionsSetup));
+        ArgumentNullException.ThrowIfNull(source);
+        ArgumentNullException.ThrowIfNull(optionsSetup);
         MemoryStreamGZipOptions compressionOptions = optionsSetup(new(), setupState);
         if (source.Length == 0)
             return MemoryStreamSlim.Create(compressionOptions.NewStreamOptions);
@@ -445,7 +445,7 @@ public static class MemoryStreamGZip
     public static MemoryStreamSlim Compress (in ReadOnlySpan<byte> source,
         Func<MemoryStreamGZipOptions, MemoryStreamGZipOptions> optionsSetup)
     {
-        ArgumentNullException.ThrowIfNull(optionsSetup, nameof(optionsSetup));
+        ArgumentNullException.ThrowIfNull(optionsSetup);
         MemoryStreamGZipOptions compressionOptions = optionsSetup(new());
         if (source.Length == 0)
             return MemoryStreamSlim.Create(compressionOptions.NewStreamOptions);
@@ -477,7 +477,7 @@ public static class MemoryStreamGZip
     public static MemoryStreamSlim Compress<TState> (in ReadOnlySpan<byte> source,
         Func<MemoryStreamGZipOptions, TState, MemoryStreamGZipOptions> optionsSetup, TState setupState)
     {
-        ArgumentNullException.ThrowIfNull(optionsSetup, nameof(optionsSetup));
+        ArgumentNullException.ThrowIfNull(optionsSetup);
         MemoryStreamGZipOptions compressionOptions = optionsSetup(new(), setupState);
         if (source.Length == 0)
             return MemoryStreamSlim.Create(compressionOptions.NewStreamOptions);
@@ -503,7 +503,7 @@ public static class MemoryStreamGZip
     /// </returns>
     public static MemoryStreamSlim Compress (string source)
     {
-        ArgumentNullException.ThrowIfNull(source, nameof(source));
+        ArgumentNullException.ThrowIfNull(source);
         if (source.Length == 0)
             return MemoryStreamSlim.Create();
 
@@ -532,7 +532,7 @@ public static class MemoryStreamGZip
     public static MemoryStreamSlim Compress (string source,
         MemoryStreamGZipOptions compressionOptions)
     {
-        ArgumentNullException.ThrowIfNull(source, nameof(source));
+        ArgumentNullException.ThrowIfNull(source);
         if (source.Length == 0)
             return MemoryStreamSlim.Create(compressionOptions.NewStreamOptions);
 
@@ -559,8 +559,8 @@ public static class MemoryStreamGZip
     public static MemoryStreamSlim Compress (string source,
         Func<MemoryStreamGZipOptions, MemoryStreamGZipOptions> optionsSetup)
     {
-        ArgumentNullException.ThrowIfNull(source, nameof(source));
-        ArgumentNullException.ThrowIfNull(optionsSetup, nameof(optionsSetup));
+        ArgumentNullException.ThrowIfNull(source);
+        ArgumentNullException.ThrowIfNull(optionsSetup);
         MemoryStreamGZipOptions compressionOptions = optionsSetup(new());
         if (source.Length == 0)
             return MemoryStreamSlim.Create(compressionOptions.NewStreamOptions);
@@ -592,8 +592,8 @@ public static class MemoryStreamGZip
     public static MemoryStreamSlim Compress<TState> (string source,
         Func<MemoryStreamGZipOptions, TState, MemoryStreamGZipOptions> optionsSetup, TState setupState)
     {
-        ArgumentNullException.ThrowIfNull(source, nameof(source));
-        ArgumentNullException.ThrowIfNull(optionsSetup, nameof(optionsSetup));
+        ArgumentNullException.ThrowIfNull(source);
+        ArgumentNullException.ThrowIfNull(optionsSetup);
         MemoryStreamGZipOptions compressionOptions = optionsSetup(new(), setupState);
         if (source.Length == 0)
             return MemoryStreamSlim.Create(compressionOptions.NewStreamOptions);
@@ -620,7 +620,7 @@ public static class MemoryStreamGZip
     /// </returns>
     public static MemoryStreamSlim Compress (string source, Encoding encoding)
     {
-        ArgumentNullException.ThrowIfNull(source, nameof(source));
+        ArgumentNullException.ThrowIfNull(source);
         if (source.Length == 0)
             return MemoryStreamSlim.Create();
 
@@ -652,7 +652,7 @@ public static class MemoryStreamGZip
     public static MemoryStreamSlim Compress (string source, Encoding encoding,
         MemoryStreamGZipOptions compressionOptions)
     {
-        ArgumentNullException.ThrowIfNull(source, nameof(source));
+        ArgumentNullException.ThrowIfNull(source);
         if (source.Length == 0)
             return MemoryStreamSlim.Create(compressionOptions.NewStreamOptions);
 
@@ -682,8 +682,8 @@ public static class MemoryStreamGZip
     public static MemoryStreamSlim Compress (string source, Encoding encoding,
         Func<MemoryStreamGZipOptions, MemoryStreamGZipOptions> optionsSetup)
     {
-        ArgumentNullException.ThrowIfNull(source, nameof(source));
-        ArgumentNullException.ThrowIfNull(optionsSetup, nameof(optionsSetup));
+        ArgumentNullException.ThrowIfNull(source);
+        ArgumentNullException.ThrowIfNull(optionsSetup);
         MemoryStreamGZipOptions compressionOptions = optionsSetup(new());
         if (source.Length == 0)
             return MemoryStreamSlim.Create(compressionOptions.NewStreamOptions);
@@ -718,8 +718,8 @@ public static class MemoryStreamGZip
     public static MemoryStreamSlim Compress<TState> (string source, Encoding encoding,
         Func<MemoryStreamGZipOptions, TState, MemoryStreamGZipOptions> optionsSetup, TState setupState)
     {
-        ArgumentNullException.ThrowIfNull(source, nameof(source));
-        ArgumentNullException.ThrowIfNull(optionsSetup, nameof(optionsSetup));
+        ArgumentNullException.ThrowIfNull(source);
+        ArgumentNullException.ThrowIfNull(optionsSetup);
         MemoryStreamGZipOptions compressionOptions = optionsSetup(new(), setupState);
         if (source.Length == 0)
             return MemoryStreamSlim.Create(compressionOptions.NewStreamOptions);
@@ -801,7 +801,7 @@ public static class MemoryStreamGZip
     public static MemoryStreamSlim Compress (Stream source,
         Func<MemoryStreamGZipOptions, MemoryStreamGZipOptions> optionsSetup)
     {
-        ArgumentNullException.ThrowIfNull(optionsSetup, nameof(optionsSetup));
+        ArgumentNullException.ThrowIfNull(optionsSetup);
         MemoryStreamCompression.ValidateCompression(source);
         MemoryStreamGZipOptions compressionOptions = optionsSetup(new());
         if (source.Length == 0)
@@ -834,7 +834,7 @@ public static class MemoryStreamGZip
     public static MemoryStreamSlim Compress<TState> (Stream source,
         Func<MemoryStreamGZipOptions, TState, MemoryStreamGZipOptions> optionsSetup, TState setupState)
     {
-        ArgumentNullException.ThrowIfNull(optionsSetup, nameof(optionsSetup));
+        ArgumentNullException.ThrowIfNull(optionsSetup);
         MemoryStreamCompression.ValidateCompression(source);
         MemoryStreamGZipOptions compressionOptions = optionsSetup(new(), setupState);
         if (source.Length == 0)
@@ -929,7 +929,7 @@ public static class MemoryStreamGZip
     public static async Task<MemoryStreamSlim> CompressAsync (Stream source,
         Func<MemoryStreamGZipOptions, MemoryStreamGZipOptions> optionsSetup, CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(optionsSetup, nameof(optionsSetup));
+        ArgumentNullException.ThrowIfNull(optionsSetup);
         MemoryStreamCompression.ValidateCompression(source);
         MemoryStreamGZipOptions compressionOptions = optionsSetup(new());
         if (source.Length == 0)
@@ -967,7 +967,7 @@ public static class MemoryStreamGZip
         Func<MemoryStreamGZipOptions, TState, MemoryStreamGZipOptions> optionsSetup, TState setupState,
         CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(optionsSetup, nameof(optionsSetup));
+        ArgumentNullException.ThrowIfNull(optionsSetup);
         MemoryStreamCompression.ValidateCompression(source);
         MemoryStreamGZipOptions compressionOptions = optionsSetup(new(), setupState);
         if (source.Length == 0)
@@ -1052,7 +1052,7 @@ public static class MemoryStreamGZip
     public static MemoryStreamSlim Decompress (Stream source,
         Func<MemoryStreamSlimOptions, MemoryStreamSlimOptions> optionsSetup)
     {
-        ArgumentNullException.ThrowIfNull(optionsSetup, nameof(optionsSetup));
+        ArgumentNullException.ThrowIfNull(optionsSetup);
         MemoryStreamCompression.ValidateCompression(source);
         MemoryStreamSlimOptions decompressionStreamOptions = optionsSetup(new MemoryStreamSlimOptions());
         if (source.Length == 0)
@@ -1085,7 +1085,7 @@ public static class MemoryStreamGZip
     public static MemoryStreamSlim Decompress<TState> (Stream source,
         Func<MemoryStreamSlimOptions, TState, MemoryStreamSlimOptions> optionsSetup, TState setupState)
     {
-        ArgumentNullException.ThrowIfNull(optionsSetup, nameof(optionsSetup));
+        ArgumentNullException.ThrowIfNull(optionsSetup);
         MemoryStreamCompression.ValidateCompression(source);
         MemoryStreamSlimOptions decompressionStreamOptions = optionsSetup(new MemoryStreamSlimOptions(), setupState);
         if (source.Length == 0)
@@ -1357,7 +1357,7 @@ public static class MemoryStreamGZip
     public static async Task<MemoryStreamSlim> DecompressAsync (Stream source,
         Func<MemoryStreamSlimOptions, MemoryStreamSlimOptions> optionsSetup, CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(optionsSetup, nameof(optionsSetup));
+        ArgumentNullException.ThrowIfNull(optionsSetup);
         MemoryStreamCompression.ValidateCompression(source);
         MemoryStreamSlimOptions decompressionStreamOptions = optionsSetup(new MemoryStreamSlimOptions());
         if (source.Length == 0)
@@ -1395,7 +1395,7 @@ public static class MemoryStreamGZip
         Func<MemoryStreamSlimOptions, TState, MemoryStreamSlimOptions> optionsSetup, TState setupState,
         CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(optionsSetup, nameof(optionsSetup));
+        ArgumentNullException.ThrowIfNull(optionsSetup);
         MemoryStreamCompression.ValidateCompression(source);
         MemoryStreamSlimOptions decompressionStreamOptions = optionsSetup(new MemoryStreamSlimOptions(), setupState);
         if (source.Length == 0)

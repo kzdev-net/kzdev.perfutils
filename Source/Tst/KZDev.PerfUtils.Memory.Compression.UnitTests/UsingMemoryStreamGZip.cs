@@ -951,7 +951,7 @@ public class UsingMemoryStreamGZip : UnitTestBase
         string testData = GetRandomString(1_000, 2_000);
 
         // Compress the data            
-        using MemoryStreamSlim compressedStream = MemoryStreamGZip.Compress(testData);
+        await using MemoryStreamSlim compressedStream = MemoryStreamGZip.Compress(testData);
 
         compressedStream.Position.Should().Be(0);
 
@@ -972,7 +972,7 @@ public class UsingMemoryStreamGZip : UnitTestBase
         string testData = string.Empty;
 
         // Compress the data            
-        using MemoryStreamSlim compressedStream = MemoryStreamGZip.Compress(testData);
+        await using MemoryStreamSlim compressedStream = MemoryStreamGZip.Compress(testData);
 
         compressedStream.Length.Should().Be(0);
 
@@ -992,7 +992,7 @@ public class UsingMemoryStreamGZip : UnitTestBase
         string testData = GetRandomString(1_000, 2_000);
 
         // Compress the data            
-        using MemoryStreamSlim compressedStream = MemoryStreamGZip.Compress(testData,
+        await using MemoryStreamSlim compressedStream = MemoryStreamGZip.Compress(testData,
             new MemoryStreamGZipOptions().WithCompressionLevel(CompressionLevel.SmallestSize));
 
         compressedStream.Position.Should().Be(0);
@@ -1015,7 +1015,7 @@ public class UsingMemoryStreamGZip : UnitTestBase
         string testData = string.Empty;
 
         // Compress the data            
-        using MemoryStreamSlim compressedStream = MemoryStreamGZip.Compress(testData,
+        await using MemoryStreamSlim compressedStream = MemoryStreamGZip.Compress(testData,
             new MemoryStreamGZipOptions().WithCompressionLevel(CompressionLevel.SmallestSize));
 
         compressedStream.Length.Should().Be(0);
@@ -1037,7 +1037,7 @@ public class UsingMemoryStreamGZip : UnitTestBase
         string testData = GetRandomString(1_000, 2_000);
 
         // Compress the data            
-        using MemoryStreamSlim compressedStream = MemoryStreamGZip.Compress(testData,
+        await using MemoryStreamSlim compressedStream = MemoryStreamGZip.Compress(testData,
             options => options.WithCompressionLevel(CompressionLevel.SmallestSize));
 
         compressedStream.Position.Should().Be(0);
@@ -1060,7 +1060,7 @@ public class UsingMemoryStreamGZip : UnitTestBase
         string testData = string.Empty;
 
         // Compress the data            
-        using MemoryStreamSlim compressedStream = MemoryStreamGZip.Compress(testData,
+        await using MemoryStreamSlim compressedStream = MemoryStreamGZip.Compress(testData,
             options => options.WithCompressionLevel(CompressionLevel.SmallestSize));
 
         compressedStream.Length.Should().Be(0);
@@ -1082,7 +1082,7 @@ public class UsingMemoryStreamGZip : UnitTestBase
         string testData = GetRandomString(1_000, 2_000);
 
         // Compress the data            
-        using MemoryStreamSlim compressedStream = MemoryStreamGZip.Compress(testData,
+        await using MemoryStreamSlim compressedStream = MemoryStreamGZip.Compress(testData,
             (options, state) => options.WithCompressionLevel(state), CompressionLevel.SmallestSize);
 
         compressedStream.Position.Should().Be(0);
@@ -1105,7 +1105,7 @@ public class UsingMemoryStreamGZip : UnitTestBase
         string testData = string.Empty;
 
         // Compress the data            
-        using MemoryStreamSlim compressedStream = MemoryStreamGZip.Compress(testData,
+        await using MemoryStreamSlim compressedStream = MemoryStreamGZip.Compress(testData,
             (options, state) => options.WithCompressionLevel(state), CompressionLevel.SmallestSize);
 
         compressedStream.Length.Should().Be(0);
@@ -1316,7 +1316,7 @@ public class UsingMemoryStreamGZip : UnitTestBase
         Encoding encoding = BitConverter.IsLittleEndian ? Encoding.BigEndianUnicode : Encoding.Unicode;
 
         // Compress the data            
-        using MemoryStreamSlim compressedStream = MemoryStreamGZip.Compress(testData, encoding);
+        await using MemoryStreamSlim compressedStream = MemoryStreamGZip.Compress(testData, encoding);
 
         compressedStream.Position.Should().Be(0);
 
@@ -1339,7 +1339,7 @@ public class UsingMemoryStreamGZip : UnitTestBase
         Encoding encoding = BitConverter.IsLittleEndian ? Encoding.BigEndianUnicode : Encoding.Unicode;
 
         // Compress the data            
-        using MemoryStreamSlim compressedStream = MemoryStreamGZip.Compress(testData, encoding);
+        await using MemoryStreamSlim compressedStream = MemoryStreamGZip.Compress(testData, encoding);
 
         compressedStream.Length.Should().Be(0);
 
@@ -1361,7 +1361,7 @@ public class UsingMemoryStreamGZip : UnitTestBase
         Encoding encoding = BitConverter.IsLittleEndian ? Encoding.BigEndianUnicode : Encoding.Unicode;
 
         // Compress the data            
-        using MemoryStreamSlim compressedStream = MemoryStreamGZip.Compress(testData, encoding,
+        await using MemoryStreamSlim compressedStream = MemoryStreamGZip.Compress(testData, encoding,
             new MemoryStreamGZipOptions().WithCompressionLevel(CompressionLevel.SmallestSize));
 
         compressedStream.Position.Should().Be(0);
@@ -1386,7 +1386,7 @@ public class UsingMemoryStreamGZip : UnitTestBase
         Encoding encoding = BitConverter.IsLittleEndian ? Encoding.BigEndianUnicode : Encoding.Unicode;
 
         // Compress the data            
-        using MemoryStreamSlim compressedStream = MemoryStreamGZip.Compress(testData, encoding,
+        await using MemoryStreamSlim compressedStream = MemoryStreamGZip.Compress(testData, encoding,
             new MemoryStreamGZipOptions().WithCompressionLevel(CompressionLevel.SmallestSize));
 
         compressedStream.Length.Should().Be(0);
@@ -1410,7 +1410,7 @@ public class UsingMemoryStreamGZip : UnitTestBase
         Encoding encoding = BitConverter.IsLittleEndian ? Encoding.BigEndianUnicode : Encoding.Unicode;
 
         // Compress the data            
-        using MemoryStreamSlim compressedStream = MemoryStreamGZip.Compress(testData, encoding,
+        await using MemoryStreamSlim compressedStream = MemoryStreamGZip.Compress(testData, encoding,
             options => options.WithCompressionLevel(CompressionLevel.SmallestSize));
 
         compressedStream.Position.Should().Be(0);
@@ -1435,7 +1435,7 @@ public class UsingMemoryStreamGZip : UnitTestBase
         Encoding encoding = BitConverter.IsLittleEndian ? Encoding.BigEndianUnicode : Encoding.Unicode;
 
         // Compress the data            
-        using MemoryStreamSlim compressedStream = MemoryStreamGZip.Compress(testData, encoding,
+        await using MemoryStreamSlim compressedStream = MemoryStreamGZip.Compress(testData, encoding,
             options => options.WithCompressionLevel(CompressionLevel.SmallestSize));
 
         compressedStream.Length.Should().Be(0);
@@ -1459,7 +1459,7 @@ public class UsingMemoryStreamGZip : UnitTestBase
         Encoding encoding = BitConverter.IsLittleEndian ? Encoding.BigEndianUnicode : Encoding.Unicode;
 
         // Compress the data            
-        using MemoryStreamSlim compressedStream = MemoryStreamGZip.Compress(testData, encoding,
+        await using MemoryStreamSlim compressedStream = MemoryStreamGZip.Compress(testData, encoding,
             (options, state) => options.WithCompressionLevel(state), CompressionLevel.SmallestSize);
 
         compressedStream.Position.Should().Be(0);
@@ -1484,7 +1484,7 @@ public class UsingMemoryStreamGZip : UnitTestBase
         Encoding encoding = BitConverter.IsLittleEndian ? Encoding.BigEndianUnicode : Encoding.Unicode;
 
         // Compress the data            
-        using MemoryStreamSlim compressedStream = MemoryStreamGZip.Compress(testData, encoding,
+        await using MemoryStreamSlim compressedStream = MemoryStreamGZip.Compress(testData, encoding,
             (options, state) => options.WithCompressionLevel(state), CompressionLevel.SmallestSize);
 
         compressedStream.Length.Should().Be(0);

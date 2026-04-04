@@ -1484,7 +1484,7 @@ public partial class UsingMemoryStreamSlim
                     for (int testLoop = 0; testLoop < 500; testLoop++)
                     {
                         int byteCount = testDataSizes[RandomSource.GetRandomInteger(testDataSizes.Length)];
-                        using MemoryStreamSlim testService = CreateTestService(byteCount);
+                        await using MemoryStreamSlim testService = CreateTestService(byteCount);
                         TestWriteLine($"Running test loop {testLoop} with byte count of {byteCount} and segment size {testSegmentSize}");
 
                         // Get an array to compare the results to
