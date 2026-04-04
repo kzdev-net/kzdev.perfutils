@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.Versioning;
 using System.Text;
+
 using KZDev.PerfUtils.Helpers;
 using KZDev.PerfUtils.Internals;
 using KZDev.PerfUtils.Observability;
@@ -56,7 +57,7 @@ public abstract class MemoryStreamSlim : MemoryStream
     /// <summary>
     /// The maximum length allowed for a <see cref="MemoryStreamSlim"/> instance.
     /// </summary>
-    protected internal static readonly long MaxMemoryStreamLength = 
+    protected internal static readonly long MaxMemoryStreamLength =
         Environment.Is64BitProcess ? Math.Max(Math.Min(0x8_0000_0000, GC.GetGCMemoryInfo().TotalAvailableMemoryBytes), int.MaxValue) : int.MaxValue;
 
     /// <summary>
@@ -442,6 +443,22 @@ public abstract class MemoryStreamSlim : MemoryStream
         }
     }
     //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Produces an <see cref="IMemoryOwner{T}"/> for this stream's materialized bytes using
+    /// <paramref name="memoryPool"/> for non-empty payloads.
+    /// </summary>
+    /// <param name="memoryPool">
+    /// The pool to rent from when the stream length is non-zero; never <c>null</c> (validated by callers).
+    /// </param>
+    /// <returns>
+    /// The materialized owner for this stream implementation.
+    /// </returns>
+    protected virtual IMemoryOwner<byte> ToMemoryInternal (MemoryPool<byte> memoryPool)
+    {
+        ThrowHelper.ThrowNotSupportedException_FeatureNotSupported();
+        return null!;
+    }
+    //--------------------------------------------------------------------------------
 
     //--------------------------------------------------------------------------------
     /// <summary>
@@ -492,7 +509,7 @@ public abstract class MemoryStreamSlim : MemoryStream
     /// An instance of the <see cref="MemoryStreamSlim"/> class with an expandable
     /// capacity initialized as specified.
     /// </returns>
-    internal static MemoryStreamSlim Create(string sourceString, Encoding encoding)
+    internal static MemoryStreamSlim Create (string sourceString, Encoding encoding)
     {
         byte[] bytes = encoding.GetBytes(sourceString);
         MemoryStreamSlim returnStream = Create(bytes.Length);
@@ -519,7 +536,7 @@ public abstract class MemoryStreamSlim : MemoryStream
     /// An instance of the <see cref="MemoryStreamSlim"/> class with an expandable
     /// capacity initialized as specified.
     /// </returns>
-    internal static MemoryStreamSlim Create(string sourceString, Encoding encoding,
+    internal static MemoryStreamSlim Create (string sourceString, Encoding encoding,
         in MemoryStreamSlimOptions options)
     {
         byte[] bytes = encoding.GetBytes(sourceString);
@@ -547,7 +564,7 @@ public abstract class MemoryStreamSlim : MemoryStream
     /// An instance of the <see cref="MemoryStreamSlim"/> class with an expandable
     /// capacity initialized as specified.
     /// </returns>
-    internal static MemoryStreamSlim Create(string sourceString, Encoding encoding,
+    internal static MemoryStreamSlim Create (string sourceString, Encoding encoding,
         Func<MemoryStreamSlimOptions, MemoryStreamSlimOptions> optionsSetup)
     {
         ArgumentNullException.ThrowIfNull(optionsSetup, nameof(optionsSetup));
@@ -581,7 +598,7 @@ public abstract class MemoryStreamSlim : MemoryStream
     /// An instance of the <see cref="MemoryStreamSlim"/> class with an expandable
     /// capacity initialized as specified.
     /// </returns>
-    internal static MemoryStreamSlim Create<TState>(string sourceString, Encoding encoding,
+    internal static MemoryStreamSlim Create<TState> (string sourceString, Encoding encoding,
         Func<MemoryStreamSlimOptions, TState, MemoryStreamSlimOptions> optionsSetup,
         TState state)
     {
@@ -1111,7 +1128,7 @@ public abstract class MemoryStreamSlim : MemoryStream
     /// <param name="encoding">
     /// The encoding to use to decode the byte stream.
     /// </param>
-    public abstract string Decode(Encoding encoding);
+    public abstract string Decode (Encoding encoding);
     //--------------------------------------------------------------------------------
 
     #region Overrides of Object
@@ -1416,22 +1433,6 @@ public abstract class MemoryStreamSlim : MemoryStream
     {
         ArgumentNullException.ThrowIfNull(memoryPool);
         return ToMemoryInternal(memoryPool);
-    }
-    //--------------------------------------------------------------------------------
-    /// <summary>
-    /// Produces an <see cref="IMemoryOwner{T}"/> for this stream's materialized bytes using
-    /// <paramref name="memoryPool"/> for non-empty payloads.
-    /// </summary>
-    /// <param name="memoryPool">
-    /// The pool to rent from when the stream length is non-zero; never <c>null</c> (validated by callers).
-    /// </param>
-    /// <returns>
-    /// The materialized owner for this stream implementation.
-    /// </returns>
-    protected virtual IMemoryOwner<byte> ToMemoryInternal (MemoryPool<byte> memoryPool)
-    {
-        ThrowHelper.ThrowNotSupportedException_FeatureNotSupported();
-        return null!;
     }
     //--------------------------------------------------------------------------------
 

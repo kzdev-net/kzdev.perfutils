@@ -117,16 +117,10 @@ using (MemoryStreamSlim stream = MemoryStreamSlim.Create())
 {
     stream.WriteByte(1);
     stream.WriteByte(2);
-    IMemoryOwner<byte> owner = stream.ToMemory();
-    try
-    {
-        ReadOnlySpan<byte> span = owner.Memory.Span;
-        // Use span ...
-    }
-    finally
-    {
-        owner.Dispose();
-    }
+    using IMemoryOwner<byte> owner = stream.ToMemory();
+
+    ReadOnlySpan<byte> span = owner.Memory.Span;
+    // Use span ...
 }
 ```
 

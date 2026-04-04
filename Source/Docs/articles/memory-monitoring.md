@@ -283,9 +283,8 @@ The following table shows the event data.
 
 | Name | Type | Description |
 | --- | --- | --- |
-| StreamId | UnicodeString | The unique identifier for the **MemoryStreamSlim** instance (same representation as other stream identity fields on this event source). |
+| StreamId | Guid | The unique identifier for the MemoryStreamSlim instance. |
 | ByteCount | Int32 | The number of stream bytes copied into the rented buffer (equals the stream’s `Length` at the time of the call). |
-| Reserved | Int32 | Reserved for future use; currently always 0. |
 
 ---
 

@@ -29,6 +29,18 @@ The following property accessors now throw `ObjectDisposedException` when access
 
 **Note:** Dynamic mode `MemoryStreamSlim` instances (created without a provided buffer) will continue to throw `ObjectDisposedException` when `ToArray()` is called after disposal. This is an intentional design difference to maintain memory efficiency - dynamic mode streams release their buffers back to the pool during disposal, making the data unavailable. This trade-off is necessary to achieve the memory efficiency goals of `MemoryStreamSlim`.
 
+#### MemoryStreamSlim - ToMemory (pooled contiguous export)
+
+**Added:** `MemoryStreamSlim` now exposes `ToMemory()` and `ToMemory(MemoryPool<byte>)`, which copy the stream’s visible bytes into a contiguous buffer wrapped in an `IMemoryOwner<byte>`. The copy spans the stream from the beginning through `Length`, independent of `Position`, with the same observable limits as `ToArray()`.
+
+**Why use `ToMemory` instead of `ToArray`?**
+
+- **`ToArray()`** allocates a new `byte[]` on the GC heap every time. The array is reclaimed only when the garbage collector runs, which can add GC pressure when you materialize large payloads often.
+- **`ToMemory()`** rents backing storage from a `MemoryPool<byte>` (shared pool by default, or a pool you supply). When you call `Dispose()` on the returned owner, the buffer is returned to that pool for reuse, which can reduce allocations and steady-state heap growth compared with repeated `ToArray()` calls.
+- **`ToMemory()`** fits APIs that already work with `Memory<byte>` or `ReadOnlyMemory<byte>` without an extra array wrapper, and a custom pool lets you attribute or cap rentals for specific subsystems.
+
+**Other details:** When the stream length is zero, the API returns a shared singleton owner whose `Dispose()` is a no-op and does not rent from any pool. For non-empty results, callers must dispose the owner so the rented buffer is returned. After disposal of the stream, behavior matches `ToArray()` by mode (fixed mode may still succeed when the underlying buffer remains available; dynamic mode throws `ObjectDisposedException`). Monitoring includes a dedicated `MemoryStreamSlimToMemory` event (separate from `MemoryStreamSlimToArray`) when a non-zero payload is materialized.
+
 ### Compatibility
 
 These changes improve compatibility with the BCL `MemoryStream` class behavior when streams are disposed. The changes ensure that `MemoryStreamSlim` behaves consistently with `MemoryStream` in most scenarios, with the documented exception of dynamic mode `ToArray()` after disposal, which is a necessary limitation for memory efficiency.

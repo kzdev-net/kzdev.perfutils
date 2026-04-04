@@ -408,10 +408,10 @@ class UtilsEventSource : EventSource
         Task = Tasks.MemoryStreamSlim,
         Opcode = Opcodes.MemoryPoolRent,
         Level = EventLevel.Informational)]
-    private void MemoryStreamSlimToMemory (string streamId, int byteCount, int reserved)
+    public void MemoryStreamSlimToMemory (string streamId, int byteCount)
     {
         if (IsEnabled(EventLevel.Informational, Keywords.Memory))
-            WriteEvent(EventId_MemoryStreamSlimToMemory, streamId, byteCount, reserved);
+            WriteEvent(EventId_MemoryStreamSlimToMemory, streamId, byteCount);
     }
     //--------------------------------------------------------------------------------
     private const int EventId_StringBuilderCreate = 21;
@@ -538,16 +538,6 @@ class UtilsEventSource : EventSource
     {
         if (IsEnabled(EventLevel.Warning, Keywords.Memory))
             MemoryStreamSlimToArray(streamId, arraySize, stringDecode ? 1 : 0);
-    }
-    //--------------------------------------------------------------------------------
-    /// <summary>
-    /// Event to report a ToMemory call on a memory stream slim instance that produces a non-zero length payload.
-    /// </summary>
-    [NonEvent]
-    public void MemoryStreamSlimToMemory (string streamId, int byteCount)
-    {
-        if (IsEnabled(EventLevel.Informational, Keywords.Memory))
-            MemoryStreamSlimToMemory(streamId, byteCount, 0);
     }
     //--------------------------------------------------------------------------------
     /// <summary>

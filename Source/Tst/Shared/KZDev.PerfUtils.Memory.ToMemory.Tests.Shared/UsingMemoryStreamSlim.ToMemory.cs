@@ -16,6 +16,90 @@ namespace KZDev.PerfUtils.Tests;
 /// </summary>
 public partial class UsingMemoryStreamSlim
 {
+    //================================================================================
+    /// <summary>
+    /// A <see cref="MemoryPool{T}"/> that delegates to <see cref="MemoryPool{T}.Shared"/> while counting rent and return.
+    /// </summary>
+    private sealed class RentReturnCountingPool : MemoryPool<byte>
+    {
+        private int _rentCount;
+        private int _returnCount;
+
+        /// <summary>
+        /// Number of completed <see cref="Rent"/> calls.
+        /// </summary>
+        public int RentCount => Volatile.Read(ref _rentCount);
+
+        /// <summary>
+        /// Number of times a rented owner was disposed (returned).
+        /// </summary>
+        public int ReturnCount => Volatile.Read(ref _returnCount);
+
+        /// <inheritdoc />
+        public override int MaxBufferSize => MemoryPool<byte>.Shared.MaxBufferSize;
+
+        /// <inheritdoc />
+        public override IMemoryOwner<byte> Rent (int minBufferSize = -1)
+        {
+            Interlocked.Increment(ref _rentCount);
+            IMemoryOwner<byte> inner = MemoryPool<byte>.Shared.Rent(minBufferSize);
+            return new CountingDisposeOwner(inner, () => Interlocked.Increment(ref _returnCount));
+        }
+
+        /// <inheritdoc />
+        protected override void Dispose (bool disposing)
+        {
+        }
+
+        /// <summary>
+        /// Wraps an inner owner and invokes a callback when the inner rental is disposed.
+        /// </summary>
+        private sealed class CountingDisposeOwner : IMemoryOwner<byte>
+        {
+            private IMemoryOwner<byte>? _inner;
+            private readonly Action _onInnerDisposed;
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="CountingDisposeOwner"/> class.
+            /// </summary>
+            /// <param name="inner">
+            /// The rental to wrap.
+            /// </param>
+            /// <param name="onInnerDisposed">
+            /// Invoked exactly once when <paramref name="inner"/> is disposed.
+            /// </param>
+            public CountingDisposeOwner (IMemoryOwner<byte> inner, Action onInnerDisposed)
+            {
+                _inner = inner;
+                _onInnerDisposed = onInnerDisposed;
+            }
+
+            /// <inheritdoc />
+            public Memory<byte> Memory
+            {
+                get
+                {
+                    IMemoryOwner<byte>? inner = _inner;
+                    return inner?.Memory ?? throw new ObjectDisposedException (nameof(CountingDisposeOwner));
+                }
+            }
+
+            /// <inheritdoc />
+            public void Dispose ()
+            {
+                IMemoryOwner<byte>? inner = Interlocked.Exchange(ref _inner, null);
+                if (inner is null)
+                {
+                    return;
+                }
+
+                inner.Dispose();
+                _onInnerDisposed();
+            }
+        }
+    }
+    //================================================================================
+
     #region ToMemory - pool and empty-stream behavior
 
     //================================================================================
@@ -251,92 +335,5 @@ public partial class UsingMemoryStreamSlim
         }
     }
     //--------------------------------------------------------------------------------
-
-    /// <summary>
-    /// A <see cref="MemoryPool{T}"/> that delegates to <see cref="MemoryPool{T}.Shared"/> while counting rent and return.
-    /// </summary>
-    private sealed class RentReturnCountingPool : MemoryPool<byte>
-    {
-        private int _rentCount;
-        private int _returnCount;
-
-        /// <summary>
-        /// Number of completed <see cref="Rent"/> calls.
-        /// </summary>
-        public int RentCount => Volatile.Read(ref _rentCount);
-
-        /// <summary>
-        /// Number of times a rented owner was disposed (returned).
-        /// </summary>
-        public int ReturnCount => Volatile.Read(ref _returnCount);
-
-        /// <inheritdoc />
-        public override int MaxBufferSize => MemoryPool<byte>.Shared.MaxBufferSize;
-
-        /// <inheritdoc />
-        public override IMemoryOwner<byte> Rent (int minBufferSize = -1)
-        {
-            Interlocked.Increment(ref _rentCount);
-            IMemoryOwner<byte> inner = MemoryPool<byte>.Shared.Rent(minBufferSize);
-            return new CountingDisposeOwner(inner, () => Interlocked.Increment(ref _returnCount));
-        }
-
-        /// <inheritdoc />
-        protected override void Dispose (bool disposing)
-        {
-        }
-
-        /// <summary>
-        /// Wraps an inner owner and invokes a callback when the inner rental is disposed.
-        /// </summary>
-        private sealed class CountingDisposeOwner : IMemoryOwner<byte>
-        {
-            private IMemoryOwner<byte>? _inner;
-            private readonly Action _onInnerDisposed;
-
-            /// <summary>
-            /// Initializes a new instance of the <see cref="CountingDisposeOwner"/> class.
-            /// </summary>
-            /// <param name="inner">
-            /// The rental to wrap.
-            /// </param>
-            /// <param name="onInnerDisposed">
-            /// Invoked exactly once when <paramref name="inner"/> is disposed.
-            /// </param>
-            public CountingDisposeOwner (IMemoryOwner<byte> inner, Action onInnerDisposed)
-            {
-                _inner = inner;
-                _onInnerDisposed = onInnerDisposed;
-            }
-
-            /// <inheritdoc />
-            public Memory<byte> Memory
-            {
-                get
-                {
-                    IMemoryOwner<byte>? inner = _inner;
-                    if (inner is null)
-                    {
-                        throw new ObjectDisposedException(nameof(CountingDisposeOwner));
-                    }
-
-                    return inner.Memory;
-                }
-            }
-
-            /// <inheritdoc />
-            public void Dispose ()
-            {
-                IMemoryOwner<byte>? inner = Interlocked.Exchange(ref _inner, null);
-                if (inner is null)
-                {
-                    return;
-                }
-
-                inner.Dispose();
-                _onInnerDisposed();
-            }
-        }
-    }
 }
 //################################################################################

@@ -42,7 +42,7 @@ public partial class UsingMemoryStreamSlim
 
         // Dynamic mode releases buffers on disposal, so ToArray() cannot work
         // This is different from BCL MemoryStream but necessary for memory efficiency
-        stream.Invoking(s => s.ToArray())
+        stream.Invoking(callStream => callStream.ToArray())
             .Should()
             .Throw<ObjectDisposedException>();
     }
@@ -91,9 +91,9 @@ public partial class UsingMemoryStreamSlim
 
         stream.Dispose();
 
-        stream.Invoking(s =>
+        stream.Invoking(callStream =>
             {
-                using IMemoryOwner<byte> _ = s.ToMemory();
+                using IMemoryOwner<byte> _ = callStream.ToMemory();
             })
             .Should()
             .Throw<ObjectDisposedException>();
@@ -113,9 +113,9 @@ public partial class UsingMemoryStreamSlim
 
         stream.Dispose();
 
-        stream.Invoking(s =>
+        stream.Invoking(callStream =>
             {
-                using IMemoryOwner<byte> _ = s.ToMemory(MemoryPool<byte>.Shared);
+                using IMemoryOwner<byte> _ = callStream.ToMemory(MemoryPool<byte>.Shared);
             })
             .Should()
             .Throw<ObjectDisposedException>();
@@ -165,7 +165,7 @@ public partial class UsingMemoryStreamSlim
         stream.Dispose();
 
         // BCL MemoryStream throws ObjectDisposedException when accessing Length after disposal
-        stream.Invoking(s => _ = s.Length)
+        stream.Invoking(callStream => _ = callStream.Length)
             .Should()
             .Throw<ObjectDisposedException>();
     }
@@ -186,7 +186,7 @@ public partial class UsingMemoryStreamSlim
         stream.Dispose();
 
         // BCL MemoryStream throws ObjectDisposedException when accessing Length after disposal
-        stream.Invoking(s => _ = s.Length)
+        stream.Invoking(callStream => _ = callStream.Length)
             .Should()
             .Throw<ObjectDisposedException>();
     }
@@ -216,7 +216,7 @@ public partial class UsingMemoryStreamSlim
         stream.Dispose();
 
         // BCL MemoryStream throws ObjectDisposedException when accessing Position getter after disposal
-        stream.Invoking(s => _ = s.Position)
+        stream.Invoking(callStream => _ = callStream.Position)
             .Should()
             .Throw<ObjectDisposedException>();
     }
@@ -237,7 +237,7 @@ public partial class UsingMemoryStreamSlim
         stream.Dispose();
 
         // BCL MemoryStream throws ObjectDisposedException when accessing Position getter after disposal
-        stream.Invoking(s => _ = s.Position)
+        stream.Invoking(callStream => _ = callStream.Position)
             .Should()
             .Throw<ObjectDisposedException>();
     }
@@ -258,7 +258,7 @@ public partial class UsingMemoryStreamSlim
         stream.Dispose();
 
         // BCL MemoryStream throws ObjectDisposedException when setting Position after disposal
-        stream.Invoking(s => s.Position = 50)
+        stream.Invoking(callStream => callStream.Position = 50)
             .Should()
             .Throw<ObjectDisposedException>();
     }
@@ -278,7 +278,7 @@ public partial class UsingMemoryStreamSlim
         stream.Dispose();
 
         // BCL MemoryStream throws ObjectDisposedException when setting Position after disposal
-        stream.Invoking(s => s.Position = 50)
+        stream.Invoking(callStream => callStream.Position = 50)
             .Should()
             .Throw<ObjectDisposedException>();
     }
@@ -305,7 +305,7 @@ public partial class UsingMemoryStreamSlim
         stream.Dispose();
 
         // BCL MemoryStream throws ObjectDisposedException when accessing Capacity getter after disposal
-        stream.Invoking(s => _ = s.Capacity)
+        stream.Invoking(callStream => _ = callStream.Capacity)
             .Should()
             .Throw<ObjectDisposedException>();
     }
@@ -326,7 +326,7 @@ public partial class UsingMemoryStreamSlim
         stream.Dispose();
 
         // BCL MemoryStream throws ObjectDisposedException when accessing Capacity getter after disposal
-        stream.Invoking(s => _ = s.Capacity)
+        stream.Invoking(callStream => _ = callStream.Capacity)
             .Should()
             .Throw<ObjectDisposedException>();
     }
@@ -345,7 +345,7 @@ public partial class UsingMemoryStreamSlim
         stream.Dispose();
 
         // BCL MemoryStream throws ObjectDisposedException when accessing Capacity getter after disposal
-        stream.Invoking(s => _ = s.CapacityLong)
+        stream.Invoking(callStream => _ = callStream.CapacityLong)
             .Should()
             .Throw<ObjectDisposedException>();
     }
@@ -364,7 +364,7 @@ public partial class UsingMemoryStreamSlim
         stream.Dispose();
 
         // BCL MemoryStream throws ObjectDisposedException when setting Capacity after disposal
-        stream.Invoking(s => s.Capacity = 200)
+        stream.Invoking(callStream => callStream.Capacity = 200)
             .Should()
             .Throw<ObjectDisposedException>();
     }
@@ -383,7 +383,7 @@ public partial class UsingMemoryStreamSlim
         stream.Dispose();
 
         // BCL MemoryStream throws ObjectDisposedException when setting Capacity after disposal
-        stream.Invoking(s => s.CapacityLong = 200)
+        stream.Invoking(callStream => callStream.CapacityLong = 200)
             .Should()
             .Throw<ObjectDisposedException>();
     }
@@ -413,7 +413,7 @@ public partial class UsingMemoryStreamSlim
         stream.Dispose();
 
         // Dynamic mode doesn't support GetBuffer() regardless of disposal state
-        stream.Invoking(s => s.GetBuffer())
+        stream.Invoking(callStream => callStream.GetBuffer())
             .Should()
             .Throw<NotSupportedException>()
             .WithMessage($"The operation is not supported with {nameof(MemoryStreamSlimMode.Dynamic)} mode MemoryStreamSlim instances.");
@@ -455,7 +455,7 @@ public partial class UsingMemoryStreamSlim
         stream.Dispose();
 
         // BCL MemoryStream throws UnauthorizedAccessException if publiclyVisible was false
-        stream.Invoking(s => s.GetBuffer())
+        stream.Invoking(callStream => callStream.GetBuffer())
             .Should()
             .Throw<UnauthorizedAccessException>();
     }
@@ -508,7 +508,7 @@ public partial class UsingMemoryStreamSlim
     //--------------------------------------------------------------------------------
     /// <summary>
     /// Tests that calling <see cref="MemoryStreamSlim.TryGetBuffer(out ArraySegment{byte})"/>
-    /// on a disposed fixed mode stream with publiclyVisible=false returns false, matching
+    /// on a disposed fixed mode stream with publiclyVisible=false, returns false, matching
     /// BCL <see cref="MemoryStream"/> behavior.
     /// </summary>
     [Fact]
@@ -576,7 +576,7 @@ public partial class UsingMemoryStreamSlim
         stream.Dispose();
 
         // BCL MemoryStream throws ObjectDisposedException when accessing Length after disposal
-        stream.Invoking(s => _ = s.Length)
+        stream.Invoking(callStream => _ = callStream.Length)
             .Should()
             .Throw<ObjectDisposedException>();
     }
@@ -596,7 +596,7 @@ public partial class UsingMemoryStreamSlim
         stream.Dispose();
 
         // BCL MemoryStream throws ObjectDisposedException when accessing Position after disposal
-        stream.Invoking(s => _ = s.Position)
+        stream.Invoking(callStream => _ = callStream.Position)
             .Should()
             .Throw<ObjectDisposedException>();
     }
@@ -614,7 +614,7 @@ public partial class UsingMemoryStreamSlim
         stream.Dispose();
 
         // BCL MemoryStream throws ObjectDisposedException when accessing Capacity after disposal
-        stream.Invoking(s => _ = s.Capacity)
+        stream.Invoking(callStream => _ = callStream.Capacity)
             .Should()
             .Throw<ObjectDisposedException>();
     }
