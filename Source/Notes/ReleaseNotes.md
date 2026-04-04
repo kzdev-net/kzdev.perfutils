@@ -4,22 +4,21 @@
 
 ### Breaking Changes
 
-#### MemoryStreamSlim - Disposed Stream Behavior
+#### MemoryStreamSlim - Disposed Stream Behavior (dynamic mode)
 
-**Changed:** Improved compatibility with BCL `MemoryStream` behavior when accessing properties on disposed streams.
+**Changed:** **Dynamic-mode** `MemoryStreamSlim` (streams created without a caller-supplied buffer, i.e. segment-backed / pool-backed instances) now throws `ObjectDisposedException` from `Length`, `Position`, and capacity-related APIs after disposal, **where that behavior aligns with the BCL `MemoryStream` contract** for the same members.
 
-The following property accessors now throw `ObjectDisposedException` when accessed after the stream has been disposed, matching the behavior of the BCL `MemoryStream` class:
+The following members now throw `ObjectDisposedException` when used after the stream has been disposed (previously, dynamic mode often returned the last known values instead of throwing):
 
-- **`Length` property getter** - Previously returned the last known length value; now throws `ObjectDisposedException`
-- **`Position` property getter** - Previously returned the last known position value; now throws `ObjectDisposedException`
-- **`Capacity` property getter** - Previously returned the last known capacity value; now throws `ObjectDisposedException`
-- **`Capacity` property setter** - Now explicitly throws `ObjectDisposedException` (previously may have thrown through other validation)
-- **`CapacityLong` property getter** - Previously returned the last known capacity value; now throws `ObjectDisposedException`
-- **`CapacityLong` property setter** - Now explicitly throws `ObjectDisposedException` (previously may have thrown through other validation)
+- **`Length` property getter**
+- **`Position` property getter**
+- **`Position` property setter**
+- **`Capacity` property getter and setter**
+- **`CapacityLong` property getter and setter**
 
-**Impact:** Code that accesses these properties on disposed `MemoryStreamSlim` instances will now throw `ObjectDisposedException` instead of returning values. This change improves compatibility with BCL `MemoryStream` and helps catch programming errors where disposed streams are being accessed.
+**Impact:** If any consumer relied on **non-throwing** access to `Length`, `Position`, or capacity after `Dispose()` on **dynamic-mode** streams, that code will now fail with `ObjectDisposedException`. Fixed-mode streams (created with a provided buffer) continue to delegate these members to the wrapped BCL `MemoryStream`, which already follows BCL disposed semantics.
 
-**Migration:** Review code that accesses `Length`, `Position`, or `Capacity` properties on `MemoryStreamSlim` instances and ensure the stream is not disposed before accessing these properties. If you need to access these values after disposal, store them in local variables before disposing the stream.
+**Migration:** Do not read or set `Length`, `Position`, `Capacity`, or `CapacityLong` on a disposed dynamic-mode stream. Capture any values you need before disposal. This aligns dynamic-mode observability with BCL `MemoryStream` and surfaces incorrect lifetime use earlier.
 
 ### Improvements
 
@@ -43,7 +42,7 @@ The following property accessors now throw `ObjectDisposedException` when access
 
 ### Compatibility
 
-These changes improve compatibility with the BCL `MemoryStream` class behavior when streams are disposed. The changes ensure that `MemoryStreamSlim` behaves consistently with `MemoryStream` in most scenarios, with the documented exception of dynamic mode `ToArray()` after disposal, which is a necessary limitation for memory efficiency.
+These changes improve compatibility with the BCL `MemoryStream` class behavior when streams are disposed. Dynamic-mode `MemoryStreamSlim` now matches BCL disposed semantics for `Length`, `Position`, and capacity surface area as described above, with the documented exception of dynamic mode `ToArray()` after disposal, which is a necessary limitation for memory efficiency.
 
 ## Version 2.0.1
 

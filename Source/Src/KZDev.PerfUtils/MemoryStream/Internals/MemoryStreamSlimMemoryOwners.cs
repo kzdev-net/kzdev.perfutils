@@ -54,19 +54,14 @@ internal sealed class EmptyMemoryStreamSlimMemoryOwner : IMemoryOwner<byte>
 /// <see cref="Dispose"/> forwards to the inner owner so the buffer is returned to the originating pool;
 /// subsequent dispose is ignored.
 /// </summary>
+/// <remarks>
+///   This type is not thread-safe. Callers should use it from a single thread of execution, which matches the
+///   typical pattern after <see cref="MemoryStreamSlim.ToMemory()"/> (for example, a <c>using</c> on one thread).
+///   Concurrent use of <see cref="Memory"/> or <see cref="Dispose"/> is unsupported and may fail unpredictably.
+/// </remarks>
 [DebuggerDisplay("PooledMemoryStreamSlimMemoryOwner (Length = {_length})")]
 internal sealed class PooledMemoryStreamSlimMemoryOwner : IMemoryOwner<byte>
 {
-    /// <summary>
-    /// Synchronizes <see cref="Memory"/> and <see cref="Dispose"/> so the inner owner is not disposed while a
-    /// <see cref="Memory{T}"/> view is being created.
-    /// </summary>
-#if NET9_0_OR_GREATER
-    private readonly Lock _gate = new();
-#else
-    private readonly object _gate = new object();
-#endif
-
     /// <summary>
     /// Rented backing store from <see cref="MemoryPool{T}.Rent"/>; cleared when disposed.
     /// </summary>
@@ -77,6 +72,15 @@ internal sealed class PooledMemoryStreamSlimMemoryOwner : IMemoryOwner<byte>
     /// </summary>
     private readonly int _length;
 
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Throws <see cref="ObjectDisposedException"/> for <see cref="Memory"/> after dispose.
+    /// </summary>
+    [DoesNotReturn]
+    private static void ThrowObjectDisposed ()
+    {
+        throw new ObjectDisposedException(nameof(PooledMemoryStreamSlimMemoryOwner));
+    }
     //--------------------------------------------------------------------------------
     /// <summary>
     /// Initializes a new instance with the specified rental from <see cref="MemoryPool{T}.Rent"/> and visible length.
@@ -108,16 +112,13 @@ internal sealed class PooledMemoryStreamSlimMemoryOwner : IMemoryOwner<byte>
     {
         get
         {
-            lock (_gate)
+            IMemoryOwner<byte>? inner = _inner;
+            if (inner is null)
             {
-                IMemoryOwner<byte>? inner = _inner;
-                if (inner is null)
-                {
-                    ThrowObjectDisposed();
-                }
-
-                return inner.Memory[.._length];
+                ThrowObjectDisposed();
             }
+
+            return inner.Memory[.._length];
         }
     }
 
@@ -126,33 +127,17 @@ internal sealed class PooledMemoryStreamSlimMemoryOwner : IMemoryOwner<byte>
     /// </summary>
     public void Dispose ()
     {
-        IMemoryOwner<byte>? inner;
-        lock (_gate)
+        IMemoryOwner<byte>? inner = _inner;
+        if (inner is null)
         {
-            inner = _inner;
-            if (inner is null)
-            {
-                return;
-            }
-
-            _inner = null;
+            return;
         }
 
+        _inner = null;
         inner.Dispose();
     }
 
     #endregion
-    //--------------------------------------------------------------------------------
-
-    //--------------------------------------------------------------------------------
-    /// <summary>
-    /// Throws <see cref="ObjectDisposedException"/> for <see cref="Memory"/> after dispose.
-    /// </summary>
-    [DoesNotReturn]
-    private static void ThrowObjectDisposed ()
-    {
-        throw new ObjectDisposedException(nameof(PooledMemoryStreamSlimMemoryOwner));
-    }
     //--------------------------------------------------------------------------------
 }
 //################################################################################

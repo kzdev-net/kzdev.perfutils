@@ -1389,6 +1389,11 @@ public abstract class MemoryStreamSlim : MemoryStream
     /// produce an owner when the underlying buffer remains available; dynamic-mode streams throw
     /// <see cref="ObjectDisposedException"/>.
     /// </para>
+    /// <para>
+    /// This method is not thread-safe with respect to concurrent use of this stream. The returned
+    /// <see cref="IMemoryOwner{T}"/> is not thread-safe either. Use <see cref="IMemoryOwner{T}.Memory"/> and
+    /// <see cref="IDisposable.Dispose"/> from a single thread (typical <c>using</c> pattern).
+    /// </para>
     /// </remarks>
     /// <returns>
     /// An <see cref="IMemoryOwner{T}"/> whose <see cref="IMemoryOwner{T}.Memory"/> spans the stream bytes.
@@ -1421,6 +1426,11 @@ public abstract class MemoryStreamSlim : MemoryStream
     /// After disposal, behavior matches <c>ToArray()</c> for the same stream mode: fixed-mode streams can still
     /// produce an owner when the underlying buffer remains available; dynamic-mode streams throw
     /// <see cref="ObjectDisposedException"/>.
+    /// </para>
+    /// <para>
+    /// This method is not thread-safe with respect to concurrent use of this stream. The returned
+    /// <see cref="IMemoryOwner{T}"/> is not thread-safe either. Use <see cref="IMemoryOwner{T}.Memory"/> and
+    /// <see cref="IDisposable.Dispose"/> from a single thread (typical <c>using</c> pattern).
     /// </para>
     /// </remarks>
     /// <returns>

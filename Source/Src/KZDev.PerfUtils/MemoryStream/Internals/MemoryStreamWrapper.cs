@@ -303,6 +303,13 @@ internal sealed class MemoryStreamWrapper : MemoryStreamSlim
     /// Last resort after disposal when <see cref="TryGetBuffer"/> did not expose data: BCL
     /// <see cref="MemoryStream.ToArray()"/> can still succeed while <see cref="Stream.Length"/> / seek would throw.
     /// </summary>
+    /// <remarks>
+    ///   This path allocates a heap array via BCL <see cref="MemoryStream.ToArray()"/> and then copies into
+    ///   memory rented from <paramref name="memoryPool"/> (see <see cref="CreatePooledCopyFromSpan"/>). It is
+    ///   not allocation-free; it exists only for the double-disposal case where safer materialization is
+    ///   unavailable. Operators and telemetry consumers should treat this as an exceptional fallback, not the
+    ///   steady-state <see cref="MemoryStreamSlim.ToMemory()"/> cost profile.
+    /// </remarks>
     /// <param name="memoryPool">
     /// The pool to rent from for non-empty payloads.
     /// </param>

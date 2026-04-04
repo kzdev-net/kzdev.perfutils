@@ -3,7 +3,7 @@
   <PropertyGroup>
     <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
     <HasSharedItems>true</HasSharedItems>
-    <SharedGUID>a1b2c3d4-e5f6-7890-abcd-ef1234567890</SharedGUID>
+    <SharedGUID>91f0c705-7c79-4d84-a602-2a60a0ab39cb</SharedGUID>
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
     <Import_RootNamespace>KZDev.PerfUtils.Tests</Import_RootNamespace>

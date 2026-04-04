@@ -161,6 +161,7 @@ public class ContinuousGrowFillAndReadThroughputBenchmarks
             if (segmentLoop++ != GetArrayWriteSegmentIteration)
                 continue;
             using IMemoryOwner<byte> owner = getMemoryCallback(stream);
+            // Same rationale as GC.KeepAlive(captureArray): observe the owner so ToMemory materialization is not dead-code eliminated.
             _ = owner.Memory.Length;
         }
 

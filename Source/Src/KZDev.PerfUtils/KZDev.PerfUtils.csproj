@@ -12,7 +12,7 @@
 		<PackageIcon>images\icon.png</PackageIcon>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageDescription>Performance utilities for .NET projects, including the MemoryStreamSlim, StringBuilderCache, InterlockedOps, and Compression classes.</PackageDescription>
-		<PackageReleaseNotes>3.0.0: Major release for target framework alignment. Supported target frameworks are net8.0, net9.0, and net10.0. Support for .NET 6 has been removed; upgrade consuming projects to a supported framework. Prior 2.x highlights included .NET 9 support, MemoryStreamSlim Int64 capacity, compression stream helpers (2.0.0), and a race-condition fix (2.0.1).</PackageReleaseNotes>
+		<PackageReleaseNotes>3.0.0: Major release for target framework alignment. Supported target frameworks are net8.0, net9.0, and net10.0. Support for .NET 6 has been removed; upgrade consuming projects to a supported framework. Breaking (dynamic-mode MemoryStreamSlim): after Dispose, Length and Position getters/setters and capacity APIs (Capacity, CapacityLong) throw ObjectDisposedException where aligned with BCL MemoryStream; code that relied on non-throwing reads of last values after dispose must change—see ReleaseNotes.md. Prior 2.x highlights included .NET 9 support, MemoryStreamSlim Int64 capacity, compression stream helpers (2.0.0), and a race-condition fix (2.0.1).</PackageReleaseNotes>
 		<EmbedUntrackedSources>true</EmbedUntrackedSources>
 		<RepositoryUrl>https://github.com/kzdev-net/kzdev.perfutils</RepositoryUrl>
 	</PropertyGroup>

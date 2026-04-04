@@ -2,9 +2,11 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 using System.Buffers;
+using System.Reflection;
 
 using FluentAssertions;
 
+using KZDev.PerfUtils.Helpers;
 using KZDev.PerfUtils.Internals;
 
 namespace KZDev.PerfUtils.Tests;
@@ -80,7 +82,7 @@ public partial class UsingMemoryStreamSlim
                 get
                 {
                     IMemoryOwner<byte>? inner = _inner;
-                    return inner?.Memory ?? throw new ObjectDisposedException (nameof(CountingDisposeOwner));
+                    return inner?.Memory ?? throw new ObjectDisposedException(nameof(CountingDisposeOwner));
                 }
             }
 
@@ -98,6 +100,130 @@ public partial class UsingMemoryStreamSlim
             }
         }
     }
+    //================================================================================
+    /// <summary>
+    /// Non-exposable <see cref="MemoryStream"/> that reports a logical <see cref="Stream.Length"/> too large
+    /// for contiguous array or pooled materialization, with <see cref="ToArray"/> matching that guard.
+    /// </summary>
+    private sealed class OversizedNonExposableMemoryStream : MemoryStream
+    {
+        private readonly long _logicalLength;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OversizedNonExposableMemoryStream"/> class.
+        /// </summary>
+        /// <param name="logicalLength">
+        /// The value returned by <see cref="Stream.Length"/>.
+        /// </param>
+        public OversizedNonExposableMemoryStream (long logicalLength)
+            : base([], 0, 0, writable: true, publiclyVisible: false)
+        {
+            _logicalLength = logicalLength;
+        }
+
+        /// <inheritdoc />
+        public override long Length => _logicalLength;
+
+        /// <inheritdoc />
+        public override byte[] ToArray ()
+        {
+            if (_logicalLength == 0)
+            {
+                return [];
+            }
+
+            if (_logicalLength > int.MaxValue)
+            {
+                ThrowHelper.ThrowInvalidOperationException_TooLargeToCopyToArray();
+            }
+
+            int bytesToCopy = (int)_logicalLength;
+            if (bytesToCopy > Array.MaxLength)
+            {
+                ThrowHelper.ThrowInvalidOperationException_TooLargeToCopyToArray();
+            }
+
+            return base.ToArray();
+        }
+    }
+    //================================================================================
+
+    /// <summary>
+    /// Cached reflection handle for <see cref="MemoryStreamSlim"/>'s <c>LengthInternal</c> property (test-only).
+    /// </summary>
+    private static readonly PropertyInfo StreamLengthInternalProperty = GetStreamLengthInternalProperty();
+
+    /// <summary>
+    /// Resolves <see cref="MemoryStreamSlim"/>'s <c>LengthInternal</c> property for dynamic stream materialization tests.
+    /// </summary>
+    /// <returns>
+    /// The non-public instance property.
+    /// </returns>
+    /// <exception cref="InvalidOperationException">
+    /// The property could not be resolved (API rename).
+    /// </exception>
+    private static PropertyInfo GetStreamLengthInternalProperty () =>
+        typeof(MemoryStreamSlim).GetProperty(
+            "LengthInternal",
+            BindingFlags.Instance | BindingFlags.NonPublic)
+        ?? throw new InvalidOperationException(
+            "Could not resolve MemoryStreamSlim.LengthInternal for test setup.");
+
+    /// <summary>
+    /// Sets <see cref="MemoryStreamSlim"/>'s internal length without growing backing storage, to exercise
+    /// contiguous materialization guards without allocating multi-gigabyte buffers.
+    /// </summary>
+    /// <param name="stream">
+    /// The stream under test.
+    /// </param>
+    /// <param name="lengthInternal">
+    /// The value to assign to <c>LengthInternal</c>.
+    /// </param>
+    private static void SetStreamLengthInternalForTest (MemoryStreamSlim stream, long lengthInternal)
+    {
+        StreamLengthInternalProperty.SetValue(stream, lengthInternal);
+    }
+
+    /// <summary>
+    /// Asserts <see cref="MemoryStreamSlim.ToMemory()"/> and <see cref="MemoryStreamSlim.ToMemory(MemoryPool{byte})"/>
+    /// throw the same exception type as <see cref="MemoryStreamSlim.ToArray"/> for the current stream state.
+    /// </summary>
+    /// <param name="stream">
+    /// The stream under test.
+    /// </param>
+    private static void AssertToMemoryThrowsSameExceptionTypeAsToArray (MemoryStreamSlim stream)
+    {
+        Type expectedType = stream.Invoking(s => s.ToArray())
+            .Should()
+            .Throw<Exception>()
+            .Which
+            .GetType();
+
+        stream.Invoking(s =>
+            {
+                using (s.ToMemory())
+                {
+                }
+            })
+            .Should()
+            .Throw<Exception>()
+            .Which
+            .Should()
+            .BeOfType(expectedType);
+
+        stream.Invoking(s =>
+            {
+                using (s.ToMemory(MemoryPool<byte>.Shared))
+                {
+                }
+            })
+            .Should()
+            .Throw<Exception>()
+            .Which
+            .Should()
+            .BeOfType(expectedType);
+    }
+
     //================================================================================
 
     #region ToMemory - pool and empty-stream behavior
@@ -303,6 +429,60 @@ public partial class UsingMemoryStreamSlim
         using IMemoryOwner<byte> owner = stream.ToMemory();
         fromArray.Should().BeEquivalentTo(payload);
         owner.Memory.ToArray().Should().BeEquivalentTo(fromArray);
+    }
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// When dynamic storage reports a length greater than <see cref="int.MaxValue"/>,
+    /// <see cref="MemoryStreamSlim.ToMemory()"/> and <see cref="MemoryStreamSlim.ToMemory(MemoryPool{byte})"/>
+    /// throw the same exception type as <see cref="MemoryStreamSlim.ToArray"/>.
+    /// </summary>
+    [Fact]
+    public void UsingMemoryStreamSlim_LengthAboveIntMax_Dynamic_ToMemory_ThrowsSameExceptionTypeAsToArray ()
+    {
+        using MemoryStreamSlim stream = MemoryStreamSlim.Create();
+        SetStreamLengthInternalForTest(stream, (long)int.MaxValue + 1);
+        AssertToMemoryThrowsSameExceptionTypeAsToArray(stream);
+    }
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// When dynamic storage reports a length greater than <see cref="Array.MaxLength"/> but within
+    /// <see cref="int.MaxValue"/>, <see cref="MemoryStreamSlim.ToMemory()"/> and
+    /// <see cref="MemoryStreamSlim.ToMemory(MemoryPool{byte})"/> throw the same exception type as
+    /// <see cref="MemoryStreamSlim.ToArray"/>.
+    /// </summary>
+    [Fact]
+    public void UsingMemoryStreamSlim_LengthAboveArrayMaxLength_Dynamic_ToMemory_ThrowsSameExceptionTypeAsToArray ()
+    {
+        using MemoryStreamSlim stream = MemoryStreamSlim.Create();
+        SetStreamLengthInternalForTest(stream, Array.MaxLength + 1L);
+        AssertToMemoryThrowsSameExceptionTypeAsToArray(stream);
+    }
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// When fixed-mode wrapped storage reports a length greater than <see cref="int.MaxValue"/>,
+    /// <see cref="MemoryStreamSlim.ToMemory()"/> and <see cref="MemoryStreamSlim.ToMemory(MemoryPool{byte})"/>
+    /// throw the same exception type as <see cref="MemoryStreamSlim.ToArray"/>.
+    /// </summary>
+    [Fact]
+    public void UsingMemoryStreamSlim_LengthAboveIntMax_FixedWrapper_ToMemory_ThrowsSameExceptionTypeAsToArray ()
+    {
+        OversizedNonExposableMemoryStream inner = new((long)int.MaxValue + 1);
+        using MemoryStreamSlim stream = new MemoryStreamWrapper(inner);
+        AssertToMemoryThrowsSameExceptionTypeAsToArray(stream);
+    }
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// When fixed-mode wrapped storage reports a length greater than <see cref="Array.MaxLength"/> but within
+    /// <see cref="int.MaxValue"/>, <see cref="MemoryStreamSlim.ToMemory()"/> and
+    /// <see cref="MemoryStreamSlim.ToMemory(MemoryPool{byte})"/> throw the same exception type as
+    /// <see cref="MemoryStreamSlim.ToArray"/>.
+    /// </summary>
+    [Fact]
+    public void UsingMemoryStreamSlim_LengthAboveArrayMaxLength_FixedWrapper_ToMemory_ThrowsSameExceptionTypeAsToArray ()
+    {
+        OversizedNonExposableMemoryStream inner = new(Array.MaxLength + 1L);
+        using MemoryStreamSlim stream = new MemoryStreamWrapper(inner);
+        AssertToMemoryThrowsSameExceptionTypeAsToArray(stream);
     }
     //--------------------------------------------------------------------------------
 
