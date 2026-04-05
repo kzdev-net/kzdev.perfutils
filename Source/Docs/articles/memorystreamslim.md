@@ -66,6 +66,52 @@ The primary behavioral difference between **MemoryStreamSlim** and **MemoryStrea
 
 In contrast, **RecyclableMemoryStream** supports `GetBuffer` and recommends it over `ToArray` for performance reasons. However, its documentation warns about potential performance implications and the need for careful use. Additionally, the initial call to `GetBuffer` can significantly degrade the performance of the **RecyclableMemoryStream** instance from that point on.
 
+When you need a **contiguous copy** of the stream’s logical content (from the start through [`Length`](xref:System.IO.Stream.Length), independent of [`Position`](xref:System.IO.Stream.Position)), use [`ToArray`](xref:System.IO.MemoryStream.ToArray) or the [`ToMemory`](xref:KZDev.PerfUtils.MemoryStreamSlim.ToMemory*) overloads instead of `GetBuffer` in expandable mode. The sections below describe when each fits and how they differ.
+
+## Exporting contiguous bytes: ToArray and ToMemory
+
+Both APIs materialize the same logical byte range as a contiguous block. [`ToArray`](xref:System.IO.MemoryStream.ToArray) always allocates a new `byte[]` on the GC heap. [`ToMemory()`](xref:KZDev.PerfUtils.MemoryStreamSlim.ToMemory) and [`ToMemory(MemoryPool<byte>)`](xref:KZDev.PerfUtils.MemoryStreamSlim.ToMemory(System.Buffers.MemoryPool{System.Byte})) copy into a buffer rented from [`MemoryPool<byte>.Shared`](xref:System.Buffers.MemoryPool`1.Shared) or a pool you supply, wrapped in an [`IMemoryOwner<byte>`](xref:System.Buffers.IMemoryOwner`1).
+
+### When to use ToArray
+
+Use `ToArray` when you specifically need a heap `byte[]` (for example, an API that only accepts arrays, or you want the payload to live until collected without returning memory to a pool). Be aware that every call allocates a new array sized to the stream length, which is costly for large streams or hot loops.
+
+### When to use ToMemory
+
+Use `ToMemory` when you want [`Memory<byte>`](xref:System.Memory`1)-friendly access, wish to avoid a fresh GC heap array for every export, or need to attribute rentals to a custom [`MemoryPool<byte>`](xref:System.Buffers.MemoryPool`1). You **must** call [`Dispose`](xref:System.IDisposable.Dispose) on the returned owner when finished so the buffer returns to **that** pool; skipping disposal leaks the rental until the owner is finalized.
+
+### ToMemory details and empty streams
+
+- **What you get:** A snapshot from the start of the stream through [`Length`](xref:System.IO.Stream.Length), with the same observable size limits as `ToArray`.
+- **Empty streams:** When `Length` is zero, the returned owner is a **shared singleton** with zero-length [`Memory`](xref:System.Buffers.IMemoryOwner`1.Memory). Its `Dispose` is an idempotent no-op and **does not** rent from any [`MemoryPool<byte>`](xref:System.Buffers.MemoryPool`1).
+- **Non-empty streams:** The pool may allocate a backing array larger than `Length`; only the first `Length` bytes are visible through [`Memory`](xref:System.Buffers.IMemoryOwner`1.Memory).
+
+### Quick comparison
+
+| | **ToArray()** | **ToMemory()** |
+| --- | --- | --- |
+| Allocation | New `byte[]` on the GC heap | Rented buffer from a `MemoryPool<byte>` |
+| Lifetime | Array becomes eligible for GC when unreferenced | Return memory with `Dispose()` on the owner |
+| API shape | `byte[]` | `IMemoryOwner<byte>` → `Memory<byte>` |
+
+```csharp
+using KZDev.PerfUtils;
+using System;
+using System.Buffers;
+
+using (MemoryStreamSlim stream = MemoryStreamSlim.Create())
+{
+    stream.WriteByte(1);
+    stream.WriteByte(2);
+    using IMemoryOwner<byte> owner = stream.ToMemory();
+
+    ReadOnlySpan<byte> span = owner.Memory.Span;
+    // Use span; owner.Dispose() returns the buffer to the pool.
+}
+```
+
+For behavior after the stream is disposed, see [ToArray Method Behavior](#toarray-method-behavior) and [ToMemory Method Behavior](#tomemory-method-behavior) under **Disposed Behavior Compatibility** below.
+
 ## Disposed Behavior Compatibility
 
 **MemoryStreamSlim** maintains compatibility with **MemoryStream** for most operations after disposal, with one important exception related to memory efficiency:
@@ -89,40 +135,9 @@ The behavior of the [`ToArray`](xref:System.IO.MemoryStream.ToArray) method afte
 
 This difference ensures that **MemoryStreamSlim** can efficiently manage memory by releasing buffers when they are no longer needed, rather than keeping them allocated indefinitely like **MemoryStream** does.
 
-### ToMemory Method
+### ToMemory Method Behavior
 
-The [`ToMemory`](xref:KZDev.PerfUtils.MemoryStreamSlim.ToMemory*) overloads copy the stream’s visible content into a contiguous buffer exposed as an [`IMemoryOwner<byte>`](xref:System.Buffers.IMemoryOwner`1). They are intended for callers who want `Memory<byte>`-friendly access while preferring a **pool-backed** rental instead of a new GC heap array from [`ToArray`](xref:System.IO.MemoryStream.ToArray).
-
-- **What you get:** A snapshot from the start of the stream through [`Length`](xref:System.IO.Stream.Length), independent of [`Position`](xref:System.IO.Stream.Position), with the same observable size limits as `ToArray`.
-- **Empty streams:** When `Length` is zero, the returned owner is a **shared singleton** with zero-length [`Memory`](xref:System.Buffers.IMemoryOwner`1.Memory). Its [`Dispose`](xref:System.IDisposable.Dispose) is an idempotent no-op and **does not** rent from any [`MemoryPool<byte>`](xref:System.Buffers.MemoryPool`1).
-- **Non-empty streams:** The implementation rents from [`MemoryPool<byte>.Shared`](xref:System.Buffers.MemoryPool`1.Shared) (parameterless overload) or from the [`MemoryPool<byte>`](xref:System.Buffers.MemoryPool`1) you pass in. You **must** dispose the owner when finished so the buffer returns to **that** pool. The owner’s `Memory` span is exactly `Length` bytes—the pool may have allocated a larger backing array, but that trailing space is **not** visible through `Memory`.
-- **Disposed streams:** Behavior matches `ToArray` by mode: **fixed mode** can still succeed after disposal when the wrapped **MemoryStream** still exposes the buffer; **dynamic mode** throws `ObjectDisposedException` because buffers were released at dispose.
-
-#### When to prefer ToMemory vs ToArray
-
-| | **ToArray()** | **ToMemory()** |
-| --- | --- | --- |
-| Allocation | New `byte[]` on the GC heap | Rented buffer from a `MemoryPool<byte>` |
-| Lifetime | Array becomes eligible for GC when unreferenced | Return memory with `Dispose()` on the owner |
-| API shape | `byte[]` | `IMemoryOwner<byte>` → `Memory<byte>` |
-
-Use `ToArray` when a simple heap array is enough. Use `ToMemory` when you want to pair contiguous bytes with pool discipline, custom pools, or `Memory<byte>`-based APIs—always dispose non-empty owners.
-
-```csharp
-using KZDev.PerfUtils;
-using System;
-using System.Buffers;
-
-using (MemoryStreamSlim stream = MemoryStreamSlim.Create())
-{
-    stream.WriteByte(1);
-    stream.WriteByte(2);
-    using IMemoryOwner<byte> owner = stream.ToMemory();
-
-    ReadOnlySpan<byte> span = owner.Memory.Span;
-    // Use span ...
-}
-```
+[`ToMemory`](xref:KZDev.PerfUtils.MemoryStreamSlim.ToMemory*) matches `ToArray` with respect to disposal: **fixed mode** can still succeed after disposal when the wrapped **MemoryStream** still exposes the buffer; **dynamic mode** throws `ObjectDisposedException` because buffers were released at dispose. For usage, pooling, and the empty-stream singleton, see [Exporting contiguous bytes: ToArray and ToMemory](#exporting-contiguous-bytes-toarray-and-tomemory).
 
 ### GetBuffer and TryGetBuffer Methods
 

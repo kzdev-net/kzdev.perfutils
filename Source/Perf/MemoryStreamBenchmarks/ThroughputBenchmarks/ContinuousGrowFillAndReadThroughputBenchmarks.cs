@@ -223,7 +223,7 @@ public class ContinuousGrowFillAndReadThroughputBenchmarks
     /// <summary>
     /// Benchmark using RecyclableMemoryStream
     /// </summary>
-    [Benchmark(Description = "RecyclableMemoryStream growth fill and read")]
+    [Benchmark(Description = "RecyclableMemoryStream growth fill and read (GetBuffer)")]
     public void UseRecyclableMemoryStream ()
     {
         // Capture the parameters once locally
@@ -238,28 +238,11 @@ public class ContinuousGrowFillAndReadThroughputBenchmarks
     }
     //--------------------------------------------------------------------------------
     /// <summary>
-    /// Benchmark using MemoryStreamSlim
-    /// </summary>
-    [Benchmark(Description = "MemoryStreamSlim growth fill and read")]
-    public void UseMemoryStreamSlim ()
-    {
-        // Capture the parameters once locally
-        int processDataLength = StartDataSize;
-        for (int loopIndex = 0; loopIndex < LoopCount; loopIndex++)
-        {
-            using MemoryStreamSlim stream =
-                MemoryStreamSlim.Create(MemoryStreamSlimOptions);
-            ProcessStream(stream, processDataLength, workingStream => workingStream.ToArray());
-            processDataLength += LoopGrowAmount;
-        }
-    }
-    //--------------------------------------------------------------------------------
-    /// <summary>
     /// Benchmark using MemoryStreamSlim with <see cref="MemoryStreamSlim.ToMemory()"/> and immediate
-    /// disposal at the same capture point as <see cref="UseMemoryStreamSlim"/> uses for <see cref="MemoryStreamSlim.ToArray"/>.
+    /// disposal.
     /// </summary>
     [Benchmark(Description = "MemoryStreamSlim growth fill and read (ToMemory)")]
-    public void UseMemoryStreamSlimToMemory ()
+    public void UseMemoryStreamSlim ()
     {
         int processDataLength = StartDataSize;
         for (int loopIndex = 0; loopIndex < LoopCount; loopIndex++)

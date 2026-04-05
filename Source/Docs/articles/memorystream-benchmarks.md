@@ -69,9 +69,18 @@ Since the benchmark results can create large tables that may be difficult to nav
 
 ## Versions
 
-The benchmarks published here used the following versions of the libraries:
+Most MemoryStream benchmark reports in this documentation (for example, bulk fill and read and the compression scenarios) were produced with:
 
 - `BenchmarkDotNet` version: 0.14.0
 - `KZDev.PerfUtils` version: 2.0.0
 - `RecyclableMemoryStream` version: 3.0.1
-- `MemoryStream` version: .NET 9.0.4
+- `MemoryStream` (BCL): .NET 9.0.4
+
+The **[Continuous growth fill and read](./continuous-growth-throughput-benchmarks.md)** scenario was regenerated with updated tooling and methodology: **MemoryStreamSlim** is benchmarked with [`ToMemory()`](xref:KZDev.PerfUtils.MemoryStreamSlim.ToMemory) (see that article for details). That report used:
+
+- `BenchmarkDotNet` version: 0.15.8
+- `KZDev.PerfUtils` version: 3.0.0 (project reference / package version at time of run)
+- `RecyclableMemoryStream` version: 3.0.1
+- `MemoryStream` (BCL): .NET 10.0.5
+
+When comparing numbers across pages, match the environment section at the top of each linked benchmark export (BenchmarkDotNet and runtime lines) to the list above.
