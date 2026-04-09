@@ -18,10 +18,40 @@
     <PropertyGroup>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
     </PropertyGroup>
-    <PropertyGroup Condition=" '$(Configuration)'=='Package' OR '$(Target)' == 'Pack' ">
+    <PropertyGroup Condition=" '$(Configuration)'=='Package' ">
         <IsPacking>true</IsPacking>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(IsPacking)'=='' AND '$(Configuration)'!='Package' ">
         <IsPacking>false</IsPacking>
     </PropertyGroup>
+    <PropertyGroup>
+        <BeforePack>_SetPackingMode;$(BeforePack)</BeforePack>
+    </PropertyGroup>
+    <Target Name="_SetPackingMode">
+        <PropertyGroup>
+            <IsPacking>true</IsPacking>
+            <IncludeSymbols>true</IncludeSymbols>
+            <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+            <!--
+            Remove the exact NOT_PACKAGING symbol from the semicolon-delimited DefineConstants list
+            for pack execution. The regex only matches NOT_PACKAGING as a full token and preserves
+            delimiters, then Trim(';') cleans up any leading/trailing separators left after replacement.
+            -->
+            <DefineConstants>$([System.Text.RegularExpressions.Regex]::Replace('$(DefineConstants)', '(^|;)NOT_PACKAGING(?=;|$);?', '$1').Trim(';'))</DefineConstants>
+        </PropertyGroup>
+        <ItemGroup>
+            <InternalsVisibleTo Remove="KZDev.PerfUtils.Common.UnitTests" />
+            <InternalsVisibleTo Remove="KZDev.PerfUtils.Concurrency.UnitTests" />
+            <InternalsVisibleTo Remove="KZDev.PerfUtils.Memory.UnitTests" />
+            <InternalsVisibleTo Remove="KZDev.PerfUtils.Memory.Fixed.UnitTests" />
+            <InternalsVisibleTo Remove="KZDev.PerfUtils.Memory.Native.UnitTests" />
+            <InternalsVisibleTo Remove="KZDev.PerfUtils.Memory.Heap.UnitTests" />
+            <InternalsVisibleTo Remove="KZDev.PerfUtils.Memory.Sequential.UnitTests" />
+            <InternalsVisibleTo Remove="KZDev.PerfUtils.Memory.Heap.Sequential.UnitTests" />
+            <InternalsVisibleTo Remove="KZDev.PerfUtils.Memory.Native.Sequential.UnitTests" />
+            <InternalsVisibleTo Remove="KZDev.PerfUtils.Strings.UnitTests" />
+            <InternalsVisibleTo Remove="MemoryStreamBenchmarks" />
+            <InternalsVisibleTo Remove="StringsBenchmarks" />
+        </ItemGroup>
+    </Target>
 </Project>
