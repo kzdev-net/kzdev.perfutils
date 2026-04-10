@@ -160,7 +160,7 @@ public static class InterlockedOps
     /// A tuple containing the original value and the new value after the operation.
     /// </returns>
     /// <remarks>
-    /// This is a convenience method that uses the <see cref="Interlocked.Or(ref int, int)"/>
+    /// This is a convenience method that uses the <see cref="Interlocked.Or(ref uint, uint)"/>
     /// operation to set the bits, and returns the original and new values.
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -183,7 +183,7 @@ public static class InterlockedOps
     /// A tuple containing the original value and the new value after the operation.
     /// </returns>
     /// <remarks>
-    /// This is a convenience method that uses the <see cref="Interlocked.Or(ref int, int)"/>
+    /// This is a convenience method that uses the <see cref="Interlocked.Or(ref long, long)"/>
     /// operation to set the bits, and returns the original and new values.
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -206,7 +206,7 @@ public static class InterlockedOps
     /// A tuple containing the original value and the new value after the operation.
     /// </returns>
     /// <remarks>
-    /// This is a convenience method that uses the <see cref="Interlocked.Or(ref int, int)"/>
+    /// This is a convenience method that uses the <see cref="Interlocked.Or(ref ulong, ulong)"/>
     /// operation to set the bits, and returns the original and new values.
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -267,7 +267,7 @@ public static class InterlockedOps
     /// A tuple containing the original value and the new value after the operation.
     /// </returns>
     /// <remarks>
-    /// This is a convenience method that could be done with <see cref="Interlocked.And(ref int, int)"/>
+    /// This is a convenience method that could be done with <see cref="Interlocked.And(ref uint, uint)"/>
     /// passing the bitwise complement of the <paramref name="clearBitsValue"/>, but this 
     /// method returns the original and new values in a tuple.
     /// </remarks>
@@ -298,7 +298,7 @@ public static class InterlockedOps
     /// A tuple containing the original value and the new value after the operation.
     /// </returns>
     /// <remarks>
-    /// This is a convenience method that could be done with <see cref="Interlocked.And(ref int, int)"/>
+    /// This is a convenience method that could be done with <see cref="Interlocked.And(ref long, long)"/>
     /// passing the bitwise complement of the <paramref name="clearBitsValue"/>, but this 
     /// method returns the original and new values in a tuple.
     /// </remarks>
@@ -329,7 +329,7 @@ public static class InterlockedOps
     /// A tuple containing the original value and the new value after the operation.
     /// </returns>
     /// <remarks>
-    /// This is a convenience method that could be done with <see cref="Interlocked.And(ref int, int)"/>
+    /// This is a convenience method that could be done with <see cref="Interlocked.And(ref ulong, ulong)"/>
     /// passing the bitwise complement of the <paramref name="clearBitsValue"/>, but this 
     /// method returns the original and new values in a tuple.
     /// </remarks>
