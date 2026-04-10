@@ -294,7 +294,7 @@ public partial class UsingMemoryStreamSlim
         using IMemoryOwner<byte> ownerA = streamA.ToMemory();
         using IMemoryOwner<byte> ownerB = streamB.ToMemory();
 
-        ReferenceEquals(ownerA, ownerB).Should().BeTrue();
+        ownerA.Should().BeSameAs(ownerB);
         ownerA.Memory.Length.Should().Be(0);
     }
     //--------------------------------------------------------------------------------
@@ -315,7 +315,7 @@ public partial class UsingMemoryStreamSlim
         using IMemoryOwner<byte> ownerB = streamB.ToMemory(pool);
 
         pool.RentCount.Should().Be(0);
-        ReferenceEquals(ownerA, ownerB).Should().BeTrue();
+        ownerA.Should().BeSameAs(ownerB);
         ownerA.Memory.Length.Should().Be(0);
     }
     //--------------------------------------------------------------------------------
@@ -635,6 +635,82 @@ public partial class UsingMemoryStreamSlim
     //--------------------------------------------------------------------------------
 
     #endregion ToMemory - fixed wrapper read fallback (non-exposed buffer)
+
+    #region ToMemory - memory owner post-dispose contracts
+
+    //================================================================================
+
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// The shared empty <see cref="IMemoryOwner{T}"/> allows <see cref="IMemoryOwner{T}.Memory"/> after
+    /// <see cref="IDisposable.Dispose"/> and tolerates repeated disposal.
+    /// </summary>
+    [Fact]
+    public void UsingMemoryStreamSlim_EmptySharedMemoryOwner_AfterDispose_MemoryIsEmptyAndDisposeIsIdempotent ()
+    {
+        using MemoryStreamSlim stream = MemoryStreamSlim.Create();
+        IMemoryOwner<byte> owner = stream.ToMemory();
+
+        owner.Should().BeSameAs(EmptyMemoryStreamSlimMemoryOwner.Instance);
+
+        owner.Dispose();
+        owner.Dispose();
+
+        owner.Memory.IsEmpty.Should().BeTrue();
+        owner.Memory.Length.Should().Be(0);
+    }
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Fixed-mode empty streams use the same shared empty owner; post-dispose <see cref="IMemoryOwner{T}.Memory"/>
+    /// remains a zero-length view.
+    /// </summary>
+    [Fact]
+    public void UsingMemoryStreamSlim_EmptyFixedSharedMemoryOwner_AfterDispose_MemoryIsEmpty ()
+    {
+        byte[] buffer = [];
+        using MemoryStreamSlim stream = MemoryStreamSlim.Create(buffer);
+        RentReturnCountingPool pool = new();
+        IMemoryOwner<byte> owner = stream.ToMemory(pool);
+
+        owner.Should().BeSameAs(EmptyMemoryStreamSlimMemoryOwner.Instance);
+        pool.RentCount.Should().Be(0);
+
+        owner.Dispose();
+        owner.Memory.IsEmpty.Should().BeTrue();
+    }
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// After <see cref="PooledMemoryStreamSlimMemoryOwner"/> is disposed, <see cref="IMemoryOwner{T}.Memory"/> throws
+    /// <see cref="ObjectDisposedException"/>.
+    /// </summary>
+    [Fact]
+    public void UsingMemoryStreamSlim_PooledMemoryOwner_AfterDispose_MemoryThrowsObjectDisposedException ()
+    {
+        using MemoryStreamSlim stream = MemoryStreamSlim.Create();
+        stream.WriteByte(7);
+
+        RentReturnCountingPool pool = new();
+        IMemoryOwner<byte> owner = stream.ToMemory(pool);
+        owner.Should().BeOfType<PooledMemoryStreamSlimMemoryOwner>();
+
+        owner.Dispose();
+        pool.ReturnCount.Should().Be(1);
+
+        ObjectDisposedException thrown = owner.Invoking(static o => _ = o.Memory)
+            .Should()
+            .Throw<ObjectDisposedException>()
+            .Which;
+        thrown.ObjectName.Should().Be(nameof(PooledMemoryStreamSlimMemoryOwner));
+
+        owner.Dispose();
+        pool.ReturnCount.Should().Be(1);
+        owner.Invoking(static o => _ = o.Memory)
+            .Should()
+            .Throw<ObjectDisposedException>();
+    }
+    //--------------------------------------------------------------------------------
+
+    #endregion ToMemory - memory owner post-dispose contracts
 
     //--------------------------------------------------------------------------------
     /// <summary>
