@@ -1324,11 +1324,27 @@ public abstract class MemoryStreamSlim : MemoryStream
     /// The length of the usable portion of the buffer for the stream as a long integer.
     /// </value>
     /// <remarks>
-    /// For current compatibility with <see cref="MemoryStream"/> and <see cref="Stream"/> classes,
-    /// no instances of <see cref="MemoryStreamSlim"/> can have a capacity greater than 
-    /// <see cref="int.MaxValue"/>. This property is simply a convenience to allow setting
-    /// and getting the capacity as a long integer. The <see cref="Capacity"/> property 
-    /// should be used for all normal operations.
+    /// <para>
+    /// The logical capacity may exceed <see cref="int.MaxValue"/> on supported configurations (typically 64-bit
+    /// processes with sufficient memory). When the current capacity is larger than <see cref="int.MaxValue"/>,
+    /// read it through the <see cref="CapacityLong"/> property (or other long-based APIs). The <see cref="Capacity"/> property getter throws
+    /// <see cref="InvalidOperationException"/> in that situation because it must return an <see cref="int"/>.
+    /// </para>
+    /// <para>
+    /// Assigning a new capacity requires a value greater than or equal to <see cref="Stream.Length"/> and less than
+    /// or equal to this instance's <see cref="MaximumCapacity"/>, which is fixed for the lifetime of the instance
+    /// based on how the stream was constructed.
+    /// </para>
+    /// <para>
+    /// For dynamically growing streams, the configured per-instance maximum does not exceed
+    /// <see cref="GlobalMaximumCapacity"/> at creation time. Streams created over an existing byte array buffer
+    /// operate in fixed-buffer mode and may impose a lower effective ceiling that matches the wrapped
+    /// <see cref="MemoryStream"/> backing store.
+    /// </para>
+    /// <para>
+    /// Hard upper bounds also depend on process bitness and reported available memory; the implementation rejects
+    /// capacities beyond what the runtime can represent or safely support for in-memory streams.
+    /// </para>
     /// </remarks>
     /// <exception cref="ArgumentOutOfRangeException">
     /// The capacity is set to a value less than zero or greater than <see cref="MaximumCapacity"/>.
