@@ -531,6 +531,84 @@ public partial class UsingMemoryStreamSlim
 
     #endregion Disposed Behavior Tests - GetBuffer and TryGetBuffer
 
+    #region Disposed Behavior Tests - Dispose idempotency
+
+    //================================================================================
+
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Tests that calling <see cref="MemoryStreamSlim.Dispose()"/> twice on a dynamic-mode
+    /// stream does not throw, matching typical <see cref="Stream"/> disposal semantics.
+    /// </summary>
+    [Fact]
+    public void UsingMemoryStreamSlim_DynamicMode_SecondDispose_DoesNotThrow ()
+    {
+        MemoryStreamSlim stream = MemoryStreamSlim.Create();
+        stream.WriteByte(1);
+
+        stream.Dispose();
+
+        Action act = () => stream.Dispose();
+
+        act.Should().NotThrow();
+    }
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Tests that calling <see cref="MemoryStreamSlim.Dispose()"/> twice on a fixed-mode
+    /// stream does not throw, matching typical <see cref="Stream"/> disposal semantics.
+    /// </summary>
+    [Fact]
+    public void UsingMemoryStreamSlim_FixedMode_SecondDispose_DoesNotThrow ()
+    {
+        byte[] sourceBuffer = new byte[4];
+        GetRandomBytes(sourceBuffer, sourceBuffer.Length);
+        MemoryStreamSlim stream = MemoryStreamSlim.Create(sourceBuffer);
+
+        stream.Dispose();
+
+        Action act = () => stream.Dispose();
+
+        act.Should().NotThrow();
+    }
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Tests that a dynamic-mode stream remains unusable for <see cref="MemoryStreamSlim.Length"/>
+    /// after a second <see cref="MemoryStreamSlim.Dispose()"/> call.
+    /// </summary>
+    [Fact]
+    public void UsingMemoryStreamSlim_DynamicMode_DoubleDispose_LengthGetter_StillThrowsObjectDisposedException ()
+    {
+        MemoryStreamSlim stream = MemoryStreamSlim.Create();
+        stream.WriteByte(1);
+        stream.Dispose();
+        stream.Dispose();
+
+        Action act = () => _ = stream.Length;
+
+        act.Should().Throw<ObjectDisposedException>();
+    }
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Tests that a fixed-mode stream remains unusable for <see cref="MemoryStreamSlim.Length"/>
+    /// after a second <see cref="MemoryStreamSlim.Dispose()"/> call.
+    /// </summary>
+    [Fact]
+    public void UsingMemoryStreamSlim_FixedMode_DoubleDispose_LengthGetter_StillThrowsObjectDisposedException ()
+    {
+        byte[] sourceBuffer = new byte[4];
+        GetRandomBytes(sourceBuffer, sourceBuffer.Length);
+        MemoryStreamSlim stream = MemoryStreamSlim.Create(sourceBuffer);
+        stream.Dispose();
+        stream.Dispose();
+
+        Action act = () => _ = stream.Length;
+
+        act.Should().Throw<ObjectDisposedException>();
+    }
+    //--------------------------------------------------------------------------------
+
+    #endregion Disposed Behavior Tests - Dispose idempotency
+
     #region Disposed Behavior Tests - Comparison with BCL MemoryStream
 
     //================================================================================

@@ -2408,16 +2408,15 @@ internal sealed class SegmentMemoryStreamSlim : MemoryStreamSlim
     }
     //--------------------------------------------------------------------------------
     /// <inheritdoc />
-    /// <exception cref="ObjectDisposedException">
-    /// The stream has been disposed.
-    /// </exception>
+    /// <remarks>
+    ///   Repeated calls after the stream is disposed have no further effect, consistent with
+    ///   typical <see cref="Stream"/> disposal semantics.
+    /// </remarks>
     protected override void Dispose (bool disposing)
     {
         if (IsDisposed)
-        {
-            if (!disposing) return; // Somehow we are being called from the finalizer after we've been disposed
-            throw new ObjectDisposedException(nameof(MemoryStreamSlim));
-        }
+            return;
+
         if (disposing)
         {
             UtilsEventSource.Log.MemoryStreamSlimDisposed(Id);
