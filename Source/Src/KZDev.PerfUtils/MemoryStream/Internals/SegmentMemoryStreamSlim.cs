@@ -1948,7 +1948,7 @@ internal sealed class SegmentMemoryStreamSlim : MemoryStreamSlim
     [DoesNotReturn]
     public override byte[] GetBuffer ()
     {
-        ThrowHelper.ThrowNotSupportedException_InvalidModeStreamStream(MemoryStreamSlimMode.Dynamic);
+        ThrowHelper.ThrowNotSupportedException_InvalidMemoryStreamSlimMode(MemoryStreamSlimMode.Dynamic);
         return default;
     }
     //--------------------------------------------------------------------------------

@@ -207,8 +207,9 @@ internal static class ThrowHelper
     /// <exception cref="NotSupportedException">
     /// </exception>
     [DoesNotReturn]
-    internal static void ThrowNotSupportedException_InvalidModeStreamStream (MemoryStreamSlimMode streamMode) =>
-        throw new NotSupportedException(string.Format(Strings.NotSupported_InvalidModeStreamStream, streamMode.GetString()));
+    internal static void ThrowNotSupportedException_InvalidMemoryStreamSlimMode (MemoryStreamSlimMode streamMode) =>
+        throw new NotSupportedException(string.Format(Strings.NotSupported_InvalidMemoryStreamSlimMode,
+            streamMode.GetString()));
     //--------------------------------------------------------------------------------
     /// <summary>
     /// Throws a not supported exception with the message for a general feature not supported.
@@ -296,11 +297,15 @@ internal static class ThrowHelper
     /// Throws an invalid operation exception with the message for a type of global settings
     /// that cannot be updated.
     /// </summary>
+    /// <param name="classTypeName">
+    /// The name of the type whose global default settings cannot be updated.
+    /// </param>
     /// <exception cref="InvalidOperationException">
     /// </exception>
     [DoesNotReturn]
     internal static void ThrowInvalidOperation_GlobalSettingsCantBeUpdated (string classTypeName) =>
-        throw new InvalidOperationException(Strings.InvalidOperation_GlobalSettingsCantBeUpdated);
+        throw new InvalidOperationException(string.Format(Strings.InvalidOperation_GlobalSettingsCantBeUpdated,
+            classTypeName));
     //--------------------------------------------------------------------------------
     /// <summary>
     /// Throws an object disposed exception with the object name.

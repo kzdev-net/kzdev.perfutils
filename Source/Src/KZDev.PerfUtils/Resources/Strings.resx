@@ -165,7 +165,7 @@
   <data name="NotSupported_UnwritableStream" xml:space="preserve">
     <value>Stream does not support writing.</value>
   </data>
-  <data name="NotSupported_InvalidModeStreamStream" xml:space="preserve">
+  <data name="NotSupported_InvalidMemoryStreamSlimMode" xml:space="preserve">
     <value>The operation is not supported with {0} mode MemoryStreamSlim instances.</value>
   </data>
   <data name="NotSupported_FeatureNotAvailable" xml:space="preserve">

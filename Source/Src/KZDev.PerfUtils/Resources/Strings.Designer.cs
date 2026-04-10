@@ -270,9 +270,9 @@ namespace KZDev.PerfUtils.Resources {
         /// <summary>
         ///   Looks up a localized string similar to The operation is not supported with {0} mode MemoryStreamSlim instances..
         /// </summary>
-        internal static string NotSupported_InvalidModeStreamStream {
+        internal static string NotSupported_InvalidMemoryStreamSlimMode {
             get {
-                return ResourceManager.GetString("NotSupported_InvalidModeStreamStream", resourceCulture);
+                return ResourceManager.GetString("NotSupported_InvalidMemoryStreamSlimMode", resourceCulture);
             }
         }
         
