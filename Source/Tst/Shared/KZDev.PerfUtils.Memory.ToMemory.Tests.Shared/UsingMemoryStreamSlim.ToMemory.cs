@@ -147,6 +147,38 @@ public partial class UsingMemoryStreamSlim
         }
     }
     //================================================================================
+    /// <summary>
+    /// Non-exposed <see cref="MemoryStream"/> whose <see cref="MemoryStream.Read(byte[], int, int)"/> and
+    /// <see cref="MemoryStream.Read(Span{byte})"/> throw, to validate failure cleanup on the read fallback path.
+    /// </summary>
+    private sealed class NonExposedReadThrowingMemoryStream : MemoryStream
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NonExposedReadThrowingMemoryStream"/> class.
+        /// </summary>
+        /// <param name="buffer">
+        /// The backing buffer.
+        /// </param>
+        /// <param name="index">
+        /// The start index in <paramref name="buffer"/>.
+        /// </param>
+        /// <param name="count">
+        /// The length of the stream view.
+        /// </param>
+        public NonExposedReadThrowingMemoryStream (byte[] buffer, int index, int count)
+            : base(buffer, index, count, writable: true, publiclyVisible: false)
+        {
+        }
+
+        /// <inheritdoc />
+        public override int Read (byte[] buffer, int offset, int count) =>
+            throw new IOException("Simulated read failure for ToMemory fallback cleanup test.");
+
+        /// <inheritdoc />
+        public override int Read (Span<byte> buffer) =>
+            throw new IOException("Simulated read failure for ToMemory fallback cleanup test.");
+    }
+    //================================================================================
 
     /// <summary>
     /// Cached reflection handle for <see cref="MemoryStreamSlim"/>'s <c>LengthInternal</c> property (test-only).
@@ -182,6 +214,24 @@ public partial class UsingMemoryStreamSlim
     private static void SetStreamLengthInternalForTest (MemoryStreamSlim stream, long lengthInternal)
     {
         StreamLengthInternalProperty.SetValue(stream, lengthInternal);
+    }
+
+    /// <summary>
+    /// Creates a <see cref="MemoryStream"/> view over <paramref name="payload"/> with
+    /// <c>publiclyVisible: false</c> so <see cref="MemoryStream.TryGetBuffer(out ArraySegment{byte})"/> returns
+    /// <see langword="false"/> and <see cref="MemoryStreamWrapper"/> materializes via the seek/read fallback.
+    /// </summary>
+    /// <param name="payload">
+    /// The bytes visible through the stream (from index zero through <c>payload.Length</c>).
+    /// </param>
+    /// <returns>
+    /// The configured stream.
+    /// </returns>
+    private static MemoryStream CreateNonExposedBufferMemoryStream (byte[] payload)
+    {
+        MemoryStream stream = new(payload, 0, payload.Length, writable: true, publiclyVisible: false);
+        stream.TryGetBuffer(out _).Should().BeFalse();
+        return stream;
     }
 
     /// <summary>
@@ -487,6 +537,104 @@ public partial class UsingMemoryStreamSlim
     //--------------------------------------------------------------------------------
 
     #endregion ToMemory - parity and content shape
+
+    #region ToMemory - fixed wrapper read fallback (non-exposed buffer)
+
+    //================================================================================
+
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// When the wrapped BCL stream does not expose its buffer, <see cref="MemoryStreamSlim.ToMemory()"/> and
+    /// <see cref="MemoryStreamSlim.ToMemory(MemoryPool{byte})"/> copy the full logical content matching
+    /// <see cref="MemoryStreamSlim.ToArray"/>.
+    /// </summary>
+    [Fact]
+    public void UsingMemoryStreamSlim_NonExposedFixedWrapper_ToMemory_MatchesToArray ()
+    {
+        byte[] payload = new byte[96];
+        GetRandomBytes(payload, payload.Length);
+        MemoryStream inner = CreateNonExposedBufferMemoryStream(payload);
+        using MemoryStreamSlim stream = new MemoryStreamWrapper(inner);
+
+        AssertToMemoryMatchesToArray(stream, payload);
+    }
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// The seek/read fallback restores <see cref="Stream.Position"/> after materializing when the buffer is not exposed.
+    /// </summary>
+    [Fact]
+    public void UsingMemoryStreamSlim_NonExposedFixedWrapper_PrePositioned_ToMemory_RestoresPosition ()
+    {
+        byte[] payload = new byte[80];
+        GetRandomBytes(payload, payload.Length);
+        MemoryStream inner = CreateNonExposedBufferMemoryStream(payload);
+        long positionBefore = 37;
+        inner.Position = positionBefore;
+
+        using MemoryStreamSlim stream = new MemoryStreamWrapper(inner);
+        byte[] fromArray = stream.ToArray();
+        using (IMemoryOwner<byte> owner = stream.ToMemory())
+        {
+            owner.Memory.ToArray().Should().BeEquivalentTo(fromArray);
+        }
+
+        using (RentReturnCountingPool pool = new())
+        {
+            using IMemoryOwner<byte> owner = stream.ToMemory(pool);
+            owner.Memory.ToArray().Should().BeEquivalentTo(fromArray);
+            pool.RentCount.Should().BeGreaterThan(0);
+        }
+
+        stream.Position.Should().Be(positionBefore);
+        inner.Position.Should().Be(positionBefore);
+    }
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// Zero-length non-exposed fixed wrapper streams yield an empty owner without renting from a supplied pool.
+    /// </summary>
+    [Fact]
+    public void UsingMemoryStreamSlim_NonExposedFixedWrapper_Empty_ToMemory_DoesNotRentFromPool ()
+    {
+        MemoryStream inner = CreateNonExposedBufferMemoryStream([]);
+        using MemoryStreamSlim stream = new MemoryStreamWrapper(inner);
+        RentReturnCountingPool pool = new();
+
+        using (stream.ToMemory(pool))
+        {
+        }
+
+        pool.RentCount.Should().Be(0);
+        pool.ReturnCount.Should().Be(0);
+    }
+    //--------------------------------------------------------------------------------
+    /// <summary>
+    /// When the read fallback throws, the rented buffer is returned to the pool and the stream position is restored.
+    /// </summary>
+    [Fact]
+    public void UsingMemoryStreamSlim_NonExposedFixedWrapper_ReadFails_ToMemory_DisposesRentalAndRestoresPosition ()
+    {
+        byte[] payload = new byte[16];
+        GetRandomBytes(payload, payload.Length);
+        NonExposedReadThrowingMemoryStream inner = new(payload, 0, payload.Length);
+        inner.TryGetBuffer(out _).Should().BeFalse();
+        long positionBefore = 11;
+        inner.Position = positionBefore;
+
+        using MemoryStreamSlim stream = new MemoryStreamWrapper(inner);
+        RentReturnCountingPool pool = new();
+
+        stream.Invoking(s => s.ToMemory(pool))
+            .Should()
+            .Throw<IOException>();
+
+        pool.RentCount.Should().Be(1);
+        pool.ReturnCount.Should().Be(1);
+        stream.Position.Should().Be(positionBefore);
+        inner.Position.Should().Be(positionBefore);
+    }
+    //--------------------------------------------------------------------------------
+
+    #endregion ToMemory - fixed wrapper read fallback (non-exposed buffer)
 
     //--------------------------------------------------------------------------------
     /// <summary>
