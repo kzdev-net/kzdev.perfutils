@@ -6,7 +6,7 @@ _layout: landing
 
 The [`KZDev.PerfUtils`](https://www.nuget.org/packages/KZDev.PerfUtils) package contains the following performance utility classes:
 
-- [`MemoryStreamSlim`](./articles/memorystreamslim.md): A high-performance, memory-efficient, and easy-to-use drop-in replacement for the `MemoryStream` class, offering significant performance benefits for large or frequently used streams.
+- [`MemoryStreamSlim`](./articles/memorystreamslim.md): A high-performance, memory-efficient stream for large or frequently resized in-memory buffers, modeled on `MemoryStream` with a largely compatible API (see the topic for construction and behavioral differences).
   - Compression helper classes that provide easy compression operations using `MemoryStreamSlim`:
     - [`MemoryStreamBrotli`](xref:KZDev.PerfUtils.MemoryStreamBrotli): Compresses source data using the Brotli algorithm into a **MemoryStreamSlim** instance.
     - [`MemoryStreamDeflate`](xref:KZDev.PerfUtils.MemoryStreamDeflate): Compresses source data using the Deflate algorithm into a **MemoryStreamSlim** instance.
@@ -17,16 +17,19 @@ The [`KZDev.PerfUtils`](https://www.nuget.org/packages/KZDev.PerfUtils) package 
 
 See the individual [documentation pages](./articles/getting-started.md) and the [API Reference](xref:KZDev.PerfUtils) for more detailed information.
 
+## Supported target frameworks
+
+The package targets **.NET 8** (`net8.0`), **.NET 9** (`net9.0`), and **.NET 10** (`net10.0`). The 3.x line does not ship builds for older TFMs (including **.NET 6**); upgrade consuming projects to a supported target framework before referencing the latest releases.
+
 ## Features
 
 ### MemoryStreamSlim
 
-`MemoryStreamSlim` is a drop-in replacement for the **MemoryStream** class used for dynamically sized streams, offering the following benefits:
+`MemoryStreamSlim` targets workloads where **MemoryStream** limits throughput or drives high GC cost. It is **largely API-compatible** with **MemoryStream** for dynamically sized streams, but it is **not** guaranteed to match every behavioral edge case. Construct instances with **`MemoryStreamSlim.Create`** instead of **`new MemoryStream`**. After **Dispose**, **Length**, **Position**, and capacity-related members follow the same **ObjectDisposedException** rules as **MemoryStream**. See [`MemoryStreamSlim`](./articles/memorystreamslim.md) for full detail.
 
 - Better throughput performance compared to the standard **MemoryStream** and the **RecyclableMemoryStream**.
 - Significantly lower memory traffic and fewer garbage collections.
 - Eliminates Large Object Heap (LOH) fragmentation caused by frequent use and release of various-sized byte arrays.
-- Simple replacement for **MemoryStream** with the same API, except for the constructor.
 - Optionally uses native memory for storage, minimizing GC pressure.
 - Supports monitoring with **.NET Metrics and Events**.
 - More efficient compression when used as a destination for compressed data.
@@ -58,7 +61,7 @@ See the individual [documentation pages](./articles/getting-started.md) and the 
 
 ### MemoryStreamSlim Example
 
-Below is an example of how to use the `MemoryStreamSlim` class. Other than instantiation using the `Create` method, the API is identical to the standard **MemoryStream** class:
+Below is an example of how to use the `MemoryStreamSlim` class. Use the `Create` methods for construction; the supported member surface area aligns with **MemoryStream**, with documented differences for disposed streams and advanced options:
 
 ```csharp
 using KZDev.PerfUtils;

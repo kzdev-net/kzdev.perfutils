@@ -2,9 +2,13 @@
 
 This repository contains the  ['KZDev.PerfUtils'](https://www.nuget.org/packages/KZDev.PerfUtils) NuGet package, which provides the following high-performance utilities:
 
-- **MemoryStreamSlim**: A memory-efficient, high-performance replacement for the MemoryStream class, offering significant benefits for large or frequently used streams.
+- **MemoryStreamSlim**: A memory-efficient, high-performance stream for large or frequently resized in-memory buffers, modeled on **MemoryStream** with a largely compatible API.
 - **StringBuilderCache**: A utility for caching StringBuilder instances to improve performance in high-throughput scenarios.
 - **InterlockedOps**: A set of additional atomic thread-safe operations that extend the functionality of the Interlocked class in the .NET Class Library.
+
+## Supported target frameworks
+
+This package targets **.NET 8** (`net8.0`), **.NET 9** (`net9.0`), and **.NET 10** (`net10.0`). The 3.x line does not ship builds for older TFMs (including **.NET 6**); upgrade consuming projects to a supported target framework before referencing the latest package versions.
 
 ## Performance Highlights
 
@@ -20,12 +24,11 @@ For more details, refer to the benchmark related pages in the [documentation](ht
 
 ### MemoryStreamSlim
 
-`MemoryStreamSlim` is a drop-in replacement for the **MemoryStream** class, offering the following advantages:
+`MemoryStreamSlim` targets workloads where **MemoryStream** limits throughput or drives high GC cost. It is **largely API-compatible** with **MemoryStream**, so many call sites can switch the concrete type with small edits, but it is **not** guaranteed to match **MemoryStream** in every behavioral edge case. Construct instances with **`MemoryStreamSlim.Create`** (and related overloads) instead of **`new MemoryStream`**. After **Dispose**, **Length**, **Position**, and capacity-related members follow the same **ObjectDisposedException** rules as **MemoryStream**; do not rely on reading those values from a disposed stream.
 
 - **Improved Throughput**: Outperforms the standard MemoryStream in terms of throughput.
 - **Reduced Memory Traffic**: Significantly lowers memory traffic and garbage collection compared to the standard MemoryStream.
 - **Eliminates LOH Fragmentation**: Prevents Large Object Heap (LOH) fragmentation caused by frequent use and release of single-byte arrays.
-- **API Compatibility**: Provides the same API as MemoryStream, with minor differences in the constructor.
 - **Optional Native Memory Storage**: Allows the use of native memory for storage, further reducing GC pressure and increasing flexibility.
 
 ### StringBuilderCache

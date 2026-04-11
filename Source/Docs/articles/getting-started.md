@@ -2,11 +2,15 @@
 
 This article introduces the `KZDev.PerfUtils` library package, which includes **MemoryStreamSlim**, **StringBuilderCache**, **InterlockedOps**, and a series of compression helper classes. The following sections provide insights into usage, class operations, and performance benchmarks. For a full API reference, see the [API Reference](xref:KZDev.PerfUtils).
 
+## Supported target frameworks
+
+The package targets **.NET 8** (`net8.0`), **.NET 9** (`net9.0`), and **.NET 10** (`net10.0`). The 3.x line does not ship builds for older TFMs (including **.NET 6**); upgrade consuming projects to a supported target framework before referencing the latest releases.
+
 ## MemoryStreamSlim
 
 The standard `MemoryStream` class in the .NET Class Library represents a stream of bytes stored in memory. While it is convenient for working with in-memory data, it has limitations. One major limitation is its reliance on a single byte array to store data, which can lead to significant garbage collection (GC) pressure when handling large amounts of memory or frequently creating and disposing of `MemoryStream` instances.
 
-The [`MemoryStreamSlim`](xref:KZDev.PerfUtils.MemoryStreamSlim) class is specifically designed to address these limitations. It improves performance in scenarios where **MemoryStream** would cause high GC pressure and also provides better overall throughput.
+The [`MemoryStreamSlim`](xref:KZDev.PerfUtils.MemoryStreamSlim) class is specifically designed to address these limitations. It improves performance in scenarios where **MemoryStream** would cause high GC pressure and also provides better overall throughput. It is **largely API-compatible** with **MemoryStream**—use **`MemoryStreamSlim.Create`** (and overloads) instead of **`MemoryStream`** constructors, and treat **Dispose** semantics (including **ObjectDisposedException** from **Length**, **Position**, and capacity members on disposed instances) as aligned with **MemoryStream** unless a topic states otherwise.
 
 Key topics for **MemoryStreamSlim** include:
 
