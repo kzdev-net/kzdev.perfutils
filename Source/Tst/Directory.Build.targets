@@ -1,0 +1,9 @@
+<Project>
+    <!--
+      Applied after the project body and Test SDK props so $(IsTestProject) is defined.
+      VSTest (dotnet test, VS, CI) reads RunSettingsFilePath for parallel hosts and session timeout.
+    -->
+    <PropertyGroup Condition="'$(IsTestProject)' == 'true'">
+        <RunSettingsFilePath>$(MSBuildThisFileDirectory)KZDev.PerfUtils.tests.runsettings</RunSettingsFilePath>
+    </PropertyGroup>
+</Project>

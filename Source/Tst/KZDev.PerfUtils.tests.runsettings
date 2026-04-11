@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+  <!--
+    VSTest / dotnet test / Visual Studio Test Explorer.
+    Limits parallel test host processes and caps total session duration.
+  -->
+  <RunConfiguration>
+    <MaxCpuCount>4</MaxCpuCount>
+    <TestSessionTimeout>600000</TestSessionTimeout>
+  </RunConfiguration>
+</RunSettings>

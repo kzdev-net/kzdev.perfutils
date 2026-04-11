@@ -27,12 +27,6 @@
 		<Using Include="Xunit" />
 	</ItemGroup>
 
-	<ItemGroup>
-		<Content Include="xunit.runner.json">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
-	</ItemGroup>
-
 	<Import Project="..\Shared\KZDev.PerfUtils.Memory.Tests.Shared\KZDev.PerfUtils.Memory.Shared.projitems" Label="Shared" />
 
 	<Import Project="..\Shared\KZDev.PerfUtils.Memory.ToMemory.Tests.Shared\KZDev.PerfUtils.Memory.ToMemory.Tests.Shared.projitems" Label="Shared" />
