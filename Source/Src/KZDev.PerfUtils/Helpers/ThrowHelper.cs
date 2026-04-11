@@ -236,7 +236,7 @@ internal static class ThrowHelper
     /// Throws an argument out of range exception with the message indicating that the 
     /// stream length would be invalid.
     /// </summary>
-    /// <exception cref="IOException">
+    /// <exception cref="ArgumentOutOfRangeException">
     /// </exception>
     [DoesNotReturn]
     internal static void ThrowArgumentOutOfRangeException_StreamLength (string argumentName) =>
@@ -246,7 +246,7 @@ internal static class ThrowHelper
     /// Throws an argument out of range exception with the message indicating that the 
     /// stream length would be invalid.
     /// </summary>
-    /// <exception cref="IOException">
+    /// <exception cref="ArgumentOutOfRangeException">
     /// </exception>
     [DoesNotReturn]
     internal static void ThrowArgumentOutOfRangeException_TooLargeForArray(string argumentName) =>
@@ -275,7 +275,8 @@ internal static class ThrowHelper
     /// Throws an invalid operation exception with the message for an integer overflow
     /// when calculating the new capacity or accessing the Int32 Capacity property of a stream.
     /// </summary>
-    /// <exception cref="ArgumentOutOfRangeException"></exception>
+    /// <exception cref="InvalidOperationException">
+    /// </exception>
     [DoesNotReturn]
     internal static void ThrowInvalidOperationException_IntOverflowCapacity () =>
         throw new InvalidOperationException(Strings.InvalidOperation_IntOverflowCapacity);
@@ -284,7 +285,8 @@ internal static class ThrowHelper
     /// Throws an invalid operation exception with the message for an attempt to copy
     /// the stream into an array but the length of the stream is too large to fit in an array.
     /// </summary>
-    /// <exception cref="NotImplementedException"></exception>
+    /// <exception cref="InvalidOperationException">
+    /// </exception>
     [DoesNotReturn]
     internal static void ThrowInvalidOperationException_TooLargeToCopyToArray () =>
         throw new InvalidOperationException (Strings.InvalidOperation_TooLargeToCopyToArray);
