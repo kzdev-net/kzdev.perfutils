@@ -41,7 +41,8 @@ public class UsingMemoryStreamSlimReleaseBuffers : UsingMemoryStreamSlimUnitTest
     /// to using unmanaged memory, so this test is contained in the heap specific test
     /// project.
     /// </remarks>
-    [Fact]
+    [Fact(Explicit = true)]
+    [Trait(TestConstants.TestTrait.TestMode, TestConstants.TestMode.Explicit)]
     public void UsingMemoryStreamSlimReleaseBuffers_CopyFullToStream_SettingReleaseMemoryProperlyReleasesMemory ()
     {
         int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();

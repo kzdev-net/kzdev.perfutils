@@ -5,5 +5,7 @@
     -->
     <PropertyGroup Condition="'$(IsTestProject)' == 'true'">
         <RunSettingsFilePath>$(MSBuildThisFileDirectory)KZDev.PerfUtils.tests.runsettings</RunSettingsFilePath>
+        <!-- .NET 9+ SDK runs each TFM in parallel by default; serialize per project for fewer hosts. -->
+        <TestTfmsInParallel>false</TestTfmsInParallel>
     </PropertyGroup>
 </Project>
