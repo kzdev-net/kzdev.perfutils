@@ -1,0 +1,193 @@
+<Solution>
+  <Configurations>
+    <BuildType Name="Debug" />
+    <BuildType Name="Package" />
+    <BuildType Name="Profile" />
+    <BuildType Name="Release" />
+  </Configurations>
+  <Folder Name="/Development/">
+    <Project Path="Dev/KZDev.PerfUtils.Examples/KZDev.PerfUtils.Examples.csproj">
+      <BuildType Solution="Package|*" Project="Profile" />
+    </Project>
+  </Folder>
+  <Folder Name="/Docs/">
+    <File Path="Docs/.gitignore" />
+    <File Path="Docs/docfx.json" />
+    <File Path="Docs/filterConfig.yml" />
+    <File Path="Docs/index.md" />
+    <File Path="Docs/toc.yml" />
+  </Folder>
+  <Folder Name="/Docs/Articles/">
+    <File Path="Docs/articles/continuous-growth-throughput-benchmarks.md" />
+    <File Path="Docs/articles/copytoasync-throughput-benchmarks.md" />
+    <File Path="Docs/articles/dynamic-throughput-benchmarks.md" />
+    <File Path="Docs/articles/getting-started.md" />
+    <File Path="Docs/articles/interlockedops.md" />
+    <File Path="Docs/articles/memory-management.md" />
+    <File Path="Docs/articles/memory-monitoring.md" />
+    <File Path="Docs/articles/memorystream-benchmarks.md" />
+    <File Path="Docs/articles/memorystream-compression-benchmarks.md" />
+    <File Path="Docs/articles/memorystream-compression.md" />
+    <File Path="Docs/articles/MemoryStreamBenchmarks.BrotliCompressionThroughputBenchmarks-report-github.md" />
+    <File Path="Docs/articles/MemoryStreamBenchmarks.BrotliCompressionThroughputBenchmarks-report.html" />
+    <File Path="Docs/articles/MemoryStreamBenchmarks.BulkFillAndReadThroughputBenchmarks-report-github.md" />
+    <File Path="Docs/articles/MemoryStreamBenchmarks.BulkFillAndReadThroughputBenchmarks-report.html" />
+    <File Path="Docs/articles/MemoryStreamBenchmarks.ContinuousGrowFillAndReadThroughputBenchmarks-report-github.md" />
+    <File Path="Docs/articles/MemoryStreamBenchmarks.ContinuousGrowFillAndReadThroughputBenchmarks-report.html" />
+    <File Path="Docs/articles/MemoryStreamBenchmarks.CopyToAsyncThroughputBenchmarks-report-github.md" />
+    <File Path="Docs/articles/MemoryStreamBenchmarks.CopyToAsyncThroughputBenchmarks-report.html" />
+    <File Path="Docs/articles/MemoryStreamBenchmarks.DeflateCompressionThroughputBenchmarks-report-github.md" />
+    <File Path="Docs/articles/MemoryStreamBenchmarks.DeflateCompressionThroughputBenchmarks-report.html" />
+    <File Path="Docs/articles/MemoryStreamBenchmarks.GZipCompressionThroughputBenchmarks-report-github.md" />
+    <File Path="Docs/articles/MemoryStreamBenchmarks.GZipCompressionThroughputBenchmarks-report.html" />
+    <File Path="Docs/articles/MemoryStreamBenchmarks.LargeSegmentedFillAndReadThroughputBenchmarks-report-github.md" />
+    <File Path="Docs/articles/MemoryStreamBenchmarks.LargeSegmentedFillAndReadThroughputBenchmarks-report.html" />
+    <File Path="Docs/articles/MemoryStreamBenchmarks.SegmentedFillAndReadThroughputBenchmarks-report-github.md" />
+    <File Path="Docs/articles/MemoryStreamBenchmarks.SegmentedFillAndReadThroughputBenchmarks-report.html" />
+    <File Path="Docs/articles/MemoryStreamBenchmarks.WrapperFillAndReadThroughputBenchmarks-report-github.md" />
+    <File Path="Docs/articles/MemoryStreamBenchmarks.WrapperFillAndReadThroughputBenchmarks-report.html" />
+    <File Path="Docs/articles/MemoryStreamBenchmarks.ZLibCompressionThroughputBenchmarks-report-github.md" />
+    <File Path="Docs/articles/MemoryStreamBenchmarks.ZLibCompressionThroughputBenchmarks-report.html" />
+    <File Path="Docs/articles/memorystreamslim.md" />
+    <File Path="Docs/articles/stringbuildercache-benchmarks.md" />
+    <File Path="Docs/articles/stringbuildercache-monitoring.md" />
+    <File Path="Docs/articles/stringbuildercache-multithread-throughput-benchmarks.md" />
+    <File Path="Docs/articles/stringbuildercache-throughput-benchmarks.md" />
+    <File Path="Docs/articles/stringbuildercache.md" />
+    <File Path="Docs/articles/StringsBenchmarks.StringBuilderMultipleThreadThroughputBenchmarks-report-github.md" />
+    <File Path="Docs/articles/StringsBenchmarks.StringBuilderMultipleThreadThroughputBenchmarks-report.html" />
+    <File Path="Docs/articles/StringsBenchmarks.StringBuilderThroughputBenchmarks-report-github.md" />
+    <File Path="Docs/articles/StringsBenchmarks.StringBuilderThroughputBenchmarks-report.html" />
+    <File Path="Docs/articles/toc.yml" />
+    <File Path="Docs/articles/wrapper-throughput-benchmarks.md" />
+  </Folder>
+  <Folder Name="/Docs/Images/">
+    <File Path="Docs/images/brotli_compression_allocated.jpg" />
+    <File Path="Docs/images/bulk_fillandread_mean.jpg" />
+    <File Path="Docs/images/copytoasync.jpg" />
+    <File Path="Docs/images/favicon.ico" />
+    <File Path="Docs/images/kzdevlogo.svg" />
+    <File Path="Docs/images/multithread_stringbuilder_allocated.jpg" />
+    <File Path="Docs/images/multithread_stringbuilder_mean.jpg" />
+    <File Path="Docs/images/segmented_fillandread_allocated.jpg" />
+    <File Path="Docs/images/stringbuilder_sample.jpg" />
+    <File Path="Docs/images/wrapped_fillandread.jpg" />
+  </Folder>
+  <Folder Name="/Docs/Templates/" />
+  <Folder Name="/Docs/Templates/Styles/">
+    <File Path="Docs/templates/custom/public/main.css" />
+  </Folder>
+  <Folder Name="/GitHub/" />
+  <Folder Name="/GitHub/WorkFlows/">
+    <File Path="../.github/workflows/docfx-publish.yml" />
+  </Folder>
+  <Folder Name="/Notes/">
+    <File Path="Notes/ReleaseNotes.md" />
+  </Folder>
+  <Folder Name="/Package/">
+    <File Path="Src/KZDev.PerfUtils/Package/nuget.icon.png" />
+    <File Path="Src/KZDev.PerfUtils/Package/nuget.readme.md" />
+  </Folder>
+  <Folder Name="/Package/v2.0/" />
+  <Folder Name="/Package/v2.0/images/">
+    <File Path="Src/KZDev.PerfUtils/Package/v2.0/images/memorystreamslim_sample.jpg" />
+    <File Path="Src/KZDev.PerfUtils/Package/v2.0/images/stringbuilder_sample.jpg" />
+  </Folder>
+  <Folder Name="/Performance/">
+    <File Path="Perf/Directory.Build.props" />
+    <File Path="Perf/Directory.Packages.props" />
+    <Project Path="Perf/MemoryStreamBenchmarks/MemoryStreamBenchmarks.csproj">
+      <BuildType Solution="Package|*" Project="Release" />
+      <Build Solution="Package|*" Project="false" />
+    </Project>
+    <Project Path="Perf/MemoryStreamProfile/MemoryStreamProfile.csproj">
+      <BuildType Solution="Package|*" Project="Release" />
+      <Build Solution="Package|*" Project="false" />
+    </Project>
+    <Project Path="Perf/StringsBenchmarks/StringsBenchmarks.csproj">
+      <BuildType Solution="Package|*" Project="Profile" />
+    </Project>
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path="../.gitignore" />
+    <File Path="../LICENSE" />
+    <File Path="../nuget.config" />
+    <File Path="../README.md" />
+    <File Path=".editorconfig" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+    <File Path="global.json" />
+    <File Path="Src/KZDev.PerfUtils/package.cmd" />
+  </Folder>
+  <Folder Name="/Source/">
+    <File Path="Src/Directory.Build.props" />
+    <File Path="Src/Directory.Packages.props" />
+    <Project Path="Src/KZDev.PerfUtils/KZDev.PerfUtils.csproj">
+      <BuildType Solution="Package|*" Project="Release" />
+    </Project>
+  </Folder>
+  <Folder Name="/Test/">
+    <File Path="linuxtest.dockerfile" />
+    <File Path="Tst/Directory.Build.props" />
+    <File Path="Tst/Directory.Packages.props" />
+    <File Path="Tst/README.md" />
+    <Project Path="Tst/KZDev.PerfUtils.Common.UnitTests/KZDev.PerfUtils.Common.UnitTests.csproj">
+      <BuildType Solution="Package|*" Project="Release" />
+      <Build Solution="Profile|*" Project="false" />
+    </Project>
+    <Project Path="Tst/KZDev.PerfUtils.Concurrency.UnitTests/KZDev.PerfUtils.Concurrency.UnitTests.csproj">
+      <BuildType Solution="Package|*" Project="Profile" />
+      <Build Solution="Profile|*" Project="false" />
+    </Project>
+    <Project Path="Tst/KZDev.PerfUtils.Memory.Compression.UnitTests/KZDev.PerfUtils.Memory.Compression.UnitTests.csproj">
+      <BuildType Solution="Package|*" Project="Debug" />
+    </Project>
+    <Project Path="Tst/KZDev.PerfUtils.Memory.Fixed.UnitTests/KZDev.PerfUtils.Memory.Fixed.UnitTests.csproj">
+      <BuildType Solution="Package|*" Project="Profile" />
+      <Build Solution="Profile|*" Project="false" />
+    </Project>
+    <Project Path="Tst/KZDev.PerfUtils.Memory.Heap.Sequential.UnitTests/KZDev.PerfUtils.Memory.Heap.Sequential.UnitTests.csproj">
+      <BuildType Solution="Package|*" Project="Release" />
+      <Build Solution="Profile|*" Project="false" />
+    </Project>
+    <Project Path="Tst/KZDev.PerfUtils.Memory.Heap.UnitTests/KZDev.PerfUtils.Memory.Heap.UnitTests.csproj">
+      <BuildType Solution="Package|*" Project="Release" />
+      <Build Solution="Profile|*" Project="false" />
+    </Project>
+    <Project Path="Tst/KZDev.PerfUtils.Memory.Native.Sequential.UnitTests/KZDev.PerfUtils.Memory.Native.Sequential.UnitTests.csproj">
+      <BuildType Solution="Package|*" Project="Release" />
+      <Build Solution="Profile|*" Project="false" />
+    </Project>
+    <Project Path="Tst/KZDev.PerfUtils.Memory.Native.UnitTests/KZDev.PerfUtils.Memory.Native.UnitTests.csproj">
+      <BuildType Solution="Package|*" Project="Release" />
+      <Build Solution="Profile|*" Project="false" />
+    </Project>
+    <Project Path="Tst/KZDev.PerfUtils.Memory.UnitTests/KZDev.PerfUtils.Memory.UnitTests.csproj">
+      <BuildType Solution="Package|*" Project="Release" />
+      <Build Solution="Profile|*" Project="false" />
+    </Project>
+    <Project Path="Tst/KZDev.PerfUtils.Strings.UnitTests/KZDev.PerfUtils.Strings.UnitTests.csproj">
+      <BuildType Solution="Package|*" Project="Profile" />
+      <Build Solution="Profile|*" Project="false" />
+    </Project>
+  </Folder>
+  <Folder Name="/Test/Common/">
+    <Project Path="Tst/KZDev.PerfUtils.TestBase/KZDev.PerfUtils.TestBase.csproj">
+      <BuildType Solution="Package|*" Project="Release" />
+    </Project>
+    <Project Path="Tst/KZDev.PerfUtils.TestData/KZDev.PerfUtils.TestData.csproj">
+      <BuildType Solution="Package|*" Project="Release" />
+    </Project>
+    <Project Path="Tst/KZDev.PerfUtils.TestPrep/KZDev.PerfUtils.TestPrep.csproj">
+      <BuildType Solution="Package|*" Project="Release" />
+    </Project>
+    <Project Path="Tst/KZDev.PerfUtils.UnitTestBase/KZDev.PerfUtils.UnitTestBase.csproj">
+      <BuildType Solution="Package|*" Project="Release" />
+      <Build Solution="Profile|*" Project="false" />
+    </Project>
+    <Project Path="Tst/Shared/KZDev.PerfUtils.Memory.Sequential.Tests.Shared/KZDev.PerfUtils.Memory.Sequential.Tests.Shared.shproj" />
+    <Project Path="Tst/Shared/KZDev.PerfUtils.Memory.Tests.Shared/KZDev.PerfUtils.Memory.Tests.Shared.shproj" />
+    <Project Path="Tst/Shared/KZDev.PerfUtils.MemoryStreamSlim.Tests.Shared/KZDev.PerfUtils.MemoryStreamSlim.Tests.Shared.shproj" />
+    <Project Path="Tst/Shared/KZDev.PerfUtils.TestMocks.Shared/KZDev.PerfUtils.TestMocks.Shared.shproj" />
+  </Folder>
+</Solution>

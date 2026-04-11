@@ -13,7 +13,7 @@
         <Authors>Kevin Zehrer</Authors>
         <Copyright>Copyright © 2024-2026 Kevin Zehrer. All rights reserved.</Copyright>
         <Product>KZDev Performance Utilities</Product>
-        <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+        <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     </PropertyGroup>
     <PropertyGroup>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
