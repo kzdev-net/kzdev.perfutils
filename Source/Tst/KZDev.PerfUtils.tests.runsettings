@@ -5,7 +5,7 @@
     Limits parallel test host processes and caps total session duration.
   -->
   <RunConfiguration>
-    <MaxCpuCount>4</MaxCpuCount>
+    <MaxCpuCount>8</MaxCpuCount>
     <TestSessionTimeout>600000</TestSessionTimeout>
   </RunConfiguration>
 </RunSettings>
