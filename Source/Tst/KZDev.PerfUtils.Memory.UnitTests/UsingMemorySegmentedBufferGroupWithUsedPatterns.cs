@@ -1736,6 +1736,216 @@ public class UsingMemorySegmentedBufferGroupWithUsedPatterns : MemorySegmentedBu
         }
     }
     //--------------------------------------------------------------------------------    
+    /// <summary>
+    /// Bounded, always-on variant of <see cref="UsingMemorySegmentedBufferGroup_GetRemainingBuffers_WithRandomUsedPatterns_GetsProperBuffers"/>
+    /// using a seeded random source and deterministic pattern/skip selection per iteration.
+    /// </summary>
+    [Fact]
+    public void UsingMemorySegmentedBufferGroup_GetRemainingBuffers_WithDeterministicUsedPatterns_GetsProperBuffers ()
+    {
+        UseSeededRandomSourceForCurrentTest();
+        const int LoopCount = 12;
+        for (int testLoop = 0; testLoop < LoopCount; testLoop++)
+        {
+            (MemorySegmentedBufferGroup sut, MemorySegmentedBufferPool bufferPool) = GetTestGroupAndPool(segmentCount: BlockFlagSetSize * 5);
+            int useSkipCount = testLoop % 8;
+            int patternCount = 1 + (testLoop % 4);
+            bool useAvailablePattern = (testLoop & 1) == 0;
+            TestWriteLine($"Test Loop: {testLoop} - Skip: {useSkipCount}, {(useAvailablePattern ? "Available" : "Used")} Patterns: {patternCount}");
+
+            int availableSegments;
+            Dictionary<int, List<int>> availableSegmentMap;
+            if (useAvailablePattern)
+            {
+                (int availableCount, int inUseCount, bool availableAreZeroed)[] pattern = new (int, int, bool)[patternCount];
+                for (int patternIndex = 0; patternIndex < patternCount; patternIndex++)
+                {
+                    pattern[patternIndex] = (GetTestInteger(1, 12), GetTestInteger(1, 12), false);
+                    TestWriteLine($"    Available: {pattern[patternIndex].availableCount}, Used: {pattern[patternIndex].inUseCount}");
+                }
+                (availableSegments, availableSegmentMap) = SetSegmentAvailablePattern(sut, skipCount: useSkipCount, pattern);
+            }
+            else
+            {
+                (int inUseCount, int availableCount, bool availableAreZeroed)[] pattern = new (int, int, bool)[patternCount];
+                for (int patternIndex = 0; patternIndex < patternCount; patternIndex++)
+                {
+                    pattern[patternIndex] = (GetTestInteger(1, 12), GetTestInteger(1, 12), false);
+                    TestWriteLine($"    Used: {pattern[patternIndex].inUseCount}, Available: {pattern[patternIndex].availableCount}");
+                }
+                (availableSegments, availableSegmentMap) = SetSegmentInUsePattern(sut, skipCount: useSkipCount, pattern);
+            }
+
+            int expectedUsedSegments = sut.SegmentCount - availableSegments;
+            GetSegmentsInUse(sut).Should().Be(expectedUsedSegments);
+
+            IEnumerator<KeyValuePair<int, List<int>>> availableSegmentSizeEnumerator = availableSegmentMap
+                .OrderByDescending(kvp => kvp.Key)
+                .GetEnumerator();
+            availableSegmentSizeEnumerator.MoveNext().Should().BeTrue();
+
+            int availableSegmentSizeOffsetIndex = 0;
+
+            while (availableSegments > 0)
+            {
+                try
+                {
+                    while (availableSegmentSizeOffsetIndex >= availableSegmentSizeEnumerator.Current.Value.Count)
+                    {
+                        availableSegmentSizeEnumerator.MoveNext().Should().BeTrue();
+                        availableSegmentSizeOffsetIndex = 0;
+                    }
+                    int expectedSegmentCount = availableSegmentSizeEnumerator.Current.Key;
+                    int expectedSegmentId = availableSegmentSizeEnumerator.Current.Value[availableSegmentSizeOffsetIndex++];
+                    int requestBufferSize = MemorySegmentedBufferGroup.StandardBufferSegmentSize * (availableSegments + 1);
+
+                    (SegmentBuffer buffer, GetBufferResult result) = sut.GetBuffer(requestBufferSize, true, bufferPool);
+                    expectedUsedSegments += buffer.SegmentCount;
+
+                    result.Should().Be(GetBufferResult.Available);
+                    buffer.SegmentCount.Should().Be(expectedSegmentCount);
+                    buffer.Length.Should().Be(MemorySegmentedBufferGroup.StandardBufferSegmentSize * buffer.SegmentCount);
+                    GetSegmentsInUse(sut).Should().Be(expectedUsedSegments);
+                    availableSegments -= buffer.SegmentCount;
+                    buffer.IsAllZeroes().Should().BeTrue();
+                    buffer.BufferInfo.BlockId.Should().Be(sut.Id);
+                    buffer.BufferInfo.SegmentId.Should().Be(expectedSegmentId);
+                }
+                catch
+                {
+                    TestWriteLine($"** Exception thrown with {availableSegments} segments left to get (deterministic loop {testLoop})");
+                    throw;
+                }
+            }
+
+            int fullRequestBufferSize = MemorySegmentedBufferGroup.StandardBufferSegmentSize;
+            (SegmentBuffer _, GetBufferResult fullResult) = sut.GetBuffer(fullRequestBufferSize, true, bufferPool);
+            fullResult.Should().Be(GetBufferResult.GroupFull);
+        }
+    }
+    //--------------------------------------------------------------------------------    
+    /// <summary>
+    /// Bounded, always-on variant of <see cref="UsingMemorySegmentedBufferGroup_GetRandomBuffers_WithRandomUsedPatterns_GetsProperBuffers"/>
+    /// using a seeded random source and deterministic pattern/skip selection per iteration.
+    /// </summary>
+    [Fact]
+    public void UsingMemorySegmentedBufferGroup_GetRandomBuffers_WithDeterministicUsedPatterns_GetsProperBuffers ()
+    {
+        UseSeededRandomSourceForCurrentTest();
+        const int BlockFlagSetTestCount = 9;
+        const int OuterLoopCount = 10;
+        for (int testLoop = 0; testLoop < OuterLoopCount; testLoop++)
+        {
+            (MemorySegmentedBufferGroup sut, MemorySegmentedBufferPool bufferPool) = GetTestGroupAndPool(segmentCount: BlockFlagSetSize * BlockFlagSetTestCount);
+            int useSkipCount = testLoop % 8;
+            int patternCount = 1 + (testLoop % 4);
+            bool useAvailablePattern = (testLoop & 1) == 0;
+
+            TestWriteLine($"Test Loop: {testLoop} - Skip: {useSkipCount}, {(useAvailablePattern ? "Available" : "Used")} Patterns: {patternCount}");
+
+            int availableSegments;
+            Dictionary<int, List<int>> availableSegmentMap;
+            if (useAvailablePattern)
+            {
+                (int availableCount, int inUseCount, bool availableAreZeroed)[] pattern = new (int, int, bool)[patternCount];
+                for (int patternIndex = 0; patternIndex < patternCount; patternIndex++)
+                {
+                    pattern[patternIndex] = (GetTestInteger(1, 12), GetTestInteger(1, 12), false);
+                    TestWriteLine($"    Available: {pattern[patternIndex].availableCount}, Used: {pattern[patternIndex].inUseCount}");
+                }
+                (availableSegments, availableSegmentMap) = SetSegmentAvailablePattern(sut, skipCount: useSkipCount, pattern);
+            }
+            else
+            {
+                (int inUseCount, int availableCount, bool availableAreZeroed)[] pattern = new (int, int, bool)[patternCount];
+                for (int patternIndex = 0; patternIndex < patternCount; patternIndex++)
+                {
+                    pattern[patternIndex] = (GetTestInteger(1, 12), GetTestInteger(1, 12), false);
+                    TestWriteLine($"    Used: {pattern[patternIndex].inUseCount}, Available: {pattern[patternIndex].availableCount}");
+                }
+                (availableSegments, availableSegmentMap) = SetSegmentInUsePattern(sut, skipCount: useSkipCount, pattern);
+            }
+
+            int expectedUsedSegments = sut.SegmentCount - availableSegments;
+            GetSegmentsInUse(sut).Should().Be(expectedUsedSegments);
+
+            int preferredSegmentId = -1;
+
+            while (availableSegments > 0)
+            {
+                try
+                {
+                    int requestSegmentCount = GetTestInteger(1, Math.Min(9, availableSegments) + 1);
+                    int requestBufferSize = MemorySegmentedBufferGroup.StandardBufferSegmentSize * requestSegmentCount;
+
+                    (SegmentBuffer buffer, GetBufferResult result, bool bufferSegmentIsPreferred) =
+                        sut.GetBuffer(requestBufferSize, true, bufferPool, preferredSegmentId);
+                    result.Should().Be(GetBufferResult.Available);
+
+                    expectedUsedSegments += buffer.SegmentCount;
+                    availableSegments -= buffer.SegmentCount;
+                    buffer.SegmentCount.Should().BeLessThanOrEqualTo(requestSegmentCount);
+                    buffer.Length.Should().Be(MemorySegmentedBufferGroup.StandardBufferSegmentSize * buffer.SegmentCount);
+                    GetSegmentsInUse(sut).Should().Be(expectedUsedSegments);
+                    buffer.IsAllZeroes().Should().BeTrue();
+                    buffer.BufferInfo.BlockId.Should().Be(sut.Id);
+
+                    if (preferredSegmentId >= 0)
+                    {
+                        bufferSegmentIsPreferred.Should().Be(preferredSegmentId == buffer.BufferInfo.SegmentId);
+                    }
+                    else
+                    {
+                        bufferSegmentIsPreferred.Should().BeFalse();
+                    }
+
+                    (KeyValuePair<int, List<int>> segmentSizeEntry, int segmentSizeListIndex) =
+                        bufferSegmentIsPreferred ?
+                            availableSegmentMap
+                                .Select(kvp => (mapEntry: kvp, segmentIndex: kvp.Value.IndexOf(buffer.BufferInfo.SegmentId)))
+                                .FirstOrDefault(kvp => kvp.segmentIndex >= 0) :
+                            (availableSegmentMap
+                                .FirstOrDefault(kvp => kvp.Value[0] == buffer.BufferInfo.SegmentId), 0);
+                    segmentSizeEntry.Should().NotBe(default(KeyValuePair<int, List<int>>));
+
+                    buffer.SegmentCount.Should().BeLessThanOrEqualTo(segmentSizeEntry.Key);
+                    preferredSegmentId = -1;
+
+                    segmentSizeEntry.Value.RemoveAt(segmentSizeListIndex);
+                    if (0 == segmentSizeEntry.Value.Count)
+                    {
+                        availableSegmentMap.Remove(segmentSizeEntry.Key);
+                    }
+
+                    if (segmentSizeEntry.Key == buffer.SegmentCount)
+                    {
+                        continue;
+                    }
+
+                    int remainingGroupSegments = segmentSizeEntry.Key - buffer.SegmentCount;
+                    preferredSegmentId = buffer.BufferInfo.SegmentId + buffer.SegmentCount;
+                    if (availableSegmentMap.ContainsKey(remainingGroupSegments))
+                    {
+                        availableSegmentMap[remainingGroupSegments].Add(preferredSegmentId);
+                        availableSegmentMap[remainingGroupSegments].Sort();
+                        continue;
+                    }
+
+                    availableSegmentMap[remainingGroupSegments] = [preferredSegmentId];
+                }
+                catch
+                {
+                    TestWriteLine($"** Exception thrown with {availableSegments} segments left to get (deterministic loop {testLoop})");
+                    throw;
+                }
+            }
+
+            int fullRequestBufferSize = MemorySegmentedBufferGroup.StandardBufferSegmentSize;
+            (SegmentBuffer _, GetBufferResult fullResult) = sut.GetBuffer(fullRequestBufferSize, true, bufferPool);
+            fullResult.Should().Be(GetBufferResult.GroupFull);
+        }
+    }
+    //--------------------------------------------------------------------------------    
 
     //================================================================================
 

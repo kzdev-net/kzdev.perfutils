@@ -72,6 +72,7 @@ public partial class UsingMemoryStreamSlim
     [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.MedRun)]
     public void UsingMemoryStreamSlim_ReadByByte_ReturnsCorrectData ()
     {
+        UseSeededRandomSourceForCurrentTest();
         int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
 
         foreach (int testSegmentSize in TestSegmentSizes)
@@ -95,6 +96,7 @@ public partial class UsingMemoryStreamSlim
     [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.MedRun)]
     public void UsingMemoryStreamSlim_WriteByByte_ReturnsCorrectData ()
     {
+        UseSeededRandomSourceForCurrentTest();
         int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
 
         // Fill the stream with random bytes
@@ -120,6 +122,7 @@ public partial class UsingMemoryStreamSlim
     [Fact]
     public void UsingMemoryStreamSlim_ReadBySegments_ReturnsCorrectData ()
     {
+        UseSeededRandomSourceForCurrentTest();
         int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
 
         foreach (int testSegmentSize in TestSegmentSizes)
@@ -143,6 +146,7 @@ public partial class UsingMemoryStreamSlim
     [Fact]
     public async Task UsingMemoryStreamSlim_ReadBySegments_OnManyThreads_ReturnsCorrectData ()
     {
+        UseSeededRandomSourceForCurrentTest();
         int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
 
         ExceptionDispatchInfo? taskException = null;
@@ -181,6 +185,7 @@ public partial class UsingMemoryStreamSlim
     [Fact]
     public async Task UsingMemoryStreamSlim_ReadBySegmentsAsync_ReturnsCorrectData ()
     {
+        UseSeededRandomSourceForCurrentTest();
         int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
 
         foreach (int testSegmentSize in TestSegmentSizes)
@@ -207,6 +212,7 @@ public partial class UsingMemoryStreamSlim
     [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.MedRun)]
     public void UsingMemoryStreamSlim_RepeatedWriteAndPosition_KeepsDataConsistent ()
     {
+        UseSeededRandomSourceForCurrentTest();
         int[] testDataSizes = GenerateTestDataSizes(1000, MemorySegmentedBufferGroup.StandardBufferSegmentSize * 20).ToArray();
 
         foreach (int testSegmentSize in TestSegmentSizes)
@@ -246,6 +252,7 @@ public partial class UsingMemoryStreamSlim
     [Fact]
     public void UsingMemoryStreamSlim_WriteInStandardSegmentSizeMultiples_WritesCorrectData ()
     {
+        UseSeededRandomSourceForCurrentTest();
         int[] testDataSizes = GenerateTestDataSizes(1000, MemorySegmentedBufferGroup.StandardBufferSegmentSize * 20).ToArray();
 
         for (int testLoop = 0; testLoop < 100; testLoop++)
@@ -284,6 +291,7 @@ public partial class UsingMemoryStreamSlim
     [Fact]
     public void UsingMemoryStreamSlim_WriteInStandardSegmentSizeMultiples_VerifyByArray_WritesCorrectData ()
     {
+        UseSeededRandomSourceForCurrentTest();
         int[] testDataSizes = GenerateTestDataSizes(1000, MemorySegmentedBufferGroup.StandardBufferSegmentSize * 20).ToArray();
 
         for (int testLoop = 0; testLoop < 100; testLoop++)
@@ -322,6 +330,7 @@ public partial class UsingMemoryStreamSlim
     [Fact]
     public void UsingMemoryStreamSlim_WriteInStandardSegmentSizeMultiples_VerifyByMemory_WritesCorrectData ()
     {
+        UseSeededRandomSourceForCurrentTest();
         SetupToMemoryAccessStreamFactory();
 
         int[] testDataSizes = GenerateTestDataSizes(1000,
@@ -363,6 +372,7 @@ public partial class UsingMemoryStreamSlim
     [Fact]
     public void UsingMemoryStreamSlim_WriteWithStandardSegmentSizeMultipleJumps_WritesCorrectData ()
     {
+        UseSeededRandomSourceForCurrentTest();
         int[] testDataSizes = GenerateTestDataSizes(1000, MemorySegmentedBufferGroup.StandardBufferSegmentSize * 20).ToArray();
 
         foreach (int testSegmentSize in TestSegmentSizes)
@@ -431,6 +441,7 @@ public partial class UsingMemoryStreamSlim
     [Fact]
     public void UsingMemoryStreamSlim_WriteWithRandomJumps_WritesCorrectData ()
     {
+        UseSeededRandomSourceForCurrentTest();
         int[] testDataSizes = GenerateTestDataSizes(1000, MemorySegmentedBufferGroup.StandardBufferSegmentSize * 20).ToArray();
 
         foreach (int testSegmentSize in TestSegmentSizes)
@@ -494,6 +505,7 @@ public partial class UsingMemoryStreamSlim
     [Trait(TestConstants.TestTrait.TestMode, TestConstants.TestMode.Explicit)]
     public async Task UsingMemoryStreamSlim_GetArray_ReturnsCorrectData ()
     {
+        UseSeededRandomSourceForCurrentTest();
         int[] testDataSizes = GenerateTestDataSizes(5000, 0xF_FFFF).ToArray();
 
         foreach (int testSegmentSize in TestSegmentSizes)
@@ -519,6 +531,7 @@ public partial class UsingMemoryStreamSlim
     [Fact]
     public void UsingMemoryStreamSlim_CopyFullToStream_CopiesAllData ()
     {
+        UseSeededRandomSourceForCurrentTest();
         int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
 
         foreach (int testSegmentSize in TestSegmentSizes)
@@ -552,6 +565,7 @@ public partial class UsingMemoryStreamSlim
     [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.MedRun)]
     public async Task UsingMemoryStreamSlim_CopyFullToStream_CopiesAllDataAsync ()
     {
+        UseSeededRandomSourceForCurrentTest();
         int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
 
         foreach (int testSegmentSize in TestSegmentSizes)
@@ -585,6 +599,7 @@ public partial class UsingMemoryStreamSlim
     [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.MedRun)]
     public async Task UsingMemoryStreamSlim_CopyFullToStream_OnManyThreads_CopiesAllDataAsync ()
     {
+        UseSeededRandomSourceForCurrentTest();
         int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
 
         ExceptionDispatchInfo? taskException = null;
@@ -636,6 +651,7 @@ public partial class UsingMemoryStreamSlim
     [Fact]
     public async Task UsingMemoryStreamSlim_CopyFullToAsyncStream_CopiesAllDataAsync ()
     {
+        UseSeededRandomSourceForCurrentTest();
         int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
 
         foreach (int testSegmentSize in TestSegmentSizes)
@@ -671,6 +687,7 @@ public partial class UsingMemoryStreamSlim
     [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.MedRun)]
     public async Task UsingMemoryStreamSlim_CopyFullToAsyncStream_OnManyThreads_CopiesAllDataAsync ()
     {
+        UseSeededRandomSourceForCurrentTest();
         int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
 
         ExceptionDispatchInfo? taskException = null;
@@ -724,6 +741,7 @@ public partial class UsingMemoryStreamSlim
     [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.MedRun)]
     public void UsingMemoryStreamSlim_CopyToLargerStream_CopiesCorrectData ()
     {
+        UseSeededRandomSourceForCurrentTest();
         int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
 
         foreach (int testSegmentSize in TestSegmentSizes)
@@ -770,6 +788,7 @@ public partial class UsingMemoryStreamSlim
     [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.MedRun)]
     public async Task UsingMemoryStreamSlim_CopyToLargerStream_CopiesCorrectDataAsync ()
     {
+        UseSeededRandomSourceForCurrentTest();
         int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
 
         foreach (int testSegmentSize in TestSegmentSizes)
@@ -817,6 +836,7 @@ public partial class UsingMemoryStreamSlim
     [Trait(TestConstants.TestTrait.TestMode, TestConstants.TestMode.Explicit)]
     public async Task UsingMemoryStreamSlim_CopyToLargerStream_OnManyThreads_CopiesCorrectDataAsync ()
     {
+        UseSeededRandomSourceForCurrentTest();
         int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
 
 
@@ -882,6 +902,7 @@ public partial class UsingMemoryStreamSlim
     [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.MedRun)]
     public async Task UsingMemoryStreamSlim_CopyToLargerAsyncStream_CopiesCorrectDataAsync ()
     {
+        UseSeededRandomSourceForCurrentTest();
         int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
 
         foreach (int testSegmentSize in TestSegmentSizes)
@@ -936,6 +957,7 @@ public partial class UsingMemoryStreamSlim
     [Trait(TestConstants.TestTrait.TestMode, TestConstants.TestMode.Explicit)]
     public async Task UsingMemoryStreamSlim_CopyToLargerAsyncStream_OnManyThreads_CopiesCorrectDataAsync ()
     {
+        UseSeededRandomSourceForCurrentTest();
         int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
 
         ExceptionDispatchInfo? taskException = null;
@@ -1006,6 +1028,7 @@ public partial class UsingMemoryStreamSlim
     [Fact]
     public void UsingMemoryStreamSlim_CopyToSmallerStream_CopiesCorrectData ()
     {
+        UseSeededRandomSourceForCurrentTest();
         int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
 
         foreach (int testSegmentSize in TestSegmentSizes)
@@ -1051,6 +1074,7 @@ public partial class UsingMemoryStreamSlim
     [Fact]
     public async Task UsingMemoryStreamSlim_CopyToSmallerStream_CopiesCorrectDataAsync ()
     {
+        UseSeededRandomSourceForCurrentTest();
         int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
 
         foreach (int testSegmentSize in TestSegmentSizes)
@@ -1097,6 +1121,7 @@ public partial class UsingMemoryStreamSlim
     [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.MedRun)]
     public async Task UsingMemoryStreamSlim_CopyToSmallerStream_OnManyThreads_CopiesCorrectDataAsync ()
     {
+        UseSeededRandomSourceForCurrentTest();
         int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
 
         ExceptionDispatchInfo? taskException = null;
@@ -1160,6 +1185,7 @@ public partial class UsingMemoryStreamSlim
     [Fact]
     public async Task UsingMemoryStreamSlim_CopyToSmallerAsyncStream_CopiesCorrectDataAsync ()
     {
+        UseSeededRandomSourceForCurrentTest();
         int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
 
         foreach (int testSegmentSize in TestSegmentSizes)
@@ -1213,6 +1239,7 @@ public partial class UsingMemoryStreamSlim
     [Trait(TestConstants.TestTrait.TimeGenre, TestConstants.TimeGenreName.MedRun)]
     public async Task UsingMemoryStreamSlim_CopyToSmallerAsyncStream_OnManyThreads_CopiesCorrectDataAsync ()
     {
+        UseSeededRandomSourceForCurrentTest();
         int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
 
         ExceptionDispatchInfo? taskException = null;
@@ -1283,6 +1310,7 @@ public partial class UsingMemoryStreamSlim
     [Fact]
     public void UsingMemoryStreamSlim_WriteToStream_CopiesAllData ()
     {
+        UseSeededRandomSourceForCurrentTest();
         int[] testDataSizes = GenerateTestDataSizes(1000, 0xF_FFFF).ToArray();
 
         foreach (int testSegmentSize in TestSegmentSizes)
@@ -1318,6 +1346,7 @@ public partial class UsingMemoryStreamSlim
     [Trait(TestConstants.TestTrait.TestMode, TestConstants.TestMode.Explicit)]
     public void UsingMemoryStreamSlim_WriteWithChaos_WritesCorrectData ()
     {
+        UseSeededRandomSourceForCurrentTest();
         int[] testDataSizes = GenerateTestDataSizes(MemorySegmentedBufferGroup.StandardBufferSegmentSize, MemorySegmentedBufferGroup.StandardBufferSegmentSize * 20).ToArray();
 
         foreach (int testSegmentSize in TestSegmentSizes)
@@ -1336,7 +1365,7 @@ public partial class UsingMemoryStreamSlim
 
                 for (int chaosIndex = 0; chaosIndex < 1000; chaosIndex++)
                 {
-                    switch (GetTestInteger() % 4)
+                    switch (GetTestInteger() % 6)
                     {
                         case 0:
                             WriteArrayDataToStream(testService, dataCopy, ref dataCopyIndexPosition);
@@ -1472,6 +1501,7 @@ public partial class UsingMemoryStreamSlim
     [Trait(TestConstants.TestTrait.TestMode, TestConstants.TestMode.Explicit)]
     public async Task UsingMemoryStreamSlim_WriteWithChaos_OnManyThreads_WritesCorrectData ()
     {
+        UseSeededRandomSourceForCurrentTest();
         int[] testDataSizes = GenerateTestDataSizes(MemorySegmentedBufferGroup.StandardBufferSegmentSize, MemorySegmentedBufferGroup.StandardBufferSegmentSize * 20).ToArray();
 
         ExceptionDispatchInfo? taskException = null;
@@ -1496,7 +1526,7 @@ public partial class UsingMemoryStreamSlim
 
                         for (int chaosIndex = 0; chaosIndex < 1000; chaosIndex++)
                         {
-                            switch (GetTestInteger() % 4)
+                            switch (GetTestInteger() % 6)
                             {
                                 case 0:
                                     WriteArrayDataToStream(testService, dataCopy, ref dataCopyIndexPosition);
@@ -1635,9 +1665,206 @@ public partial class UsingMemoryStreamSlim
         taskException?.Throw();
     }
     //--------------------------------------------------------------------------------    
+    /// <summary>
+    /// Bounded regression for <see cref="MemoryStreamSlim.ToArray"/> after segmented async fills.
+    /// Uses a seeded <see cref="IRandomSource"/> for size indices; payload bytes still use the secure path.
+    /// </summary>
+    [Fact]
+    public async Task UsingMemoryStreamSlim_GetArray_WithBoundedSeededRandom_ReturnsCorrectData ()
+    {
+        UseSeededRandomSourceForCurrentTest();
+        int[] testDataSizes = GenerateTestDataSizes(80, 0xF_FFFF).ToArray();
+        const int InnerLoopsPerSegmentSize = 8;
+        foreach (int testSegmentSize in TestSegmentSizes)
+            for (int testLoop = 0; testLoop < InnerLoopsPerSegmentSize; testLoop++)
+            {
+                int byteCount = testDataSizes[RandomSource.GetRandomInteger(testDataSizes.Length)];
+                await using MemoryStreamSlim testService = CreateTestService(byteCount);
+                byte[] dataCopy =
+                    await MemoryTestPrep.FillStreamAndArrayWithRandomBytesAsync(testService, byteCount, testSegmentSize);
+                byte[] returnedArray = testService.ToArray();
+                returnedArray.Should().BeEquivalentTo(dataCopy);
+            }
+    }
+    //--------------------------------------------------------------------------------    
+    /// <summary>
+    /// Exercises array, span, byte, position, and seek chaos operations on a fixed cycle. Array and
+    /// span writes cap each chunk by the current <see cref="TestSegmentSizes"/> value, consistent with
+    /// segmented fills elsewhere. Set-length chaos is omitted here because it desynchronizes the
+    /// mirror array without the long-running test's bookkeeping.
+    /// </summary>
+    [Fact]
+    public void UsingMemoryStreamSlim_WriteWithChaos_DeterministicOperationCycle_WritesCorrectData ()
+    {
+        UseSeededRandomSourceForCurrentTest();
+        int[] byteCounts =
+        [
+            MemorySegmentedBufferGroup.StandardBufferSegmentSize,
+            MemorySegmentedBufferGroup.StandardBufferSegmentSize * 2,
+            MemorySegmentedBufferGroup.StandardBufferSegmentSize * 3
+        ];
+        foreach (int testSegmentSize in TestSegmentSizes)
+            foreach (int byteCount in byteCounts)
+            {
+                using MemoryStreamSlim testService = CreateTestService(byteCount);
+                byte[] dataCopy = new byte[byteCount];
+                if (testService.Mode == MemoryStreamSlimMode.Fixed)
+                {
+                    testService.Read(dataCopy, 0, byteCount).Should().Be(byteCount);
+                }
+
+                int dataCopyIndexPosition = 0;
+                // Use % 5 (not % 6) so this test omits SetStreamLength: the broader chaos tests hit
+                // case 5 as well, which needs mirror-array bookkeeping this path does not implement.
+                // The index-driven cycle still runs array, span, byte, position, and seek evenly.
+                // Run 72 iterations to keep the sequence long enough to revisit those five operations
+                // many times across different offsets and segment boundaries without changing test behavior.
+                for (int chaosIndex = 0; chaosIndex < 72; chaosIndex++)
+                {
+                    switch (chaosIndex % 5)
+                    {
+                        case 0:
+                            WriteArrayDataToStream(testService, dataCopy, testSegmentSize, ref dataCopyIndexPosition);
+                            break;
+
+                        case 1:
+                            WriteSpanDataToStream(testService, dataCopy, testSegmentSize, ref dataCopyIndexPosition);
+                            break;
+
+                        case 2:
+                            WriteByteDataToStream(testService, dataCopy, ref dataCopyIndexPosition);
+                            break;
+
+                        case 3:
+                            PositionStream(testService, byteCount, out dataCopyIndexPosition);
+                            break;
+
+                        case 4:
+                            SeekStream(testService, byteCount, ref dataCopyIndexPosition);
+                            break;
+                    }
+                }
+
+                testService.SetLength(Math.Max(testService.Length, dataCopy.Length));
+                VerifyContentsFromStartToEndOneRead(testService, dataCopy);
+            }
+
+        void WriteArrayDataToStream (MemoryStreamSlim stream, byte[] dataCopyArray, int segmentSizeCap,
+            ref int dataCopyArrayPosition)
+        {
+            int writePosition = (int)stream.Position;
+            int spaceLeft = dataCopyArray.Length - writePosition;
+            int writeByteCount = ResolveChaosWriteByteCount(spaceLeft, segmentSizeCap);
+            byte[] writeData = MemoryTestPrep.GetRandomByteArray(writeByteCount);
+
+            stream.Write(writeData);
+            Array.Copy(writeData, 0, dataCopyArray, dataCopyArrayPosition, writeByteCount);
+            dataCopyArrayPosition += writeByteCount;
+        }
+
+        void WriteSpanDataToStream (MemoryStreamSlim stream, byte[] dataCopyArray, int segmentSizeCap,
+            ref int dataCopyArrayPosition)
+        {
+            int writePosition = (int)stream.Position;
+            int spaceLeft = dataCopyArray.Length - writePosition;
+            int writeByteCount = ResolveChaosWriteByteCount(spaceLeft, segmentSizeCap);
+            byte[] writeData = MemoryTestPrep.GetRandomByteArray(writeByteCount);
+
+            stream.Write(writeData.AsSpan());
+            Array.Copy(writeData, 0, dataCopyArray, dataCopyArrayPosition, writeByteCount);
+            dataCopyArrayPosition += writeByteCount;
+        }
+
+        /// <summary>
+        /// Picks a write size for chaos array/span writes: small tail flushes use all remaining space;
+        /// otherwise the exclusive upper bound is the smaller of half the space left and one past the
+        /// segment cap (matching <see cref="MemoryTestPrep.FillStreamAndArrayWithRandomBytes(Stream, int, int)"/> chunking).
+        /// </summary>
+        /// <param name="spaceLeft">
+        /// Bytes from the stream position to the end of the logical buffer.
+        /// </param>
+        /// <param name="segmentSizeCap">
+        /// Maximum bytes per write for this outer loop iteration.
+        /// </param>
+        /// <returns>
+        /// The number of bytes to write.
+        /// </returns>
+        int ResolveChaosWriteByteCount (int spaceLeft, int segmentSizeCap)
+        {
+            if (spaceLeft < 10)
+            {
+                return spaceLeft;
+            }
+
+            int halfExclusive = spaceLeft / 2;
+            int segmentExclusive = segmentSizeCap + 1;
+            int writeMaxExclusive = Math.Max(2, Math.Min(halfExclusive, segmentExclusive));
+            return RandomSource.GetRandomInteger(1, writeMaxExclusive);
+        }
+
+        void WriteByteDataToStream (MemoryStreamSlim stream, byte[] dataCopyArray, ref int dataCopyArrayPosition)
+        {
+            int writePosition = (int)stream.Position;
+            int spaceLeft = dataCopyArray.Length - writePosition;
+            if (spaceLeft < 1)
+            {
+                return;
+            }
+
+            byte writeData = GetRandomByte();
+            stream.WriteByte(writeData);
+            dataCopyArray[dataCopyArrayPosition++] = writeData;
+        }
+
+        void PositionStream (MemoryStreamSlim stream, int maxPosition, out int dataCopyArrayPosition)
+        {
+            int newPosition = (0 == maxPosition) ? 0 : RandomSource.GetRandomInteger(maxPosition);
+            stream.Position = dataCopyArrayPosition = newPosition;
+        }
+
+        void SeekStream (MemoryStreamSlim stream, int maxPosition, ref int dataCopyArrayPosition)
+        {
+            int currentPosition = (int)stream.Position;
+
+            switch (RandomSource.GetRandomInteger(4))
+            {
+                case 0:
+                {
+                    int newPosition = dataCopyArrayPosition = (0 == maxPosition) ? 0 : RandomSource.GetRandomInteger(maxPosition);
+                    stream.Seek(newPosition, SeekOrigin.Begin);
+                }
+                break;
+
+                case 1:
+                {
+                    int newOffset = (currentPosition == maxPosition) ? 0 : RandomSource.GetRandomInteger(maxPosition - currentPosition);
+                    dataCopyArrayPosition += newOffset;
+                    stream.Seek(newOffset, SeekOrigin.Current);
+                }
+                break;
+
+                case 2:
+                {
+                    int newOffset = (0 == currentPosition) ? 0 : -RandomSource.GetRandomInteger(currentPosition);
+                    dataCopyArrayPosition += newOffset;
+                    stream.Seek(newOffset, SeekOrigin.Current);
+                }
+                break;
+
+                case 3:
+                {
+                    long newOffset = (0 == stream.Length) ? 0 : -RandomSource.GetRandomLongInteger(stream.Length);
+                    dataCopyArrayPosition = (int)(stream.Length + newOffset);
+                    stream.Seek(newOffset, SeekOrigin.End);
+                }
+                break;
+            }
+        }
+    }
+    //--------------------------------------------------------------------------------    
 
     //================================================================================
 
-#endregion Test Methods
+    #endregion Test Methods
 }
 //################################################################################
