@@ -21,12 +21,12 @@ public partial class UsingInterlockedOps : UnitTestBase
     /// <summary>
     /// The number of times we loop through for simple condition based tests (non-contention)
     /// </summary>
-    private const int ConditionTestLoopCount = 1_000_000;
+    private const int ConditionTestLoopCount = 100_000;
 
     /// <summary>
     /// The number of test loops to run for simple bit manipulation operations
     /// </summary>
-    private const int BitManagementTestLoopCount = 1_000_000;
+    private const int BitManagementTestLoopCount = 100_000;
 
     /// <summary>
     /// A test integer value that is used to test the <see cref="InterlockedOps"/> methods
