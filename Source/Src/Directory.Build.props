@@ -46,7 +46,6 @@
             <InternalsVisibleTo Remove="KZDev.PerfUtils.Memory.Fixed.UnitTests" />
             <InternalsVisibleTo Remove="KZDev.PerfUtils.Memory.Native.UnitTests" />
             <InternalsVisibleTo Remove="KZDev.PerfUtils.Memory.Heap.UnitTests" />
-            <InternalsVisibleTo Remove="KZDev.PerfUtils.Memory.Sequential.UnitTests" />
             <InternalsVisibleTo Remove="KZDev.PerfUtils.Memory.Heap.Sequential.UnitTests" />
             <InternalsVisibleTo Remove="KZDev.PerfUtils.Memory.Native.Sequential.UnitTests" />
             <InternalsVisibleTo Remove="KZDev.PerfUtils.Strings.UnitTests" />
