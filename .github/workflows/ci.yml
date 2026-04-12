@@ -73,8 +73,21 @@ jobs:
           fi
           echo "Overlay applied to ${count} xunit.runner.json file(s)."
 
+      # Only test projects that define TestMode=Explicit tests. Solution-wide `dotnet test`
+      # fails on other assemblies with: No test matches the given testcase filter.
+      # `dotnet test` accepts one .csproj per invocation (SDK 10+).
       - name: Test (Explicit only, sequential xUnit)
         run: |
-          dotnet test Source/KZDev.PerfUtils.slnx -c Release --no-build \
-            --filter "TestMode=Explicit" \
-            -- xUnit.Explicit=only xUnit.MaxParallelThreads=1 xUnit.ParallelizeAssembly=false xUnit.ParallelizeTestCollections=false
+          set -euo pipefail
+          explicit_projects=(
+            Source/Tst/KZDev.PerfUtils.Memory.Heap.Sequential.UnitTests/KZDev.PerfUtils.Memory.Heap.Sequential.UnitTests.csproj
+            Source/Tst/KZDev.PerfUtils.Memory.Heap.UnitTests/KZDev.PerfUtils.Memory.Heap.UnitTests.csproj
+            Source/Tst/KZDev.PerfUtils.Memory.Native.UnitTests/KZDev.PerfUtils.Memory.Native.UnitTests.csproj
+            Source/Tst/KZDev.PerfUtils.Memory.Fixed.UnitTests/KZDev.PerfUtils.Memory.Fixed.UnitTests.csproj
+            Source/Tst/KZDev.PerfUtils.Memory.UnitTests/KZDev.PerfUtils.Memory.UnitTests.csproj
+          )
+          for proj in "${explicit_projects[@]}"; do
+            dotnet test "$proj" -c Release --no-build \
+              --filter "TestMode=Explicit" \
+              -- xUnit.Explicit=only xUnit.MaxParallelThreads=1 xUnit.ParallelizeAssembly=false xUnit.ParallelizeTestCollections=false
+          done
