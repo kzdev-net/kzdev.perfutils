@@ -1209,7 +1209,7 @@ public abstract class MemoryStreamSlim : MemoryStream
 
         try
         {
-            // TODO - Consider getting an array from the buffer before using span.
+            // TODO (Research) - Consider getting an array from the buffer before using span.
             return ValueTask.FromResult(Read(buffer.Span));
         }
         catch (Exception ex)
@@ -1294,7 +1294,7 @@ public abstract class MemoryStreamSlim : MemoryStream
 
         try
         {
-            // TODO - Consider getting an array from the buffer before using span.
+            // TODO (Research) - Consider getting an array from the buffer before using span.
             Write(buffer.Span);
             return default;
         }

@@ -1836,7 +1836,7 @@ internal sealed class SegmentMemoryStreamSlim : MemoryStreamSlim
     /// <inheritdoc />
     public override string Decode (Encoding encoding)
     {
-        //  TODO - Check the current state of the internal buffers and check if we can
+        //  TODO (Research) - Check the current state of the internal buffers and check if we can
         //  decode directly from the buffers rather than copying the data to a new array.
         byte[] bytes = ToArrayInternal(true);
         return encoding.GetString(bytes, 0, bytes.Length);
