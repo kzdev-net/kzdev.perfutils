@@ -1,31 +1,23 @@
-# Use the official .NET 6 SDK image as the base image for .NET 6
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS dotnet6
+# Linux test image: .NET SDK 10 matches Source/global.json and CI (Build / Test workflow).
+# The SDK restores, builds, and tests net8.0, net9.0, and net10.0 — the package target frameworks
+# defined under Source/Src and Source/Tst Directory.Build.props. `dotnet test` on the solution
+# runs the standard test suite once per target framework for each multi-targeted test project.
+FROM mcr.microsoft.com/dotnet/sdk:10.0
 
-# Use the official .NET 8 SDK image as the base image for .NET 8
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS dotnet8
-
-# Use the official .NET 9 SDK image as the base image for .NET 8
-FROM mcr.microsoft.com/dotnet/sdk:9.0 AS final
-
-# Install .NET 6 SDK
-COPY --from=dotnet6 /usr/share/dotnet /usr/share/dotnet
-COPY --from=dotnet6 /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-
-# Install .NET 6 SDK
-COPY --from=dotnet8 /usr/share/dotnet /usr/share/dotnet
-COPY --from=dotnet8 /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+ENV DOTNET_CLI_TELEMETRY_OPTOUT=1 \
+    DOTNET_NOLOGO=1
 
 # Set the working directory inside the container
 WORKDIR /app
 
-# Copy the project files to the container
+# Build context is the Source directory (see Tst/README.md).
 COPY . .
 
 # Restore the project dependencies
-RUN dotnet restore
+RUN dotnet restore KZDev.PerfUtils.slnx
 
 # Build the project
-RUN dotnet build --no-restore
+RUN dotnet build KZDev.PerfUtils.slnx -c Release --no-restore
 
-# Run the tests
-CMD ["dotnet", "test", "--no-build", "--logger", "xunit;LogFileName={assembly}.{framework}.results.xml", "--results-directory", "/app/Tst/linux-tests-results"]
+# Standard tests only (same as CI job test-standard); all TFMs; Release must match build above.
+CMD ["dotnet", "test", "KZDev.PerfUtils.slnx", "-c", "Release", "--no-build", "--logger", "xunit;LogFileName={assembly}.{framework}.results.xml", "--results-directory", "/app/Tst/linux-tests-results"]

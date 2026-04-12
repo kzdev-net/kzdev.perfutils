@@ -9,7 +9,8 @@ namespace KZDev.PerfUtils.Helpers;
 
 //################################################################################
 /// <summary>
-/// Helper class for throwing exceptions.
+/// Centralizes throwing common argument, state, and I/O exceptions using localized
+/// messages from <see cref="Strings"/>.
 /// </summary>
 [ExcludeFromCodeCoverage]
 internal static class ThrowHelper
@@ -18,7 +19,7 @@ internal static class ThrowHelper
 
     //--------------------------------------------------------------------------------
     /// <summary>
-    /// Throws an argument out of range exception with the message for a non-negative number.
+    /// Throws an ArgumentOutOfRangeException with the message for a non-negative number.
     /// </summary>
     /// <param name="argumentName">The name of the invalid argument.</param>
     /// <exception cref="ArgumentOutOfRangeException">
@@ -28,7 +29,7 @@ internal static class ThrowHelper
         throw new ArgumentOutOfRangeException(argumentName, string.Format(Strings.Arg_OutOfRangeNonNegNum, argumentName));
     //--------------------------------------------------------------------------------
     /// <summary>
-    /// Throws an argument out of range exception with the message for a number required 
+    /// Throws an ArgumentOutOfRangeException with the message for a number required 
     /// to be between two values.
     /// </summary>
     /// <param name="argumentName">
@@ -48,7 +49,7 @@ internal static class ThrowHelper
         throw new ArgumentOutOfRangeException(argumentName, string.Format(Strings.Arg_OutOfRangeNeedBetween, argumentName, minimumValue, maximumValue));
     //--------------------------------------------------------------------------------
     /// <summary>
-    /// Throws an argument out of range exception with the message for a number required 
+    /// Throws an ArgumentOutOfRangeException with the message for a number required 
     /// to be greater than or equal to a minimum value.
     /// </summary>
     /// <param name="argumentName">
@@ -65,7 +66,7 @@ internal static class ThrowHelper
         throw new ArgumentOutOfRangeException(argumentName, string.Format(Strings.Arg_OutOfRangeMinValue, argumentName, minimumValue));
     //--------------------------------------------------------------------------------
     /// <summary>
-    /// Throws an argument out of range exception with the message for a number required 
+    /// Throws an ArgumentOutOfRangeException with the message for a number required 
     /// to be less than the size of the collection.
     /// </summary>
     /// <param name="argumentName">
@@ -77,7 +78,7 @@ internal static class ThrowHelper
         throw new ArgumentOutOfRangeException(argumentName, Strings.Arg_IndexMustBeLessException);
     //--------------------------------------------------------------------------------
     /// <summary>
-    /// Throws an argument out of range exception with the message for a number required 
+    /// Throws an ArgumentOutOfRangeException with the message for a number required 
     /// to be less than or equal to the size of the collection.
     /// </summary>
     /// <param name="argumentName">
@@ -90,7 +91,7 @@ internal static class ThrowHelper
         throw new ArgumentOutOfRangeException(argumentName, Strings.Arg_IndexMustBeLessOrEqualException);
     //--------------------------------------------------------------------------------
     /// <summary>
-    /// Throws an argument exception with the message for an invalid Stream seek origin
+    /// Throws an ArgumentException with the message for an invalid Stream seek origin
     /// value.
     /// </summary>
     /// <param name="argumentName">
@@ -103,7 +104,7 @@ internal static class ThrowHelper
         throw new ArgumentException(Strings.Arg_InvalidSeekOrigin, argumentName);
     //--------------------------------------------------------------------------------
     /// <summary>
-    /// Throws an argument with the message for an invalid array segment offset
+    /// Throws an ArgumentException with the message for an invalid array segment offset
     /// and length.
     /// </summary>
     /// <exception cref="ArgumentException">
@@ -113,7 +114,7 @@ internal static class ThrowHelper
         throw new ArgumentException(Strings.Arg_InvalidOffsetLength);
     //--------------------------------------------------------------------------------
     /// <summary>
-    /// Throws an argument with the message for copy destination that is too short
+    /// Throws an ArgumentException with the message for copy destination that is too short
     /// and length.
     /// </summary>
     /// <param name="argumentName">
@@ -126,7 +127,7 @@ internal static class ThrowHelper
         throw new ArgumentException(Strings.Arg_DestinationTooShort, argumentName);
     //--------------------------------------------------------------------------------
     /// <summary>
-    /// Throws an argument with the message for a source stream that is not readable 
+    /// Throws an ArgumentException with the message for a source stream that is not readable 
     /// </summary>
     /// <param name="argumentName">
     /// The name of the invalid argument.
@@ -138,7 +139,7 @@ internal static class ThrowHelper
         throw new ArgumentException(Strings.Arg_SourceStreamMustBeReadable, argumentName);
     //--------------------------------------------------------------------------------
     /// <summary>
-    /// Throws an argument with the message for a source stream that is not seekable
+    /// Throws an ArgumentException with the message for a source stream that is not seekable
     /// </summary>
     /// <param name="argumentName">
     /// The name of the invalid argument.
@@ -150,7 +151,7 @@ internal static class ThrowHelper
         throw new ArgumentException(Strings.Arg_SourceStreamMustBeSeekable, argumentName);
     //--------------------------------------------------------------------------------
     /// <summary>
-    /// Throws an argument exception with the message for a contained value that is not comparable.
+    /// Throws an ArgumentException with the message for a contained value that is not comparable.
     /// </summary>
     /// <param name="argumentName">
     /// The name of the invalid argument.
@@ -168,7 +169,7 @@ internal static class ThrowHelper
 
     //--------------------------------------------------------------------------------
     /// <summary>
-    /// Throws an invalid operation exception with the message for a closed stream.
+    /// Throws an InvalidOperationException with the message for a closed stream.
     /// </summary>
     /// <exception cref="InvalidOperationException">
     /// </exception>
@@ -177,7 +178,7 @@ internal static class ThrowHelper
         throw new InvalidOperationException(Strings.InvalidOperation_StreamClosed);
     //--------------------------------------------------------------------------------
     /// <summary>
-    /// Throws an object disposed exception with the message for a closed stream.
+    /// Throws an ObjectDisposedException with the message for a closed stream.
     /// </summary>
     /// <param name="objectName">
     /// The name of the object that was disposed.
@@ -189,7 +190,7 @@ internal static class ThrowHelper
         throw new ObjectDisposedException(objectName, Strings.InvalidOperation_StreamClosed);
     //--------------------------------------------------------------------------------
     /// <summary>
-    /// Throws a not supported exception with the message for an unwritable stream.
+    /// Throws a NotSupportedException with the message for an unwritable stream.
     /// </summary>
     /// <exception cref="NotSupportedException">
     /// </exception>
@@ -198,7 +199,7 @@ internal static class ThrowHelper
         throw new NotSupportedException(Strings.NotSupported_UnwritableStream);
     //--------------------------------------------------------------------------------
     /// <summary>
-    /// Throws a not supported exception with the message for a feature not supported
+    /// Throws a NotSupportedException with the message for a feature not supported
     /// in the specified stream mode.
     /// </summary>
     /// <param name="streamMode">
@@ -212,7 +213,7 @@ internal static class ThrowHelper
             streamMode.GetString()));
     //--------------------------------------------------------------------------------
     /// <summary>
-    /// Throws a not supported exception with the message for a general feature not supported.
+    /// Throws a NotSupportedException with the message for a general feature not supported.
     /// </summary>
     /// <exception cref="NotSupportedException">
     /// </exception>
@@ -221,7 +222,7 @@ internal static class ThrowHelper
         throw new NotSupportedException(Strings.NotSupported_FeatureNotAvailable);
     //--------------------------------------------------------------------------------
     /// <summary>
-    /// Throws an argument out of range exception with the message for a small capacity.
+    /// Throws an ArgumentOutOfRangeException with the message for a small capacity.
     /// </summary>
     /// <param name="argumentName">
     /// The name of the invalid argument.
@@ -233,7 +234,7 @@ internal static class ThrowHelper
         throw new ArgumentOutOfRangeException(argumentName, Strings.Arg_OutOfRangeSmallCapacity);
     //--------------------------------------------------------------------------------
     /// <summary>
-    /// Throws an argument out of range exception with the message indicating that the 
+    /// Throws an ArgumentOutOfRangeException with the message indicating that the 
     /// stream length would be invalid.
     /// </summary>
     /// <exception cref="ArgumentOutOfRangeException">
@@ -243,8 +244,8 @@ internal static class ThrowHelper
         throw new ArgumentOutOfRangeException(argumentName, Strings.Arg_OutOfRangeStreamLength);
     //--------------------------------------------------------------------------------
     /// <summary>
-    /// Throws an argument out of range exception with the message indicating that the 
-    /// stream length would be invalid.
+    /// Throws an ArgumentOutOfRangeException with the message indicating that the
+    /// requested size is too large for an array.
     /// </summary>
     /// <exception cref="ArgumentOutOfRangeException">
     /// </exception>
@@ -253,7 +254,7 @@ internal static class ThrowHelper
         throw new ArgumentOutOfRangeException(argumentName, Strings.Arg_TooLargeForArray);
     //--------------------------------------------------------------------------------
     /// <summary>
-    /// Throws an IO exception with the message for the stream being too long.
+    /// Throws an IOException with the message for the stream being too long.
     /// </summary>
     /// <exception cref="IOException">
     /// </exception>
@@ -262,7 +263,7 @@ internal static class ThrowHelper
         throw new IOException(Strings.IO_StreamTooLong);
     //--------------------------------------------------------------------------------
     /// <summary>
-    /// Throws an IO exception with the message for an attempt to move the position
+    /// Throws an IOException with the message for an attempt to move the position
     /// before the beginning of the stream.
     /// </summary>
     /// <exception cref="IOException">
@@ -272,7 +273,7 @@ internal static class ThrowHelper
         throw new IOException(Strings.IO_SeekBeforeBegin);
     //--------------------------------------------------------------------------------
     /// <summary>
-    /// Throws an invalid operation exception with the message for an integer overflow
+    /// Throws an InvalidOperationException with the message for an integer overflow
     /// when calculating the new capacity or accessing the Int32 Capacity property of a stream.
     /// </summary>
     /// <exception cref="InvalidOperationException">
@@ -282,7 +283,7 @@ internal static class ThrowHelper
         throw new InvalidOperationException(Strings.InvalidOperation_IntOverflowCapacity);
     //--------------------------------------------------------------------------------
     /// <summary>
-    /// Throws an invalid operation exception with the message for an attempt to copy
+    /// Throws an InvalidOperationException with the message for an attempt to copy
     /// the stream into an array but the length of the stream is too large to fit in an array.
     /// </summary>
     /// <exception cref="InvalidOperationException">
@@ -296,7 +297,7 @@ internal static class ThrowHelper
 
     //--------------------------------------------------------------------------------
     /// <summary>
-    /// Throws an invalid operation exception with the message for a type of global settings
+    /// Throws an InvalidOperationException with the message for a type of global settings
     /// that cannot be updated.
     /// </summary>
     /// <param name="classTypeName">
@@ -310,7 +311,7 @@ internal static class ThrowHelper
             classTypeName));
     //--------------------------------------------------------------------------------
     /// <summary>
-    /// Throws an object disposed exception with the object name.
+    /// Throws an ObjectDisposedException for the object identified by the specified name.
     /// </summary>
     /// <param name="objectName">
     /// The name of the object that was disposed.
