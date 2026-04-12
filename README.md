@@ -1,6 +1,6 @@
 # KZDev.PerfUtils
 
-[![Build / Test](https://github.com/kzdev-net/kzdev.perfutils/actions/workflows/ci.yml/badge.svg)](https://github.com/kzdev-net/kzdev.perfutils/actions/workflows/ci.yml)
+[![Build / Test](https://github.com/kzdev-net/kzdev.perfutils/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/kzdev-net/kzdev.perfutils/actions/workflows/ci.yml?query=branch%3Amain)
 
 This repository contains the  ['KZDev.PerfUtils'](https://www.nuget.org/packages/KZDev.PerfUtils) NuGet package, which provides the following high-performance utilities:
 
