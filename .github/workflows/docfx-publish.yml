@@ -30,7 +30,7 @@ jobs:
         with:
           dotnet-version: 10.x
 
-      - run: dotnet restore Source/KZDev.PerfUtils.sln
+      - run: dotnet restore Source/KZDev.PerfUtils.slnx
       - run: dotnet build -c Release Source/Src/KZDev.PerfUtils/KZDev.PerfUtils.csproj
       - run: dotnet tool update -g docfx
       - run: docfx Source/Docs/docfx.json

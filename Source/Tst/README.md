@@ -2,7 +2,7 @@
 
 This document covers **local `dotnet test`** workflows (standard vs Explicit) and **Linux Docker** runs.
 
-Unless noted otherwise, run commands from the **`Source`** directory (the folder that contains `KZDev.PerfUtils.sln`). The solution uses **artifacts output** (`UseArtifactsOutput`); test build outputs live under **`artifacts/bin/<ProjectName>/release_net*`** at the repository root, not under each project’s `bin` folder.
+Unless noted otherwise, run commands from the **`Source`** directory (the folder that contains `KZDev.PerfUtils.slnx`). The solution uses **artifacts output** (`UseArtifactsOutput`); test build outputs live under **`artifacts/bin/<ProjectName>/release_net*`** at the repository root, not under each project’s `bin` folder.
 
 ---
 
@@ -13,17 +13,17 @@ Restores, builds, and runs **non-Explicit** tests with the defaults wired in `Di
 **PowerShell or cmd (from `Source`):**
 
 ```cmd
-dotnet restore KZDev.PerfUtils.sln
-dotnet build KZDev.PerfUtils.sln -c Release
-dotnet test KZDev.PerfUtils.sln -c Release --no-build
+dotnet restore KZDev.PerfUtils.slnx
+dotnet build KZDev.PerfUtils.slnx -c Release
+dotnet test KZDev.PerfUtils.slnx -c Release --no-build
 ```
 
 **bash (from `Source`):**
 
 ```bash
-dotnet restore KZDev.PerfUtils.sln
-dotnet build KZDev.PerfUtils.sln -c Release
-dotnet test KZDev.PerfUtils.sln -c Release --no-build
+dotnet restore KZDev.PerfUtils.slnx
+dotnet build KZDev.PerfUtils.slnx -c Release
+dotnet test KZDev.PerfUtils.slnx -c Release --no-build
 ```
 
 `[Fact(Explicit = true)]` tests are **skipped** in this default configuration.
@@ -39,13 +39,13 @@ This repository’s `dotnet test` path uses **VSTest** (not Microsoft Testing Pl
 **One-shot command (from `Source`, after a Release build):**
 
 ```cmd
-dotnet test KZDev.PerfUtils.sln -c Release --no-build --filter "TestMode=Explicit" -- xUnit.Explicit=only xUnit.MaxParallelThreads=1 xUnit.ParallelizeAssembly=false xUnit.ParallelizeTestCollections=false
+dotnet test KZDev.PerfUtils.slnx -c Release --no-build --filter "TestMode=Explicit" -- xUnit.Explicit=only xUnit.MaxParallelThreads=1 xUnit.ParallelizeAssembly=false xUnit.ParallelizeTestCollections=false
 ```
 
 **bash** (keep the filter expression in quotes so the shell does not treat `=` specially):
 
 ```bash
-dotnet test KZDev.PerfUtils.sln -c Release --no-build --filter "TestMode=Explicit" -- xUnit.Explicit=only xUnit.MaxParallelThreads=1 xUnit.ParallelizeAssembly=false xUnit.ParallelizeTestCollections=false
+dotnet test KZDev.PerfUtils.slnx -c Release --no-build --filter "TestMode=Explicit" -- xUnit.Explicit=only xUnit.MaxParallelThreads=1 xUnit.ParallelizeAssembly=false xUnit.ParallelizeTestCollections=false
 ```
 
 **Notes:**

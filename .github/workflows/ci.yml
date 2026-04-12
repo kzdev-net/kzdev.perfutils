@@ -21,13 +21,13 @@ jobs:
           dotnet-version: 10.x
 
       - name: Restore
-        run: dotnet restore Source/KZDev.PerfUtils.sln
+        run: dotnet restore Source/KZDev.PerfUtils.slnx
 
       - name: Build
-        run: dotnet build Source/KZDev.PerfUtils.sln -c Release
+        run: dotnet build Source/KZDev.PerfUtils.slnx -c Release
 
       - name: Test (standard)
-        run: dotnet test Source/KZDev.PerfUtils.sln -c Release --no-build
+        run: dotnet test Source/KZDev.PerfUtils.slnx -c Release --no-build
 
       - name: Upload Release artifacts
         uses: actions/upload-artifact@v4
@@ -75,6 +75,6 @@ jobs:
 
       - name: Test (Explicit only, sequential xUnit)
         run: |
-          dotnet test Source/KZDev.PerfUtils.sln -c Release --no-build \
+          dotnet test Source/KZDev.PerfUtils.slnx -c Release --no-build \
             --filter "TestMode=Explicit" \
             -- xUnit.Explicit=only xUnit.MaxParallelThreads=1 xUnit.ParallelizeAssembly=false xUnit.ParallelizeTestCollections=false
