@@ -63,11 +63,11 @@ Add **`[Trait(TestConstants.TestTrait.TestMode, TestConstants.TestMode.Explicit)
 
 ---
 
-## Maintainers: branch protection (CI)
+## Maintainers: branch protection (Build / Test)
 
-Configure GitHub **branch protection** status checks to match how CI gates merges:
+Configure GitHub **branch protection** status checks to match how the workflow gates merges:
 
-- **`main`:** Require **`test-standard`** and **`test-explicit`** from the **CI** workflow so both jobs must pass before merge.
+- **`main`:** Require **`test-standard`** and **`test-explicit`** from the **Build / Test** workflow so both jobs must pass before merge.
 - **`dev`:** Require **`test-standard`** only. **`test-explicit`** is informational on `dev` (workflow uses `continue-on-error` for pushes to `dev` and for pull requests whose base branch is not `main`).
 
 Fork pull requests need repository settings that allow GitHub Actions to run from forks if you want CI for external contributors.

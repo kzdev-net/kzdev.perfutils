@@ -1,5 +1,7 @@
 # KZDev.PerfUtils
 
+[![Build / Test](https://github.com/kzdev-net/kzdev.perfutils/actions/workflows/ci.yml/badge.svg)](https://github.com/kzdev-net/kzdev.perfutils/actions/workflows/ci.yml)
+
 This repository contains the  ['KZDev.PerfUtils'](https://www.nuget.org/packages/KZDev.PerfUtils) NuGet package, which provides the following high-performance utilities:
 
 - **MemoryStreamSlim**: A memory-efficient, high-performance stream for large or frequently resized in-memory buffers, modeled on **MemoryStream** with a largely compatible API.
