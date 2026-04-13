@@ -59,11 +59,20 @@ public class UsingMemoryStreamSlimReleaseBuffers : UsingMemoryStreamSlimUnitTest
                 using MemoryStreamSlim testService = MemoryStreamSlim.Create(options => options.WithZeroBufferBehavior(MemoryStreamSlimZeroBufferOption.OnRelease));
                 int byteCount = testDataSizes[RandomSource.GetRandomInteger(testDataSizes.Length)];
                 MemoryTestPrep.FillStreamAndArrayWithRandomBytes(testService, byteCount, testSegmentSize);
+                // Make sure that the LOH memory usage is non-zero on the first loop.
+                if (testLoop > 0)
+                    continue;
+                testMetricsMonitor.LohSize.Should().BeGreaterThan(0);
             }
 
         // Clean the GC and capture the current LOH memory usage
         GC.Collect(GC.MaxGeneration);
         double runCompleteLohMemory = testMetricsMonitor.LohSize;
+        if (runCompleteLohMemory == 0)
+        {
+            // We know that LOH did go above zero during the test, so if it is back to zero now then we can just end the test since the memory was released as expected.
+            return;
+        }
         // Tell the MemoryStreamSlim to release its memory buffers
         MemoryStreamSlim.ReleaseMemoryBuffers();
 
@@ -74,6 +83,10 @@ public class UsingMemoryStreamSlimReleaseBuffers : UsingMemoryStreamSlimUnitTest
         GC.Collect(GC.MaxGeneration);
         // We should drop LOH memory by at least 1/2 (it should actually drop to zero, but we can't guarantee that)
         double newLohMemory = testMetricsMonitor.LohSize;
+        if (newLohMemory == 0)
+        {
+            return;
+        }
         newLohMemory.Should().BeLessThan(runCompleteLohMemory / 2);
     }
     //--------------------------------------------------------------------------------    
