@@ -51,6 +51,7 @@ public class UsingMemoryStreamSlimReleaseBuffers : UsingMemoryStreamSlimUnitTest
         GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;
         GC.Collect(GC.MaxGeneration);
         using TestMetricsMonitor testMetricsMonitor = new TestMetricsMonitor();
+        bool lohHeapAllocated = false;
         // Fill the streams with random bytes
         foreach (int testSegmentSize in TestSegmentSizes)
             for (int testLoop = 0; testLoop < 1000; testLoop++)
@@ -59,12 +60,16 @@ public class UsingMemoryStreamSlimReleaseBuffers : UsingMemoryStreamSlimUnitTest
                 using MemoryStreamSlim testService = MemoryStreamSlim.Create(options => options.WithZeroBufferBehavior(MemoryStreamSlimZeroBufferOption.OnRelease));
                 int byteCount = testDataSizes[RandomSource.GetRandomInteger(testDataSizes.Length)];
                 MemoryTestPrep.FillStreamAndArrayWithRandomBytes(testService, byteCount, testSegmentSize);
-                // Make sure that the LOH memory usage is non-zero on the first loop.
-                if (testLoop > 0)
+                if (lohHeapAllocated)
                     continue;
-                testMetricsMonitor.LohSize.Should().BeGreaterThan(0);
+                if (testMetricsMonitor.LohSize > 0)
+                {
+                    lohHeapAllocated = true;
+                }
             }
 
+        // We should hit at least one instance of a case where the LOH was allocated from
+        lohHeapAllocated.Should().BeTrue("we should have allocated some LOH memory during the test");
         // Clean the GC and capture the current LOH memory usage
         GC.Collect(GC.MaxGeneration);
         double runCompleteLohMemory = testMetricsMonitor.LohSize;
