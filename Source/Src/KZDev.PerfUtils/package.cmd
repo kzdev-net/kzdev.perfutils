@@ -1,15 +1,15 @@
 @ECHO OFF
 SETLOCAL
+SET "PROJECTPATH=%~dp0KZDev.PerfUtils.csproj"
 SET SOLUTIONPATH=%~dp0..\..
 
 PUSHD %SOLUTIONPATH%
 
-dotnet clean -c Release
-dotnet restore
+dotnet clean "%PROJECTPATH%" -c Release
+dotnet restore "%PROJECTPATH%"
+dotnet pack "%PROJECTPATH%" -c Release --no-restore -p:IsPacking=true -p:ContinuousIntegrationBuild=true
 
 POPD
- 
-dotnet msbuild -t:Pack -p:IsPacking=true -p:Configuration=Release -p:ContinuousIntegrationBuild=true
 
 :EOF
 ENDLOCAL

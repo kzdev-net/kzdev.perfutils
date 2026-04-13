@@ -8,6 +8,12 @@ This repository contains the  ['KZDev.PerfUtils'](https://www.nuget.org/packages
 - **StringBuilderCache**: A utility for caching StringBuilder instances to improve performance in high-throughput scenarios.
 - **InterlockedOps**: A set of additional atomic thread-safe operations that extend the functionality of the Interlocked class in the .NET Class Library.
 
+> [!IMPORTANT]
+> **MemoryStreamSlim** outperforms **RecyclableMemoryStream** across all benchmarked categories in this project. See the benchmark documentation for workload-by-workload comparisons.
+
+> [!TIP]
+> **New in v3:** `MemoryStreamSlim.ToMemory()` provides a significantly more memory-efficient way to access raw stream buffers as `Memory<byte>`.
+
 ## Supported target frameworks
 
 This package targets **.NET 8** (`net8.0`), **.NET 9** (`net9.0`), and **.NET 10** (`net10.0`). The 3.x line does not ship builds for older TFMs (including **.NET 6**); upgrade consuming projects to a supported target framework before referencing the latest package versions.
