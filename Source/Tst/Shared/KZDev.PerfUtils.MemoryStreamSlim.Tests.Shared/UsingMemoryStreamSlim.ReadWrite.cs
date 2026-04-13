@@ -1368,15 +1368,15 @@ public partial class UsingMemoryStreamSlim
                     switch (GetTestInteger() % 6)
                     {
                         case 0:
-                            WriteArrayDataToStream(testService, dataCopy, ref dataCopyIndexPosition);
+                            WriteArrayDataToStream(testService, dataCopy, out dataCopyIndexPosition);
                             break;
 
                         case 1:
-                            WriteSpanDataToStream(testService, dataCopy, ref dataCopyIndexPosition);
+                            WriteSpanDataToStream(testService, dataCopy, out dataCopyIndexPosition);
                             break;
 
                         case 2:
-                            WriteByteDataToStream(testService, dataCopy, ref dataCopyIndexPosition);
+                            WriteByteDataToStream(testService, dataCopy, out dataCopyIndexPosition);
                             break;
 
                         case 3:
@@ -1392,12 +1392,20 @@ public partial class UsingMemoryStreamSlim
                             break;
                     }
                 }
-                // Verify the contents
-                testService.SetLength(Math.Max(testService.Length, dataCopy.Length));
+                // Verify the contents: SetLength extension zero-fills new bytes; mirror must match.
+                long streamLengthBeforeFinalResize = testService.Length;
+                testService.SetLength(Math.Max(streamLengthBeforeFinalResize, dataCopy.Length));
+                long streamLengthAfterFinalResize = testService.Length;
+                if (streamLengthAfterFinalResize > streamLengthBeforeFinalResize)
+                {
+                    int clearStartIndex = checked((int)streamLengthBeforeFinalResize);
+                    int clearLength = checked((int)(streamLengthAfterFinalResize - streamLengthBeforeFinalResize));
+                    Array.Clear(dataCopy, clearStartIndex, clearLength);
+                }
                 VerifyContentsFromStartToEndOneRead(testService, dataCopy);
             }
 
-        void WriteArrayDataToStream (MemoryStreamSlim stream, byte[] dataCopyArray, ref int dataCopyArrayPosition)
+        void WriteArrayDataToStream (MemoryStreamSlim stream, byte[] dataCopyArray, out int dataCopyArrayPosition)
         {
             int writePosition = (int)stream.Position;
             int spaceLeft = dataCopyArray.Length - writePosition;
@@ -1405,11 +1413,11 @@ public partial class UsingMemoryStreamSlim
             byte[] writeData = MemoryTestPrep.GetRandomByteArray(byteCount);
 
             stream.Write(writeData);
-            Array.Copy(writeData, 0, dataCopyArray, dataCopyArrayPosition, byteCount);
-            dataCopyArrayPosition += byteCount;
+            Array.Copy(writeData, 0, dataCopyArray, writePosition, byteCount);
+            dataCopyArrayPosition = writePosition + byteCount;
         }
 
-        void WriteSpanDataToStream (MemoryStreamSlim stream, byte[] dataCopyArray, ref int dataCopyArrayPosition)
+        void WriteSpanDataToStream (MemoryStreamSlim stream, byte[] dataCopyArray, out int dataCopyArrayPosition)
         {
             int writePosition = (int)stream.Position;
             int spaceLeft = dataCopyArray.Length - writePosition;
@@ -1417,19 +1425,23 @@ public partial class UsingMemoryStreamSlim
             byte[] writeData = MemoryTestPrep.GetRandomByteArray(byteCount);
 
             stream.Write(writeData.AsSpan());
-            Array.Copy(writeData, 0, dataCopyArray, dataCopyArrayPosition, byteCount);
-            dataCopyArrayPosition += byteCount;
+            Array.Copy(writeData, 0, dataCopyArray, writePosition, byteCount);
+            dataCopyArrayPosition = writePosition + byteCount;
         }
 
-        void WriteByteDataToStream (MemoryStreamSlim stream, byte[] dataCopyArray, ref int dataCopyArrayPosition)
+        void WriteByteDataToStream (MemoryStreamSlim stream, byte[] dataCopyArray, out int dataCopyArrayPosition)
         {
             int writePosition = (int)stream.Position;
             int spaceLeft = dataCopyArray.Length - writePosition;
             if (spaceLeft < 1)
+            {
+                dataCopyArrayPosition = writePosition;
                 return;
+            }
             byte writeData = GetRandomByte();
             stream.WriteByte(writeData);
-            dataCopyArray[dataCopyArrayPosition++] = writeData;
+            dataCopyArray[writePosition] = writeData;
+            dataCopyArrayPosition = writePosition + 1;
         }
 
         void PositionStream (MemoryStreamSlim stream, int maxPosition, out int dataCopyArrayPosition)
@@ -1482,8 +1494,8 @@ public partial class UsingMemoryStreamSlim
             int currentLength = (int)stream.Length;
             int newLength = (maxPosition < 2) ? maxPosition : RandomSource.GetRandomInteger(2, maxPosition);
 
-            // Do we need to clear data in the copy?
-            if ((stream.Mode == MemoryStreamSlimMode.Dynamic) && (newLength < currentLength))
+            // Discarded logical bytes are unreadable from the stream; clear the mirror for any mode.
+            if (newLength < currentLength)
             {
                 Array.Clear(dataCopyArray, newLength, currentLength - newLength);
             }
@@ -1529,15 +1541,15 @@ public partial class UsingMemoryStreamSlim
                             switch (GetTestInteger() % 6)
                             {
                                 case 0:
-                                    WriteArrayDataToStream(testService, dataCopy, ref dataCopyIndexPosition);
+                                    WriteArrayDataToStream(testService, dataCopy, out dataCopyIndexPosition);
                                     break;
 
                                 case 1:
-                                    WriteSpanDataToStream(testService, dataCopy, ref dataCopyIndexPosition);
+                                    WriteSpanDataToStream(testService, dataCopy, out dataCopyIndexPosition);
                                     break;
 
                                 case 2:
-                                    WriteByteDataToStream(testService, dataCopy, ref dataCopyIndexPosition);
+                                    WriteByteDataToStream(testService, dataCopy, out dataCopyIndexPosition);
                                     break;
 
                                 case 3:
@@ -1553,8 +1565,16 @@ public partial class UsingMemoryStreamSlim
                                     break;
                             }
                         }
-                        // Verify the contents
-                        testService.SetLength(Math.Max(testService.Length, dataCopy.Length));
+                        // Verify the contents: SetLength extension zero-fills new bytes; mirror must match.
+                        long streamLengthBeforeFinalResize = testService.Length;
+                        testService.SetLength(Math.Max(streamLengthBeforeFinalResize, dataCopy.Length));
+                        long streamLengthAfterFinalResize = testService.Length;
+                        if (streamLengthAfterFinalResize > streamLengthBeforeFinalResize)
+                        {
+                            int clearStartIndex = checked((int)streamLengthBeforeFinalResize);
+                            int clearLength = checked((int)(streamLengthAfterFinalResize - streamLengthBeforeFinalResize));
+                            Array.Clear(dataCopy, clearStartIndex, clearLength);
+                        }
                         // Alternate how we verify the data
                         if (0 == (testLoop & 1))
                             await VerifyContentsFromStartToEndOneReadAsync(testService, dataCopy);
@@ -1562,7 +1582,7 @@ public partial class UsingMemoryStreamSlim
                             await VerifyContentsFromStartToEndInBlocksAsync(testService, dataCopy, 0x61);
                     }
 
-                void WriteArrayDataToStream (MemoryStreamSlim stream, byte[] dataCopyArray, ref int dataCopyArrayPosition)
+                void WriteArrayDataToStream (MemoryStreamSlim stream, byte[] dataCopyArray, out int dataCopyArrayPosition)
                 {
                     int writePosition = (int)stream.Position;
                     int spaceLeft = dataCopyArray.Length - writePosition;
@@ -1570,11 +1590,11 @@ public partial class UsingMemoryStreamSlim
                     byte[] writeData = MemoryTestPrep.GetRandomByteArray(byteCount);
 
                     stream.Write(writeData);
-                    Array.Copy(writeData, 0, dataCopyArray, dataCopyArrayPosition, byteCount);
-                    dataCopyArrayPosition += byteCount;
+                    Array.Copy(writeData, 0, dataCopyArray, writePosition, byteCount);
+                    dataCopyArrayPosition = writePosition + byteCount;
                 }
 
-                void WriteSpanDataToStream (MemoryStreamSlim stream, byte[] dataCopyArray, ref int dataCopyArrayPosition)
+                void WriteSpanDataToStream (MemoryStreamSlim stream, byte[] dataCopyArray, out int dataCopyArrayPosition)
                 {
                     int writePosition = (int)stream.Position;
                     int spaceLeft = dataCopyArray.Length - writePosition;
@@ -1582,19 +1602,23 @@ public partial class UsingMemoryStreamSlim
                     byte[] writeData = MemoryTestPrep.GetRandomByteArray(byteCount);
 
                     stream.Write(writeData.AsSpan());
-                    Array.Copy(writeData, 0, dataCopyArray, dataCopyArrayPosition, byteCount);
-                    dataCopyArrayPosition += byteCount;
+                    Array.Copy(writeData, 0, dataCopyArray, writePosition, byteCount);
+                    dataCopyArrayPosition = writePosition + byteCount;
                 }
 
-                void WriteByteDataToStream (MemoryStreamSlim stream, byte[] dataCopyArray, ref int dataCopyArrayPosition)
+                void WriteByteDataToStream (MemoryStreamSlim stream, byte[] dataCopyArray, out int dataCopyArrayPosition)
                 {
                     int writePosition = (int)stream.Position;
                     int spaceLeft = dataCopyArray.Length - writePosition;
                     if (spaceLeft < 1)
+                    {
+                        dataCopyArrayPosition = writePosition;
                         return;
+                    }
                     byte writeData = GetRandomByte();
                     stream.WriteByte(writeData);
-                    dataCopyArray[dataCopyArrayPosition++] = writeData;
+                    dataCopyArray[writePosition] = writeData;
+                    dataCopyArrayPosition = writePosition + 1;
                 }
 
                 void PositionStream (MemoryStreamSlim stream, int maxPosition, out int dataCopyArrayPosition)
@@ -1647,8 +1671,8 @@ public partial class UsingMemoryStreamSlim
                     int currentLength = (int)stream.Length;
                     int newLength = (maxPosition < 2) ? maxPosition : RandomSource.GetRandomInteger(2, maxPosition);
 
-                    // Do we need to clear data in the copy?
-                    if ((stream.Mode == MemoryStreamSlimMode.Dynamic) && (newLength < currentLength))
+                    // Discarded logical bytes are unreadable from the stream; clear the mirror for any mode.
+                    if (newLength < currentLength)
                     {
                         Array.Clear(dataCopyArray, newLength, currentLength - newLength);
                     }
@@ -1724,15 +1748,15 @@ public partial class UsingMemoryStreamSlim
                     switch (chaosIndex % 5)
                     {
                         case 0:
-                            WriteArrayDataToStream(testService, dataCopy, testSegmentSize, ref dataCopyIndexPosition);
+                            WriteArrayDataToStream(testService, dataCopy, testSegmentSize, out dataCopyIndexPosition);
                             break;
 
                         case 1:
-                            WriteSpanDataToStream(testService, dataCopy, testSegmentSize, ref dataCopyIndexPosition);
+                            WriteSpanDataToStream(testService, dataCopy, testSegmentSize, out dataCopyIndexPosition);
                             break;
 
                         case 2:
-                            WriteByteDataToStream(testService, dataCopy, ref dataCopyIndexPosition);
+                            WriteByteDataToStream(testService, dataCopy, out dataCopyIndexPosition);
                             break;
 
                         case 3:
@@ -1750,7 +1774,7 @@ public partial class UsingMemoryStreamSlim
             }
 
         void WriteArrayDataToStream (MemoryStreamSlim stream, byte[] dataCopyArray, int segmentSizeCap,
-            ref int dataCopyArrayPosition)
+            out int dataCopyArrayPosition)
         {
             int writePosition = (int)stream.Position;
             int spaceLeft = dataCopyArray.Length - writePosition;
@@ -1758,12 +1782,12 @@ public partial class UsingMemoryStreamSlim
             byte[] writeData = MemoryTestPrep.GetRandomByteArray(writeByteCount);
 
             stream.Write(writeData);
-            Array.Copy(writeData, 0, dataCopyArray, dataCopyArrayPosition, writeByteCount);
-            dataCopyArrayPosition += writeByteCount;
+            Array.Copy(writeData, 0, dataCopyArray, writePosition, writeByteCount);
+            dataCopyArrayPosition = writePosition + writeByteCount;
         }
 
         void WriteSpanDataToStream (MemoryStreamSlim stream, byte[] dataCopyArray, int segmentSizeCap,
-            ref int dataCopyArrayPosition)
+            out int dataCopyArrayPosition)
         {
             int writePosition = (int)stream.Position;
             int spaceLeft = dataCopyArray.Length - writePosition;
@@ -1771,24 +1795,17 @@ public partial class UsingMemoryStreamSlim
             byte[] writeData = MemoryTestPrep.GetRandomByteArray(writeByteCount);
 
             stream.Write(writeData.AsSpan());
-            Array.Copy(writeData, 0, dataCopyArray, dataCopyArrayPosition, writeByteCount);
-            dataCopyArrayPosition += writeByteCount;
+            Array.Copy(writeData, 0, dataCopyArray, writePosition, writeByteCount);
+            dataCopyArrayPosition = writePosition + writeByteCount;
         }
 
-        /// <summary>
-        /// Picks a write size for chaos array/span writes: small tail flushes use all remaining space;
-        /// otherwise the exclusive upper bound is the smaller of half the space left and one past the
-        /// segment cap (matching <see cref="MemoryTestPrep.FillStreamAndArrayWithRandomBytes(Stream, int, int)"/> chunking).
-        /// </summary>
-        /// <param name="spaceLeft">
-        /// Bytes from the stream position to the end of the logical buffer.
-        /// </param>
-        /// <param name="segmentSizeCap">
-        /// Maximum bytes per write for this outer loop iteration.
-        /// </param>
-        /// <returns>
-        /// The number of bytes to write.
-        /// </returns>
+        // Local helper (XML docs are not valid on local functions for tooling). Picks a write size for
+        // chaos array/span writes: small tail flushes use all remaining space; otherwise the exclusive
+        // upper bound is the smaller of half the space left and one past the segment cap (matching
+        // MemoryTestPrep.FillStreamAndArrayWithRandomBytes chunking).
+        // spaceLeft: bytes from the stream position to the end of the logical buffer.
+        // segmentSizeCap: maximum bytes per write for this outer loop iteration.
+        // Returns the number of bytes to write.
         int ResolveChaosWriteByteCount (int spaceLeft, int segmentSizeCap)
         {
             if (spaceLeft < 10)
@@ -1802,18 +1819,20 @@ public partial class UsingMemoryStreamSlim
             return RandomSource.GetRandomInteger(1, writeMaxExclusive);
         }
 
-        void WriteByteDataToStream (MemoryStreamSlim stream, byte[] dataCopyArray, ref int dataCopyArrayPosition)
+        void WriteByteDataToStream (MemoryStreamSlim stream, byte[] dataCopyArray, out int dataCopyArrayPosition)
         {
             int writePosition = (int)stream.Position;
             int spaceLeft = dataCopyArray.Length - writePosition;
             if (spaceLeft < 1)
             {
+                dataCopyArrayPosition = writePosition;
                 return;
             }
 
             byte writeData = GetRandomByte();
             stream.WriteByte(writeData);
-            dataCopyArray[dataCopyArrayPosition++] = writeData;
+            dataCopyArray[writePosition] = writeData;
+            dataCopyArrayPosition = writePosition + 1;
         }
 
         void PositionStream (MemoryStreamSlim stream, int maxPosition, out int dataCopyArrayPosition)
