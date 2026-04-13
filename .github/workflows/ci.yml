@@ -59,6 +59,20 @@ jobs:
           name: test-release-artifacts
           path: artifacts
 
+      # upload-artifact / download-artifact do not preserve Unix mode bits; xUnit v3 execs the
+      # apphost (path without .dll). Without +x, launch fails with Permission denied (Win32Exception 13).
+      - name: Restore execute bit on ELF outputs under artifacts/bin
+        run: |
+          set -euo pipefail
+          command -v file >/dev/null || { echo "file command not found"; exit 1; }
+          if [ -d artifacts/bin ]; then
+            while IFS= read -r -d '' f; do
+              if file -b "$f" | grep -qiE 'ELF.*executable'; then
+                chmod +x "$f"
+              fi
+            done < <(find artifacts/bin -type f -print0)
+          fi
+
       - name: Apply serialized xUnit runner for Explicit
         run: |
           set -euo pipefail
