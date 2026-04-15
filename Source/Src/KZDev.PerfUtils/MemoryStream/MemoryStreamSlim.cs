@@ -228,24 +228,24 @@ public abstract class MemoryStreamSlim : MemoryStream
     /// <summary>
     /// <c>true</c> when the stream can be written to.
     /// </summary>
-    protected bool CanWriteInternal { [DebuggerStepThrough] get; [DebuggerStepThrough] set; }
+    internal bool CanWriteInternal { [DebuggerStepThrough] get; [DebuggerStepThrough] set; }
 
     /// <summary>
     /// The current length of this stream.
     /// </summary>
-    protected long LengthInternal { [DebuggerStepThrough] get; [DebuggerStepThrough] set; } = 0;
+    internal long LengthInternal { [DebuggerStepThrough] get; [DebuggerStepThrough] set; } = 0;
 
     /// <summary>
     /// The current file position in this stream.
     /// </summary>
-    protected long PositionInternal { [DebuggerStepThrough] get; [DebuggerStepThrough] set; } = 0;
+    internal long PositionInternal { [DebuggerStepThrough] get; [DebuggerStepThrough] set; } = 0;
 
     /// <summary>
     /// The current capacity of this stream. This is the reported capacity, not the actual
     /// allocated capacity, which can be larger. This is also the capacity that can be
     /// explicitly set by the user. So, we will always have at least this much space.
     /// </summary>
-    protected long CapacityInternal
+    internal long CapacityInternal
     {
         [DebuggerStepThrough]
         get => _internalCapacity;
