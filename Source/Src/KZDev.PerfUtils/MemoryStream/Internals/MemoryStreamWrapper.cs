@@ -342,7 +342,7 @@ internal sealed class MemoryStreamWrapper : MemoryStreamSlim
     /// The shared empty owner or a pooled copy of the stream bytes from the start through
     /// <see cref="Stream.Length"/>, independent of <see cref="Stream.Position"/>.
     /// </returns>
-    protected override IMemoryOwner<byte> ToMemoryInternal (MemoryPool<byte> memoryPool)
+    internal override IMemoryOwner<byte> ToMemoryInternal (MemoryPool<byte> memoryPool)
     {
         // When TryGetBuffer succeeds, copy directly from the backing array (no ToArray, no seek/read).
         // This remains usable after dispose for publicly visible buffers, same family of cases as BCL GetBuffer.

@@ -97,7 +97,7 @@ public abstract class MemoryStreamSlim : MemoryStream
     /// memory buffers for large memory, this also shortcuts/overrides the check for the global settings
     /// by checking if this is running in a browser environment.
     /// </summary>
-    protected static bool InternalUseNativeLargeMemoryBuffers => !OperatingSystem.IsBrowser() && _useNativeMemoryBuffers;
+    internal static bool InternalUseNativeLargeMemoryBuffers => !OperatingSystem.IsBrowser() && _useNativeMemoryBuffers;
 
     /// <summary>
     /// Gets the default settings for <see cref="MemoryStreamSlim"/> instances.
@@ -283,7 +283,7 @@ public abstract class MemoryStreamSlim : MemoryStream
     /// If <c>true</c>, the active stream count is incremented; otherwise, it is decremented.
     /// </param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    protected static void AdjustActiveStreamCount (bool increment)
+    internal static void AdjustActiveStreamCount (bool increment)
     {
         if (increment)
             Interlocked.Increment(ref _activeStreamCount);
@@ -335,7 +335,7 @@ public abstract class MemoryStreamSlim : MemoryStream
     /// <paramref name="offset"/> and <paramref name="count"/> exceed the length of <paramref name="buffer"/>.
     /// </exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    protected new static void ValidateBufferArguments (byte[] buffer, int offset, int count)
+    internal new static void ValidateBufferArguments (byte[] buffer, int offset, int count)
     {
         // Do the standard stream validations
         Stream.ValidateBufferArguments(buffer, offset, count);
@@ -355,7 +355,7 @@ public abstract class MemoryStreamSlim : MemoryStream
     /// <c>true</c> if the length is valid; otherwise, <c>false</c>.
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    protected static void ValidateLength (long length)
+    internal static void ValidateLength (long length)
     {
         if ((length >= 0) && (length <= MaxMemoryStreamLength))
             return;
@@ -426,7 +426,7 @@ public abstract class MemoryStreamSlim : MemoryStream
     /// The token to monitor for cancellation requests.
     /// </param>
     /// <returns></returns>
-    protected Task CopyToSyncAsAsync (Stream destination, int bufferSize, CancellationToken cancellationToken)
+    internal Task CopyToSyncAsAsync (Stream destination, int bufferSize, CancellationToken cancellationToken)
     {
         // We have no async needs here
         if (cancellationToken.IsCancellationRequested)
@@ -453,7 +453,7 @@ public abstract class MemoryStreamSlim : MemoryStream
     /// <returns>
     /// The materialized owner for this stream implementation.
     /// </returns>
-    protected virtual IMemoryOwner<byte> ToMemoryInternal (MemoryPool<byte> memoryPool)
+    internal virtual IMemoryOwner<byte> ToMemoryInternal (MemoryPool<byte> memoryPool)
     {
         ThrowHelper.ThrowNotSupportedException_FeatureNotSupported();
         return null!;
@@ -473,7 +473,7 @@ public abstract class MemoryStreamSlim : MemoryStream
     /// Verifies that the stream is not closed and throws an exception if it is.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    protected void EnsureNotClosed ()
+    internal void EnsureNotClosed ()
     {
         if (IsOpen) return;
         if (IsDisposed)
@@ -486,7 +486,7 @@ public abstract class MemoryStreamSlim : MemoryStream
     /// Verifies that the stream is not closed and is writable and throws an exception if it is.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    protected void EnsureWriteable ()
+    internal void EnsureWriteable ()
     {
         EnsureNotClosed();
         if (!CanWrite)

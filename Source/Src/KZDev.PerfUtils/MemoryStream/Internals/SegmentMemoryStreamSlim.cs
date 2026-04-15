@@ -2228,7 +2228,7 @@ internal sealed class SegmentMemoryStreamSlim : MemoryStreamSlim
     /// <returns>
     /// The shared empty owner or a pooled copy of the stream bytes.
     /// </returns>
-    protected override IMemoryOwner<byte> ToMemoryInternal (MemoryPool<byte> memoryPool)
+    internal override IMemoryOwner<byte> ToMemoryInternal (MemoryPool<byte> memoryPool)
     {
         EnsureNotClosed();
         int bytesToCopy = GetContiguousMaterializationByteCountOrThrow();
