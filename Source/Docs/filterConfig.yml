@@ -2,3 +2,5 @@
 apiRules:
   - exclude:
       uidRegex: ^System.Object..*$
+  - exclude:
+      uidRegex: '^KZDev\.PerfUtils\.MemoryStreamSlim\.#ctor\(.*\)$'
